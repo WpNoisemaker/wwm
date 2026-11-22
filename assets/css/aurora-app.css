@@ -1,0 +1,187 @@
+/*
+ * AURORA / APP — the couple's dashboard (/account) and the front-end HQ (/hq).
+ *
+ * Loads after app.css. Turns the two-column admin into something that reads like a native app:
+ * a glass rail on a desktop, a bottom tab bar and bottom sheets on a phone, mesh stat tiles,
+ * oversized light numerals, and tables that become cards when the screen is narrow.
+ */
+
+/* ================================================================ Shell */
+
+.app { padding-block: clamp(14px, 3vw, 34px) clamp(56px, 7vw, 100px); }
+.app__grid { grid-template-columns: 288px minmax(0, 1fr); gap: clamp(18px, 2.6vw, 34px); }
+
+.app__side {
+	position: sticky;
+	top: calc(var(--head-h) + 16px);
+	gap: 16px;
+	padding: 18px;
+	border: 1px solid var(--edge);
+	border-radius: var(--r-pane);
+	background: var(--glass);
+	-webkit-backdrop-filter: var(--blur);
+	backdrop-filter: var(--blur);
+	box-shadow: var(--shadow-2), var(--inset-top);
+}
+/* HQ runs dark, so the owner always knows which side of the product they are on. */
+.app--hq .app__side {
+	background: var(--glass-dark) var(--p-adire-light);
+	background-blend-mode: normal;
+	border-color: var(--edge-dark);
+	color: #F3F0F8;
+	box-shadow: var(--shadow-3);
+}
+
+.app__me { padding: 2px 2px 16px; border-bottom: 1px solid var(--hair); }
+.app--hq .app__me { border-bottom-color: rgba(255, 255, 255, .14); }
+.app__me b { font-family: var(--font-display); font-weight: 600; letter-spacing: -.01em; }
+.app__av { width: 46px; height: 46px; border: 1px solid var(--edge); box-shadow: var(--shadow-1); }
+.app__av--seal { border-color: var(--sun); box-shadow: var(--shadow-sun); }
+.app__switch select { min-height: 46px; border-radius: var(--r-pill); background-color: var(--glass-2); }
+
+.app__nav { gap: 3px; }
+.app__nav a {
+	gap: 11px;
+	padding: .72em .9em;
+	border-radius: var(--r-sm);
+	font: 600 .93rem/1.2 var(--font-body);
+	letter-spacing: -.005em;
+	transition: background-color var(--t), color var(--t), transform var(--t-fast) var(--spring);
+}
+.app__nav a:hover { background: var(--glass-2); }
+.app__nav a:active { transform: scale(.98); }
+.app__nav a.is-on { background: var(--ink); color: var(--canvas); }
+.app__nav a.is-on svg { color: var(--sun); }
+.app--hq .app__nav a:hover { background: rgba(255, 255, 255, .08); }
+.app--hq .app__nav a.is-on { background: var(--mesh-sun); color: #160E22; }
+.app--hq .app__nav a.is-on svg { color: #160E22; }
+.app__nav hr { border-top: 1px solid var(--hair); }
+.app--hq .app__nav hr { border-top-color: rgba(255, 255, 255, .14); }
+
+.app__main { gap: 22px; }
+.app-head h1 { font-size: clamp(1.9rem, 3.6vw, 2.9rem); font-weight: 400; letter-spacing: -.035em; }
+
+/* ================================================================ Panels & tiles */
+
+.panel {
+	padding: clamp(20px, 2.6vw, 30px);
+	border: 1px solid var(--edge);
+	border-radius: var(--r-pane);
+	background: var(--glass);
+	-webkit-backdrop-filter: var(--blur);
+	backdrop-filter: var(--blur);
+	box-shadow: var(--shadow-2), var(--inset-top);
+}
+.panel > h2, .panel__head h2 { font-size: 1.22rem; font-weight: 550; letter-spacing: -.02em; }
+.panel--soft { background: var(--glass-2); border-style: solid; }
+.panel--mesh { background: var(--mesh-sun); color: #160E22; border-color: transparent; }
+
+.stat-grid { gap: 14px; }
+.stat {
+	padding: 18px 20px 20px;
+	border-radius: var(--r-card);
+	background: var(--tone-mesh, var(--glass-2));
+	border: 1px solid var(--edge);
+	box-shadow: var(--shadow-1), var(--inset-top);
+	overflow: hidden;
+}
+/* The first tile on a screen carries the brand mesh, so every page has one warm anchor. */
+.stat-grid > .stat:first-child { background: var(--mesh-sun); color: #160E22; border-color: transparent; box-shadow: var(--shadow-sun); }
+.stat-grid > .stat:first-child > span { color: rgba(22, 14, 34, .66); }
+.stat b { font: 250 clamp(1.7rem, 3vw, 2.5rem)/1 var(--font-num); letter-spacing: -.04em; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+
+.share-panel { background: var(--mesh-sun); color: #160E22; border-color: transparent; }
+.share-panel__qr { border: 1px solid rgba(22, 14, 34, .12); border-radius: var(--r-sm); background: #fff; box-shadow: var(--shadow-1); }
+
+.checklist li { background: var(--glass-2); border: 1px solid var(--edge); }
+.checklist li.is-done { background: color-mix(in srgb, var(--lime) 26%, transparent); border-color: transparent; }
+.mini-rank li { background: var(--glass-2); border: 1px solid var(--edge); }
+.mini-rank li::before { font: 250 1.4rem/1 var(--font-num); color: var(--sun-deep); }
+
+/* ================================================================ Tables become cards on a phone */
+
+.table-wrap { border-radius: var(--r-card); }
+@media (max-width: 760px) {
+	.table-wrap { border: 0; background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; overflow: visible; }
+	.table, .table tbody, .table tr, .table td { display: block; width: 100%; }
+	.table thead { display: none; }
+	.table tr {
+		margin-bottom: 12px;
+		padding: 14px 16px;
+		border: 1px solid var(--edge);
+		border-radius: var(--r-card);
+		background: var(--glass);
+		-webkit-backdrop-filter: var(--blur);
+		backdrop-filter: var(--blur);
+		box-shadow: var(--shadow-1), var(--inset-top);
+	}
+	.table td { display: flex; justify-content: space-between; gap: 14px; padding: 7px 0; border-bottom: 1px solid var(--hair); text-align: right; }
+	.table td:last-child { border-bottom: 0; padding-bottom: 0; }
+	.table td::before {
+		content: attr(data-label);
+		flex: none;
+		color: var(--muted);
+		font: 600 .72rem/1.5 var(--font-body);
+		letter-spacing: .08em;
+		text-transform: uppercase;
+		text-align: left;
+	}
+	.table td:not([data-label]) { justify-content: flex-end; }
+}
+
+/* ================================================================ The app on a phone */
+
+@media (max-width: 899px) {
+	.app__grid { grid-template-columns: minmax(0, 1fr); }
+
+	/* The sidebar's identity block stays at the top; its links become a snapping rail. */
+	.app__side {
+		position: sticky;
+		top: calc(var(--head-h) + 6px);
+		z-index: 40;
+		padding: 12px 12px 6px;
+		border-radius: var(--r-card);
+	}
+	.app__me { padding-bottom: 12px; }
+	.app__nav {
+		display: flex;
+		gap: 8px;
+		margin-inline: -12px;
+		padding: 10px 12px 12px;
+		overflow-x: auto;
+		scroll-snap-type: x proximity;
+		scrollbar-width: none;
+	}
+	.app__nav::-webkit-scrollbar { display: none; }
+	.app__nav a {
+		flex: none;
+		scroll-snap-align: start;
+		padding: .6em 1em;
+		border-radius: var(--r-pill);
+		border: 1px solid var(--edge);
+		background: var(--glass-2);
+		white-space: nowrap;
+	}
+	.app--hq .app__nav a { border-color: var(--edge-dark); background: rgba(255, 255, 255, .06); }
+	.app__nav hr { display: none; }
+	.app__nav a span { display: inline; }
+
+	.app-cols { grid-template-columns: minmax(0, 1fr); }
+	.stat-grid, .stat-grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.panel { padding: 18px 16px; border-radius: var(--r-card); }
+	.app-head h1 { font-size: clamp(1.7rem, 7vw, 2.2rem); }
+
+	/* Save bars clear the tab bar. */
+	.form-actions--sticky { bottom: calc(var(--tab-h) + var(--safe-b) + 12px); }
+}
+
+@media (max-width: 520px) {
+	.stat-grid, .stat-grid--4 { grid-template-columns: minmax(0, 1fr); }
+	.stat-grid .stat { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+	.stat-grid .stat b { font-size: 1.9rem; }
+}
+
+/* ================================================================ Printables keep paper rules */
+
+.table-cards, .wd-print { background: #fff !important; }
+.table-cards *, .wd-print * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }

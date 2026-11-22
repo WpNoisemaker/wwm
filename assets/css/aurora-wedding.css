@@ -1,0 +1,216 @@
+/*
+ * AURORA / WEDDING — the public wedding page, and the ladder that runs through it.
+ *
+ * Loads after wedding.css and before any template's own stylesheet, so a design can always
+ * override anything here. Everything is drawn from the couple's own variables (--w-primary,
+ * --w-accent, --w-bg, --w-ink, --w-head, --w-body), never from brand yellow, so a page looks
+ * like the couple and not like us.
+ *
+ * The ladder, visible at a glance:
+ *   .wpage--t-free     plain. One column, flat cards, black & white, no mesh, no motion.
+ *   .wpage--t-pro      the couple's colours. Soft tints, glass cards, gentle motion.
+ *   .wpage--t-premium  a designed page. Layered glass, mesh from their own palette, ornament,
+ *                      a signature hero, entrance motion, and the finish each design carries.
+ */
+
+/* ================================================================ Shared ground */
+
+.wpage {
+	--w-glass: color-mix(in srgb, var(--w-bg) 62%, transparent);
+	--w-glass-2: color-mix(in srgb, var(--w-bg) 80%, transparent);
+	--w-edge: color-mix(in srgb, var(--w-ink) 10%, transparent);
+	--w-edge-2: color-mix(in srgb, var(--w-ink) 18%, transparent);
+	--w-soft: color-mix(in srgb, var(--w-ink) 7%, transparent);
+	--w-tint: color-mix(in srgb, var(--w-primary) 8%, var(--w-bg));
+	--w-tint-2: color-mix(in srgb, var(--w-accent) 14%, var(--w-bg));
+	--w-line: 1px;
+	--w-r: 24px;
+	--w-r-lg: 32px;
+	--w-shadow-1: 0 1px 2px color-mix(in srgb, var(--w-ink) 5%, transparent), 0 6px 18px color-mix(in srgb, var(--w-ink) 7%, transparent);
+	--w-shadow-2: 0 2px 6px color-mix(in srgb, var(--w-ink) 6%, transparent), 0 16px 44px color-mix(in srgb, var(--w-ink) 11%, transparent);
+	--w-blur: blur(22px) saturate(1.5);
+	/* A mesh built entirely from the couple's two colours. */
+	--w-mesh:
+		radial-gradient(120% 115% at 14% 8%, color-mix(in srgb, var(--w-accent) 85%, #fff) 0%, transparent 62%),
+		radial-gradient(130% 120% at 88% 16%, var(--w-accent) 0%, transparent 66%),
+		radial-gradient(150% 140% at 52% 108%, var(--w-primary) 0%, transparent 72%),
+		linear-gradient(160deg, color-mix(in srgb, var(--w-primary) 70%, var(--w-accent)) 0%, var(--w-primary) 100%);
+	--w-mesh-soft:
+		radial-gradient(110% 110% at 12% 6%, color-mix(in srgb, var(--w-accent) 34%, var(--w-bg)) 0%, transparent 64%),
+		radial-gradient(120% 120% at 90% 92%, color-mix(in srgb, var(--w-primary) 24%, var(--w-bg)) 0%, transparent 68%),
+		var(--w-bg);
+	background: var(--w-bg);
+}
+
+/* Shared furniture: used by every design, so it must stay quiet enough to take any art direction. */
+.wpage .card, .wpage .panel, .wpage .w-card, .wpage .w-panel, .wpage .w-box {
+	border: var(--w-line) solid var(--w-edge);
+	border-radius: var(--w-r);
+	background: var(--w-glass-2);
+	box-shadow: var(--w-shadow-1);
+}
+.wpage .btn, .wpage .w-btn {
+	min-height: 50px;
+	border-radius: 999px;
+	border: var(--w-line) solid transparent;
+	box-shadow: var(--w-shadow-1);
+	font-family: var(--w-head);
+	font-weight: 600;
+	letter-spacing: -.005em;
+	transition: transform .16s cubic-bezier(.34, 1.56, .64, 1), box-shadow .26s, filter .26s;
+}
+.wpage .btn:hover, .wpage .w-btn:hover { transform: translateY(-1px); box-shadow: var(--w-shadow-2); }
+.wpage .btn:active, .wpage .w-btn:active { transform: scale(.97); }
+.wpage .w-btn { background: var(--w-primary); color: #fff; }
+.wpage .w-btn--accent { background: var(--w-accent); color: var(--w-ink); }
+.wpage .w-btn--ghost { background: transparent; border-color: var(--w-edge-2); box-shadow: none; color: var(--w-ink); }
+
+.wpage input, .wpage select, .wpage textarea {
+	border: var(--w-line) solid var(--w-edge-2);
+	border-radius: 16px;
+	background: color-mix(in srgb, var(--w-bg) 86%, #fff);
+	box-shadow: none;
+}
+.wpage input:focus, .wpage select:focus, .wpage textarea:focus {
+	border-color: var(--w-primary);
+	box-shadow: 0 0 0 4px color-mix(in srgb, var(--w-primary) 24%, transparent);
+}
+
+.wpage .countdown span {
+	border: var(--w-line) solid var(--w-edge);
+	border-radius: 20px;
+	background: var(--w-glass-2);
+	box-shadow: var(--w-shadow-1);
+	font-size: .62rem;
+	letter-spacing: .12em;
+}
+.wpage .countdown b { font: 250 clamp(1.5rem, 2.8vw, 2.2rem)/1 var(--w-head); letter-spacing: -.035em; }
+
+.wpage .w-hash { border: var(--w-line) solid var(--w-edge-2); border-radius: 999px; background: var(--w-tint-2); box-shadow: var(--w-shadow-1); }
+.wpage .tag, .wpage .chip { border-radius: 999px; border: var(--w-line) solid var(--w-edge); background: var(--w-glass-2); box-shadow: none; }
+.wpage .w-buzz { border-top: var(--w-line) solid var(--w-edge); }
+.wpage .meter { background: var(--w-soft); border-radius: 999px; }
+.wpage .meter > i, .wpage .meter__fill { background: var(--w-primary); }
+
+/* Section rhythm, generous on every tier. */
+.wpage .w-sec, .wpage .section { padding-block: clamp(36px, 5.5vw, 86px); }
+.wpage h2 { letter-spacing: -.03em; }
+
+/* ================================================================ Tier 1 — Free: plain and honest */
+
+.wpage--t-free {
+	--w-r: 18px;
+	--w-r-lg: 22px;
+	--w-shadow-1: 0 1px 2px rgba(17, 17, 17, .06);
+	--w-shadow-2: 0 2px 8px rgba(17, 17, 17, .09);
+}
+/* No glass, no mesh, no blur: the free page is clean paper and a rule. */
+.wpage--t-free .card, .wpage--t-free .panel, .wpage--t-free .w-card {
+	background: #fff;
+	border-color: rgba(17, 17, 17, .12);
+	box-shadow: none;
+}
+.wpage--t-free .w-hero { background: #fff; border-bottom: 1px solid rgba(17, 17, 17, .14); }
+.wpage--t-free .w-names { font-weight: 500; }
+.wpage--t-free .countdown span { background: #fff; border-color: rgba(17, 17, 17, .14); box-shadow: none; }
+.wpage--t-free .w-sec + .w-sec { border-top: 1px solid rgba(17, 17, 17, .08); }
+/* The one place a free page is allowed to glow: the upgrade nudge. */
+.wpage--t-free .w-upsell { background: var(--mesh-sun); color: #160E22; border: 0; border-radius: 26px; box-shadow: 0 10px 30px rgba(245, 184, 0, .3); }
+
+/* ================================================================ Tier 2 — Pro: their colours, softly */
+
+.wpage--t-pro {
+	--w-r: 24px;
+	--w-r-lg: 30px;
+}
+.wpage--t-pro .card, .wpage--t-pro .panel, .wpage--t-pro .w-card {
+	background: var(--w-glass-2);
+	-webkit-backdrop-filter: var(--w-blur);
+	backdrop-filter: var(--w-blur);
+	box-shadow: var(--w-shadow-1);
+}
+.wpage--t-pro .w-hero { background: var(--w-mesh-soft); border-bottom: 1px solid var(--w-edge); }
+.wpage--t-pro .w-sec:nth-of-type(even) { background: var(--w-tint); }
+.wpage--t-pro .w-names { font-weight: 500; }
+.wpage--t-pro .countdown span { -webkit-backdrop-filter: var(--w-blur); backdrop-filter: var(--w-blur); }
+
+/* ================================================================ Tier 3 — Premium: a designed page */
+
+.wpage--t-premium {
+	--w-r: 28px;
+	--w-r-lg: 38px;
+	--w-shadow-2: 0 3px 8px color-mix(in srgb, var(--w-ink) 7%, transparent), 0 22px 64px color-mix(in srgb, var(--w-ink) 14%, transparent);
+}
+.wpage--t-premium .card, .wpage--t-premium .panel, .wpage--t-premium .w-card {
+	background: var(--w-glass);
+	-webkit-backdrop-filter: var(--w-blur);
+	backdrop-filter: var(--w-blur);
+	border-color: color-mix(in srgb, #fff 42%, var(--w-edge));
+	box-shadow: var(--w-shadow-2), inset 0 1px 0 color-mix(in srgb, #fff 50%, transparent);
+}
+.wpage--t-premium .w-hero {
+	position: relative;
+	background: var(--w-mesh-soft);
+	border-bottom: 0;
+	overflow: hidden;
+}
+/* A premium hero carries its own light: a slow aurora behind the names. */
+.wpage--t-premium .w-hero::before {
+	content: "";
+	position: absolute;
+	inset: -30%;
+	pointer-events: none;
+	background:
+		radial-gradient(38% 42% at 18% 12%, color-mix(in srgb, var(--w-accent) 46%, transparent) 0%, transparent 70%),
+		radial-gradient(40% 44% at 84% 78%, color-mix(in srgb, var(--w-primary) 34%, transparent) 0%, transparent 72%);
+	animation: wAurora 26s ease-in-out infinite alternate;
+}
+@keyframes wAurora {
+	from { transform: translate3d(-2%, -1%, 0) scale(1); }
+	to { transform: translate3d(3%, 2%, 0) scale(1.08); }
+}
+.wpage--t-premium .w-hero > * { position: relative; z-index: 1; }
+.wpage--t-premium .w-names { font-weight: 450; letter-spacing: -.035em; }
+.wpage--t-premium .countdown span {
+	-webkit-backdrop-filter: var(--w-blur);
+	backdrop-filter: var(--w-blur);
+	box-shadow: var(--w-shadow-1), inset 0 1px 0 color-mix(in srgb, #fff 54%, transparent);
+}
+.wpage--t-premium .w-sec { position: relative; }
+/* Section headings on a premium page get a hairline rule in the couple's accent. */
+.wpage--t-premium .w-sec > .wrap > h2::after {
+	content: "";
+	display: block;
+	width: 52px;
+	height: 2px;
+	margin: .55em 0 0;
+	border-radius: 2px;
+	background: linear-gradient(90deg, var(--w-accent), transparent);
+}
+.wpage--t-premium .center > h2::after, .wpage--t-premium .w-sec--center h2::after { margin-inline: auto; background: linear-gradient(90deg, transparent, var(--w-accent), transparent); }
+/* Premium cards lift. */
+.wpage--t-premium a.card:hover, .wpage--t-premium a.w-card:hover { transform: translateY(-4px); box-shadow: var(--w-shadow-2); }
+/* And they arrive. */
+.wpage--t-premium .w-reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s cubic-bezier(.2,.8,.2,1) var(--d, 0ms), transform .7s cubic-bezier(.2,.8,.2,1) var(--d, 0ms); }
+.wpage--t-premium .w-reveal.is-in { opacity: 1; transform: none; }
+
+/* ================================================================ Fallbacks */
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+	.wpage .card, .wpage .panel, .wpage .w-card, .wpage .countdown span { background: color-mix(in srgb, var(--w-bg) 94%, #fff); }
+}
+@media (prefers-reduced-motion: reduce) {
+	.wpage--t-premium .w-hero::before { animation: none; }
+	.wpage--t-premium .w-reveal { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+	.wpage .card, .wpage .panel, .wpage .w-card, .wpage .countdown span {
+		-webkit-backdrop-filter: none !important;
+		backdrop-filter: none !important;
+		background: color-mix(in srgb, var(--w-bg) 96%, #fff) !important;
+	}
+}
+@media print {
+	.wpage--t-premium .w-hero::before { display: none; }
+	.wpage .card, .wpage .panel, .wpage .w-card { background: #fff !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; box-shadow: none !important; border: 1px solid #ccc !important; }
+}

@@ -1,0 +1,220 @@
+<?php
+/**
+ * Couple pack: Ibrahim Bello & Ummahani Musa Tahir ("Ibrahim & Ummi").
+ *
+ * A Premium page with the Ivory & Gold custom design & the couple's account. It is set up once,
+ * on the first visit after the theme update, & never changes a page or an account that already
+ * exists. The couple can edit everything from their account afterwards. The password is stored
+ * only as a hash; ask the couple to change it after they first sign in.
+ *
+ * @package WWMD
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+return array(
+	'slug'     => 'ibrahim-ummi',
+	'template' => 'ivory',
+	'styles'   => array( 'nikkah', 'traditional' ),
+	'images'   => array( 'venue-hall', 'memory-garden', 'memory-cafe', 'dancefloor' ),
+	'user'     => array(
+		'email' => 'kwasunaira@gmail.com',
+		'name'  => 'Ibrahim & Ummi',
+		'first' => 'Ibrahim',
+		'hash'  => '$2y$12$wN22k7gatiEJ3kwZhZdfDuNgkM/p2D2S77ttSBGt5TQxvv3n.YWkW',
+	),
+	'vendors'  => array(
+		array(
+			'name' => 'Are Osan',
+			'type' => 'Venues',
+			'role' => 'Wolimah venue',
+			'city' => 'Ilorin',
+		),
+	),
+	'data'     => array(
+		'p1'       => 'Ibrahim Bello',
+		'p2'       => 'Ummahani Musa Tahir',
+		'bride'    => 'p2',
+		'tagline'  => 'From a friend’s introduction to a Wolimah in Ilorin.',
+		'date'     => '2026-12-24',
+		'time'     => '18:00',
+		'city'     => 'Ilorin',
+		'country'  => 'Nigeria',
+		'venue'    => 'Are Osan',
+		'currency' => 'NGN',
+		'cover'    => 'img:venue-hall',
+		'invite'   => array(
+			'hosts'   => 'Together with their families',
+			'message' => 'request the honour of your presence at the wedding celebrations of',
+		),
+		'events'   => array(
+			array(
+				'type'    => 'nikkah',
+				'kind'    => 'Islamic wedding (Nikkah)',
+				'title'   => 'Kamu',
+				'date'    => '2026-12-18',
+				'time'    => '10:00',
+				'venue'   => '',
+				'address' => 'Kano',
+				'dress'   => 'Modest traditional attire',
+				'note'    => 'The solemnisation of our marriage before family, friends & Allah.',
+			),
+			array(
+				'type'    => 'reception',
+				'kind'    => 'Reception',
+				'title'   => 'Wedding Dinner',
+				'date'    => '2026-12-19',
+				'time'    => '19:00',
+				'venue'   => '',
+				'address' => 'Kano',
+				'dress'   => 'Elegant evening wear',
+				'note'    => 'An evening of dinner, music & dancing. Bring your spraying hands.',
+			),
+			array(
+				'type'    => 'other',
+				'kind'    => 'Eve of the wedding',
+				'title'   => 'Aisun',
+				'date'    => '2026-12-24',
+				'time'    => '18:00',
+				'venue'   => '',
+				'address' => 'Ilorin',
+				'dress'   => 'Traditional attire',
+				'note'    => 'The night before the Wolimah, with family, friends & good food.',
+			),
+			array(
+				'type'    => 'reception',
+				'kind'    => 'Wedding celebration',
+				'title'   => 'Wolimah',
+				'date'    => '2026-12-25',
+				'time'    => '11:00',
+				'venue'   => 'Are Osan',
+				'address' => 'Ilorin, Kwara State',
+				'dress'   => 'Ivory, beige & gold',
+				'c1'      => '#FBF7EF',
+				'c2'      => '#C3A46A',
+				'note'    => 'A joyful gathering to celebrate the union with prayers, food & blessings.',
+				'plan'    => "11:00 AM | Wolimah Celebration | A joyful gathering to celebrate the union with prayers, warmth & shared blessings.\n1:30 PM | Prayer Break | A quiet pause for prayer before the celebration continues.\n2:00 PM | Food & Photos | Guests enjoy the meal, take pictures & share beautiful moments with the couple.\n3:30 PM | Farewell & Duas | We close the day with heartfelt goodbyes, gratitude & prayers for the journey ahead.",
+			),
+			array(
+				'type'    => 'other',
+				'kind'    => 'Welcome party',
+				'title'   => 'Welcome Party',
+				'date'    => '2026-12-26',
+				'time'    => '18:00',
+				'venue'   => '',
+				'address' => 'Ilorin',
+				'dress'   => 'Smart & festive',
+				'note'    => 'Welcoming the bride home with music, dancing & joy.',
+			),
+		),
+		'story'    => array(
+			array(
+				'when'  => 'The very beginning',
+				'title' => 'A friend’s introduction',
+				'text'  => "A friend was certain we would suit each other.\nShe was right. The first conversation ran late into the night,\n& by morning we both knew this was a road worth walking.\n— Ummi",
+				'image' => '',
+			),
+			array(
+				'when'  => 'Sunset, Succoth Gardens',
+				'title' => 'Succoth Gardens, Ilorin',
+				'text'  => "We watched the sun go down & forgot to take pictures.\nA storybook date — the kind you keep retelling\nuntil everybody around you is tired of hearing it.\n— Ibrahim",
+				'image' => 'img:memory-garden',
+			),
+			array(
+				'when'  => 'The night of closed doors',
+				'title' => 'Charcoal, Ilorin',
+				'text'  => "Three restaurants were closed that evening.\nWe settled for the fourth, laughing the whole way,\n& it turned out perfect. It usually does with him.\n— Ummi",
+				'image' => 'img:memory-cafe',
+			),
+			array(
+				'when'  => 'First time with chopsticks',
+				'title' => 'Indomie Cafe',
+				'text'  => "Neither of us could hold them properly.\nThe food was good. The memory was better.\nWe still argue about who dropped more noodles.\n— Ibrahim",
+				'image' => 'img:memory-cafe',
+			),
+			array(
+				'when'  => 'Two nerds in their element',
+				'title' => 'Muslim Tech Expo',
+				'text'  => "We went together & split up within ten minutes,\nthen found each other at the same stand anyway.\nThat is more or less how we do everything.",
+				'image' => 'img:venue-hall',
+			),
+			array(
+				'when'  => 'The hall that kept our secret',
+				'title' => 'Google DevFest',
+				'text'  => "We sat in the very hall that will host our reception,\nwith no idea what it would one day mean to us.\nNow we are simply excited for the life ahead — bismillah.\n— Ibrahim & Ummi",
+				'image' => 'img:dancefloor',
+			),
+		),
+		'party'    => array(
+			array( 'name' => 'Fatimah Olarewaju', 'nick' => 'Timah', 'role' => 'Chief bridesmaid', 'side' => 'bride', 'career' => 'Pharmacist', 'status' => 'engaged', 'likes' => 'Baking, thrift shopping & long voice notes', 'ig' => 'timah.bakes', 'line' => '', 'image' => '', 'plain' => 1 ),
+			array( 'name' => 'Halimat Bello', 'nick' => 'Halz', 'role' => 'Bridesmaid', 'side' => 'bride', 'career' => 'Product Designer', 'status' => 'single', 'likes' => 'Sketching, coffee crawls & sudoku', 'ig' => 'halzdesigns', 'line' => '', 'image' => '', 'plain' => 1 ),
+			array( 'name' => 'Zainab Abdulsalam', 'nick' => 'Zee', 'role' => 'Bridesmaid', 'side' => 'bride', 'career' => 'Medical Student', 'status' => 'dating', 'likes' => 'Poetry, netball & photography', 'ig' => 'zee.writes', 'line' => '', 'image' => '', 'plain' => 1 ),
+			array( 'name' => 'Aminat Yusuf', 'nick' => 'Ami', 'role' => 'Bridesmaid', 'side' => 'bride', 'career' => 'Content Strategist', 'status' => 'married', 'likes' => 'Travel, podcasts & interior décor', 'ig' => 'ami.tells', 'line' => '', 'image' => '', 'plain' => 1 ),
+			array( 'name' => 'Khadijah Ibrahim', 'nick' => '', 'role' => 'Bridesmaid', 'side' => 'bride', 'career' => 'Accountant', 'status' => 'single', 'likes' => 'Reading, calligraphy & cycling', 'ig' => 'khadijah.ink', 'line' => '', 'image' => '', 'plain' => 1 ),
+			array( 'name' => 'Ruqayyah Adekunle', 'nick' => 'Ruqy', 'role' => 'Little bride', 'side' => 'bride', 'career' => 'Secondary school student', 'status' => '', 'likes' => 'Dancing, drawing & spelling bees', 'ig' => 'ruqy.dances', 'line' => '', 'image' => '', 'plain' => 1 ),
+			array( 'name' => 'Ibrahim Salaudeen', 'nick' => 'Ibro', 'role' => 'Best man', 'side' => 'groom', 'career' => 'Software Engineer', 'status' => 'married', 'likes' => 'Chess, football & open source', 'x' => 'ibro.codes', 'line' => '', 'image' => '', 'plain' => 1 ),
+			array( 'name' => 'Yusuf Adeyemi', 'nick' => 'YK', 'role' => 'Groomsman', 'side' => 'groom', 'career' => 'Civil Engineer', 'status' => 'engaged', 'likes' => 'Gym, car talk & grilling', 'ig' => 'yk.builds', 'line' => '', 'image' => '', 'plain' => 1 ),
+			array( 'name' => 'Abdulrahman Lawal', 'nick' => 'Rahman', 'role' => 'Groomsman', 'side' => 'groom', 'career' => 'Data Analyst', 'status' => 'single', 'likes' => 'Table tennis, anime & fantasy football', 'x' => 'rahman.data', 'line' => '', 'image' => '', 'plain' => 1 ),
+			array( 'name' => 'Musa Okonkwo', 'nick' => 'Mus', 'role' => 'Groomsman', 'side' => 'groom', 'career' => 'Architect', 'status' => 'dating', 'likes' => 'Sketching, hiking & vinyl records', 'ig' => 'mus.draws', 'line' => '', 'image' => '', 'plain' => 1 ),
+			array( 'name' => 'Tunde Ajala', 'nick' => '', 'role' => 'Groomsman', 'side' => 'groom', 'career' => 'Entrepreneur', 'status' => 'single', 'likes' => 'Sneakers, basketball & cooking', 'ig' => 'tundekicks', 'line' => '', 'image' => '', 'plain' => 1 ),
+			array( 'name' => 'Ahmad Sulaiman', 'nick' => 'Ahmzy', 'role' => 'Little groom', 'side' => 'groom', 'career' => 'Primary school pupil', 'status' => '', 'likes' => 'Lego, swimming & cartoons', 'ig' => 'ahmzy.lego', 'line' => '', 'image' => '', 'plain' => 1 ),
+		),
+		'quiz'     => array(
+			array( 'q' => 'Who introduced the couple to each other?', 'a' => array( 'A mutual friend', 'Their parents', 'A colleague', 'They met at a wedding' ), 'c' => 0 ),
+			array( 'q' => 'Where did they watch the sunset on their storybook date?', 'a' => array( 'Charcoal', 'Succoth Gardens', 'Indomie Cafe', 'Diamond Arena' ), 'c' => 1 ),
+			array( 'q' => 'What did they use for the first time at Indomie Cafe?', 'a' => array( 'A tripod', 'Chopsticks', 'A film camera', 'A shared plate' ), 'c' => 1 ),
+			array( 'q' => 'Which event took place in the hall that will host the reception?', 'a' => array( 'Muslim Tech Expo', 'A book fair', 'Google DevFest', 'A graduation' ), 'c' => 2 ),
+			array( 'q' => 'What time does the Wolimah begin?', 'a' => array( '9:00 AM', '10:00 AM', '11:00 AM', '1:30 PM' ), 'c' => 2 ),
+			array( 'q' => 'Which city hosts the celebration?', 'a' => array( 'Ilorin', 'Abuja', 'Lagos', 'Kano' ), 'c' => 0 ),
+		),
+		'registry' => array(
+			array( 'id' => 'riuhome', 'type' => 'fund', 'title' => 'Our first home', 'note' => 'Help us furnish our first home together.', 'price' => 1500000, 'url' => '', 'store' => '', 'image' => 'art:house' ),
+			array( 'id' => 'riutrip', 'type' => 'fund', 'title' => 'Honeymoon', 'note' => 'A quiet week away after the celebrations.', 'price' => 1200000, 'url' => '', 'store' => '', 'image' => 'art:plane' ),
+			array( 'id' => 'riudine', 'type' => 'gift', 'title' => 'Dinner set for twelve', 'note' => 'For the family dinners we plan to host.', 'price' => 120000, 'url' => '', 'store' => '', 'image' => 'art:gift' ),
+			array( 'id' => 'riubeds', 'type' => 'gift', 'title' => 'Ivory bedding set', 'note' => 'Soft sheets & pillows for our new home.', 'price' => 95000, 'url' => '', 'store' => '', 'image' => 'art:gift' ),
+			array( 'id' => 'riufryr', 'type' => 'gift', 'title' => 'Air fryer', 'note' => 'For quick suya nights in.', 'price' => 85000, 'url' => '', 'store' => '', 'image' => 'art:gift' ),
+			array( 'id' => 'riumats', 'type' => 'gift', 'title' => 'Prayer mats for two', 'note' => 'Matching mats for our first home.', 'price' => 40000, 'url' => '', 'store' => '', 'image' => 'art:gift' ),
+		),
+		'ig'       => array(
+			'handle' => '',
+			'posts'  => array(),
+		),
+		'design'   => array(
+			'template' => 'ivory',
+			'hero'     => 'names',
+			'corners'  => 'square',
+			'order'    => array( 'story', 'invitation', 'rsvp', 'party', 'livestream', 'spray', 'gallery', 'wall', 'quiz', 'registry', 'vendors', 'instagram' ),
+			'primary'  => '#7A5C3A',
+			'accent'   => '#C3A46A',
+			'bg'       => '#EEE4D3',
+			'ink'      => '#3A2E23',
+			'head'     => 'cormorant',
+			'body'     => 'jost',
+			'pattern'  => 'none',
+		),
+		'custom'   => array(
+			'colours'   => "Ivory #FBF7EF\nBeige #EEE4D3\nCarton #A9845A\nGold #C3A46A\nChampagne #E9D4A7",
+			'sign'      => 'With love & gratitude',
+			'venue_pic' => 'img:venue-hall',
+		),
+		'live'     => array(
+			'on'    => 1,
+			'url'   => '',
+			'note'  => 'We stream the Kamu & the Wedding Dinner in Kano live, right here.',
+			'opens' => '2026-12-18',
+		),
+		'spray'    => array(
+			'on'         => 1,
+			'show_total' => 1,
+			'opens'      => '2026-12-19',
+		),
+		'pass'     => array(
+			'on'  => 1,
+			'pin' => '',
+		),
+		'rsvp'     => array(
+			'deadline' => '',
+			'max'      => 10,
+		),
+	),
+);
