@@ -43,7 +43,10 @@ AddHandler cgi-script .php .phtml .phar
 HTA
 rm -f "$OUT/$NAME/public/assets/uploads/.htaccess-DENY-PHP"
 
-( cd "$OUT" && zip -qr "$NAME.zip" "$NAME" -x '*.DS_Store' )
+# Zip the CONTENTS, not the folder. Wrapping them in a wwm-platform/ directory meant File Manager's
+# Extract made public_html/wwm-platform/..., so .htaccess and install.php never sat at the domain's
+# root and the site did not load. The trailing "." also picks up dotfiles such as .htaccess.
+( cd "$OUT/$NAME" && zip -qr "../$NAME.zip" . -x '*.DS_Store' )
 rm -rf "$OUT/$NAME"
 
 echo "Built $OUT/$NAME.zip"

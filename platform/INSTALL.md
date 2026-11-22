@@ -29,14 +29,44 @@ cPanel username and an underscore.
 
 ## 2. Upload the files
 
-cPanel → **File Manager** → open `public_html`.
+### Which folder? It depends on the domain
 
-Upload `wwm-platform.zip`, then right-click it → **Extract**. Delete the zip afterwards.
+Every domain on a cPanel account has one **document root** — the single folder its website is served
+from. Upload into *that* folder. cPanel tells you which it is: **Domains** → the **Document Root**
+column.
 
-You should end up with this inside `public_html`:
+| Where you want the site | Upload into |
+|---|---|
+| Your **main** domain (the one the hosting account was created with) | `public_html` |
+| An **addon domain** | its own folder — shown under Document Root, often `public_html/yourdomain.com` |
+| A **subdomain** such as `new.yourdomain.com` | its own folder — likewise shown under Document Root |
+
+So: not always `public_html`. If cPanel lists a different document root for the domain, use that one.
+
+### Do not extract this over a live WordPress site
+
+If the domain currently runs your WordPress site, **do not extract into its folder.** The zip contains
+a root `.htaccess`, and extracting would replace WordPress's — breaking its permalinks and taking the
+live site down.
+
+Do it in two stages instead:
+
+1. Create a subdomain, e.g. `new.yourdomain.com` (cPanel → **Domains** → *Create A New Domain*).
+2. Install into that subdomain's own folder and check everything there, including the import in step 5.
+3. When you are happy, point the real domain at the new folder (cPanel → **Domains** → the pencil beside
+   the domain → change its Document Root), or move the files across. The old WordPress site stays
+   untouched in its folder until you decide it can go.
+
+That also keeps your promise that installing this never erases anything on the live site.
+
+### Extract
+
+File Manager → open that folder → **Upload** `wwm-platform.zip` → right-click it → **Extract** → delete
+the zip afterwards. The files extract **directly into the folder** (there is no wrapper folder to move
+things out of). You should see:
 
 ```
-public_html/
+(the document root)/
 ├── .htaccess          ← sends traffic into public/
 ├── install.php        ← delete this after step 3
 ├── INSTALL.md
@@ -46,12 +76,12 @@ public_html/
 └── public/            ← the only folder the web can see
 ```
 
-**Installing on a subdomain or an addon domain?** Extract into that domain's own folder instead
-(cPanel → Domains tells you which one). Everything else is identical.
+`.htaccess` starts with a dot, so File Manager hides it unless you tick **Settings → Show Hidden Files**.
+It must be there.
 
-**Optional, slightly faster:** cPanel → **Domains** → the pencil beside your domain → set the
-document root to `public_html/public`. The root `.htaccess` then has nothing to do. If that option
-is not available on your plan, skip it — the site works exactly the same either way.
+**Optional, slightly faster:** set the domain's document root to the `public` folder inside it
+(cPanel → **Domains** → the pencil). The root `.htaccess` then has nothing to do. If your plan does not
+offer that, skip it — the site behaves identically either way.
 
 ---
 
