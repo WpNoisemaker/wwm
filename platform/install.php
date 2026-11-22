@@ -36,8 +36,10 @@ $checks = [
 $ready = array_reduce($checks, static fn($ok, $c) => $ok && $c[1], true);
 
 /* ---------------------------------------------------------------- do the install -------------- */
-$errors = [];
-$done   = false;
+$errors    = [];
+$done      = false;
+$demo      = null;   // set to the demo summary when demo content was added
+$demoError = '';
 
 if (!$installed && $ready && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     $host  = trim((string) ($_POST['host'] ?? 'localhost'));
@@ -147,6 +149,19 @@ if (!$installed && $ready && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             } else {
                 @chmod(CONFIG, 0640);
                 $done = true;
+
+                // Demo content, if they asked for it. It runs through the app itself, which is why it
+                // waits until the config exists. A failure here never fails the install: the site is
+                // already usable, and the same thing can be done later from HQ.
+                if (!empty($_POST['demo'])) {
+                    try {
+                        require_once ROOT . '/app/Core/App.php';
+                        App::boot(ROOT);
+                        $demo = Demo::install();
+                    } catch (Throwable $e) {
+                        $demoError = $e->getMessage();
+                    }
+                }
             }
         } catch (Throwable $e) {
             $errors[] = 'Install failed: ' . $e->getMessage();
@@ -189,6 +204,12 @@ if (!$installed && $ready && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 	.hint { color:var(--muted); font-size:.82rem; }
 	.bad { background:#FDEDEB; border-left:3px solid var(--bad); padding:12px 14px; border-radius:10px; margin-bottom:12px; font-size:.9rem; }
 	.ok  { background:#EAF7F0; border-left:3px solid var(--ok);  padding:14px 16px; border-radius:10px; font-size:.95rem; }
+	label.check { display:flex; gap:10px; align-items:flex-start; font-weight:400; margin:12px 0 5px; cursor:pointer; }
+	label.check input { width:auto; margin-top:4px; flex:none; }
+	table.logins { width:100%; border-collapse:collapse; font-size:.86rem; margin:10px 0 4px; }
+	table.logins th, table.logins td { text-align:left; padding:7px 8px 7px 0; border-bottom:1px solid #EFEDF1; vertical-align:top; }
+	table.logins th { font-size:.74rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:600; }
+	.warn { background:#FFF7DB; border-left:3px solid #E5B400; padding:12px 14px; border-radius:10px; margin:14px 0; font-size:.88rem; }
 	code { background:#F3F1F6; padding:2px 6px; border-radius:6px; font-size:.86em; }
 	ol { padding-left:20px; } ol li { margin:8px 0; }
 </style>
@@ -211,6 +232,21 @@ if (!$installed && $ready && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 				<li>Sign in at <code>/sign-in</code> with the owner email you just set.</li>
 				<li>If you are moving from WordPress, run the importer over a <em>copy</em> of your old database — see <code>INSTALL.md</code>.</li>
 			</ol>
+			<?php if ($demo): ?>
+				<h2 style="margin-top:20px">Demo logins</h2>
+				<p class="hint">Sign in at <code>/sign-in</code>. Every demo account uses the same password:</p>
+				<p><code style="font-size:1rem;padding:4px 9px"><?= h(Demo::PASSWORD) ?></code></p>
+				<table class="logins">
+					<tr><th>Email</th><th>Who</th></tr>
+					<?php foreach ($demo['logins'] as $l): ?>
+						<tr><td><code><?= h($l['email']) ?></code></td><td><b><?= h($l['who']) ?></b><br><span class="hint"><?= h($l['shows']) ?></span></td></tr>
+					<?php endforeach; ?>
+				</table>
+				<p class="hint">Your own account (the one you just made) is the owner: it has full access to HQ.</p>
+				<div class="warn"><b>Remove the demo before launch.</b> These accounts share a published password. In HQ &rarr; Settings, <em>Demo content</em> &rarr; <em>Remove all demo content</em> deletes the demo pages and every demo account, and nothing else.</div>
+			<?php elseif ($demoError !== ''): ?>
+				<div class="bad">Your site is installed, but the demo content could not be added: <?= h($demoError) ?>. You can try again from HQ &rarr; Settings.</div>
+			<?php endif; ?>
 			<a href="./"><button type="button">Open the site</button></a>
 		</div>
 
@@ -264,6 +300,11 @@ if (!$installed && $ready && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 			<label for="pw">Password</label>
 			<input id="pw" name="pw" type="password" required minlength="10">
 			<small>At least 10 characters. This account can reach HQ, so make it a real one.</small>
+
+			<h2 style="margin-top:22px">Demo content</h2>
+			<label class="check"><input type="checkbox" name="demo" value="1" <?= (!isset($_POST['email']) || !empty($_POST['demo'])) ? 'checked' : '' ?>>
+				<span><b>Add demo content</b> &mdash; ten wedding pages across all four plans, vendors, marketplace listings and the anonymous community, plus accounts to sign in and look around.</span></label>
+			<small>The demo accounts share a published password, so take the demo content out before you launch for real. It is one button in HQ &rarr; Settings, and it removes only the demo.</small>
 
 			<button type="submit"<?= $ready ? '' : ' disabled' ?>>Install</button>
 			<?php if (!$ready): ?><small style="text-align:center">Fix the red items above first, then reload this page.</small><?php endif; ?>

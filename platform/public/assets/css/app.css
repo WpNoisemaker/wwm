@@ -351,3 +351,9 @@ html, body { max-width: 100%; overflow-x: clip; }
 /* Each look paints its wash on body::after. The pseudo-element is absolute, so body has to be the
  * containing block or the wash would size itself to the viewport and stop partway down the page. */
 body { position: relative; }
+
+/* A flash message. Global: it is shown on the account, wedding and community pages too. Colour carries the meaning, but so does the wording, so it reads either way. */
+.note { padding: 12px 14px; border-radius: var(--r-sm); font-size: .9rem; line-height: 1.45; margin-bottom: 18px; }
+.note--ok  { background: #EAF7F0; border-left: 3px solid #1E9E62; color: #10402A; }
+.note--bad { background: #FDEDEB; border-left: 3px solid #C0392B; color: #5A1A13; }
+.note a { text-decoration: underline; word-break: break-all; }

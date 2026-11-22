@@ -59,3 +59,8 @@
 	.guest input { grid-column: 2; justify-self: end; }
 	.guest .btn { grid-column: 1 / -1; justify-self: stretch; text-align: center; }
 }
+
+/* The "confirm your email" notice: the message, and the button beside it where there is room. */
+.verify { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 18px; }
+.verify__f { margin: 0; }
+.verify .btn { margin: 0; }

@@ -105,6 +105,15 @@ final class AccountController
                 'primary' => self::hex((string) ($_POST['primary'] ?? '')),
                 'accent'  => self::hex((string) ($_POST['accent'] ?? '')),
             ]));
+            // Going public from private is the one change email confirmation gates. A page that is
+            // already public is left alone when it is edited — pulling it down would punish somebody
+            // for a check they were never asked to pass.
+            $visibility = ($_POST['visibility'] ?? '') === 'public' ? 'public' : 'private';
+            $held = false;
+            if ($visibility === 'public' && (string) $w['visibility'] !== 'public' && Verify::needed(Auth::user())) {
+                $visibility = 'private';
+                $held = true;
+            }
             Db::update('weddings', [
                 'partner_a'  => trim((string) ($_POST['a'] ?? '')),
                 'partner_b'  => trim((string) ($_POST['b'] ?? '')),
@@ -118,9 +127,13 @@ final class AccountController
                 'venue'      => trim((string) ($_POST['venue'] ?? '')),
                 'template'   => trim((string) ($_POST['template'] ?? 'classic')),
                 'design'     => $design,
-                'visibility' => in_array($_POST['visibility'] ?? '', ['public', 'private'], true) ? (string) $_POST['visibility'] : 'private',
+                'visibility' => $visibility,
             ], 'id = ? AND owner_id = ?', [$w['id'], Auth::id()]);
-            Guard::flash('ok', 'Saved.');
+            if ($held) {
+                Guard::flash('bad', 'Saved — but your page is still private. Confirm your email first, then make it public. We sent you a link; use "Send it again" on this page if it did not arrive.');
+            } else {
+                Guard::flash('ok', 'Saved.');
+            }
             self::go('/account/page');
         }
         $this->show('page', ['title' => 'Your page', 'w' => $w, 'd' => Wedding::design($w)]);
@@ -280,6 +293,10 @@ final class AccountController
     {
         Guard::must();
         $w   = $this->need();
+        if (Verify::needed(Auth::user())) {
+            Guard::flash('bad', 'Confirm your email before you ask for a payout. Money goes to a bank account, so we need to know the address on this account is really yours.');
+            self::go('/account/money');
+        }
         $amt = max(0, (int) ($_POST['amount'] ?? 0));
         $in  = (int) Db::val("SELECT COALESCE(SUM(amount),0) FROM payments WHERE wedding_id = ? AND status IN ('paid','released')", [$w['id']], 0);
         $out = (int) Db::val("SELECT COALESCE(SUM(amount),0) FROM payouts WHERE user_id = ? AND status <> 'failed'", [Auth::id()], 0);
@@ -298,6 +315,23 @@ final class AccountController
         ]);
         Guard::flash('ok', 'Payout requested. It is reviewed before it goes out.');
         self::go('/account/money');
+    }
+
+    /** Send the confirmation link again. Throttled, because it sends an email each time. */
+    public function resendVerify(): void
+    {
+        Guard::must();
+        Auth::wall();
+        $u = Auth::user();
+        if (!Verify::needed($u)) {
+            Guard::flash('ok', 'Nothing to confirm.');
+        } elseif (Guard::tooMany('verify', 3, 30)) {
+            Guard::flash('bad', 'We have sent a few already. Check your spam folder, or wait a little before asking again.');
+        } else {
+            Verify::send($u);
+            Guard::flash('ok', 'Sent again. Check your inbox, and your spam folder.');
+        }
+        self::go('/account');
     }
 
     /* ------------------------------------------------------------------------ Settings ------- */

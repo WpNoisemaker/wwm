@@ -9,7 +9,7 @@
 // --- The public site --------------------------------------------------------------------------
 $r->get('/',                    [SiteController::class, 'home']);
 $r->get('/weddings',            [WeddingController::class, 'index']);
-$r->get('/w/{slug}',            [WeddingController::class, 'show']);
+$r->any('/w/{slug}',            [WeddingController::class, 'show']);   // GET shows it; POST is the pass-code form on a private page
 $r->post('/w/{slug}/rsvp',      [WeddingController::class, 'rsvp']);
 $r->post('/w/{slug}/note',      [WeddingController::class, 'note']);
 $r->get('/rankings',            [RankingsController::class, 'index']);
@@ -38,6 +38,7 @@ $r->any('/sign-in',             [AuthController::class, 'signIn']);
 $r->any('/join',                [AuthController::class, 'join']);
 $r->post('/sign-out',           [AuthController::class, 'signOut']);
 $r->any('/forgot',              [AuthController::class, 'forgot']);
+$r->get('/verify/{token}',       [AuthController::class, 'verify']);
 $r->any('/reset/{token}',       [AuthController::class, 'reset']);
 
 // --- The couple's own pages -------------------------------------------------------------------
@@ -51,6 +52,7 @@ $r->get('/account/guests',      [AccountController::class, 'guests']);
 $r->post('/account/guests/{id:\d+}', [AccountController::class, 'guestUpdate']);
 $r->get('/account/money',       [AccountController::class, 'money']);
 $r->post('/account/payout',     [AccountController::class, 'payout']);
+$r->post('/account/verify/resend', [AccountController::class, 'resendVerify']);
 $r->any('/account/settings',    [AccountController::class, 'settings']);
 
 // --- HQ, for staff ----------------------------------------------------------------------------
@@ -59,6 +61,9 @@ $r->get('/hq/weddings',         [HqController::class, 'weddings']);
 $r->get('/hq/people',           [HqController::class, 'people']);
 $r->get('/hq/money',            [HqController::class, 'money']);
 $r->any('/hq/settings',         [HqController::class, 'settings']);
+$r->post('/hq/test-mail',       [HqController::class, 'testMail']);
+$r->post('/hq/demo/add',        [HqController::class, 'demoAdd']);
+$r->post('/hq/demo/remove',     [HqController::class, 'demoRemove']);
 
 // --- Kept from the build, handy for comparing the four dressings ------------------------------
 $r->get('/looks',               [LooksController::class, 'index']);

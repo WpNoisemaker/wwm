@@ -19,6 +19,9 @@ CREATE TABLE users (
   avatar        VARCHAR(255) NOT NULL DEFAULT '',
   -- What they have agreed to be reached on. Email is implicit and always on.
   notify        VARCHAR(60)  NOT NULL DEFAULT '',
+  -- NULL until they follow the link we emailed. Only ever asked of people who sign up while the
+  -- admin has email confirmation switched on (see Verify); nobody is asked while it is off.
+  email_verified_at DATETIME NULL,
   wp_id         INT UNSIGNED NULL,
   created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   last_seen_at  DATETIME     NULL,

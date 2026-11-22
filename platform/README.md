@@ -62,6 +62,20 @@ a bottom tab bar, thumb-sized targets.
 Prices live in the `settings` table (`pro_price`, `premium_price`, `fee_gift`) and are editable
 from HQ, so the pricing page can never drift from what is actually charged.
 
+## Demo content
+
+`Demo` loads ten wedding pages across all four plans, eight vendors, eight listings, the 45 community
+conversations and a few sign-in accounts. It records every row it creates, so `Demo::remove()` deletes exactly
+those and never a real person's data, and a failure part-way undoes itself. The installer offers it with a
+tick-box; HQ → Settings can add or remove it later, for the owner only. The demo accounts share a published
+password and must come out before launch.
+
+## Email confirmation
+
+Off by default and switched on from HQ → Settings. When on, accounts created from that moment must confirm their
+email before their page can go public or they can ask for a payout. It only ever applies to accounts created
+*after* the switch, so turning it on can never lock out anybody who already had one.
+
 ## Notifications
 
 WhatsApp and SMS are **off and unavailable** until an administrator configures a provider. There is

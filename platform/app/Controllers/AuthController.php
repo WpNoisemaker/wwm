@@ -14,18 +14,29 @@ final class AuthController
         if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             Guard::must();
             $to = self::safeTo((string) ($_POST['to'] ?? ''));
-            if (Guard::tooMany('sign-in', 10, 15)) {
+            // Only FAILED attempts count, and they are counted twice: per address, and per account.
+            // Counting every sign-in would lock out real people, because a mobile network can put
+            // thousands of them behind one address. The per-account limit is the one that stops
+            // somebody guessing at a single password from many addresses. The email is hashed so the
+            // throttle table never holds a list of who is being guessed at.
+            $mail  = strtolower(trim((string) ($_POST['email'] ?? '')));
+            $byIp  = 'sign-in:ip:' . Guard::ip();
+            $byMail = 'sign-in:acct:' . sha1($mail);
+            if (Guard::blocked($byIp, 30) || Guard::blocked($byMail, 8)) {
                 Guard::flash('bad', 'Too many tries. Wait a few minutes and try again.');
                 self::go('/sign-in');
             }
             $u = Auth::attempt((string) ($_POST['email'] ?? ''), (string) ($_POST['pass'] ?? ''));
             if (!$u) {
+                Guard::hit($byIp, 15);
+                Guard::hit($byMail, 15);
                 // One message for both halves, so this cannot be used to discover who has an account.
                 Guard::keep(['email' => (string) ($_POST['email'] ?? '')]);
                 Guard::flash('bad', 'That email and password do not match.');
                 self::go('/sign-in' . ($to ? '?to=' . urlencode($to) : ''));
             }
             Guard::dropOld();
+            Guard::forget($byMail);
             Auth::login($u);
             self::go($to ?: '/account');
         }
@@ -96,7 +107,14 @@ final class AuthController
 
             Guard::dropOld();
             Auth::login($u);
-            Guard::flash('ok', 'Welcome. Your page is made — fill it in, then make it public when you are ready.');
+            if (Verify::enabled()) {
+                // The admin has switched confirmation on. They can still build the page; the link is
+                // what lets it go public.
+                Verify::send($u);
+                Guard::flash('ok', 'Welcome. Your page is made. We have emailed you a link to confirm your address — you will need it before the page can go public.');
+            } else {
+                Guard::flash('ok', 'Welcome. Your page is made — fill it in, then make it public when you are ready.');
+            }
             self::go('/account');
         }
 
@@ -146,6 +164,17 @@ final class AuthController
             }
         }
         View::render('auth/forgot', ['title' => 'Forgot password', 'css' => ['auth'], 'bare' => true, 'link' => $link]);
+    }
+
+    /** The link in the confirmation email. Works signed in or out, and only once. */
+    public function verify(string $token): void
+    {
+        if (Verify::confirm($token)) {
+            Guard::flash('ok', 'Thank you — your email is confirmed.');
+        } else {
+            Guard::flash('bad', 'That link has expired or has already been used. Sign in and ask for a new one.');
+        }
+        self::go(Auth::check() ? '/account' : '/sign-in');
     }
 
     public function reset(string $token): void

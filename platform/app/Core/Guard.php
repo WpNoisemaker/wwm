@@ -86,6 +86,40 @@ final class Guard
         unset($_SESSION['_old']);
     }
 
+    /** This visitor's address, for keying a throttle. */
+    public static function ip(): string
+    {
+        return (string) ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0');
+    }
+
+    /**
+     * Has this key used up its allowance? Only reads: asking does not count as an attempt.
+     * Pair it with hit(), called only for the attempts that should count (a failed sign-in, say).
+     * tooMany() below counts every call, which is right for things that cost something each time
+     * (sending an email) and wrong for a sign-in, where a success is not a reason to slow anyone down.
+     */
+    public static function blocked(string $key, int $limit): bool
+    {
+        Db::run('DELETE FROM throttle WHERE expires_at < NOW()');
+        return (int) Db::val('SELECT hits FROM throttle WHERE bucket = ?', [substr($key, 0, 120)], 0) >= $limit;
+    }
+
+    /** Count one attempt against a key, for $minutes from the first. */
+    public static function hit(string $key, int $minutes): void
+    {
+        Db::run(
+            'INSERT INTO throttle (bucket, hits, expires_at) VALUES (?, 1, DATE_ADD(NOW(), INTERVAL ? MINUTE))
+             ON DUPLICATE KEY UPDATE hits = hits + 1',
+            [substr($key, 0, 120), $minutes]
+        );
+    }
+
+    /** Forget a key, once whatever it was guarding has succeeded. */
+    public static function forget(string $key): void
+    {
+        Db::run('DELETE FROM throttle WHERE bucket = ?', [substr($key, 0, 120)]);
+    }
+
     /** Simple per-action throttle, so a shared host is not a free brute-force target. */
     public static function tooMany(string $action, int $limit = 8, int $minutes = 15): bool
     {

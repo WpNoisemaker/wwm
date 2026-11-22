@@ -90,6 +90,7 @@ It checks the server, then asks for:
 - the three database names from step 1
 - your site address, e.g. `https://yourdomain.com` (no trailing slash)
 - the owner account — your name, email and a password of 10+ characters
+- whether to add **demo content** (ticked by default; see "Demo content" below)
 
 Press **Install**. It creates all 24 tables, makes your owner account, and writes
 `config/config.php` with a freshly generated security key.
@@ -196,8 +197,53 @@ Sign in at `/sign-in`, then:
 
 - **HQ → Settings** — plan prices and the gift service fee
 - **HQ → People** — promote anyone who needs staff access
+- **HQ → Settings → Email confirmation** — **off** until you turn it on. When it is on, anyone who signs up from
+  that moment must confirm their email before making their page public or asking for a payout. Everyone who
+  already has an account, including anyone imported from WordPress, is never asked. Use **Send me a test email**
+  first: if it does not arrive, leave confirmation off.
+- **HQ → Settings → Demo content** — if you added the demo, remove it before you launch
 - WhatsApp and SMS notifications are **off and unavailable** by design. Nothing is sent to anybody
   until an administrator configures a provider. There is no accidental-blast path.
+
+---
+
+## Demo content
+
+Tick **Add demo content** in the installer and the site opens already populated, so you can see how it
+looks and behaves before a single real couple has signed up:
+
+- **10 wedding pages** across all four plans, with programs, guests, a wall of love, a gift registry and
+  real payments behind the totals. One page is already past, one is private.
+- **8 vendors** with reviews, **8 marketplace listings**, and the **45 anonymous community conversations**
+  with their replies.
+- Accounts to sign in with. **Every demo account uses the password `DemoPass2026!`**
+
+| Email | What it is | What it shows |
+|---|---|---|
+| `society@demo.test` | Couple, High Society | Yusuf & Halima — monogram, gold, the full page |
+| `premium@demo.test` | Couple, Premium | Chidi & Amaka — full-bleed cover, spraying, livestream |
+| `pro@demo.test` | Couple, Pro | Seyi & Folake — squad, gallery, their own colours |
+| `free@demo.test` | Couple, Free | Kola & Lara — the free page and its upgrade nudge |
+| `vendor@demo.test` | Vendor | Owns the Golden Lens profile |
+| `seller@demo.test` | Marketplace seller | Owns the marketplace listings |
+| `staff@demo.test` | Staff | Can open HQ, but cannot remove the demo |
+
+The other six couples sign in as `musa@`, `ibrahim@`, `tunde@`, `emeka@`, `daniel@` and `tolu@` `demo.test`,
+with the same password. **Your own account, the one you made in the installer, is the owner** and has full
+access to HQ.
+
+The private page is `/w/tolu-ayo`. Its code is **`TOLUAYO`**.
+
+### Take it out before you launch
+
+The demo accounts share a published password, so they must not stay on a live site. Sign in as the owner →
+**HQ → Settings → Demo content → Remove all demo content**. It deletes the demo pages, vendors, listings,
+community posts and every demo account — and **only** those. Anything a real person has made, including real
+couples, real RSVPs and real community posts, is left exactly as it was. (It remembers precisely which rows
+it created, so it does not guess.) The same card has **Add demo content** if you want it back.
+
+Demo emails end in `@demo.test`, a reserved domain that can never receive mail, so a password reset on a demo
+account cannot reach a stranger.
 
 ---
 

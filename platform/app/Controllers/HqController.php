@@ -83,6 +83,8 @@ final class HqController
                             [$k, trim((string) $_POST[$k])]);
                 }
             }
+            // A ticked box is present in the POST, an unticked one is simply absent.
+            Verify::set(isset($_POST['email_verify']));
             Guard::flash('ok', 'Saved. The pricing page now shows these.');
             header('Location: ' . App::url('/hq/settings'));
             exit;
@@ -96,6 +98,71 @@ final class HqController
                 'email'         => Site::setting('email', ''),
                 'whatsapp'      => Site::setting('whatsapp', ''),
             ],
+            'verify' => ['on' => Verify::enabled(), 'since' => Site::setting('email_verify_since', '')],
+            'demo'   => ['present' => Demo::present(), 'counts' => Demo::counts(), 'logins' => Demo::logins(), 'password' => Demo::PASSWORD],
         ]);
+    }
+
+    /** Adding or removing the demo is the owner's call alone. A staff account can look, not change. */
+    private function ownerOnly(): void
+    {
+        $this->gate();
+        if (!Auth::is('owner')) {
+            Guard::flash('bad', 'Only the owner can add or remove the demo content.');
+            header('Location: ' . App::url('/hq/settings'));
+            exit;
+        }
+    }
+
+    public function demoAdd(): void
+    {
+        $this->ownerOnly();
+        Guard::must();
+        try {
+            Demo::install();
+            Guard::flash('ok', 'Demo content added. The demo logins are listed below.');
+        } catch (Throwable $e) {
+            Guard::flash('bad', 'The demo content was not added: ' . $e->getMessage());
+        }
+        header('Location: ' . App::url('/hq/settings'));
+        exit;
+    }
+
+    public function demoRemove(): void
+    {
+        $this->ownerOnly();
+        Guard::must();
+        $gone = Demo::remove();
+        Guard::flash('ok', $gone
+            ? sprintf('Demo content removed: %d wedding pages, %d accounts, %d vendors, %d listings and %d community posts. Nothing else was touched.',
+                $gone['weddings'] ?? 0, $gone['users'] ?? 0, $gone['vendors'] ?? 0, $gone['listings'] ?? 0, $gone['talks'] ?? 0)
+            : 'There was no demo content to remove.');
+        header('Location: ' . App::url('/hq/settings'));
+        exit;
+    }
+
+    /**
+     * Sends the signed-in admin a test message. Switching email confirmation on when the host cannot
+     * actually deliver mail would leave new sign-ups waiting for a link that never comes, so this is
+     * how an admin proves it works first.
+     */
+    public function testMail(): void
+    {
+        $this->gate();
+        Guard::must();
+        $me = Auth::user();
+        $ok = Mailer::send(
+            (string) $me['email'],
+            'A test email from your site',
+            "If you can read this, your site can send email.\n\nIt is safe to switch on email confirmation.\n"
+        );
+        Guard::flash(
+            $ok ? 'ok' : 'bad',
+            $ok
+                ? 'Handed to the mail server for ' . $me['email'] . '. Check the inbox and the spam folder — if it arrives, sending works.'
+                : 'The server refused to send. Leave email confirmation off until that is sorted; ask your host about PHP mail().'
+        );
+        header('Location: ' . App::url('/hq/settings'));
+        exit;
     }
 }
