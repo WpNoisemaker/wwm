@@ -1,0 +1,125 @@
+<!doctype html>
+<!-- nav:talk -->
+<html lang="en">
+<head>
+{{head}}
+<title>Community · Wedding Websites &amp; More</title>
+<meta name="description" content="Say what you can't say at home. Text-only posts under any pen name.">
+</head>
+<body>
+{{site_head}}
+<header class="appbar">
+	<a class="cbtn" href="index.html" aria-label="Back"><svg class="ico"><use href="#i-back"/></svg></a>
+	<p class="appbar__title">Community</p>
+	<button class="cbtn" type="button" data-open="composer" aria-label="Write a post"><svg class="ico"><use href="#i-pen"/></svg></button>
+</header>
+
+<main class="wrap">
+	<div class="hero__head" style="margin-bottom:30px">
+		<span class="eyebrow">Under any pen name</span>
+		<h1 class="hero__title" style="font-size:56px">Say it here instead</h1>
+	</div>
+
+	<div class="chips" data-choose style="margin-bottom:18px;justify-content:safe center">
+		<button class="chip is-on" type="button">For you</button>
+		<button class="chip" type="button">Family</button>
+		<button class="chip" type="button">Money</button>
+		<button class="chip" type="button">In-laws</button>
+		<button class="chip" type="button">Marriage</button>
+		<button class="chip" type="button">Faith</button>
+	</div>
+
+	<div class="talk">
+		<div>
+			<div class="deck" data-deck data-pos="#deck-pos" tabindex="0" aria-label="Posts. Swipe or use the arrow keys.">
+				<article class="post c-dusk" data-like="214" data-reply="38" data-save="12"><span class="post__topic">Family</span><p class="post__text">My mother wants 800 guests. We can afford 200. How do I tell her without it becoming a war?</p><span class="post__meta">Quiet Storm · 2h</span></article>
+				<article class="post c-sky" data-like="97" data-reply="22" data-save="5"><span class="post__topic">In-laws</span><p class="post__text">His sister calls me "the Lagos girl" like it's an insult. We've been married four years.</p><span class="post__meta">Ronke Again · 5h</span></article>
+				<article class="post c-night" data-like="331" data-reply="64" data-save="40"><span class="post__topic">Money</span><p class="post__text">We spent ₦9m on one day and now we can't pay rent. Nobody tells you about the month after.</p><span class="post__meta">Second Chances · 1d</span></article>
+				<article class="post c-cream" data-like="58" data-reply="11" data-save="3"><span class="post__topic">Marriage</span><p class="post__text post__text--long">I love him. I just don't know if I love who I become around his family. Is that a reason to wait, or am I overthinking?</p><span class="post__meta">Not Yet · 1d</span></article>
+				<article class="post c-blue" data-like="142" data-reply="29" data-save="18"><span class="post__topic">Faith</span><p class="post__text">Our churches want different dates. Neither pastor will move. We just want to get married.</p><span class="post__meta">Two Altars · 2d</span></article>
+				<article class="post c-slate" data-like="76" data-reply="9" data-save="6"><span class="post__topic">Family</span><p class="post__text">My dad won't come if my stepmother is seated at the high table. It's my wedding too.</p><span class="post__meta">Middle Child · 3d</span></article>
+			</div>
+			<p class="deck-pos" id="deck-pos" aria-live="polite">1 of 6</p>
+			<div class="actions">
+				<div class="act"><button class="cbtn cbtn--lg" type="button" data-deck-go="-1" aria-label="Previous post"><svg class="ico"><use href="#i-back"/></svg></button><span class="count">Back</span></div>
+				<div class="act"><button class="cbtn cbtn--lg" type="button" data-post-act="like" aria-label="Like"><svg class="ico"><use href="#i-heart"/></svg></button><span class="count" data-count="like">214</span></div>
+				<div class="act"><a class="cbtn cbtn--lg" href="#replies" aria-label="Replies"><svg class="ico"><use href="#i-chat"/></svg></a><span class="count" data-count="reply">38</span></div>
+				<div class="act"><button class="cbtn cbtn--lg" type="button" data-post-act="save" aria-label="Save"><svg class="ico"><use href="#i-bookmark"/></svg></button><span class="count" data-count="save">12</span></div>
+				<div class="act"><button class="cbtn cbtn--lg" type="button" data-deck-go="1" aria-label="Next post"><svg class="ico"><use href="#i-next"/></svg></button><span class="count">Next</span></div>
+			</div>
+			<button class="pill pill--block write-btn" type="button" data-open="composer">Write a post</button>
+		</div>
+
+		<div class="talk-side" id="replies">
+			<div class="row row--between" style="margin-bottom:12px">
+				<h2 style="font-size:22px">Replies</h2>
+				<div class="seg" data-choose><button type="button" class="is-on">Top</button><button type="button">New</button></div>
+			</div>
+			<div class="replies">
+				<div class="reply"><p>Tell her the number before the venue is booked, not after. Then give her 40 seats that are hers to fill. My mum calmed down once she had her own list.</p><span>Been There · 214 likes</span></div>
+				<div class="reply"><p>Let your fiancé's family help you say it. Sometimes it lands softer from an aunty.</p><span>Owambe Survivor · 96 likes</span></div>
+				<div class="reply"><p>800 guests is a wedding for her friends. Ask her what she actually wants people to see. Maybe it's the outfits, maybe it's the food. Give her that.</p><span>Kemi T · 51 likes</span></div>
+			</div>
+			<form class="wish-form" onsubmit="event.preventDefault();WWM.toast('Reply posted under your pen name');this.reset()">
+				<input class="input" placeholder="Reply under your pen name…" aria-label="Your reply" autocomplete="off">
+				<button class="cbtn" type="submit" aria-label="Send reply"><svg class="ico"><use href="#i-arrow"/></svg></button>
+			</form>
+		</div>
+	</div>
+</main>
+
+<!-- Composer: the post you write is the post people see -->
+<div class="sheet" id="composer" role="dialog" aria-modal="true" aria-labelledby="composer-t" aria-hidden="true">
+	<div class="sheet__grab" aria-hidden="true"></div>
+	<div class="sheet__head">
+		<button class="cbtn cbtn--sm" type="button" data-close aria-label="Close"><svg class="ico"><use href="#i-close"/></svg></button>
+		<h2 id="composer-t">New post</h2>
+		<span></span>
+	</div>
+	<div class="compose c-dusk" id="compose">
+		<textarea id="compose-text" rows="1" maxlength="280" placeholder="What's on your mind?" aria-label="Your post"></textarea>
+		<span class="compose__count" id="compose-count">0 / 280</span>
+	</div>
+	<div class="swatches" role="radiogroup" aria-label="Background">
+		<button type="button" class="c-dusk is-on" data-c="c-dusk" aria-label="Dusk"></button>
+		<button type="button" class="c-sky" data-c="c-sky" aria-label="Sky"></button>
+		<button type="button" class="c-night" data-c="c-night" aria-label="Night"></button>
+		<button type="button" class="c-blue" data-c="c-blue" aria-label="Blue"></button>
+		<button type="button" class="c-slate" data-c="c-slate" aria-label="Slate"></button>
+		<button type="button" class="c-cream" data-c="c-cream" aria-label="Cream"></button>
+	</div>
+	<div class="chips" data-choose id="compose-topic" style="justify-content:safe center;margin-bottom:14px">
+		<button class="chip is-on" type="button">Family</button><button class="chip" type="button">Money</button><button class="chip" type="button">In-laws</button><button class="chip" type="button">Marriage</button><button class="chip" type="button">Faith</button>
+	</div>
+	<label class="field"><span>Pen name: anything you like</span><input class="input" id="compose-name" value="Quiet Storm" autocomplete="off"></label>
+	<button class="pill pill--block" type="button" id="compose-post" style="margin-top:16px">Post</button>
+	<p class="after-pill">Only your pen name appears on the post.</p>
+</div>
+
+{{tab_bar}}
+{{scripts}}
+<script>
+	(function () {
+		var box = document.getElementById('compose'), txt = document.getElementById('compose-text'), cnt = document.getElementById('compose-count');
+		var colour = 'c-dusk';
+		txt.addEventListener('input', function () { cnt.textContent = txt.value.length + ' / 280'; txt.style.height = 'auto'; txt.style.height = txt.scrollHeight + 'px'; });
+		document.querySelector('.swatches').addEventListener('click', function (e) {
+			var b = e.target.closest('button'); if (!b) { return; }
+			this.querySelectorAll('button').forEach(function (x) { x.classList.toggle('is-on', x === b); x.setAttribute('aria-checked', x === b); });
+			box.classList.remove(colour); colour = b.dataset.c; box.classList.add(colour);
+		});
+		document.getElementById('compose-post').addEventListener('click', function () {
+			var t = txt.value.trim(); if (!t) { txt.focus(); WWM.toast('Write something first'); return; }
+			var name = document.getElementById('compose-name').value.trim() || 'Anonymous';
+			var topic = document.querySelector('#compose-topic .is-on').textContent;
+			var a = document.createElement('article'); a.className = 'post ' + colour; a.dataset.like = 0; a.dataset.reply = 0; a.dataset.save = 0;
+			a.innerHTML = '<span class="post__topic"></span><p class="post__text"></p><span class="post__meta"></span>';
+			a.children[0].textContent = topic; a.children[1].textContent = t; a.children[2].textContent = name + ' · just now';
+			if (t.length > 120) { a.children[1].classList.add('post__text--long'); }
+			var deck = document.querySelector('[data-deck]'); deck.prepend(a); deck.first();
+			txt.value = ''; cnt.textContent = '0 / 280'; WWM.closeSheet(); WWM.toast('Posted as ' + name);
+		});
+	})();
+</script>
+</body>
+</html>
