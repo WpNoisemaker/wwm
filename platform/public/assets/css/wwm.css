@@ -1653,3 +1653,5 @@ html, body { overflow-x: hidden; max-width: 100%; }
 	.hero--brand .hero__ctas { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; width: min(100%, 360px); margin-inline: auto; }
 	.hero--brand .hero__ctas .pill { width: 100%; }
 }
+.seg--plans { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; width: auto; max-width: 100%; border-radius: 26px; padding: 4px; }
+.seg--plans .seg__a { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; }
