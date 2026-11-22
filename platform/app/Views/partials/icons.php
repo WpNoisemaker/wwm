@@ -38,3 +38,19 @@ function money(string $amount, string $cur = 'NGN'): string {
     $read = $sym[$cur] ?? $cur;
     return '<span class="money"><span class="sr-only">' . e($read . $amount) . '</span><span aria-hidden="true">' . $draw . e($amount) . '</span></span>';
 }
+
+/** 2756500 -> "2.7m". Kept short because these sit inside small tiles. */
+function short_money(int $n): string {
+    if ($n >= 1000000) { return rtrim(rtrim(number_format($n / 1000000, 1), '0'), '.') . 'm'; }
+    if ($n >= 1000)    { return rtrim(rtrim(number_format($n / 1000, 1), '0'), '.') . 'k'; }
+    return number_format($n);
+}
+
+/** "4 hours ago". */
+function ago(string $when): string {
+    $s = max(0, time() - strtotime($when));
+    foreach ([31536000 => 'year', 2592000 => 'month', 604800 => 'week', 86400 => 'day', 3600 => 'hour', 60 => 'minute'] as $sec => $word) {
+        if ($s >= $sec) { $n = (int) floor($s / $sec); return $n . ' ' . $word . ($n > 1 ? 's' : '') . ' ago'; }
+    }
+    return 'just now';
+}

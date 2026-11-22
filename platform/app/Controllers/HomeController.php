@@ -5,26 +5,31 @@ final class HomeController
 {
     public function index(): void
     {
+        // Until sign-in lands, the home screen shows the soonest public wedding, so the page is
+        // driven entirely by imported rows rather than by anything hand-written.
+        $w = Wedding::forUser(Auth::id());
+        if (!$w) {
+            View::render('empty', ['title' => 'Wedding Websites & More', 'tab' => 'home']);
+            return;
+        }
+        $d    = Wedding::dash((int) $w['id']);
+        $days = Wedding::daysTo($w);
+        $talk = Talk::latest();
+
         View::render('home', [
-            'title'  => 'Wedding Websites & More',
+            'title'  => Wedding::names($w) . ' — Wedding Websites & More',
             'tab'    => 'home',
-            'hello'  => 'Tolu & Ayo',
-            'sub'    => 'Your page is live. 418 guests have replied, and 106 are still to.',
-            'days'   => '84',
-            'raised' => '2.7m', 'raisedCur' => 'NGN',
-            'raisedSub' => '+₦44,357 this week',
-            'stats'  => [
-                ['n' => '418', 'l' => 'RSVPs', 'pill' => 'Total'],
-                ['n' => '312', 'l' => 'Coming'],
-                ['n' => '106', 'l' => 'To reply'],
-                ['n' => '12',  'l' => 'Vendors'],
-            ],
+            'w'      => $w,
+            'd'      => $d,
+            'days'   => $days,
+            'talk'   => $talk,
             'tasks'  => [
-                ['i' => 'rings', 't' => 'Your story',      'href' => '/account/page',  'done' => true],
-                ['i' => 'cal',   't' => 'Programs',        'href' => '/account/page',  'done' => true],
-                ['i' => 'user',  't' => 'Invite the squad','href' => '/account/squad', 'v' => '3 of 8'],
-                ['i' => 'gift',  't' => 'Gift registry',   'href' => '/account/money', 'v' => '₦1.4m'],
-                ['i' => 'cam',   't' => 'Guest gallery',   'href' => '/account/page',  'v' => '214 photos'],
+                ['i' => 'rings', 't' => 'Your story',       'href' => '/account/page',   'done' => trim((string) $w['story']) !== ''],
+                ['i' => 'cal',   't' => 'Programs',         'href' => '/account/page',   'v' => $d['programs'] ?: null, 'done' => $d['programs'] > 0],
+                ['i' => 'user',  't' => 'The squad',        'href' => '/account/squad',  'v' => $d['squad'] ?: 'None yet'],
+                ['i' => 'gift',  't' => 'Gift registry',    'href' => '/account/money',  'money' => short_money($d['raised'])],
+                ['i' => 'cam',   't' => 'Guest gallery',    'href' => '/account/page',   'v' => $d['photos'] . ' photos'],
+                ['i' => 'store', 't' => 'Vendors',          'href' => '/account/vendors','v' => 'Browse'],
             ],
             'feats'  => [
                 ['t' => 'RSVP',     's' => 'with entry passes', 'c' => 'green',  'href' => '/account/guests'],
@@ -32,7 +37,6 @@ final class HomeController
                 ['t' => 'Spray',    's' => 'from their seat',   'c' => 'pink',   'href' => '/account/money'],
                 ['t' => 'Gallery',  's' => 'photos & notes',    'c' => 'blue',   'href' => '/account/page'],
             ],
-            'talk'   => 'My mother-in-law calls me by my husband\'s first wife\'s name. On purpose.',
         ]);
     }
 }
