@@ -1,2 +1,7 @@
+# Live settings: written by install.php, never the same on two servers.
 platform/config/config.php
+
+# Build output. Reproduce it with platform/build-zip.sh — do not commit the zip itself,
+# it is 8 MB and changes on every build.
 platform/dist/
+*.zip
