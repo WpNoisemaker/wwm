@@ -5,6 +5,8 @@ final class HomeController
 {
     public function index(): void
     {
+        Auth::wall();
+
         // Until sign-in lands, the home screen shows the soonest public wedding, so the page is
         // driven entirely by imported rows rather than by anything hand-written.
         $w = Wedding::forUser(Auth::id());

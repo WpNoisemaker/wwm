@@ -70,14 +70,22 @@ if (!$installed && $ready && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 
     if (!$errors && $pdo) {
         try {
-            // Run the schema. Statements are split on semicolons at end of line, which is safe
-            // because schema.sql contains no stored routines.
+            // Run the schema. Comment lines are stripped FIRST: the tables are introduced by
+            // banner comments, and testing whether a chunk begins with "--" would skip the
+            // statement underneath the banner along with it. Splitting on a semicolon that ends a
+            // line is safe here because schema.sql holds no stored routines.
             $sql = (string) file_get_contents(SCHEMA);
+            $sql = preg_replace('/^\s*--[^\n]*$/m', '', $sql) ?? $sql;
+            $ran = 0;
             foreach (preg_split('/;\s*\R/', $sql) as $stmt) {
                 $stmt = trim($stmt);
-                if ($stmt !== '' && !str_starts_with($stmt, '--')) {
+                if ($stmt !== '') {
                     $pdo->exec($stmt);
+                    $ran++;
                 }
+            }
+            if ($ran < 20) {
+                throw new RuntimeException("Only {$ran} statements ran from the schema; it looks truncated. Re-upload db/schema.sql.");
             }
 
             // The first account owns the place.
@@ -94,6 +102,20 @@ if (!$installed && $ready && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 'email'         => $email,
             ] as $k => $v) {
                 $set->execute([$k, $v]);
+            }
+
+            // The four how-tos double as the product's own explanation, so a fresh site is not
+            // empty on day one. Optional: if the file is missing the install still succeeds.
+            $starter = ROOT . '/db/starter.sql';
+            if (is_file($starter)) {
+                try {
+                    foreach (preg_split('/;\s*\R/', (string) file_get_contents($starter)) as $stmt) {
+                        $stmt = trim($stmt);
+                        if ($stmt !== '') { $pdo->exec($stmt); }
+                    }
+                } catch (Throwable $ignored) {
+                    // Starter content is a nicety, never a reason to fail an install.
+                }
             }
 
             $cfg = "<?php\n"

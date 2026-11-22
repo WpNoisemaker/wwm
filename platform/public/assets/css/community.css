@@ -1,0 +1,100 @@
+/* ==============================================================================================
+ * The anonymous community.
+ *
+ * A post is words on a colour — never an image, and never with the poster's name on the graphic.
+ * A diagonal watermark crosses each one, light enough to read straight through.
+ * ========================================================================================== */
+
+.talk__top { padding-top: 16px; }
+.talk__h { font-size: clamp(2rem, 7vw, 3.2rem); font-weight: 400; letter-spacing: -.045em; line-height: 1.02; margin-bottom: 12px; }
+.talk__lede { max-width: 54ch; margin-bottom: 20px; }
+
+/* --- A post ---------------------------------------------------------------------------------- */
+.post {
+	position: relative;
+	display: grid;
+	align-content: space-between;
+	gap: 18px;
+	min-height: 320px;
+	padding: 22px;
+	border-radius: var(--r-xl);
+	overflow: hidden;
+	isolation: isolate;
+}
+.post--paper  { background: #FBFBF9; color: #160E22; box-shadow: inset 0 0 0 1px rgba(22,14,34,.07); }
+.post--ink    { background: #160E22; color: #F4F2F8; }
+.post--sun    { background: linear-gradient(166deg, var(--sun), var(--sun-deep)); color: #2A2003; }
+.post--citrus { background: linear-gradient(166deg, #FFE98A, #F5B800); color: #2A2003; }
+.post--blush  { background: linear-gradient(166deg, #FFC79A, #F2749B); color: #3A0F22; }
+.post--dusk   { background: linear-gradient(166deg, #BFA3F7, #8FAAF0); color: #130B2E; }
+.post--noir   { background: linear-gradient(166deg, #2E1C44, #11182B); color: #F2F0F7; }
+
+/* The watermark. Transparent enough that the words read straight through it. */
+.post__mark {
+	position: absolute; inset: -30%;
+	display: grid; place-items: center;
+	transform: rotate(-32deg);
+	font-size: .78rem; font-weight: 600; letter-spacing: .22em; text-transform: uppercase;
+	line-height: 3.4;
+	color: currentColor; opacity: .06;
+	white-space: pre-wrap; text-align: center;
+	pointer-events: none; user-select: none;
+	z-index: 0;
+}
+.post > *:not(.post__mark) { position: relative; z-index: 1; }
+
+.post__top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.post__topic { font-style: normal; font-size: .74rem; font-weight: 500; padding: 5px 12px; border-radius: var(--r-pill); background: color-mix(in srgb, currentColor 14%, transparent); }
+.post__ago { font-size: .74rem; opacity: .68; }
+.post__says { font-size: clamp(1.1rem, 3.4vw, 1.42rem); line-height: 1.38; font-weight: 450; letter-spacing: -.02em; align-self: center; }
+.post__foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: .78rem; opacity: .72; }
+.post__like { display: inline-flex; align-items: center; gap: 5px; padding: 0; border: 0; background: none; color: inherit; font: inherit; font-size: .78rem; cursor: pointer; }
+.post--open { min-height: 240px; margin: 14px 0 24px; }
+
+/* --- The deck -------------------------------------------------------------------------------- */
+.deck { display: grid; gap: 12px; }
+.deck--live {
+	position: relative;
+	display: block;
+	height: 400px;
+	margin-bottom: 14px;
+	touch-action: pan-y;        /* vertical scrolling still belongs to the page */
+	perspective: 1000px;
+}
+.deck--live .post {
+	position: absolute; inset: 0;
+	margin: 0;
+	will-change: transform, opacity;
+	cursor: grab;
+	user-select: none;
+	-webkit-user-select: none;
+}
+.deck--live .post.is-on { cursor: grab; }
+.deck--live .post.is-on:active { cursor: grabbing; }
+
+.deck__bar { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
+.deck__like { display: contents; }
+.deck__b {
+	display: grid; place-items: center;
+	width: 48px; height: 48px;
+	border: 1px solid var(--edge);
+	border-radius: 50%;
+	background: var(--card-2);
+	color: var(--ink);
+	cursor: pointer;
+	transition: transform .18s var(--spring), background-color .2s, color .2s;
+}
+.deck__b:active { transform: scale(.9); }
+.deck__b--like { width: 60px; height: 60px; background: var(--acid); color: var(--acid-ink); border-color: transparent; }
+.deck__b--save.is-on { background: var(--ink); color: var(--sun); border-color: transparent; }
+.deck__hint { text-align: center; font-size: .78rem; color: var(--muted); margin-bottom: 20px; }
+
+/* --- Replies --------------------------------------------------------------------------------- */
+.talk__one { max-width: 640px; }
+.reply { padding: 14px 16px; border-radius: var(--r); background: var(--card-2); border: 1px solid var(--edge); margin-bottom: 8px; }
+.reply p { margin: 0 0 6px; font-size: .96rem; line-height: 1.5; }
+.reply small { font-size: .76rem; color: var(--muted); }
+.say { max-width: 640px; }
+
+@media (min-width: 760px) { .deck--live { height: 440px; max-width: 560px; } }
+@media (prefers-reduced-motion: reduce) { .deck--live .post { transition: none !important; } }

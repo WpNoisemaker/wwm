@@ -1,0 +1,60 @@
+/* ==============================================================================================
+ * The gate: sign in, join, forgot, reset. A single centred card on the brand wash, so the moment
+ * of signing up still feels like the rest of the site rather than a bare form.
+ * ========================================================================================== */
+
+.gate {
+	min-height: 100dvh;
+	display: grid;
+	align-content: center;
+	justify-items: center;
+	gap: 18px;
+	padding: 40px 16px calc(40px + var(--safe-b));
+	background:
+		radial-gradient(58% 42% at 12% 4%, var(--sun-lite) 0%, transparent 62%),
+		radial-gradient(52% 40% at 92% 10%, #FFE9B0 0%, transparent 60%),
+		radial-gradient(60% 46% at 70% 98%, #F6E3C2 0%, transparent 64%),
+		var(--sun-wash);
+}
+.gate__brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.04rem; letter-spacing: -.03em; color: var(--ink); }
+
+.gate__card {
+	width: min(100%, 460px);
+	padding: clamp(24px, 5vw, 36px);
+	border-radius: var(--r-xl);
+	background: #fff;
+	box-shadow: 0 2px 4px rgba(22,14,34,.05), 0 30px 70px -40px rgba(22,14,34,.45);
+}
+.gate__h { font-size: clamp(1.7rem, 5vw, 2.1rem); font-weight: 400; letter-spacing: -.04em; margin-bottom: 6px; }
+.gate__sub { margin-bottom: 22px; }
+
+.gate__form { display: grid; gap: 0; }
+.gate__form label { display: block; margin: 14px 0 6px; font-size: .86rem; font-weight: 500; }
+.gate__form label em { font-style: normal; font-weight: 400; color: var(--muted); }
+.gate__form input {
+	width: 100%;
+	min-height: 48px;
+	padding: 0 14px;
+	border: 1px solid #E2DEE8;
+	border-radius: var(--r-sm);
+	background: #FCFCFB;
+	font: inherit;
+	color: var(--ink);
+}
+.gate__form input:focus { outline: 2px solid var(--sun); outline-offset: 1px; border-color: transparent; background: #fff; }
+.gate__form .btn { margin-top: 22px; }
+.gate__pair { display: grid; gap: 0 12px; grid-template-columns: 1fr 1fr; }
+.gate__rule { margin: 24px 0 2px; border: 0; border-top: 1px solid var(--hair); }
+.gate__hint { display: block; margin-top: 7px; font-size: .78rem; color: var(--muted); }
+.gate__small { display: block; margin-top: 14px; text-align: center; font-size: .86rem; color: var(--ink-2); }
+.gate__small:hover { color: var(--ink); }
+.gate__foot { font-size: .9rem; color: var(--ink-2); }
+.gate__foot a { font-weight: 500; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+
+/* A flash message. Colour carries the meaning, but so does the wording, so it reads either way. */
+.note { padding: 12px 14px; border-radius: var(--r-sm); font-size: .9rem; line-height: 1.45; margin-bottom: 18px; }
+.note--ok  { background: #EAF7F0; border-left: 3px solid #1E9E62; color: #10402A; }
+.note--bad { background: #FDEDEB; border-left: 3px solid #C0392B; color: #5A1A13; }
+.note a { text-decoration: underline; word-break: break-all; }
+
+@media (max-width: 420px) { .gate__pair { grid-template-columns: 1fr; } }

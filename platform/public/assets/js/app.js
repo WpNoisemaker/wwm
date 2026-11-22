@@ -29,3 +29,25 @@
 	if (scrim) { scrim.addEventListener('click', close); }
 	addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
 }());
+
+
+/* --------------------------------------------------------------------------- Countdown
+ * The server already printed the right numbers, so this only keeps them moving. If it never
+ * runs, the page is still correct — just frozen at the moment it was served.
+ */
+(function () {
+	var box = document.querySelector('[data-count]');
+	if (!box) { return; }
+	var at = Date.parse((box.getAttribute('data-at') || '').replace(' ', 'T'));
+	if (isNaN(at)) { return; }
+	var d = box.querySelector('[data-d]'), h = box.querySelector('[data-h]'), m = box.querySelector('[data-m]');
+	function pad(n) { return n < 10 ? '0' + n : String(n); }
+	function tick() {
+		var left = Math.max(0, Math.floor((at - Date.now()) / 1000));
+		if (d) { d.textContent = pad(Math.floor(left / 86400)); }
+		if (h) { h.textContent = pad(Math.floor((left % 86400) / 3600)); }
+		if (m) { m.textContent = pad(Math.floor((left % 3600) / 60)); }
+	}
+	tick();
+	setInterval(tick, 30000);
+})();
