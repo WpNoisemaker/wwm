@@ -42,7 +42,10 @@ if ( $wd_gf ) {
 // A design's own styles (& script): assets/custom/{key}/ for a custom template, assets/tpl/ for a Premium design.
 if ( 'classic' !== $wd_tpl ) {
 	$wd_asset = $wd_info['custom'] ? 'custom/' . $wd_tpl . '/' . $wd_tpl : 'tpl/' . $wd_tpl;
-	$wd_dep   = array( 'wd-wedding' );
+	// A design's own sheet must load after the Aurora wedding layer, so the design always wins
+	// where the two touch the same component. Stated as a dependency rather than left to the
+	// order things happen to be enqueued in.
+	$wd_dep   = wp_style_is( 'wd-aurora-wedding', 'registered' ) ? array( 'wd-wedding', 'wd-aurora-wedding' ) : array( 'wd-wedding' );
 	// Designs that share a base (the Studio designs) load it first, then their own look.
 	if ( ! empty( $wd_info['base'] ) && is_readable( WD_DIR . '/assets/tpl/' . $wd_info['base'] . '.css' ) ) {
 		wp_enqueue_style( 'wd-tpl-base', get_template_directory_uri() . '/assets/tpl/' . $wd_info['base'] . '.css', $wd_dep, WD_VER );
