@@ -1,0 +1,101 @@
+/*
+ * Owambe: the party page. Bright colours, confetti, chunky cards & big buttons.
+ * Green = the couple's main colour, gold = their second colour.
+ */
+.wpage--tpl-owambe {
+	--st-r: 26px;
+	--st-head-w: 400;
+	--st-label: 800 .72rem/1.4 var(--w-body);
+	--st-label-track: .12em;
+	--st-line: color-mix(in srgb, var(--w-ink) 20%, transparent);
+	--st-shadow: 0 8px 0 color-mix(in srgb, var(--w-ink) 85%, transparent);
+	--st-tint: color-mix(in srgb, var(--w-accent) 26%, var(--w-bg));
+}
+.st-confetti { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.st-confetti i { position: absolute; width: 14px; height: 14px; border-radius: 50%; background: var(--w-accent); opacity: .85; }
+.st-confetti i:nth-child(3n) { width: 10px; height: 22px; border-radius: 4px; background: var(--w-primary); transform: rotate(28deg); }
+.st-confetti i:nth-child(3n+1) { background: color-mix(in srgb, var(--w-primary) 45%, #fff); }
+.st-confetti i:nth-child(4n) { width: 8px; height: 8px; background: var(--w-ink); }
+.st-confetti i:nth-child(1) { top: 8%; left: 4%; } .st-confetti i:nth-child(2) { top: 18%; left: 22%; } .st-confetti i:nth-child(3) { top: 6%; left: 46%; }
+.st-confetti i:nth-child(4) { top: 14%; left: 70%; } .st-confetti i:nth-child(5) { top: 9%; left: 92%; } .st-confetti i:nth-child(6) { top: 34%; left: 3%; }
+.st-confetti i:nth-child(7) { top: 40%; left: 96%; } .st-confetti i:nth-child(8) { top: 58%; left: 6%; } .st-confetti i:nth-child(9) { top: 66%; left: 90%; }
+.st-confetti i:nth-child(10) { top: 82%; left: 14%; } .st-confetti i:nth-child(11) { top: 88%; left: 36%; } .st-confetti i:nth-child(12) { top: 84%; left: 62%; }
+.st-confetti i:nth-child(13) { top: 92%; left: 84%; } .st-confetti i:nth-child(14) { top: 26%; left: 84%; } .st-confetti i:nth-child(15) { top: 50%; left: 48%; opacity: .3; }
+.st-confetti i:nth-child(16) { top: 74%; left: 50%; opacity: .5; } .st-confetti i:nth-child(17) { top: 30%; left: 34%; opacity: .5; } .st-confetti i:nth-child(18) { top: 96%; left: 4%; }
+.wpage--tpl-owambe .st-hero { background: var(--st-tint); }
+.wpage--tpl-owambe .btn { min-height: 52px; border: 2px solid var(--w-ink) !important; font-weight: 800; box-shadow: 0 5px 0 var(--w-ink); }
+.wpage--tpl-owambe .btn:hover { transform: translateY(-2px); box-shadow: 0 7px 0 var(--w-ink); }
+.wpage--tpl-owambe .st-photo__frame { border: 3px solid var(--w-ink); box-shadow: 10px 10px 0 var(--w-primary), 10px 10px 0 3px var(--w-ink); }
+.wpage--tpl-owambe .st-status { border: 2px solid var(--w-ink); background: var(--w-accent); color: var(--w-ink); transform: rotate(-4deg); }
+.wpage--tpl-owambe .st-kicker { display: inline-block; padding: .5em 1em; border: 2px solid var(--w-ink); border-radius: 999px; background: #fff; color: var(--w-ink); transform: rotate(-2deg); }
+.wpage--tpl-owambe .st-names { color: var(--w-primary); text-shadow: 3px 3px 0 var(--w-accent); }
+.wpage--tpl-owambe .st-names .st-amp { color: var(--w-ink); text-shadow: none; }
+.wpage--tpl-owambe .st-rule i { width: 12px; height: 12px; border: 2px solid var(--w-ink); border-radius: 50%; background: var(--w-accent); }
+.wpage--tpl-owambe .st-rule i:nth-child(even) { background: var(--w-primary); }
+.wpage--tpl-owambe .st-count span { border: 2px solid var(--w-ink); box-shadow: 0 4px 0 var(--w-ink); }
+.wpage--tpl-owambe .w-title { color: var(--w-primary); }
+.wpage--tpl-owambe .w-eyebrow { display: inline-flex; padding: .45em 1em; border: 2px solid var(--w-ink); border-radius: 999px; background: var(--w-accent); color: var(--w-ink); }
+.wpage--tpl-owambe .w-head::before { display: none; }
+.wpage--tpl-owambe.wpage--lux :is(.card-form, .gift, .vend, .note, .invite__card, .event, .story__card, .quiz, .wall-form, .squad__card, .photo) { border: 2px solid var(--w-ink); box-shadow: 0 7px 0 var(--w-ink); }
+.wpage--tpl-owambe .event__when { border: 2px solid var(--w-ink); background: var(--w-accent); color: var(--w-ink); }
+.wpage--tpl-owambe .story__item::after { border: 2px solid var(--w-ink); background: var(--w-accent); }
+.wpage--tpl-owambe .story::before { width: 3px; background: repeating-linear-gradient(var(--w-ink) 0 10px, transparent 10px 18px); }
+.wpage--tpl-owambe .st-sign { background: var(--w-primary); color: #fff; }
+.wpage--tpl-owambe .st-sign :is(.st-sign__kicker, .st-amp) { color: var(--w-accent); }
+.wpage--tpl-owambe .st-mono { border: 3px solid var(--w-ink); background: var(--w-accent); color: var(--w-ink); box-shadow: 0 6px 0 var(--w-ink); }
+.wpage--tpl-owambe .w-sec .w-eyebrow { color: var(--w-ink) !important; }
+
+/* ================================================================================================
+ * AURORA — Owambe is the loud one. It should feel like a party without becoming cheap: the colour
+ * is saturated, the shapes are chunky, and things move — but the type stays disciplined and the
+ * confetti is paper, not plastic.
+ * ============================================================================================= */
+
+.wpage--tpl-owambe {
+	--ow-party: linear-gradient(118deg,
+		var(--w-primary) 0%,
+		color-mix(in srgb, var(--w-primary) 58%, var(--w-accent)) 42%,
+		var(--w-accent) 100%);
+	--ow-confetti: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cg opacity='.5'%3E%3Crect x='20' y='14' width='7' height='12' rx='1.5' fill='%23ffffff' opacity='.5' transform='rotate(22 23 20)'/%3E%3Crect x='136' y='40' width='6' height='11' rx='1.5' fill='%23ffffff' opacity='.42' transform='rotate(-34 139 45)'/%3E%3Crect x='70' y='104' width='7' height='12' rx='1.5' fill='%23ffffff' opacity='.46' transform='rotate(14 73 110)'/%3E%3Crect x='150' y='140' width='6' height='10' rx='1.5' fill='%23ffffff' opacity='.38' transform='rotate(-18 153 145)'/%3E%3Crect x='32' y='150' width='6' height='11' rx='1.5' fill='%23ffffff' opacity='.44' transform='rotate(40 35 155)'/%3E%3Ccircle cx='104' cy='30' r='3' fill='%23ffffff' opacity='.4'/%3E%3Ccircle cx='16' cy='84' r='2.6' fill='%23ffffff' opacity='.36'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* The hero is the dance floor. */
+.wpage--tpl-owambe .st-hero {
+	position: relative;
+	background-color: transparent;
+	background-image: var(--ow-confetti), var(--ow-party);
+	background-size: 180px 180px, cover;
+	color: #fff;
+	overflow: hidden;
+}
+.wpage--tpl-owambe .st-hero :is(.st-names, .st-kicker, .st-status) { color: inherit; }
+.wpage--tpl-owambe .st-hero .st-count span { background: rgba(255, 255, 255, .16); border-color: rgba(255, 255, 255, .26); color: #fff; }
+.wpage--tpl-owambe .st-hero .st-count b { color: #fff; }
+
+/* Confetti drifting down, slowly enough to be charming rather than busy. */
+.wpage--tpl-owambe .st-hero::after {
+	content: "";
+	position: absolute;
+	inset: -180px 0 0 0;
+	pointer-events: none;
+	background-image: var(--ow-confetti);
+	background-size: 180px 180px;
+	animation: owFall 22s linear infinite;
+}
+@keyframes owFall { from { transform: translateY(0); } to { transform: translateY(180px); } }
+.wpage--tpl-owambe .st-hero__in { position: relative; z-index: 1; }
+
+/* Chunky buttons that press like a real one. */
+.wpage--tpl-owambe .btn { min-height: 56px; font-size: .84rem; letter-spacing: .14em; }
+.wpage--tpl-owambe .st-photo__frame { border-radius: var(--st-r); box-shadow: var(--st-shadow-2); }
+.wpage--tpl-owambe .w-title::after {
+	content: "";
+	display: block;
+	width: 78px;
+	height: 8px;
+	margin: 16px auto 0;
+	border-radius: 999px;
+	background: var(--ow-party);
+}
+.st-page.wpage--tpl-owambe .w-sec.w-sec--tint { background: color-mix(in srgb, var(--w-accent) 20%, var(--w-bg)); }
+@media (prefers-reduced-motion: reduce) { .wpage--tpl-owambe .st-hero::after { animation: none; } }

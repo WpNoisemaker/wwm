@@ -1,0 +1,124 @@
+/*
+ * Keepsake: like a photo album. The photo as a print with tape, handwritten touches & little hearts.
+ * Blue = the couple's main colour, sunflower = their second colour.
+ */
+.wpage--tpl-keepsake {
+	--st-r: 4px;
+	--st-head-w: 600;
+	--st-label: 600 .72rem/1.4 var(--w-body);
+	--st-label-track: .14em;
+	--st-line: color-mix(in srgb, var(--w-ink) 14%, transparent);
+	--st-shadow: 0 18px 40px -26px color-mix(in srgb, var(--w-ink) 70%, transparent);
+	--st-tint: color-mix(in srgb, var(--w-accent) 14%, var(--w-bg));
+	--script: "Great Vibes", cursive;
+	--paper-lines: repeating-linear-gradient(180deg, transparent 0 31px, color-mix(in srgb, var(--w-primary) 10%, transparent) 31px 32px);
+}
+.wpage--tpl-keepsake .st-hero { background: var(--paper-lines), var(--w-bg); }
+.wpage--tpl-keepsake .st-photo { justify-self: center; width: min(100%, 460px); padding: 14px 14px 64px; background: #fff; box-shadow: var(--st-shadow), 0 2px 6px color-mix(in srgb, var(--w-ink) 12%, transparent); transform: rotate(-2.5deg); }
+.wpage--tpl-keepsake .st-hero--right .st-photo { transform: rotate(2.5deg); }
+.wpage--tpl-keepsake .st-photo::before, .wpage--tpl-keepsake .st-photo::after { content: ""; position: absolute; z-index: 2; top: -14px; width: 110px; height: 30px; background: color-mix(in srgb, var(--w-accent) 55%, transparent); box-shadow: 0 1px 2px color-mix(in srgb, var(--w-ink) 15%, transparent); }
+.wpage--tpl-keepsake .st-photo::before { left: -22px; transform: rotate(-32deg); }
+.wpage--tpl-keepsake .st-photo::after { right: -22px; transform: rotate(32deg); }
+.wpage--tpl-keepsake .st-photo__frame { border-radius: 0; box-shadow: none; }
+.wpage--tpl-keepsake .st-photo__frame > :is(.cover-img, .cover-art) { aspect-ratio: 1; }
+.wpage--tpl-keepsake .st-hero--top .st-photo { width: min(100%, 860px); transform: rotate(-1deg); }
+.wpage--tpl-keepsake .st-hero--top .st-photo__frame > :is(.cover-img, .cover-art) { aspect-ratio: 16 / 9; }
+.wpage--tpl-keepsake .st-photo .st-status { top: auto; bottom: 18px; left: 50%; transform: translateX(-50%); padding: 0; border-radius: 0; background: none; color: var(--w-ink); font: 400 1.7rem/1 var(--script); letter-spacing: 0; text-transform: none; white-space: nowrap; }
+.wpage--tpl-keepsake .st-status--inline { transform: none; }
+.wpage--tpl-keepsake .st-names .st-amp { color: var(--w-primary); font: 400 1.3em/1 var(--script); }
+.wpage--tpl-keepsake .st-sign__kicker { color: var(--w-primary); font: 400 1.6rem/1.2 var(--script); letter-spacing: 0; text-transform: none; }
+.st-heart { width: 26px; height: 22px; fill: var(--w-accent); stroke: var(--w-ink); stroke-width: 1.4; }
+.wpage--tpl-keepsake .st-rule::before, .wpage--tpl-keepsake .st-rule::after { content: ""; width: 60px; height: 0; border-top: 1.5px dashed color-mix(in srgb, var(--w-ink) 35%, transparent); }
+.wpage--tpl-keepsake .st-count span { border: 1px dashed color-mix(in srgb, var(--w-ink) 30%, transparent); border-radius: 4px; }
+.wpage--tpl-keepsake .w-eyebrow { font: 400 1.6rem/1.2 var(--script); letter-spacing: 0; text-transform: none; }
+.wpage--tpl-keepsake .w-head::before { display: none; }
+.wpage--tpl-keepsake .w-title::after { content: ""; display: block; width: 100px; height: 8px; margin: 12px auto 0; background: color-mix(in srgb, var(--w-accent) 70%, transparent); transform: rotate(-1.5deg); }
+.wpage--tpl-keepsake.wpage--lux :is(.story__card, .photo, .note) { padding: 12px 12px 18px; background: #fff; }
+.wpage--tpl-keepsake .story__item:nth-child(odd) .story__card { transform: rotate(-1.2deg); }
+.wpage--tpl-keepsake .story__item:nth-child(even) .story__card { transform: rotate(1.2deg); }
+.wpage--tpl-keepsake .story__card img { border-radius: 0; }
+.wpage--tpl-keepsake .story__when { font: 400 1.4rem/1 var(--script); letter-spacing: 0; text-transform: none; }
+.wpage--tpl-keepsake .note:nth-child(3n+1) { --tilt: -1.5deg !important; }
+.wpage--tpl-keepsake .note:nth-child(3n+2) { --tilt: 1deg !important; }
+.wpage--tpl-keepsake .w-sec--tint { background: var(--paper-lines), var(--st-tint); }
+.wpage--tpl-keepsake .st-sign { background: var(--paper-lines), var(--st-tint); }
+.wpage--tpl-keepsake .st-mono { border: 1.5px dashed currentColor; font: 400 2rem/1 var(--script); }
+.wpage--tpl-keepsake .st-sign .st-rule { margin-top: 0; }
+@media (max-width: 860px) {
+	.wpage--tpl-keepsake .st-photo { width: min(88%, 400px); }
+}
+
+/* ================================================================================================
+ * AURORA — Keepsake is the one design that must resist the glass. It is paper, tape and a hand,
+ * so its surfaces stay opaque and slightly off-square, and the light falls on them rather than
+ * through them. Everything else on the page still follows the house rules.
+ * ============================================================================================= */
+
+.wpage--tpl-keepsake {
+	/* Paper, not glass. */
+	--st-glass: color-mix(in srgb, var(--w-bg) 97%, #fff);
+	--st-card: color-mix(in srgb, var(--w-bg) 97%, #fff);
+	--st-blur: none;
+	--st-edge: color-mix(in srgb, var(--w-ink) 9%, transparent);
+	--st-shadow-1: 0 1px 1px color-mix(in srgb, var(--w-ink) 7%, transparent), 0 6px 14px color-mix(in srgb, var(--w-ink) 8%, transparent);
+	--st-shadow-2: 0 2px 3px color-mix(in srgb, var(--w-ink) 9%, transparent), 0 16px 34px color-mix(in srgb, var(--w-ink) 13%, transparent);
+	--ke-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='t'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='4'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23t)' opacity='.05'/%3E%3C/svg%3E");
+	--ke-tape: linear-gradient(104deg, color-mix(in srgb, var(--w-accent) 46%, #fff) 0%, color-mix(in srgb, var(--w-accent) 60%, #fff) 48%, color-mix(in srgb, var(--w-accent) 40%, #fff) 100%);
+}
+
+/* The grain of the page itself. */
+.wpage--tpl-keepsake .w-sec { background-image: var(--ke-paper); }
+
+/* The photograph is a print, laid down slightly crooked and taped at the corner. */
+.wpage--tpl-keepsake .st-photo { position: relative; }
+.wpage--tpl-keepsake .st-photo__frame {
+	padding: 12px 12px 48px;
+	border: 0;
+	border-radius: 3px;
+	background: #fff;
+	box-shadow: var(--st-shadow-2);
+	transform: rotate(-1.6deg);
+}
+.wpage--tpl-keepsake .st-photo__frame > :is(.cover-img, .cover-art) { border-radius: 1px; }
+.wpage--tpl-keepsake .st-photo::before,
+.wpage--tpl-keepsake .st-photo::after {
+	content: "";
+	position: absolute;
+	z-index: 2;
+	width: 86px;
+	height: 26px;
+	background: var(--ke-tape);
+	opacity: .78;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, .12);
+}
+.wpage--tpl-keepsake .st-photo::before { top: -11px; left: -16px; transform: rotate(-26deg); }
+.wpage--tpl-keepsake .st-photo::after { bottom: 24px; right: -18px; transform: rotate(-21deg); }
+
+/* The caption under the print, written by hand. */
+.wpage--tpl-keepsake .st-photo .st-status {
+	position: absolute;
+	left: 0; right: 0; bottom: 26px;
+	font-family: "Great Vibes", cursive;
+	font-size: 1.5rem;
+	text-align: center;
+	color: color-mix(in srgb, var(--w-ink) 72%, var(--w-primary));
+	transform: rotate(-1.6deg);
+}
+/* Notes on the wall are torn scraps, each at its own angle. */
+.wpage--tpl-keepsake .note { border-radius: 3px; }
+.wpage--tpl-keepsake .note:nth-child(3n+1) { transform: rotate(-.9deg); }
+.wpage--tpl-keepsake .note:nth-child(3n+2) { transform: rotate(1.1deg); }
+.wpage--tpl-keepsake .note:nth-child(3n) { transform: rotate(-.4deg); }
+.wpage--tpl-keepsake .w-title::after {
+	content: "";
+	display: block;
+	width: 64px;
+	height: 7px;
+	margin: 14px auto 0;
+	background: var(--ke-tape);
+	opacity: .8;
+	transform: rotate(-1.4deg);
+}
+@media (prefers-reduced-motion: reduce) {
+	.wpage--tpl-keepsake :is(.st-photo__frame, .note, .st-status) { transform: none; }
+}

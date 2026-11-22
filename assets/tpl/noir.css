@@ -1,0 +1,112 @@
+/*
+ * Noir: evening glamour. A deep page, thin gold lines, a tall photo with a fine gold frame & big,
+ * graceful names. Gold = the couple's main colour, champagne = their second colour.
+ */
+.wpage--tpl-noir {
+	--st-card: color-mix(in srgb, var(--w-bg) 88%, #fff);
+	--st-card-ink: var(--w-ink);
+	--st-line: color-mix(in srgb, var(--w-primary) 34%, transparent);
+	--st-r: 0px;
+	--st-btn-r: 0px;
+	--st-head-w: 500;
+	--st-label: 500 .68rem/1.4 var(--w-body);
+	--st-label-track: .32em;
+	--st-shadow: 0 40px 80px -50px #000;
+	--st-tint: color-mix(in srgb, var(--w-primary) 7%, var(--w-bg));
+}
+.wpage--tpl-noir .btn { color: var(--w-bg) !important; }
+.wpage--tpl-noir :is(.w-btn, .btn--ink) { color: var(--w-bg) !important; }
+.wpage--tpl-noir .w-btn--ghost { color: var(--w-ink) !important; }
+.wpage--tpl-noir .st-hero { padding-bottom: 0; background: radial-gradient(120% 80% at 80% 0%, color-mix(in srgb, var(--w-primary) 16%, transparent), transparent 60%), var(--w-bg); }
+.wpage--tpl-noir .st-orn i { position: absolute; top: 0; bottom: 0; width: 1px; background: linear-gradient(transparent, var(--st-line) 20%, var(--st-line) 80%, transparent); }
+.wpage--tpl-noir .st-orn i:nth-child(1) { left: 6%; }
+.wpage--tpl-noir .st-orn i:nth-child(2) { right: 6%; }
+.wpage--tpl-noir .st-orn i:nth-child(3) { left: 50%; opacity: .35; }
+.wpage--tpl-noir .st-photo { padding: 16px; border: 1px solid var(--st-line); }
+.wpage--tpl-noir .st-photo__frame > :is(.cover-img, .cover-art) { aspect-ratio: 3 / 4; filter: saturate(.92) contrast(1.04); }
+.wpage--tpl-noir .st-hero--top .st-photo__frame > :is(.cover-img, .cover-art) { aspect-ratio: 21 / 9; }
+.wpage--tpl-noir .st-status { background: var(--w-primary); color: var(--w-bg); }
+.wpage--tpl-noir .st-names { font-style: italic; }
+.wpage--tpl-noir .st-names .st-amp { color: var(--w-primary); font-style: normal; }
+.wpage--tpl-noir .st-rule i { width: 70px; height: 1px; background: var(--w-primary); }
+.wpage--tpl-noir .st-rule svg { width: 10px; height: 10px; fill: var(--w-primary); }
+.wpage--tpl-noir .st-date b { color: var(--w-primary); font-weight: 500; }
+.wpage--tpl-noir .st-count span { border-color: var(--st-line); background: transparent; color: var(--w-ink); }
+.wpage--tpl-noir .w-title { font-style: italic; }
+.wpage--tpl-noir .w-title::after { content: ""; display: block; width: 60px; height: 1px; margin: 18px auto 0; background: var(--w-primary); }
+.wpage--tpl-noir .w-sec + .w-sec { border-top: 1px solid color-mix(in srgb, var(--w-primary) 18%, transparent); }
+.wpage--tpl-noir .invite__card::before { inset: 10px; border-color: var(--st-line); }
+.wpage--tpl-noir .event__when { background: transparent; color: var(--w-primary); border: 1px solid var(--st-line); }
+.wpage--tpl-noir :is(.event__links a, .gift__type, .vend__type) { border-color: var(--st-line); color: var(--w-primary) !important; }
+.wpage--tpl-noir .story__item::after { box-shadow: 0 0 0 6px var(--w-bg); transform: translate(-50%, -50%) rotate(45deg); border-radius: 0; }
+.wpage--tpl-noir .st-sign { background: var(--w-bg); }
+.wpage--tpl-noir .st-sign .st-rule { position: absolute; left: 0; right: 0; top: 34px; margin: 0; }
+.wpage--tpl-noir .st-sign__in { padding-top: clamp(80px, 9vw, 120px); }
+.wpage--tpl-noir .st-sign .st-mono { display: none; }
+/* Everything that is white by default turns to the dark card, so light text stays readable. */
+.wpage--tpl-noir .w-sec--dark { background: color-mix(in srgb, var(--w-bg) 80%, #000); color: var(--w-ink); }
+.wpage--tpl-noir :is(.feed li, .ig-tile, .leader li, .w-progs li, .quiz__opts button, .note-pick span, .seg span, .share-sheet, .story__when, .squad__side, .bill, .photo figcaption, .tabs a, .chip) { border-color: var(--st-line); background: var(--st-card); color: var(--w-ink); }
+.wpage--tpl-noir .gift__pic, .wpage--tpl-noir .vend__pic { background: color-mix(in srgb, var(--w-bg) 60%, var(--w-ink)); }
+
+/* ================================================================================================
+ * AURORA — Noir is where the dark surface should be at its most beautiful.
+ * Black glass, gold caught on every edge, and light that moves slowly behind the names.
+ * Square corners are kept: Noir earns its formality from the right angle.
+ * ============================================================================================= */
+
+.wpage--tpl-noir {
+	--st-card: color-mix(in srgb, var(--w-bg) 86%, #000);
+	--st-glass: color-mix(in srgb, var(--w-bg) 56%, transparent);
+	--st-edge: color-mix(in srgb, var(--w-accent) 26%, transparent);
+	--st-inset: inset 0 1px 0 color-mix(in srgb, var(--w-accent) 30%, transparent);
+	--st-shadow-1: 0 1px 2px rgba(0, 0, 0, .5), 0 10px 30px rgba(0, 0, 0, .45);
+	--st-shadow-2: 0 3px 10px rgba(0, 0, 0, .55), 0 28px 70px rgba(0, 0, 0, .6);
+	--no-foil: linear-gradient(104deg,
+		color-mix(in srgb, var(--w-accent) 48%, #fff) 0%,
+		var(--w-accent) 34%,
+		color-mix(in srgb, var(--w-accent) 58%, #1a1208) 56%,
+		var(--w-accent) 76%,
+		color-mix(in srgb, var(--w-accent) 40%, #fff) 100%);
+}
+
+/* The names are struck in gold leaf, not filled with flat gold. */
+.wpage--tpl-noir .st-names {
+	background: var(--no-foil);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+	.wpage--tpl-noir .st-names { color: var(--w-accent); }
+}
+
+/* Slow light moving behind the hero, the way a room lit by candles moves. */
+.wpage--tpl-noir .st-hero { position: relative; overflow: hidden; }
+.wpage--tpl-noir .st-hero::after {
+	content: "";
+	position: absolute;
+	inset: -40%;
+	z-index: 0;
+	pointer-events: none;
+	background:
+		radial-gradient(34% 40% at 22% 18%, color-mix(in srgb, var(--w-accent) 16%, transparent) 0%, transparent 72%),
+		radial-gradient(30% 36% at 80% 76%, color-mix(in srgb, var(--w-primary) 14%, transparent) 0%, transparent 74%);
+	animation: noFlicker 32s ease-in-out infinite alternate;
+}
+.wpage--tpl-noir .st-hero__in { position: relative; z-index: 1; }
+@keyframes noFlicker { from { transform: translate3d(-2%, 1%, 0); } to { transform: translate3d(3%, -2%, 0); } }
+
+/* A single gold hairline above every section heading. */
+.wpage--tpl-noir .w-title::before {
+	content: "";
+	display: block;
+	width: 58px;
+	height: 1px;
+	margin: 0 auto 20px;
+	background: var(--no-foil);
+}
+/* Photographs wear a fine gold frame with a breath of space inside it. */
+.wpage--tpl-noir .st-photo__frame { padding: 7px; border: 1px solid color-mix(in srgb, var(--w-accent) 46%, transparent); border-radius: 0; background: transparent; }
+.wpage--tpl-noir .st-count span { border-color: color-mix(in srgb, var(--w-accent) 28%, transparent); }
+.wpage--tpl-noir .st-count b { color: var(--w-accent); }
+@media (prefers-reduced-motion: reduce) { .wpage--tpl-noir .st-hero::after { animation: none; } }

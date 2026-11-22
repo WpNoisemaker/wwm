@@ -1,0 +1,237 @@
+/*
+ * Studio: the shared base of seven Premium designs (Noir, Coral, Indigo, Aso-oke, Keepsake, Savannah
+ * & Owambe). Loads after wedding.css & before the design's own sheet, which sets the variables below
+ * & adds its ornaments. Main colour = --w-primary, second colour = --w-accent.
+ */
+
+.st-page {
+	--st-p: var(--w-primary);
+	--st-a: var(--w-accent);
+	--st-bg: var(--w-bg);
+	--st-ink: var(--w-ink);
+	--st-card: #fff;
+	--st-card-ink: var(--w-ink);
+	--st-line: color-mix(in srgb, var(--w-ink) 14%, transparent);
+	--st-r: 22px;
+	--st-btn-r: 999px;
+	--st-head: var(--w-head);
+	--st-head-w: 400;
+	--st-head-case: none;
+	--st-head-track: 0;
+	--st-label: 600 .7rem/1.4 var(--w-body);
+	--st-label-track: .2em;
+	--st-shadow: 0 26px 60px -40px color-mix(in srgb, var(--w-ink) 60%, transparent);
+	--st-tint: color-mix(in srgb, var(--w-accent) 16%, var(--w-bg));
+}
+.st-page { background: var(--st-bg); color: var(--st-ink); accent-color: var(--st-p); }
+
+/* ---------------------------------------------------------------- Buttons & fields */
+.st-page .btn { min-height: 48px; padding: .85em 1.5em; border-radius: var(--st-btn-r); font: 600 .78rem/1.1 var(--w-body); letter-spacing: .12em; text-transform: uppercase; }
+.st-page :is(.w-btn, .btn--ink) { --btn-bg: var(--st-p); --btn-fg: #fff; --btn-bd: var(--st-p); color: #fff !important; }
+.st-page :is(.w-btn--accent, .btn--marigold) { --btn-bg: var(--st-a); --btn-bd: var(--st-a); color: var(--st-card-ink) !important; }
+.st-page .w-btn--live { --btn-bg: #B5402E; --btn-bd: #B5402E; color: #fff !important; }
+.st-page .w-btn--ghost { --btn-bg: transparent; --btn-bd: color-mix(in srgb, currentColor 40%, transparent); color: inherit !important; }
+.st-page :is(input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="file"]):not([type="range"]), select, textarea) { border: 1px solid var(--st-line); border-radius: min(14px, var(--st-r)); background: var(--st-card); color: var(--st-card-ink); }
+.st-page :is(input, select, textarea):focus { border-color: var(--st-p); outline: 3px solid color-mix(in srgb, var(--st-p) 18%, transparent); outline-offset: 0; }
+.st-page :is(.seg, .note-pick) input:checked + span { border-color: var(--st-p); background: var(--st-p); color: #fff; }
+
+/* ---------------------------------------------------------------- Section nav */
+.st-page.wpage--lux .w-nav { border-bottom: 1px solid var(--st-line); background: color-mix(in srgb, var(--st-bg) 94%, transparent); }
+.st-page.wpage--lux .w-nav a { border-radius: var(--st-btn-r); color: var(--st-ink) !important; font: 600 .74rem/1 var(--w-body); letter-spacing: .12em; text-transform: uppercase; }
+.st-page.wpage--lux .w-nav a.is-on { background: var(--st-p); color: #fff !important; box-shadow: none; }
+.st-page.wpage--lux .w-nav a.w-nav__mono { background: none; color: var(--st-p) !important; font: var(--st-head-w) 1.25rem/1 var(--st-head); letter-spacing: 0; text-transform: none; }
+
+/* ---------------------------------------------------------------- Top of the page */
+.st-hero { position: relative; padding: clamp(30px, 5vw, 72px) 0 0; overflow: hidden; color: var(--st-ink); isolation: isolate; }
+.st-hero__in { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: clamp(28px, 6vw, 90px); }
+.st-hero--right .st-photo { order: 2; }
+.st-hero--top .st-hero__in, .st-hero--names .st-hero__in { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+.st-hero--top .st-photo { width: 100%; }
+.st-hero--top .st-hero__text, .st-hero--names .st-hero__text { max-width: 780px; }
+.st-hero--names { padding-top: clamp(56px, 9vw, 120px); }
+.st-photo { position: relative; margin: 0; }
+.st-photo__frame { position: relative; display: block; overflow: hidden; border-radius: var(--st-r); box-shadow: var(--st-shadow); }
+.st-photo__frame > :is(.cover-img, .cover-art) { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; }
+.st-hero--top .st-photo__frame > :is(.cover-img, .cover-art) { aspect-ratio: 21 / 9; }
+.st-status { position: absolute; top: 16px; left: 16px; z-index: 2; margin: 0; padding: .55em 1.1em; border-radius: 999px; background: var(--st-card); color: var(--st-card-ink); font: var(--st-label); letter-spacing: var(--st-label-track); text-transform: uppercase; }
+.st-status--inline { position: static; display: inline-block; margin: 0 0 14px; }
+.st-hero__text { text-align: center; }
+.st-kicker { margin: 0 0 12px; color: var(--st-p); font: var(--st-label); letter-spacing: var(--st-label-track); text-transform: uppercase; }
+.st-names { display: grid; justify-items: center; gap: .02em; margin: 0; font: var(--st-head-w) clamp(2.8rem, 6vw, 5.4rem)/1.02 var(--st-head); letter-spacing: var(--st-head-track); text-transform: var(--st-head-case); overflow-wrap: anywhere; }
+.st-amp { color: var(--st-p); font-family: var(--st-head); font-style: italic; font-weight: 400; }
+.st-names .st-amp { font-size: .55em; line-height: 1.2; }
+.st-names .vbadge { margin-left: .12em; vertical-align: .32em; }
+.st-names .vbadge .icon { width: .36em; height: .36em; }
+.st-rule { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 18px auto; color: var(--st-p); }
+.st-date { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 4px 12px; margin: 0 0 6px; font: 600 .82rem/1.4 var(--w-body); letter-spacing: .16em; text-transform: uppercase; }
+.st-date span { opacity: .7; }
+.st-place { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: 1rem; opacity: .85; }
+.st-tagline { max-width: 42ch; margin: 18px auto 0; font: italic 400 1.2rem/1.5 var(--st-head); }
+.st-next { margin: 28px 0 12px; color: var(--st-p); font: var(--st-label); letter-spacing: var(--st-label-track); text-transform: uppercase; }
+.st-page .st-count { display: grid; grid-template-columns: repeat(4, 76px); justify-content: center; gap: 10px; max-width: none; margin: 0 auto; }
+.st-page .st-count span { display: grid; justify-items: center; gap: 6px; padding: 14px 4px 12px; border: 1px solid var(--st-line); border-radius: min(18px, var(--st-r)); background: var(--st-card); color: var(--st-card-ink); font: 600 .54rem/1 var(--w-body); letter-spacing: .14em; text-transform: uppercase; }
+.st-page .st-count b { color: var(--st-p); font: var(--st-head-w) 1.9rem/1 var(--st-head); letter-spacing: 0; }
+.st-hero__text .btn-row { justify-content: center; gap: 10px; margin-top: 28px; }
+.st-hero__text .w-gift { justify-content: center; margin-top: 18px; }
+.st-hash { margin: 18px 0 0; color: var(--st-p); font: italic 400 1.1rem/1.3 var(--st-head); }
+.st-hero__foot { position: relative; z-index: 1; }
+.st-hero__foot .w-buzz { justify-content: center; margin: 0; padding: clamp(30px, 4vw, 46px) 0 30px; border-top: 0; }
+.st-hero__foot .w-buzz a { color: inherit !important; }
+
+/* ---------------------------------------------------------------- Sections */
+.st-page .w-sec { padding-block: clamp(64px, 8vw, 116px); }
+.st-page .w-sec:not(.w-sec--dark):not(.w-sec--pattern) { background: var(--st-bg); }
+.st-page .w-sec.w-sec--tint { background: var(--st-tint); }
+.st-page .w-head { margin-inline: auto; text-align: center; }
+.st-page .w-head--row { flex-direction: column; align-items: center; }
+.st-page .w-head__aside { margin-inline: auto; }
+.st-page .w-head::before { margin: 0 auto 14px; -webkit-mask-position: center; mask-position: center; background: var(--st-p); }
+.st-page .w-eyebrow { justify-content: center; color: var(--st-p); font: var(--st-label); letter-spacing: var(--st-label-track); }
+.st-page .w-title { font: var(--st-head-w) clamp(2.1rem, 4.4vw, 3.5rem)/1.08 var(--st-head); letter-spacing: var(--st-head-track); text-transform: var(--st-head-case); }
+.st-page :is(.w-sec--dark, .w-sec--pattern) .w-eyebrow { color: var(--st-a); }
+
+/* Cards */
+.st-page.wpage--lux :is(.card-form, .gift, .vend, .note, .photo, .quiz, .live__card, .spray__counter, .wall-form, .pass__ticket, .ig-follow, .squad__card, .opens-card, .rsvp__closed, .invite__card, .event, .story__card) { border: 1px solid var(--st-line); border-radius: var(--st-r); background: var(--st-card); color: var(--st-card-ink); box-shadow: var(--st-shadow); }
+.st-page .note { --tilt: 0deg !important; }
+.st-page :is(.gift, .vend__pic)[class*="tone-"] { --tone: color-mix(in srgb, var(--st-a) 22%, #fff); }
+.st-page :is(.meter i, .gift .meter i) { background: var(--st-p); }
+.st-page :is(.gift__body h3, .vend__body h3, .squad__card h4, .quiz__q, .story__card h3, .event h3) { font-family: var(--st-head); font-weight: var(--st-head-w); }
+.st-page :is(.w-sec--dark, .w-sec--pattern) :is(.quiz, .card-form, .live__card) .w-title { color: var(--st-card-ink); }
+
+/* The invitation & the programs */
+.st-page .invite__card::before { border-color: color-mix(in srgb, var(--st-a) 70%, transparent); border-radius: max(0px, calc(var(--st-r) - 10px)); }
+.st-page .invite__names { color: var(--st-p); font-weight: var(--st-head-w); text-transform: var(--st-head-case); letter-spacing: var(--st-head-track); }
+.st-page .invite__date { border-top-color: var(--st-line); }
+.st-page .event__when { border-radius: min(18px, var(--st-r)); background: var(--st-p); color: #fff; border: 0; }
+.st-page .event__type { color: var(--st-p); }
+.st-page .event__links a { border-radius: var(--st-btn-r); }
+
+/* Our story */
+.st-page .story::before { width: 1px; background: var(--st-line); }
+.st-page .story__item::after { width: 14px; height: 14px; border: 0; background: var(--st-p); box-shadow: 0 0 0 6px var(--st-bg); }
+.st-page .story__when { border-color: var(--st-line); border-radius: var(--st-btn-r); background: var(--st-card); color: var(--st-p); font: var(--st-label); letter-spacing: var(--st-label-track); text-transform: uppercase; box-shadow: none; }
+.st-page .story__card img { border: 0; border-radius: max(0px, calc(var(--st-r) - 8px)); }
+
+/* ---------------------------------------------------------------- Sign-off */
+.st-sign { position: relative; overflow: hidden; border-top: 1px solid var(--st-line); background: var(--st-tint); color: var(--st-ink); text-align: center; isolation: isolate; }
+.st-sign__in { position: relative; z-index: 1; padding-block: clamp(54px, 7vw, 100px); }
+.st-mono { display: grid; place-items: center; width: 86px; height: 86px; margin: 0 auto 16px; border: 1px solid currentColor; border-radius: 50%; color: var(--st-p); font: var(--st-head-w) 1.7rem/1 var(--st-head); }
+.st-sign__kicker { margin: 0; color: var(--st-p); font: var(--st-label); letter-spacing: var(--st-label-track); text-transform: uppercase; }
+.st-sign__names { margin: 8px 0 0; font: var(--st-head-w) clamp(2.2rem, 4.8vw, 3.5rem)/1.1 var(--st-head); text-transform: var(--st-head-case); letter-spacing: var(--st-head-track); }
+.st-sign__date { margin: 8px 0 0; font: italic 400 1.1rem/1.3 var(--st-head); }
+.st-page .w-viral { border-top: 0; }
+
+/* ---------------------------------------------------------------- Tablets & phones */
+@media (max-width: 860px) {
+	.st-hero__in { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+	.st-hero--right .st-photo { order: 0; }
+	.st-photo { width: min(100%, 520px); }
+	.st-hero--top .st-photo { width: 100%; }
+	.st-hero--top .st-photo__frame > :is(.cover-img, .cover-art) { aspect-ratio: 4 / 3; }
+}
+@media (max-width: 600px) {
+	.st-names { font-size: clamp(2.4rem, 12vw, 3.4rem); }
+	.st-page .st-count { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+	.st-page .st-count b { font-size: 1.5rem; }
+}
+
+/* ================================================================================================
+ * AURORA uplift for the Studio base.
+ *
+ * Seven Premium designs sit on this file, so everything added here is written against the Studio
+ * variables each design already sets — no new colours are introduced. A design that wants none of
+ * this simply redefines the variable, and a design's own stylesheet still loads afterwards and wins.
+ * ============================================================================================= */
+
+.st-page {
+	/* Depth, derived from the page's own ink so it tints with the couple's palette. */
+	--st-shadow-1: 0 1px 2px color-mix(in srgb, var(--st-ink) 5%, transparent), 0 8px 24px color-mix(in srgb, var(--st-ink) 7%, transparent);
+	--st-shadow-2: 0 3px 8px color-mix(in srgb, var(--st-ink) 6%, transparent), 0 24px 64px color-mix(in srgb, var(--st-ink) 13%, transparent);
+	--st-glass: color-mix(in srgb, var(--st-card) 70%, transparent);
+	--st-blur: blur(22px) saturate(1.5);
+	--st-edge: color-mix(in srgb, #fff 46%, var(--st-line));
+	--st-inset: inset 0 1px 0 color-mix(in srgb, #fff 52%, transparent);
+	--st-spring: cubic-bezier(.34, 1.56, .64, 1);
+	/* A mesh made only from the couple's two colours — never from brand yellow. */
+	--st-mesh:
+		radial-gradient(110% 110% at 12% 6%, color-mix(in srgb, var(--st-a) 36%, var(--st-bg)) 0%, transparent 64%),
+		radial-gradient(120% 120% at 90% 94%, color-mix(in srgb, var(--st-p) 26%, var(--st-bg)) 0%, transparent 68%),
+		var(--st-bg);
+}
+
+/* Cards become glass, with the hairline and the soft layered shadow. A design that wants solid
+ * paper (Keepsake, for one) just sets --st-glass to its own opaque colour. */
+.st-page.wpage--lux :is(.card-form, .gift, .vend, .note, .photo, .quiz, .live__card, .spray__counter,
+.wall-form, .pass__ticket, .ig-follow, .squad__card, .opens-card, .rsvp__closed, .invite__card,
+.event, .story__card) {
+	border-color: var(--st-edge);
+	background: var(--st-glass);
+	-webkit-backdrop-filter: var(--st-blur);
+	backdrop-filter: var(--st-blur);
+	box-shadow: var(--st-shadow-1), var(--st-inset);
+}
+.st-page.wpage--lux a:is(.gift, .vend, .photo, .squad__card):hover {
+	transform: translateY(-4px);
+	box-shadow: var(--st-shadow-2), var(--st-inset);
+}
+.st-page.wpage--lux :is(.gift, .vend, .photo, .squad__card) { transition: transform .26s cubic-bezier(.2,.8,.2,1), box-shadow .26s cubic-bezier(.2,.8,.2,1); }
+
+/* Buttons: still Studio's uppercase tracking, now with a spring and real depth. */
+.st-page .btn { box-shadow: var(--st-shadow-1); transition: transform .16s var(--st-spring), box-shadow .26s, filter .26s; }
+.st-page .btn:hover { transform: translateY(-1px); box-shadow: var(--st-shadow-2); }
+.st-page .btn:active { transform: scale(.97); }
+
+/* Fields. */
+.st-page :is(input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="file"]):not([type="range"]), select, textarea) {
+	min-height: 50px;
+	background: color-mix(in srgb, var(--st-card) 88%, transparent);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+}
+.st-page :is(input, select, textarea):focus { outline-width: 4px; }
+
+/* The countdown reads as a row of glass tiles with big light figures. */
+.st-page .st-count span {
+	border-color: var(--st-edge);
+	background: var(--st-glass);
+	-webkit-backdrop-filter: var(--st-blur);
+	backdrop-filter: var(--st-blur);
+	box-shadow: var(--st-shadow-1), var(--st-inset);
+}
+.st-page .st-count b { font-weight: 300; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+
+/* The section nav floats as a frosted pill bar. */
+.st-page.wpage--lux .w-nav {
+	background: color-mix(in srgb, var(--st-bg) 72%, transparent);
+	-webkit-backdrop-filter: blur(24px) saturate(1.6);
+	backdrop-filter: blur(24px) saturate(1.6);
+	border-bottom-color: var(--st-edge);
+}
+
+/* Tinted sections get the couple's own mesh rather than a flat wash. */
+.st-page .w-sec.w-sec--tint { background: var(--st-mesh); }
+
+/* Premium pages arrive section by section. */
+.st-page .w-reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s cubic-bezier(.2,.8,.2,1) var(--d, 0ms), transform .7s cubic-bezier(.2,.8,.2,1) var(--d, 0ms); }
+.st-page .w-reveal.is-in { opacity: 1; transform: none; }
+
+/* Fallbacks. */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+	.st-page.wpage--lux :is(.card-form, .gift, .vend, .note, .photo, .quiz, .live__card, .spray__counter,
+	.wall-form, .pass__ticket, .ig-follow, .squad__card, .opens-card, .rsvp__closed, .invite__card,
+	.event, .story__card), .st-page .st-count span, .st-page.wpage--lux .w-nav { background: var(--st-card); }
+}
+@media (prefers-reduced-transparency: reduce) {
+	.st-page.wpage--lux :is(.card-form, .gift, .vend, .note, .photo, .quiz, .live__card, .spray__counter,
+	.wall-form, .pass__ticket, .ig-follow, .squad__card, .opens-card, .rsvp__closed, .invite__card,
+	.event, .story__card), .st-page .st-count span, .st-page.wpage--lux .w-nav,
+	.st-page :is(input, select, textarea) {
+		-webkit-backdrop-filter: none !important;
+		backdrop-filter: none !important;
+		background: var(--st-card) !important;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.st-page .w-reveal { opacity: 1; transform: none; }
+	.st-page .btn, .st-page.wpage--lux :is(.gift, .vend, .photo, .squad__card) { transition: none; }
+}

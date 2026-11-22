@@ -1,0 +1,443 @@
+/*
+ * ROYAL — a royal proclamation.
+ *
+ * Deep wine ground, gold foil names, an engine-turned crest, woven kente bands, Roman numerals,
+ * engraved rules and square corners. The most formal page in the set, and it resists the
+ * soft-radius house style on purpose: --w-r stays 0 everywhere.
+ *
+ * Every colour is derived from the couple's own --w-primary / --w-accent / --w-bg / --w-ink and
+ * every face from --w-head / --w-body (plus Pinyon Script for the script line), so the page looks
+ * like the couple, not like us. Loads after wedding.css; selectors carry .wpage.wpage--tpl-royal
+ * so the design always wins over the shared Aurora chrome whatever order the sheets print in.
+ *
+ * Nothing here is borrowed from a shared file: the engraved rule, the lozenge pip, the corner
+ * brackets, the beaded ring and the guilloché medallion are all drawn below in CSS and SVG
+ * data-URIs so inc/art.php and wedding.css stay untouched.
+ *
+ *  1 Tokens, foil & ornament stock     6 Sections & vellum
+ *  2 Ornament primitives               7 The register of ceremonies
+ *  3 Foil type                         8 The chronicle
+ *  4 Chrome: buttons, fields, nav      9 Sign-off
+ *  5 The proclamation (hero)          10 Motion · 11 Phones & fallbacks
+ */
+
+/* ================================================= 1  Tokens, foil & ornament stock */
+
+.wpage.wpage--tpl-royal {
+	/* The ground: three steps down from the couple's primary. */
+	--ro-deep: color-mix(in srgb, var(--w-primary) 82%, #150309);
+	--ro-deeper: color-mix(in srgb, var(--w-primary) 52%, #0a0205);
+	--ro-night: color-mix(in srgb, var(--w-primary) 22%, #050103);
+
+	/* The gold, six steps across the couple's accent: specular highlight to engraved shadow. */
+	--ro-gold: var(--w-accent);
+	--ro-gold-hi: color-mix(in srgb, var(--w-accent) 20%, #fffdf3);
+	--ro-gold-lite: color-mix(in srgb, var(--w-accent) 56%, #fff4d8);
+	--ro-gold-mid: color-mix(in srgb, var(--w-accent) 84%, #6b4a12);
+	/* --ro-gold-shade is the darkest band of the bright leaf; it stops there so even that band
+	   clears 3:1 on the wine ground. --ro-gold-deep goes darker, for foil struck into ivory. */
+	--ro-gold-shade: color-mix(in srgb, var(--w-accent) 72%, #4a3208);
+	--ro-gold-deep: color-mix(in srgb, var(--w-accent) 52%, #241300);
+	--ro-gold-ink: color-mix(in srgb, var(--w-accent) 34%, var(--w-ink));
+
+	/* Paper. Warm neutrals, still tied to the couple's own background. */
+	--ro-ivory: color-mix(in srgb, var(--w-bg) 26%, #fffdf7);
+	--ro-paper: color-mix(in srgb, var(--w-bg) 90%, #fff);
+	--ro-vellum: color-mix(in srgb, var(--w-bg) 34%, #fffdf6);
+	--ro-ink: var(--w-ink);
+
+	/* Engraved hairlines. */
+	--ro-line: color-mix(in srgb, var(--w-accent) 58%, transparent);
+	--ro-line-soft: color-mix(in srgb, var(--w-accent) 28%, transparent);
+	--ro-line-ink: color-mix(in srgb, var(--w-ink) 16%, transparent);
+
+	/* Gold leaf. A fine hatched grain laid over a fifteen-stop leaf with two specular bands:
+	   --ro-foil for the deep ground, --ro-foil-ink engraved dark enough to hold AA on ivory. */
+	--ro-grain: repeating-linear-gradient(101deg, rgba(255, 255, 255, .2) 0 1px, rgba(0, 0, 0, .1) 1px 2px, transparent 2px 6px);
+	--ro-grain-ink: repeating-linear-gradient(101deg, rgba(255, 255, 255, .16) 0 1px, rgba(0, 0, 0, .14) 1px 2px, transparent 2px 6px);
+	--ro-foil: var(--ro-grain), linear-gradient(176deg, var(--ro-gold-hi) 0%, var(--ro-gold-lite) 6%, var(--ro-gold) 14%, var(--ro-gold-mid) 24%, var(--ro-gold-shade) 32%, var(--ro-gold-mid) 38%, var(--ro-gold-lite) 44%, var(--ro-gold-hi) 48%, var(--ro-gold-lite) 53%, var(--ro-gold) 61%, var(--ro-gold-mid) 70%, var(--ro-gold-shade) 77%, var(--ro-gold-mid) 85%, var(--ro-gold) 93%, var(--ro-gold-lite) 100%);
+	--ro-foil-ink: var(--ro-grain-ink), linear-gradient(176deg, var(--ro-gold-deep) 0%, var(--ro-gold-ink) 15%, var(--ro-gold-deep) 31%, color-mix(in srgb, var(--ro-gold-ink) 74%, #000) 46%, var(--ro-gold-deep) 57%, var(--ro-gold-ink) 76%, var(--ro-gold-deep) 100%);
+
+	/* The cloth: warp, weft and a diamond band, woven from the couple's own colours. */
+	--ro-weave: repeating-linear-gradient(0deg, transparent 0 2px, rgba(0, 0, 0, .3) 2px 3px), repeating-linear-gradient(90deg, transparent 0 5px, rgba(0, 0, 0, .13) 5px 6px);
+	--ro-warp: repeating-linear-gradient(90deg, var(--ro-gold) 0 12px, var(--ro-night) 12px 15px, var(--ro-deep) 15px 28px, var(--ro-night) 28px 31px, var(--ro-gold-lite) 31px 37px, var(--ro-deeper) 37px 50px, var(--ro-night) 50px 53px);
+	--ro-weft: repeating-linear-gradient(90deg, var(--ro-deeper) 0 8px, var(--ro-gold) 8px 12px, var(--ro-night) 12px 16px, var(--ro-deep) 16px 25px);
+	--ro-zig-a: repeating-linear-gradient(45deg, var(--ro-gold) 0 2px, transparent 2px 10px);
+	--ro-zig-b: repeating-linear-gradient(-45deg, var(--ro-gold) 0 2px, transparent 2px 10px);
+	--ro-night-fill: linear-gradient(var(--ro-night), var(--ro-night));
+
+	/* Engine turning: the guilloché of a banknote or a struck seal. */
+	--ro-guilloche: repeating-conic-gradient(from 0deg at 50% 50%, color-mix(in srgb, var(--w-accent) 26%, transparent) 0deg 1.3deg, transparent 1.3deg 4deg), repeating-radial-gradient(circle at 50% 50%, transparent 0 4px, color-mix(in srgb, var(--w-accent) 14%, transparent) 4px 4.7px, transparent 4.7px 9.4px);
+	--ro-guilloche-xl: repeating-conic-gradient(from 0deg at 50% 50%, color-mix(in srgb, var(--w-accent) 30%, transparent) 0deg 2deg, transparent 2deg 6deg), repeating-radial-gradient(circle at 50% 50%, transparent 0 15px, color-mix(in srgb, var(--w-accent) 20%, transparent) 15px 17px, transparent 17px 34px);
+	--ro-beads: repeating-conic-gradient(from 0deg at 50% 50%, var(--ro-gold-lite) 0deg 2deg, transparent 2deg 7.5deg);
+	--ro-ring: radial-gradient(circle at 50% 50%, transparent 0 47.4%, #000 48.4% 50.4%, transparent 51.4%);
+
+	/* Drawn here, not in a shared file: an engraved rule and a hollow lozenge pip. */
+	--ro-rule: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 16'%3E%3Crect x='4' y='7.4' width='110' height='1.1'/%3E%3Crect x='206' y='7.4' width='110' height='1.1'/%3E%3Crect x='40' y='4.6' width='64' height='.5'/%3E%3Crect x='216' y='4.6' width='64' height='.5'/%3E%3Ccircle cx='122' cy='8' r='1.5'/%3E%3Ccircle cx='198' cy='8' r='1.5'/%3E%3Ccircle cx='133' cy='8' r='.85'/%3E%3Ccircle cx='187' cy='8' r='.85'/%3E%3Cpath fill-rule='evenodd' d='M160 0l7.6 8-7.6 8-7.6-8zM160 2.9l4.8 5.1-4.8 5.1-4.8-5.1z'/%3E%3Cpath d='M160 5.6l2.3 2.4-2.3 2.4-2.3-2.4z'/%3E%3C/svg%3E");
+	--ro-pip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M8 0l8 8-8 8-8-8zM8 3.2L12.8 8 8 12.8 3.2 8z'/%3E%3Cpath d='M8 5.7l2.3 2.3-2.3 2.3L5.7 8z'/%3E%3C/svg%3E");
+
+	/* Corner brackets, built from bars so they stay crisp at any size. */
+	--ro-bar: linear-gradient(#000, #000);
+	--ro-brackets: var(--ro-bar) 0 0 / 26px 1.1px no-repeat, var(--ro-bar) 0 0 / 1.1px 26px no-repeat, var(--ro-bar) 100% 0 / 26px 1.1px no-repeat, var(--ro-bar) 100% 0 / 1.1px 26px no-repeat, var(--ro-bar) 0 100% / 26px 1.1px no-repeat, var(--ro-bar) 0 100% / 1.1px 26px no-repeat, var(--ro-bar) 100% 100% / 26px 1.1px no-repeat, var(--ro-bar) 100% 100% / 1.1px 26px no-repeat;
+	--ro-pips-corner: var(--ro-pip) 0 0 / 14px no-repeat, var(--ro-pip) 100% 0 / 14px no-repeat, var(--ro-pip) 0 100% / 14px no-repeat, var(--ro-pip) 100% 100% / 14px no-repeat;
+	--ro-pips-edge: var(--ro-pip) 50% 0 / 11px no-repeat, var(--ro-pip) 50% 100% / 11px no-repeat, var(--ro-pip) 0 50% / 11px no-repeat, var(--ro-pip) 100% 50% / 11px no-repeat;
+
+	/* The one status colour on the page: "live" must stay legibly red next to any wine, so it is
+	   a signal, not a brand colour — nudged toward the couple's primary so it still belongs. */
+	--ro-live: color-mix(in srgb, #b4241c 80%, var(--w-primary));
+
+	--ro-display: var(--w-head);
+	--ro-script: "Pinyon Script", "Great Vibes", cursive;
+	--ro-ease: cubic-bezier(.22, .72, .2, 1);
+	--ro-lift: 0 34px 64px -42px color-mix(in srgb, var(--ro-night) 88%, transparent);
+	--ro-glass: blur(12px) saturate(1.25);
+
+	/* Square. This is the identity and it overrides the house radius on every tier. */
+	--w-r: 0px;
+	--w-r-lg: 0px;
+	background: var(--ro-paper);
+	color: var(--ro-ink);
+}
+.wpage.wpage--tpl-royal :is(.btn, .w-btn, .countdown span, .status, .w-hash, .w-progs li, .w-progs__icon, .tag, .chip, .note-pick span, .seg span, .event__when, .squad__side, .card, .panel, .w-card, input, select, textarea) { border-radius: 0; }
+
+/* ================================================= 2  Ornament primitives */
+
+/* The woven band: a warp, a diamond weft and a warp again, finished with foil selvedges. */
+.ro-band { position: relative; height: 22px; background: var(--ro-weave), var(--ro-weft) 0 0 / auto 6px repeat-x, var(--ro-zig-a) 0 6px / auto 10px repeat-x, var(--ro-zig-b) 0 6px / auto 10px repeat-x, var(--ro-night-fill) 0 6px / auto 10px repeat-x, var(--ro-weft) 0 16px / auto 6px repeat-x, var(--ro-warp); }
+.ro-band::before, .ro-band::after { content: ""; position: absolute; left: 0; right: 0; height: 2px; background: var(--ro-foil); }
+.ro-band::before { top: 0; }
+.ro-band::after { bottom: 0; }
+
+/* The engraved rule: tapered hairlines, four pips and a double lozenge, cut out of gold foil. */
+.ro-rule { display: block; width: min(280px, 76%); height: 16px; margin: clamp(18px, 2.4vw, 28px) auto; background: var(--ro-foil-ink); -webkit-mask: var(--ro-rule) center / contain no-repeat; mask: var(--ro-rule) center / contain no-repeat; }
+.ro-rule--sm { width: min(190px, 62%); }
+.ro-rule--flip { transform: scaleY(-1); }
+:is(.ro-hero, .ro-sign, .w-sec--dark, .w-sec--pattern) .ro-rule { background: var(--ro-foil); }
+
+.ro-kicker { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 0 0 .8em; color: var(--ro-gold-ink); font: 600 .7rem/1.5 var(--w-body); letter-spacing: .34em; text-transform: uppercase; }
+.ro-kicker::before, .ro-kicker::after { content: ""; flex: 0 1 46px; height: 1px; background: linear-gradient(90deg, transparent, currentColor); }
+.ro-kicker::after { background: linear-gradient(90deg, currentColor, transparent); }
+
+/* The crest: an engine-turned medallion, a double ring, forty-eight beads, four foil pips
+   and the shared ornament redrawn at a finer stroke. */
+.ro-crest { position: relative; display: grid; place-items: center; width: 128px; margin: 0 auto 20px; color: var(--ro-gold); filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .3)); }
+.ro-crest > *, .ro-crest::before, .ro-crest::after { grid-area: 1 / 1; }
+.ro-crest .orn { width: 98px; stroke-width: .72; }
+.ro-crest .orn__text { font: 600 27px/1 var(--ro-display); letter-spacing: .1em; }
+.ro-crest::before { content: ""; width: 100%; aspect-ratio: 1; pointer-events: none; border: 1px solid var(--ro-line); border-radius: 50%; background: var(--ro-guilloche); box-shadow: 0 0 0 5px transparent, 0 0 0 6px var(--ro-line-soft), inset 0 0 0 6px transparent, inset 0 0 0 7px var(--ro-line-soft); }
+.ro-crest__bead { width: 100%; aspect-ratio: 1; pointer-events: none; transform: scale(1.14); background: var(--ro-beads); -webkit-mask: var(--ro-ring); mask: var(--ro-ring); }
+.ro-crest::after { content: ""; width: calc(100% + 38px); height: calc(100% + 38px); pointer-events: none; background: var(--ro-foil); -webkit-mask: var(--ro-pips-edge); mask: var(--ro-pips-edge); }
+.ro-crest--hero { width: 136px; }
+.ro-crest--sign { width: 116px; }
+/* The sign-off crest is struck, not printed: a raised medallion with a pressed shadow. */
+.ro-crest--seal::before { background: var(--ro-guilloche), radial-gradient(circle at 36% 30%, color-mix(in srgb, var(--ro-gold) 24%, transparent), color-mix(in srgb, var(--ro-night) 52%, transparent) 72%); box-shadow: 0 0 0 5px transparent, 0 0 0 6px var(--ro-line-soft), inset 0 0 0 6px transparent, inset 0 0 0 7px var(--ro-line-soft), inset 0 2px 5px color-mix(in srgb, var(--ro-night) 60%, transparent), 0 14px 26px -14px #000; }
+
+.ro-hash { display: inline-block; margin: 16px 0 0; padding: .5em 1.2em; border: 1px solid var(--ro-line); color: var(--ro-gold-lite); font: 600 .74rem/1 var(--w-body); letter-spacing: .18em; }
+.ro-head, .wpage--tpl-royal .w-head { max-width: 720px; margin: 0 auto clamp(34px, 5vw, 60px); text-align: center; }
+.wpage.wpage--tpl-royal .w-head::before, .ro-head::before { content: ""; display: block; width: 252px; height: 16px; margin: 0 auto 20px; background: var(--ro-foil-ink); -webkit-mask: var(--ro-rule) center / contain no-repeat; mask: var(--ro-rule) center / contain no-repeat; }
+.ro-title, .wpage--tpl-royal.wpage--lux .w-title { margin: 0; color: var(--ro-deep); font: 600 clamp(1.9rem, 4.2vw, 3.2rem)/1.12 var(--ro-display); letter-spacing: .06em; text-transform: uppercase; }
+.wpage--tpl-royal.wpage--lux .w-eyebrow { justify-content: center; color: var(--ro-gold-ink); font: 600 .7rem/1.5 var(--w-body); letter-spacing: .32em; }
+.wpage--tpl-royal .w-head__aside, .wpage--tpl-royal .w-head > p:not(.w-eyebrow) { max-width: 54ch; margin-inline: auto; }
+
+/* ================================================= 3  Foil type */
+
+.ro-foil, .ro-date b, .ro-ledger__when b, .ro-ledger__no, .ro-chron__medal, .ro-sign__date { background-image: var(--ro-foil); background-size: auto, 100% 240%; -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
+/* Struck into the ground: a hairline of light under every foil letter. */
+.ro-hero .ro-foil, .ro-sign .ro-foil, .ro-sign__date, .ro-date b { filter: drop-shadow(0 1px 0 color-mix(in srgb, var(--ro-night) 72%, transparent)); }
+/* On ivory the foil darkens and the bevel flips, so figures keep AA and still read as metal. */
+.wpage--tpl-royal .w-sec:not(.w-sec--dark):not(.w-sec--pattern) :is(.ro-foil, .ro-ledger__when b, .ro-ledger__no, .ro-chron__medal) { background-image: var(--ro-foil-ink); filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .8)); }
+
+/* ================================================= 4  Chrome */
+
+.wpage.wpage--tpl-royal .btn { min-height: 50px; padding: .95em 1.7em; border-width: 1px; box-shadow: none; font: 600 .68rem/1.15 var(--w-body); letter-spacing: .24em; text-transform: uppercase; transition: transform .2s var(--ro-ease), box-shadow .3s, background .3s; }
+.wpage.wpage--tpl-royal :is(.w-btn, .btn--ink) { --btn-bg: var(--ro-deep); --btn-fg: var(--ro-ivory); --btn-bd: var(--ro-deep); background: var(--ro-deep); color: var(--ro-ivory) !important; }
+.wpage.wpage--tpl-royal :is(.w-btn--accent, .btn--marigold) { --btn-bg: var(--ro-gold); --btn-bd: var(--ro-gold-deep); background: var(--ro-foil); color: #1d1206 !important; text-shadow: 0 1px 0 rgba(255, 255, 255, .34); }
+.wpage.wpage--tpl-royal .w-btn--live { --btn-bg: var(--ro-live); --btn-bd: var(--ro-live); background: var(--ro-live); color: #fff !important; }
+.wpage.wpage--tpl-royal .w-btn--ghost { --btn-bg: transparent; --btn-bd: var(--ro-line); background: transparent; border-color: var(--ro-line); color: inherit !important; }
+.wpage.wpage--tpl-royal .btn:hover { transform: translateY(-2px); box-shadow: 0 18px 34px -20px color-mix(in srgb, var(--ro-deeper) 85%, transparent); }
+.wpage.wpage--tpl-royal .btn:active { transform: translateY(0); }
+.wpage--tpl-royal .linkish, .wpage--tpl-royal .w-sec a:not(.btn) { color: var(--ro-deep); }
+
+.wpage.wpage--tpl-royal :is(input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="file"]):not([type="range"]), select, textarea) { border: 1px solid var(--ro-line); background: color-mix(in srgb, var(--ro-vellum) 86%, #fff); box-shadow: inset 0 1px 2px color-mix(in srgb, var(--ro-ink) 7%, transparent); }
+.wpage.wpage--tpl-royal :is(input, select, textarea):focus { border-color: var(--ro-gold-deep); outline: 2px solid var(--ro-line-soft); outline-offset: 0; box-shadow: none; }
+.wpage--tpl-royal, .wpage--tpl-royal :is(.check, .checks) input { accent-color: var(--ro-deep); }
+.wpage.wpage--tpl-royal .seg span { border: 1px solid var(--ro-line); background: color-mix(in srgb, var(--ro-vellum) 86%, #fff); font: 600 .66rem/1.3 var(--w-body); letter-spacing: .22em; text-transform: uppercase; }
+.wpage--tpl-royal .seg input:checked + span { border-color: var(--ro-deep); background: var(--ro-deep); color: var(--ro-ivory); }
+.wpage--tpl-royal .meter i, .wpage--tpl-royal .meter__fill { background: var(--ro-foil-ink); }
+
+.wpage--tpl-royal.wpage--lux .w-nav { display: flex; align-items: center; gap: 10px; padding: 0 var(--gutter); border-bottom: 1px solid var(--ro-line); background: color-mix(in srgb, var(--ro-paper) 84%, transparent); -webkit-backdrop-filter: var(--ro-glass); backdrop-filter: var(--ro-glass); }
+.wpage--tpl-royal .w-nav ul { flex: 1; width: auto; margin: 0; }
+.wpage--tpl-royal .w-nav li:first-child { margin-left: auto; }
+.wpage--tpl-royal .w-nav li:last-child { margin-right: auto; }
+.wpage--tpl-royal.wpage--lux .w-nav a { color: var(--ro-deep) !important; font-size: .64rem; letter-spacing: .24em; }
+.wpage--tpl-royal.wpage--lux .w-nav a.is-on { box-shadow: inset 0 -2px 0 var(--ro-gold-deep); }
+.wpage--tpl-royal.wpage--lux .w-nav a.w-nav__mono { display: grid; place-items: center; flex: none; width: 38px; height: 38px; padding: 0; border: 1px solid var(--ro-line); border-radius: 50%; color: var(--ro-gold-ink) !important; font: 600 .8rem/1 var(--ro-display); letter-spacing: .04em; box-shadow: none; }
+
+/* ================================================= 5  The proclamation */
+
+.ro-hero { position: relative; isolation: isolate; overflow: hidden; color: var(--ro-ivory); background:
+	radial-gradient(64% 48% at 50% -6%, color-mix(in srgb, var(--w-accent) 22%, transparent) 0%, transparent 72%),
+	radial-gradient(56% 46% at 8% 16%, color-mix(in srgb, var(--w-primary) 72%, #fff) 0%, transparent 70%),
+	radial-gradient(70% 58% at 94% 80%, color-mix(in srgb, var(--w-accent) 16%, var(--ro-deeper)) 0%, transparent 74%),
+	radial-gradient(130% 104% at 50% 0%, var(--ro-deep) 0%, var(--ro-deeper) 58%, var(--ro-night) 100%); }
+.ro-hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--w-pattern); background-size: 120px; opacity: .07; }
+/* The signature: a vast engine-turned rosette struck into the ground behind the proclamation. */
+.ro-hero::after { content: ""; position: absolute; left: 50%; top: 50%; z-index: 0; width: min(820px, 130vw); aspect-ratio: 1; pointer-events: none; opacity: .5; transform: translate(-50%, -50%); background: var(--ro-guilloche-xl); -webkit-mask: radial-gradient(circle at 50% 50%, #000 0 30%, transparent 64%); mask: radial-gradient(circle at 50% 50%, #000 0 30%, transparent 64%); }
+.ro-hero > * { position: relative; z-index: 2; }
+.ro-hero__veil { position: absolute; inset: -22%; z-index: 1; pointer-events: none; background:
+	radial-gradient(34% 36% at 22% 18%, color-mix(in srgb, var(--w-accent) 24%, transparent) 0%, transparent 70%),
+	radial-gradient(38% 40% at 82% 76%, color-mix(in srgb, var(--w-primary) 46%, transparent) 0%, transparent 72%); }
+.ro-hero__in { display: grid; grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); align-items: center; gap: clamp(32px, 6vw, 88px); padding-block: clamp(46px, 7vw, 100px); }
+.ro-hero--right .ro-portrait { order: 2; }
+.ro-hero:is(.ro-hero--top, .ro-hero--names) .ro-hero__in { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+.ro-hero--top .ro-portrait { width: min(100%, 980px); }
+.ro-hero--top .ro-portrait__frame { aspect-ratio: 16 / 8; }
+
+/* The portrait: a foil mat, an engraved outer rule and four corner lozenges. */
+.ro-portrait { position: relative; width: min(100%, 520px); margin: 0 auto; }
+.ro-portrait::before { content: ""; position: absolute; inset: -17px; border: 1px solid var(--ro-line-soft); pointer-events: none; }
+.ro-portrait::after { content: ""; position: absolute; inset: -24px; z-index: 2; pointer-events: none; background: var(--ro-foil); -webkit-mask: var(--ro-pips-corner); mask: var(--ro-pips-corner); }
+.ro-portrait__frame { position: relative; display: block; aspect-ratio: 4 / 5; padding: 9px; background: var(--ro-foil); box-shadow: 0 48px 82px -46px #000, inset 0 0 0 1px color-mix(in srgb, var(--ro-gold-deep) 70%, transparent); }
+.ro-portrait__frame::after { content: ""; position: absolute; inset: 4px; border: 1px solid rgba(255, 255, 255, .42); pointer-events: none; }
+.ro-portrait__frame > :is(img, svg, .cover-art) { display: block; width: 100%; height: 100%; object-fit: cover; outline: 1px solid var(--ro-gold-deep); }
+.ro-portrait__status, .ro-status { width: fit-content; margin: 0 auto; padding: .58em 1.35em; border: 1px solid var(--ro-gold); background: var(--ro-night); color: var(--ro-gold-lite); font: 600 .62rem/1 var(--w-body); letter-spacing: .28em; text-transform: uppercase; white-space: nowrap; }
+.ro-portrait__status { position: absolute; left: 50%; bottom: -15px; z-index: 3; transform: translateX(-50%); }
+.ro-status { margin-bottom: 18px; }
+
+/* The plate the proclamation is engraved on: glass over the ground, a double rule, foil corners. */
+.ro-procl { position: relative; width: 100%; max-width: 690px; margin-inline: auto; text-align: center; }
+.ro-plate { padding: clamp(34px, 4.6vw, 60px) clamp(22px, 3.6vw, 54px) clamp(30px, 4vw, 50px); }
+.ro-plate::before { content: ""; position: absolute; inset: 0; z-index: 0; border: 1px solid var(--ro-line); background: linear-gradient(168deg, color-mix(in srgb, var(--ro-night) 22%, transparent), color-mix(in srgb, var(--ro-night) 50%, transparent)); -webkit-backdrop-filter: var(--ro-glass); backdrop-filter: var(--ro-glass); box-shadow: inset 0 0 0 7px transparent, inset 0 0 0 8px var(--ro-line-soft), var(--ro-lift); }
+.ro-plate::after { content: ""; position: absolute; inset: 16px; z-index: 2; pointer-events: none; background: var(--ro-foil); -webkit-mask: var(--ro-brackets); mask: var(--ro-brackets); }
+.ro-procl > * { position: relative; z-index: 1; }
+.ro-hero .ro-kicker { color: var(--ro-gold-lite); }
+/* The one script line on the page, as an engraver would set it. */
+.ro-request { max-width: 480px; margin: 0 auto .45em; color: color-mix(in srgb, var(--ro-ivory) 94%, transparent); font: 400 clamp(1.5rem, 2.7vw, 2.15rem)/1.3 var(--ro-script); letter-spacing: .012em; }
+.ro-names { display: grid; justify-items: center; gap: .04em; margin: 0; font: 600 clamp(2.5rem, 6.2vw, 4.9rem)/1.04 var(--ro-display); letter-spacing: .055em; text-transform: uppercase; overflow-wrap: anywhere; }
+.ro-names__last { display: inline-flex; align-items: center; gap: .18em; }
+.ro-names .vbadge .icon { width: .42em; height: .42em; color: var(--ro-gold); }
+.ro-names .vbadge .icon path:last-child { stroke: var(--ro-deeper); }
+.ro-amp { margin: .02em 0; color: var(--ro-gold-lite); font: 400 .98em/.9 var(--ro-script); letter-spacing: 0; text-transform: none; -webkit-text-fill-color: currentColor; }
+.ro-date { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 20px; max-width: 480px; margin: 24px auto 12px; }
+.ro-date span { padding-block: 10px; border-block: 1px solid var(--ro-line); color: var(--ro-ivory); font: 600 .7rem/1.3 var(--w-body); letter-spacing: .28em; text-transform: uppercase; }
+.ro-date b { font: 600 clamp(2.9rem, 5.2vw, 3.8rem)/1 var(--ro-display); letter-spacing: .02em; }
+.ro-place { margin: 0; color: color-mix(in srgb, var(--ro-ivory) 90%, transparent); font: 500 .95rem/1.5 var(--w-body); letter-spacing: .06em; }
+.ro-procl .ro-rule { margin-block: clamp(16px, 2vw, 24px); }
+.ro-tagline { max-width: 44ch; margin: 0 auto; color: color-mix(in srgb, var(--ro-ivory) 90%, transparent); font: italic 400 1.05rem/1.55 var(--w-body); }
+.ro-next { margin: 28px 0 12px; color: var(--ro-gold-lite); font: 600 .66rem/1.3 var(--w-body); letter-spacing: .26em; text-transform: uppercase; }
+.wpage.wpage--tpl-royal .ro-count { display: grid; grid-template-columns: repeat(4, minmax(0, 82px)); justify-content: center; gap: 10px; max-width: none; margin: 0 auto; }
+.wpage.wpage--tpl-royal .ro-count span { position: relative; display: grid; justify-items: center; gap: 6px; padding: 15px 4px 12px; border: 1px solid var(--ro-line); outline: 1px solid var(--ro-line-soft); outline-offset: -5px; background: color-mix(in srgb, var(--ro-night) 42%, transparent); -webkit-backdrop-filter: var(--ro-glass); backdrop-filter: var(--ro-glass); color: color-mix(in srgb, var(--ro-ivory) 84%, transparent); font: 600 .55rem/1 var(--w-body); letter-spacing: .22em; text-transform: uppercase; box-shadow: none; }
+.wpage.wpage--tpl-royal .ro-count span::before { content: ""; position: absolute; left: 14px; right: 14px; top: 0; height: 2px; background: var(--ro-foil); }
+.wpage.wpage--tpl-royal .ro-count b { color: var(--ro-gold); font: 600 1.95rem/1 var(--ro-display); letter-spacing: 0; }
+.ro-procl .btn-row { justify-content: center; margin-top: 30px; }
+.ro-hero .w-btn:not(.w-btn--accent):not(.w-btn--live):not(.w-btn--ghost) { --btn-bg: var(--ro-ivory); --btn-fg: var(--ro-deep); --btn-bd: var(--ro-ivory); background: var(--ro-ivory); color: var(--ro-deep) !important; }
+.ro-hero .w-btn--ghost { color: var(--ro-ivory) !important; }
+.ro-hero .w-gift { justify-content: center; margin-top: 18px; color: color-mix(in srgb, var(--ro-ivory) 86%, transparent); }
+.ro-hero .w-gift a { color: var(--ro-gold-lite); }
+.ro-hero__foot .w-buzz { justify-content: center; margin: 0 auto; padding: 16px 0 clamp(26px, 4vw, 42px); border-top: 1px solid var(--ro-line-soft); color: color-mix(in srgb, var(--ro-ivory) 86%, transparent); }
+.ro-hero__foot .w-buzz :is(a, button, .linkish) { color: var(--ro-gold-lite) !important; }
+.ro-hero__foot .w-buzz .icon { color: var(--ro-gold); }
+
+/* ================================================= 6  Sections & vellum */
+
+.wpage.wpage--tpl-royal .w-sec { padding-block: clamp(60px, 8vw, 112px); border: 0; }
+.wpage--tpl-royal .w-sec:not(.w-sec--dark):not(.w-sec--pattern) { background: radial-gradient(72% 52% at 50% 0%, rgba(255, 255, 255, .72), transparent 70%), var(--ro-paper); color: var(--ro-ink); }
+.wpage--tpl-royal .w-sec.w-sec--tint { background: radial-gradient(72% 52% at 50% 0%, rgba(255, 255, 255, .55), transparent 70%), color-mix(in srgb, var(--ro-gold) 8%, var(--ro-paper)); }
+.wpage--tpl-royal .w-sec + .w-sec:not(.w-sec--dark):not(.w-sec--pattern) { box-shadow: inset 0 1px 0 var(--ro-line-soft); }
+.wpage--tpl-royal :is(.w-sec--dark, .w-sec--pattern) { position: relative; isolation: isolate; background: radial-gradient(60% 46% at 50% -4%, color-mix(in srgb, var(--w-accent) 16%, transparent), transparent 72%), radial-gradient(120% 96% at 50% 0%, var(--ro-deep) 0%, var(--ro-deeper) 62%, var(--ro-night) 100%); color: var(--ro-ivory); }
+.wpage--tpl-royal .w-sec--pattern::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--w-pattern); background-size: 120px; opacity: .07; }
+.wpage--tpl-royal :is(.w-sec--dark, .w-sec--pattern) :is(.w-title, .ro-title) { color: var(--ro-ivory); }
+.wpage--tpl-royal :is(.w-sec--dark, .w-sec--pattern) :is(.w-eyebrow, .ro-kicker) { color: var(--ro-gold-lite); }
+.wpage--tpl-royal :is(.w-sec--dark, .w-sec--pattern) .w-head::before { background: var(--ro-foil); }
+.wpage.wpage--tpl-royal .w-sec--pattern .w-head { max-width: 720px; padding: 0; border: 0; background: none; box-shadow: none; color: var(--ro-ivory); }
+.wpage--tpl-royal :is(.w-sec--dark, .w-sec--pattern) a:not(.btn) { color: var(--ro-gold-lite); }
+
+/* Vellum: a translucent card over the section's wash, inside a double engraved rule. */
+.wpage.wpage--tpl-royal :is(.card-form, .gift, .vend, .note, .photo, .quiz, .live__card, .spray__counter, .wall-form, .pass__ticket, .ig-follow, .leader li, .feed li, .squad__card, .opens-card, .card, .panel, .w-card) { border: 1px solid var(--ro-line); outline: 1px solid var(--ro-line-soft); outline-offset: -7px; background: color-mix(in srgb, var(--ro-vellum) 82%, transparent); -webkit-backdrop-filter: var(--ro-glass); backdrop-filter: var(--ro-glass); color: var(--ro-ink); box-shadow: 0 28px 54px -40px color-mix(in srgb, var(--ro-deeper) 72%, transparent), inset 0 1px 0 rgba(255, 255, 255, .5); }
+.wpage--tpl-royal.wpage--lux .card-form { padding: clamp(28px, 4vw, 46px); }
+.wpage--tpl-royal .note { --tilt: 0deg !important; transform: none; }
+.wpage--tpl-royal .note p { font-style: italic; }
+.wpage.wpage--tpl-royal .gift__type, .wpage--tpl-royal.wpage--lux .vend__type { border: 1px solid var(--ro-line); background: none; color: var(--ro-gold-ink); font: 600 .57rem/1.2 var(--w-body); letter-spacing: .22em; }
+.wpage--tpl-royal :is(.gift__body h3, .vend__body h3, .quiz__q) { font-family: var(--ro-display); letter-spacing: .03em; }
+.wpage--tpl-royal .live__card { color: var(--ro-ink) !important; }
+.wpage--tpl-royal .w-sec--dark .live__frame { border: 1px solid var(--ro-gold); outline: 1px solid var(--ro-line-soft); outline-offset: 6px; }
+.wpage.wpage--tpl-royal .quiz__opts button { border: 1px solid var(--ro-line); background: color-mix(in srgb, var(--ro-vellum) 86%, #fff); }
+.wpage--tpl-royal .quiz__opts button:is(:hover, .is-picked) { border-color: var(--ro-gold-deep); background: color-mix(in srgb, var(--ro-gold) 14%, #fff); }
+.wpage.wpage--tpl-royal .status, .wpage.wpage--tpl-royal .w-hash { border: 1px solid var(--ro-gold); background: var(--ro-night); color: var(--ro-gold-lite); }
+.wpage--tpl-royal .rsvp__art { color: var(--ro-gold-deep); }
+.wpage.wpage--tpl-royal .rsvp__closed { border: 1px solid var(--ro-line); outline: 1px solid var(--ro-line-soft); outline-offset: -7px; background: color-mix(in srgb, var(--ro-vellum) 86%, #fff); font-style: italic; text-align: center; }
+.wpage.wpage--tpl-royal .squad__side { border: 0; background: none; color: var(--ro-gold-lite); font: 600 .72rem/1.3 var(--w-body); letter-spacing: .3em; text-transform: uppercase; box-shadow: none; }
+.wpage--tpl-royal .squad__pic { border: 2px solid var(--ro-gold); outline: 1px solid var(--ro-line); outline-offset: 4px; }
+.wpage--tpl-royal .squad__card h4 { font-family: var(--ro-display); letter-spacing: .04em; }
+.wpage--tpl-royal .squad__role { color: var(--ro-gold-ink); }
+.wpage--tpl-royal :is(.gift, .vend__pic)[class*="tone-"] { --tone: color-mix(in srgb, var(--ro-gold) 15%, #fffaf0); }
+.wpage--tpl-royal .gift__pic { border-bottom: 1px solid var(--ro-line); }
+.wpage--tpl-royal .gift__pic .art { filter: saturate(.8); }
+.wpage--tpl-royal.wpage--lux .vend__type { display: block; width: auto; padding: 0; border: 0; background: none; }
+.wpage--tpl-royal .vend__pic { border-color: var(--ro-gold); outline: 1px solid var(--ro-line-soft); outline-offset: 3px; }
+.wpage.wpage--tpl-royal .note-pick span { border: 1px solid var(--ro-line); background: color-mix(in srgb, var(--ro-vellum) 86%, #fff); }
+.wpage--tpl-royal .note-pick input:checked + span { border-color: var(--ro-deep); background: var(--ro-deep); color: var(--ro-ivory); }
+.wpage--tpl-royal :is(.w-sec--dark, .w-sec--pattern) :is(.quiz, .card-form, .live__card, .leader) :is(.w-title, .ro-title) { color: var(--ro-deep); }
+.wpage--tpl-royal :is(.w-sec--dark, .w-sec--pattern) :is(.quiz, .card-form, .live__card, .leader) .w-eyebrow { color: var(--ro-gold-ink); }
+.wpage--tpl-royal #instagram .w-title { text-transform: none; }
+
+/* ================================================= 7  The register of ceremonies */
+
+.ro-decree { max-width: 50ch; margin: 20px auto 0; font: italic 400 1.1rem/1.62 var(--w-body); }
+/* The register: the whole order of the day bound inside one engraved frame. */
+.ro-register { position: relative; max-width: 1060px; margin: 0 auto; padding: clamp(12px, 1.8vw, 22px); }
+.ro-register::before { content: ""; position: absolute; inset: 0; border: 1px solid var(--ro-line); pointer-events: none; }
+.ro-register::after { content: ""; position: absolute; inset: 8px; pointer-events: none; background: var(--ro-foil-ink); -webkit-mask: var(--ro-brackets); mask: var(--ro-brackets); }
+.ro-ledger { display: grid; margin: 0; padding: 0; list-style: none; }
+.ro-ledger__item { position: relative; display: grid; grid-template-columns: 84px minmax(0, 1fr) minmax(190px, 258px); gap: clamp(16px, 3vw, 36px); align-items: start; padding: clamp(26px, 3.4vw, 38px) clamp(10px, 1.6vw, 20px); transition: background .4s var(--ro-ease); }
+.ro-ledger__item + .ro-ledger__item { border-top: 1px solid var(--ro-line); }
+.ro-ledger__item:nth-child(odd) { background: color-mix(in srgb, var(--ro-gold) 4%, transparent); }
+.ro-ledger__item:hover { background: color-mix(in srgb, var(--ro-gold) 9%, transparent); }
+.ro-ledger__no { position: relative; display: grid; place-items: center; width: 72px; height: 72px; font: 600 1.18rem/1 var(--ro-display); letter-spacing: .06em; }
+.ro-ledger__no::before { content: ""; position: absolute; inset: 10px; border: 1px solid var(--ro-gold-deep); outline: 1px solid var(--ro-line-soft); outline-offset: 4px; transform: rotate(45deg); }
+.ro-ledger__type { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 7px; color: var(--ro-gold-ink); font: 600 .66rem/1.3 var(--w-body); letter-spacing: .26em; text-transform: uppercase; }
+.ro-ledger__main h3 { margin: 0 0 10px; color: var(--ro-deep); font: 600 clamp(1.35rem, 2.6vw, 1.9rem)/1.16 var(--ro-display); letter-spacing: .045em; text-transform: uppercase; }
+.ro-private { display: inline-block; margin: 0 0 8px; padding: .32em .85em; border: 1px solid var(--ro-line); color: var(--ro-gold-ink); font: 600 .6rem/1.2 var(--w-body); letter-spacing: .2em; text-transform: uppercase; }
+.ro-ledger__place { margin: 0 0 8px; font-size: 1rem; }
+.ro-ledger__note { margin: 0 0 8px; font-style: italic; }
+.ro-ledger__dress { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 8px; }
+.ro-ledger__dress > span { color: var(--ro-gold-ink); font: 600 .62rem/1.2 var(--w-body); letter-spacing: .22em; text-transform: uppercase; }
+.ro-ledger__dress .swatch { width: 18px; height: 18px; border: 1px solid var(--ro-line); border-radius: 50%; }
+.ro-plan { display: grid; gap: 0; margin: 16px 0 0; padding: 4px 0; border-left: 1px solid var(--ro-line-ink); list-style: none; }
+.ro-plan li { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 12px; padding: 7px 0 7px 16px; }
+.ro-plan b { color: var(--ro-deep); font: 600 .9rem/1.4 var(--ro-display); letter-spacing: .04em; }
+.ro-plan small { display: block; color: color-mix(in srgb, var(--ro-ink) 72%, transparent); }
+.ro-ledger__when { display: grid; justify-items: end; gap: 2px; text-align: right; }
+.ro-ledger__when b { margin-bottom: 5px; font: 600 clamp(2.7rem, 4.6vw, 3.7rem)/1 var(--ro-display); font-variant-numeric: lining-nums; }
+.ro-ledger__when > span { padding-top: 7px; border-top: 1px solid var(--ro-line); color: var(--ro-gold-ink); font: 600 .72rem/1.3 var(--w-body); letter-spacing: .24em; text-transform: uppercase; }
+.ro-ledger__when small { color: color-mix(in srgb, var(--ro-ink) 72%, transparent); font-size: .9rem; }
+.ro-ledger__links { display: grid; justify-items: end; gap: 7px; margin: 14px 0 0; }
+.ro-ledger__links a { display: inline-flex; align-items: center; gap: 6px; padding-bottom: 3px; border-bottom: 1px solid var(--ro-line); color: var(--ro-deep) !important; font: 600 .64rem/1.2 var(--w-body); letter-spacing: .2em; text-decoration: none; text-transform: uppercase; }
+.ro-ledger__links a:hover { border-color: var(--ro-deep); }
+
+/* ================================================= 8  The chronicle */
+
+.ro-chron__roll { position: relative; max-width: 1040px; margin: 0 auto; }
+.ro-chron__list { position: relative; display: grid; gap: clamp(28px, 4vw, 46px); margin: 0; padding: 0; list-style: none; }
+.ro-chron__list::before { content: ""; position: absolute; top: 10px; bottom: 10px; left: 50%; width: 1px; background: linear-gradient(transparent, var(--ro-line), var(--ro-gold-deep), var(--ro-line), transparent); }
+/* Foil lozenges cap the spine at both ends. */
+.ro-chron__cap { position: absolute; left: 50%; width: 13px; height: 13px; background: var(--ro-foil-ink); -webkit-mask: var(--ro-pip) center / contain no-repeat; mask: var(--ro-pip) center / contain no-repeat; transform: translateX(-50%); }
+.ro-chron__cap--top { top: 3px; }
+.ro-chron__cap--end { bottom: 3px; }
+.ro-chron__item { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr); align-items: start; }
+/* The numeral is foil, so the disc is filled with an inset shadow — a background-colour would be
+   clipped away with it by background-clip: text. */
+.ro-chron__medal { grid-column: 2; grid-row: 1; justify-self: center; display: grid; place-items: center; width: 56px; height: 56px; margin-top: 18px; border: 1px solid var(--ro-gold-deep); border-radius: 50%; outline: 1px solid var(--ro-line-soft); outline-offset: 4px; box-shadow: inset 0 0 0 30px var(--ro-paper); font: 600 1rem/1 var(--ro-display); letter-spacing: .05em; }
+.ro-chron__card { grid-column: 1; grid-row: 1; padding: clamp(24px, 3vw, 34px); border: 1px solid var(--ro-line); outline: 1px solid var(--ro-line-soft); outline-offset: -7px; background: color-mix(in srgb, var(--ro-vellum) 82%, transparent); -webkit-backdrop-filter: var(--ro-glass); backdrop-filter: var(--ro-glass); text-align: right; box-shadow: 0 28px 54px -40px color-mix(in srgb, var(--ro-deeper) 72%, transparent), inset 0 1px 0 rgba(255, 255, 255, .5); }
+.ro-chron__item:nth-child(even) .ro-chron__card { grid-column: 3; text-align: left; }
+.ro-chron__card .ro-kicker { justify-content: flex-end; }
+.ro-chron__item:nth-child(even) .ro-chron__card .ro-kicker { justify-content: flex-start; }
+.ro-chron__card h3 { margin: 0 0 10px; color: var(--ro-deep); font: 600 1.38rem/1.22 var(--ro-display); letter-spacing: .045em; text-transform: uppercase; }
+.ro-chron__card p:last-child { margin: 0; }
+.ro-chron__pic { margin: 0 0 18px; padding: 5px; background: var(--ro-foil); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ro-gold-deep) 65%, transparent); }
+.ro-chron__pic img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; outline: 1px solid var(--ro-gold-deep); }
+
+/* ================================================= 9  Sign-off */
+
+.ro-sign { position: relative; isolation: isolate; color: var(--ro-ivory); text-align: center; background:
+	radial-gradient(58% 44% at 50% 104%, color-mix(in srgb, var(--w-accent) 18%, transparent) 0%, transparent 72%),
+	radial-gradient(124% 100% at 50% 100%, var(--ro-deep) 0%, var(--ro-deeper) 58%, var(--ro-night) 100%); }
+.ro-sign::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--w-pattern); background-size: 120px; opacity: .06; }
+.ro-sign__in { padding-block: clamp(52px, 7vw, 92px); }
+.ro-sign .ro-kicker { color: var(--ro-gold-lite); }
+.ro-sign__names { margin: 0; font: 600 clamp(1.9rem, 4.4vw, 3.1rem)/1.18 var(--ro-display); letter-spacing: .06em; text-transform: uppercase; }
+.ro-sign__names .ro-amp { margin: 0 .12em; }
+.ro-sign .ro-rule { margin-block: clamp(14px, 2vw, 22px); }
+.ro-sign__date { margin: 0; font: 600 1rem/1.4 var(--ro-display); letter-spacing: .34em; }
+.wpage--tpl-royal .w-viral { border-top: 0; }
+
+/* ================================================= 10  Motion */
+
+@media (prefers-reduced-motion: no-preference) {
+	.ro-foil, .ro-date b, .ro-ledger__when b, .ro-sign__date { animation: ro-shine 7s ease-in-out infinite alternate; }
+	@keyframes ro-shine { from { background-position: 0 0, 0 0; } to { background-position: 0 0, 0 100%; } }
+	.ro-hero__veil { animation: ro-drift 30s ease-in-out infinite alternate; }
+	@keyframes ro-drift { from { transform: translate3d(-2%, -1%, 0) scale(1); } to { transform: translate3d(3%, 2%, 0) scale(1.09); } }
+	/* The proclamation is engraved line by line. */
+	.ro-procl > * { animation: ro-rise .85s var(--ro-ease) both; }
+	.ro-procl > :nth-child(1) { animation-delay: .05s; }
+	.ro-procl > :nth-child(2) { animation-delay: .13s; }
+	.ro-procl > :nth-child(3) { animation-delay: .21s; }
+	.ro-procl > :nth-child(4) { animation-delay: .29s; }
+	.ro-procl > :nth-child(5) { animation-delay: .37s; }
+	.ro-procl > :nth-child(6) { animation-delay: .45s; }
+	.ro-procl > :nth-child(7) { animation-delay: .53s; }
+	.ro-procl > :nth-child(n+8) { animation-delay: .61s; }
+	@keyframes ro-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+	.ro-portrait { animation: ro-unveil 1.1s var(--ro-ease) both .1s; }
+	@keyframes ro-unveil { from { opacity: 0; transform: scale(.965); } to { opacity: 1; transform: none; } }
+	/* The seal is struck, the corners are cut, the rosette turns once. */
+	.ro-plate::after, .ro-portrait::after, .ro-crest::after { animation: ro-pip 1s var(--ro-ease) both .6s; }
+	@keyframes ro-pip { from { opacity: 0; } to { opacity: 1; } }
+	.ro-crest--seal { animation: ro-strike 1s var(--ro-ease) both .2s; }
+	@keyframes ro-strike { from { opacity: 0; transform: scale(1.09); } to { opacity: 1; transform: none; } }
+	.ro-hero::after { animation: ro-turn 240s linear infinite; }
+	@keyframes ro-turn { to { transform: translate(-50%, -50%) rotate(360deg); } }
+}
+
+/* ================================================= 11  Phones, tablets & fallbacks */
+
+@media (max-width: 900px) {
+	.ro-hero__in { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+	.ro-hero--right .ro-portrait { order: 0; }
+	.ro-portrait { width: min(100%, 440px); }
+	.ro-ledger__item { grid-template-columns: 62px minmax(0, 1fr); }
+	.ro-ledger__no { width: 56px; height: 56px; font-size: .95rem; }
+	.ro-ledger__no::before { inset: 9px; }
+	.ro-ledger__when { grid-column: 2; grid-row: 1; display: flex; flex-wrap: wrap; align-items: baseline; justify-items: start; gap: 4px 12px; text-align: left; }
+	.ro-ledger__when b { font-size: 2.3rem; }
+	.ro-ledger__when > span { padding-top: 0; border-top: 0; }
+	.ro-ledger__links { display: flex; flex-wrap: wrap; justify-items: start; gap: 14px; width: 100%; margin: 6px 0 0; }
+	.ro-ledger__main { grid-column: 2; }
+}
+@media (max-width: 700px) {
+	.ro-plate { padding-inline: clamp(16px, 5vw, 30px); }
+	.ro-plate::after { inset: 11px; }
+	.ro-register { padding: 0; }
+	.ro-register::before, .ro-register::after { display: none; }
+	.ro-ledger__item:first-child { border-top: 1px solid var(--ro-line); }
+	.ro-ledger__item:last-child { border-bottom: 1px solid var(--ro-line); }
+	.ro-chron__list::before { left: 28px; }
+	.ro-chron__cap { left: 28px; }
+	.ro-chron__item { grid-template-columns: 56px minmax(0, 1fr); }
+	.ro-chron__medal { grid-column: 1; width: 44px; height: 44px; margin-top: 16px; font-size: .86rem; }
+	.ro-chron__card, .ro-chron__item:nth-child(even) .ro-chron__card { grid-column: 2; text-align: left; }
+	.ro-chron__card .ro-kicker, .ro-chron__item:nth-child(even) .ro-chron__card .ro-kicker { justify-content: flex-start; }
+	.wpage.wpage--tpl-royal .ro-count { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+	.wpage.wpage--tpl-royal .ro-count b { font-size: 1.5rem; }
+	.ro-date { gap: 10px; }
+	.ro-date span { font-size: .58rem; letter-spacing: .16em; }
+	.ro-names { font-size: clamp(2.1rem, 10vw, 3rem); }
+	.ro-request { font-size: clamp(1.3rem, 6.4vw, 1.6rem); }
+	.ro-kicker { letter-spacing: .24em; }
+	.ro-kicker::before, .ro-kicker::after { flex-basis: 20px; }
+}
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+	.wpage.wpage--tpl-royal :is(.card-form, .gift, .vend, .note, .photo, .quiz, .live__card, .spray__counter, .wall-form, .pass__ticket, .ig-follow, .leader li, .feed li, .squad__card, .opens-card, .card, .panel, .w-card), .ro-chron__card { background: color-mix(in srgb, var(--ro-vellum) 94%, #fff); }
+	.ro-plate::before { background: linear-gradient(168deg, color-mix(in srgb, var(--ro-night) 58%, transparent), color-mix(in srgb, var(--ro-night) 80%, transparent)); }
+	.wpage.wpage--tpl-royal .ro-count span { background: color-mix(in srgb, var(--ro-night) 72%, transparent); }
+	.wpage--tpl-royal.wpage--lux .w-nav { background: var(--ro-paper); }
+}
+@media (prefers-reduced-transparency: reduce) {
+	.wpage--tpl-royal :is(.card-form, .gift, .vend, .note, .photo, .quiz, .live__card, .wall-form, .pass__ticket, .leader li, .feed li, .squad__card, .card, .panel, .w-card, .ro-chron__card, .ro-count span, .w-nav) { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+	.wpage--tpl-royal :is(.card-form, .gift, .vend, .note, .photo, .quiz, .live__card, .wall-form, .pass__ticket, .leader li, .feed li, .squad__card, .card, .panel, .w-card, .ro-chron__card) { background: color-mix(in srgb, var(--ro-vellum) 96%, #fff) !important; }
+	.ro-plate::before { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; background: color-mix(in srgb, var(--ro-night) 80%, transparent) !important; }
+	.ro-hero__veil, .ro-hero::after { display: none; }
+}
+@media (forced-colors: active) {
+	.ro-foil, .ro-date b, .ro-ledger__when b, .ro-ledger__no, .ro-chron__medal, .ro-sign__date { background: none; color: inherit; -webkit-text-fill-color: currentColor; filter: none; }
+	.ro-band, .ro-rule, .ro-crest::after, .ro-crest__bead, .ro-plate::after, .ro-portrait::after, .ro-register::after { forced-color-adjust: none; }
+	.ro-hero::after { display: none; }
+}
+@media print {
+	.ro-hero, .ro-sign, .wpage--tpl-royal :is(.w-sec--dark, .w-sec--pattern) { background: #fff !important; color: #111 !important; }
+	.ro-hero__veil, .ro-hero::after, .ro-band { display: none !important; }
+	.ro-foil, .ro-date b, .ro-ledger__when b, .ro-ledger__no, .ro-chron__medal, .ro-sign__date, .ro-request, .ro-place, .ro-tagline, .ro-sign__names { background: none !important; color: #111 !important; -webkit-text-fill-color: #111 !important; filter: none !important; }
+	.ro-plate::before, .ro-plate::after { display: none !important; }
+	.wpage--tpl-royal :is(.card-form, .gift, .vend, .note, .ro-chron__card) { background: #fff !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; box-shadow: none !important; }
+}

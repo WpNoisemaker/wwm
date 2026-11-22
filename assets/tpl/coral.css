@@ -1,0 +1,100 @@
+/*
+ * Coral: strings of coral beads, warm terracotta & a round photo with a beaded ring.
+ * Coral = the couple's main colour, peach = their second colour.
+ */
+.wpage--tpl-coral {
+	--st-r: 28px;
+	--st-head-w: 400;
+	--st-label: 700 .68rem/1.4 var(--w-body);
+	--st-label-track: .18em;
+	--st-line: color-mix(in srgb, var(--w-primary) 22%, transparent);
+	--st-tint: color-mix(in srgb, var(--w-accent) 22%, var(--w-bg));
+	--bead: radial-gradient(circle at 34% 30%, color-mix(in srgb, var(--w-accent) 60%, #fff) 0 14%, var(--w-primary) 52%, color-mix(in srgb, var(--w-primary) 70%, #000) 100%);
+}
+.st-beads { display: flex; align-items: center; justify-content: center; gap: 4px; margin: 18px auto; }
+.st-beads i { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--bead); box-shadow: 0 1px 2px color-mix(in srgb, var(--w-ink) 30%, transparent); }
+.st-beads i:nth-child(odd) { width: 12px; height: 12px; }
+.st-beads i:nth-child(5) { width: 18px; height: 18px; }
+.st-beads--band { position: absolute; left: 0; right: 0; top: 14px; z-index: 0; justify-content: flex-start; overflow: hidden; margin: 0; padding: 0 4px; gap: 5px; }
+.st-beads--band i:nth-child(5) { width: 12px; height: 12px; }
+.st-beads--band i:nth-child(4n) { width: 7px; height: 7px; background: color-mix(in srgb, var(--w-accent) 70%, #fff); }
+.wpage--tpl-coral .st-hero { padding-top: clamp(50px, 6vw, 86px); background: linear-gradient(180deg, var(--st-tint), var(--w-bg) 75%); }
+.wpage--tpl-coral .st-photo { justify-self: center; width: min(100%, 470px); padding: 16px; border-radius: 50%; background: conic-gradient(from 0deg, var(--w-primary) 0 5deg, transparent 5deg 12deg) border-box; -webkit-mask: none; }
+.wpage--tpl-coral .st-photo::before { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: repeating-conic-gradient(var(--w-primary) 0 4deg, transparent 4deg 9deg); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 9px), #000 calc(100% - 8px)); mask: radial-gradient(farthest-side, transparent calc(100% - 9px), #000 calc(100% - 8px)); }
+.wpage--tpl-coral .st-photo { background: none; }
+.wpage--tpl-coral .st-photo__frame { border-radius: 50%; }
+.wpage--tpl-coral .st-photo__frame > :is(.cover-img, .cover-art) { aspect-ratio: 1; }
+.wpage--tpl-coral .st-hero--top .st-photo { width: min(100%, 470px); }
+.wpage--tpl-coral .st-hero--top .st-photo__frame > :is(.cover-img, .cover-art) { aspect-ratio: 1; }
+.wpage--tpl-coral .st-status { top: 12%; left: 50%; transform: translateX(-50%); white-space: nowrap; background: var(--w-primary); color: #fff; }
+.wpage--tpl-coral .st-hero__text { text-align: left; }
+.wpage--tpl-coral .st-names { justify-items: start; }
+.wpage--tpl-coral .st-hero--top .st-hero__text, .wpage--tpl-coral .st-hero--names .st-hero__text { text-align: center; }
+.wpage--tpl-coral :is(.st-hero--top, .st-hero--names) .st-names { justify-items: center; }
+.wpage--tpl-coral .st-hero__text .st-beads { justify-content: flex-start; }
+.wpage--tpl-coral :is(.st-hero--top, .st-hero--names) .st-hero__text .st-beads { justify-content: center; }
+.wpage--tpl-coral .st-hero__text :is(.st-date, .btn-row, .w-gift) { justify-content: flex-start; }
+.wpage--tpl-coral :is(.st-hero--top, .st-hero--names) .st-hero__text :is(.st-date, .btn-row, .w-gift) { justify-content: center; }
+.wpage--tpl-coral .st-hero__text .st-count { justify-content: start; }
+.wpage--tpl-coral :is(.st-hero--top, .st-hero--names) .st-hero__text .st-count { justify-content: center; }
+.wpage--tpl-coral .st-amp { color: var(--w-primary); }
+.wpage--tpl-coral .w-title::after { content: ""; display: block; width: 120px; height: 12px; margin: 16px auto 0; background: radial-gradient(circle, var(--w-primary) 0 4px, transparent 4.5px) 0 50% / 15px 12px repeat-x; }
+.wpage--tpl-coral .st-sign { padding-top: 30px; }
+.wpage--tpl-coral .st-sign .st-beads--band { top: 12px; }
+.wpage--tpl-coral .st-mono { border: 0; background: var(--bead); color: #fff; box-shadow: 0 10px 24px -12px var(--w-primary); }
+@media (max-width: 860px) {
+	.wpage--tpl-coral .st-hero__text { text-align: center; }
+	.wpage--tpl-coral .st-names { justify-items: center; }
+	.wpage--tpl-coral .st-hero__text :is(.st-beads, .st-date, .btn-row, .w-gift) { justify-content: center; }
+	.wpage--tpl-coral .st-hero__text .st-count { justify-content: center; }
+	.wpage--tpl-coral .st-photo { width: min(86%, 380px); }
+}
+
+/* ================================================================================================
+ * AURORA — Coral. The bead is the whole design, so it is drawn as a real strung bead:
+ * round, lit from the upper left, with a dark seam where it meets the next one.
+ * ============================================================================================= */
+
+.wpage--tpl-coral {
+	--co-bead: radial-gradient(circle at 34% 30%,
+		color-mix(in srgb, var(--w-primary) 18%, #fff) 0%,
+		var(--w-primary) 42%,
+		color-mix(in srgb, var(--w-primary) 70%, #2b0d06) 86%);
+	--co-strand: repeating-linear-gradient(90deg,
+		transparent 0 2px,
+		color-mix(in srgb, var(--w-primary) 72%, #2b0d06) 2px 3px,
+		transparent 3px 16px);
+}
+
+/* A strand of beads instead of a rule. */
+.wpage--tpl-coral .st-rule { display: flex; align-items: center; justify-content: center; gap: 5px; }
+.wpage--tpl-coral .st-rule i { width: 46px; height: 11px; border-radius: 999px; background: var(--co-bead), var(--co-strand); background-blend-mode: multiply, normal; opacity: 1; }
+.wpage--tpl-coral .st-rule span { width: 17px; height: 17px; border-radius: 50%; background: var(--co-bead); box-shadow: 0 1px 2px rgba(43, 13, 6, .4); }
+
+/* The round photograph is ringed with beads, each one lit. */
+.wpage--tpl-coral .st-photo__frame {
+	position: relative;
+	padding: 13px;
+	border: 0;
+	border-radius: 50%;
+	background:
+		repeating-conic-gradient(from 0deg,
+			color-mix(in srgb, var(--w-primary) 86%, #fff) 0deg 4deg,
+			var(--w-primary) 4deg 9deg,
+			color-mix(in srgb, var(--w-primary) 68%, #2b0d06) 9deg 11deg);
+	box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--w-primary) 60%, #2b0d06), var(--st-shadow-2);
+}
+.wpage--tpl-coral .st-photo__frame > :is(.cover-img, .cover-art) { border-radius: 50%; aspect-ratio: 1; }
+
+/* Section headings sit under three beads. */
+.wpage--tpl-coral .w-title::after {
+	content: "";
+	display: block;
+	width: 58px;
+	height: 13px;
+	margin: 16px auto 0;
+	border-radius: 999px;
+	background: var(--co-bead), var(--co-strand);
+	background-blend-mode: multiply, normal;
+}
+.wpage--tpl-coral .st-mono { background: var(--co-bead); color: #fff; border: 0; }

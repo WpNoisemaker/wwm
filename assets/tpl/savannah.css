@@ -1,0 +1,75 @@
+/*
+ * Savannah: golden hour. Warm sunset tones, the sun & an acacia tree on the skyline & soft, round photos.
+ * Burnt orange = the couple's main colour, sand = their second colour.
+ */
+.wpage--tpl-savannah {
+	--st-r: 34px;
+	--st-head-w: 400;
+	--st-label: 500 .7rem/1.4 var(--w-body);
+	--st-label-track: .26em;
+	--st-line: color-mix(in srgb, var(--w-primary) 20%, transparent);
+	--st-tint: color-mix(in srgb, var(--w-accent) 24%, var(--w-bg));
+	--sky: linear-gradient(180deg, color-mix(in srgb, var(--w-accent) 55%, var(--w-bg)) 0%, color-mix(in srgb, var(--w-accent) 22%, var(--w-bg)) 55%, var(--w-bg) 100%);
+}
+.wpage--tpl-savannah .st-hero { padding-bottom: clamp(70px, 9vw, 130px); background: var(--sky); }
+.st-land { position: absolute; left: 0; right: 0; bottom: 0; z-index: 0; width: 100%; height: clamp(90px, 12vw, 170px); }
+.st-land__sun { fill: color-mix(in srgb, var(--w-primary) 30%, var(--w-accent)); opacity: .55; }
+.st-land__hill { fill: color-mix(in srgb, var(--w-primary) 16%, var(--w-bg)); }
+.st-land__tree path { fill: none; stroke: color-mix(in srgb, var(--w-ink) 75%, var(--w-primary)); stroke-width: 4; stroke-linecap: round; }
+.st-land__tree path + path { fill: color-mix(in srgb, var(--w-ink) 75%, var(--w-primary)); stroke: none; }
+.st-land__tree--small path { stroke-width: 3; }
+.wpage--tpl-savannah .st-hero__foot .w-buzz { padding-bottom: 0; }
+.wpage--tpl-savannah .st-photo__frame > :is(.cover-img, .cover-art) { aspect-ratio: 4 / 5; }
+.wpage--tpl-savannah .st-hero--top .st-photo__frame > :is(.cover-img, .cover-art) { aspect-ratio: 21 / 9; }
+.wpage--tpl-savannah .st-photo__frame { border-radius: var(--st-r); }
+.wpage--tpl-savannah .st-names { color: color-mix(in srgb, var(--w-ink) 80%, var(--w-primary)); }
+.wpage--tpl-savannah .st-rule i { width: 54px; height: 1px; background: var(--w-primary); opacity: .6; }
+.wpage--tpl-savannah .st-rule span { width: 14px; height: 14px; border-radius: 50%; background: var(--w-primary); box-shadow: 0 0 0 5px color-mix(in srgb, var(--w-accent) 45%, transparent); }
+.wpage--tpl-savannah .st-count span { border-radius: 18px; }
+.wpage--tpl-savannah .w-title::after { content: ""; display: block; width: 14px; height: 14px; margin: 18px auto 0; border-radius: 50%; background: var(--w-primary); box-shadow: 0 0 0 5px color-mix(in srgb, var(--w-accent) 45%, transparent), -40px 0 0 -4px var(--w-accent), 40px 0 0 -4px var(--w-accent); }
+.wpage--tpl-savannah .w-sec--tint { background: var(--st-tint); }
+.wpage--tpl-savannah .st-sign { padding-bottom: clamp(70px, 9vw, 120px); background: var(--sky); border-top: 0; }
+.wpage--tpl-savannah .st-sign__in { padding-bottom: clamp(20px, 3vw, 40px); }
+.wpage--tpl-savannah .st-mono { border: 0; background: var(--w-primary); color: #fff; }
+
+/* ================================================================================================
+ * AURORA — Savannah is the design where a gradient belongs: a real dusk sky, layered, with the
+ * heat still coming off the ground and the acacia standing against it.
+ * ============================================================================================= */
+
+.wpage--tpl-savannah {
+	--sv-sky: linear-gradient(177deg,
+		color-mix(in srgb, var(--w-primary) 32%, #2a1a3a) 0%,
+		color-mix(in srgb, var(--w-primary) 46%, var(--w-accent)) 26%,
+		color-mix(in srgb, var(--w-accent) 76%, #fff) 52%,
+		color-mix(in srgb, var(--w-accent) 42%, var(--w-bg)) 74%,
+		var(--w-bg) 100%);
+	--sv-glow: radial-gradient(44% 34% at 50% 68%, color-mix(in srgb, var(--w-accent) 72%, #fff) 0%, transparent 70%);
+}
+
+/* The sky, with the sun sitting low in it. */
+.wpage--tpl-savannah .st-hero {
+	position: relative;
+	background: var(--sv-glow), var(--sv-sky);
+	color: color-mix(in srgb, var(--w-ink) 86%, var(--w-primary));
+}
+/* Heat haze: the air above the ground moving very slowly. */
+.wpage--tpl-savannah .st-hero::before {
+	content: "";
+	position: absolute;
+	inset: auto 0 0 0;
+	height: 46%;
+	pointer-events: none;
+	background: radial-gradient(70% 100% at 50% 100%, color-mix(in srgb, var(--w-accent) 34%, transparent) 0%, transparent 72%);
+	animation: svHaze 24s ease-in-out infinite alternate;
+}
+@keyframes svHaze { from { transform: translateY(0) scaleY(1); opacity: .8; } to { transform: translateY(-5px) scaleY(1.07); opacity: 1; } }
+.wpage--tpl-savannah .st-hero__in { position: relative; z-index: 1; }
+
+/* The acacia reads as a silhouette against the light, not as a drawing on top of it. */
+.wpage--tpl-savannah .st-land__tree path { stroke: color-mix(in srgb, var(--w-ink) 88%, #000); }
+.wpage--tpl-savannah .st-land__tree path + path { fill: color-mix(in srgb, var(--w-ink) 88%, #000); }
+.wpage--tpl-savannah .st-land__hill { fill: color-mix(in srgb, var(--w-ink) 20%, var(--w-accent)); }
+.wpage--tpl-savannah .st-land__sun { fill: color-mix(in srgb, var(--w-accent) 70%, #fff); opacity: .85; }
+.wpage--tpl-savannah .st-photo__frame { box-shadow: var(--st-shadow-2); }
+@media (prefers-reduced-motion: reduce) { .wpage--tpl-savannah .st-hero::before { animation: none; } }

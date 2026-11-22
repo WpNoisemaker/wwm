@@ -1,0 +1,271 @@
+/*
+ * Garden: soft & romantic. A wide photo with rounded corners, sprigs drawn in fine line, a script "&",
+ * vellum paper, taped prints & a wreath. Leaf = the couple's main colour, blush = their second colour.
+ * Loads after wedding.css, only on pages that use Garden.
+ */
+
+.wpage--tpl-garden {
+	--ga-leaf: var(--w-primary);
+	--ga-blush: var(--w-accent);
+	--ga-blush-deep: color-mix(in srgb, var(--w-accent) 72%, var(--w-ink));
+	--ga-paper: var(--w-bg);
+	--ga-ink: var(--w-ink);
+	--ga-line: color-mix(in srgb, var(--w-primary) 22%, transparent);
+	--ga-soft: 0 28px 60px -40px color-mix(in srgb, var(--w-ink) 50%, transparent);
+	--ga-serif: var(--w-head);
+	--ga-script: "Great Vibes", "Pinyon Script", cursive;
+	background: var(--ga-paper);
+	color: var(--ga-ink);
+}
+
+/* ---------------------------------------------------------------- Buttons, fields & small parts */
+.wpage--tpl-garden .btn { min-height: 48px; padding: .85em 1.5em; border-radius: 999px; font: 600 .78rem/1.1 var(--w-body); letter-spacing: .08em; text-transform: none; }
+.wpage--tpl-garden :is(.w-btn, .btn--ink) { --btn-bg: var(--ga-leaf); --btn-fg: #fff; --btn-bd: var(--ga-leaf); color: #fff !important; }
+.wpage--tpl-garden :is(.w-btn--accent, .btn--marigold) { --btn-bg: color-mix(in srgb, var(--ga-blush) 55%, #fff); --btn-bd: color-mix(in srgb, var(--ga-blush) 70%, #fff); color: var(--ga-ink) !important; }
+.wpage--tpl-garden .w-btn--live { --btn-bg: #C2412D; --btn-bd: #C2412D; color: #fff !important; }
+.wpage--tpl-garden .w-btn--ghost { --btn-bg: transparent; --btn-bd: var(--ga-line); color: var(--ga-leaf) !important; }
+.wpage--tpl-garden.wpage--lux .btn:hover { box-shadow: 0 14px 28px -16px color-mix(in srgb, var(--ga-leaf) 70%, transparent); }
+.wpage--tpl-garden :is(input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="file"]):not([type="range"]), select, textarea) { border: 1px solid var(--ga-line); border-radius: 14px; background: #fff; }
+.wpage--tpl-garden :is(input, select, textarea):focus { border-color: var(--ga-leaf); outline: 3px solid color-mix(in srgb, var(--ga-leaf) 18%, transparent); outline-offset: 0; }
+.wpage--tpl-garden { accent-color: var(--ga-leaf); }
+.wpage--tpl-garden :is(.seg span, .note-pick span) { border: 1px solid var(--ga-line); border-radius: 999px; background: #fff; }
+.wpage--tpl-garden :is(.seg, .note-pick) input:checked + span { border-color: var(--ga-leaf); background: var(--ga-leaf); color: #fff; }
+.wpage--tpl-garden .ga-amp { color: var(--ga-blush-deep); font-family: var(--ga-script); font-weight: 400; }
+.ga-wreath { display: block; width: 100%; height: auto; color: var(--ga-leaf); overflow: visible; }
+.ga-wreath__text { font: 500 34px/1 var(--ga-serif); letter-spacing: .06em; }
+
+/* ---------------------------------------------------------------- Section nav: soft pills */
+.wpage--tpl-garden.wpage--lux .w-nav { display: flex; align-items: center; gap: 8px; padding: 0 var(--gutter); border-bottom: 1px solid var(--ga-line); background: color-mix(in srgb, var(--ga-paper) 92%, transparent); }
+.wpage--tpl-garden .w-nav ul { flex: 1; width: auto; margin: 0; padding: 9px 0; }
+.wpage--tpl-garden .w-nav li:first-child { margin-left: auto; }
+.wpage--tpl-garden .w-nav li:last-child { margin-right: auto; }
+.wpage--tpl-garden.wpage--lux .w-nav a { padding: .7em 1.05em; border-radius: 999px; color: var(--ga-ink) !important; font: 600 .8rem/1 var(--w-body); letter-spacing: .02em; text-transform: none; }
+.wpage--tpl-garden.wpage--lux .w-nav a.is-on { background: color-mix(in srgb, var(--ga-leaf) 12%, transparent); color: var(--ga-leaf) !important; box-shadow: none; }
+.wpage--tpl-garden.wpage--lux .w-nav a.w-nav__mono { display: grid; place-items: center; flex: none; padding: 0 6px; background: none; color: var(--ga-leaf) !important; font: 400 1.5rem/1 var(--ga-script); letter-spacing: 0; }
+
+/* ---------------------------------------------------------------- The top of the page */
+.ga-hero { position: relative; padding: clamp(18px, 3vw, 36px) 0 0; background: radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--ga-blush) 24%, var(--ga-paper)) 0%, var(--ga-paper) 62%); color: var(--ga-ink); overflow: hidden; }
+.ga-hero__in { display: grid; justify-items: center; }
+.ga-photo { position: relative; width: 100%; margin: 0; }
+.ga-photo > .cover-img, .ga-photo > .cover-art { display: block; width: 100%; height: auto; aspect-ratio: 21 / 9; object-fit: cover; border-radius: 32px; box-shadow: var(--ga-soft); }
+.ga-photo--art { display: grid; place-items: center; aspect-ratio: 21 / 9; border-radius: 32px; background: radial-gradient(closest-side, #fff 0%, color-mix(in srgb, #fff 40%, transparent) 60%, transparent 100%), color-mix(in srgb, var(--ga-blush) 22%, var(--ga-paper)); box-shadow: var(--ga-soft); }
+.ga-photo--art .ga-wreath { width: min(40%, 250px); margin-bottom: 6%; }
+.ga-photo__sprig { position: absolute; bottom: -42px; z-index: 3; width: clamp(66px, 8.4vw, 116px); color: var(--ga-leaf); pointer-events: none; }
+.ga-photo__sprig--l { left: -18px; transform: rotate(-14deg); }
+.ga-photo__sprig--r { right: -18px; transform: scaleX(-1) rotate(-14deg); }
+.ga-crest { width: 190px; margin: 6px auto 18px; }
+.ga-card { position: relative; z-index: 2; width: min(100% - 40px, 780px); margin: clamp(-130px, -9vw, -64px) auto 0; padding: clamp(30px, 5vw, 58px) clamp(22px, 5vw, 66px) clamp(28px, 4vw, 48px); border-radius: 30px; background: color-mix(in srgb, #fff 90%, var(--ga-paper)); box-shadow: 0 34px 80px -44px color-mix(in srgb, var(--ga-ink) 55%, transparent); text-align: center; }
+.ga-card::before { content: ""; position: absolute; inset: 10px; border: 1px solid var(--ga-line); border-radius: 22px; pointer-events: none; }
+.ga-hero--names .ga-card { margin-top: 0; }
+.ga-status { display: inline-block; margin: 0 0 16px; padding: .5em 1.1em; border-radius: 999px; background: color-mix(in srgb, var(--ga-blush) 32%, #fff); font: 600 .68rem/1 var(--w-body); letter-spacing: .16em; text-transform: uppercase; }
+.ga-kicker { margin: 0 0 6px; color: var(--ga-leaf); font: 600 .72rem/1.55 var(--w-body); letter-spacing: .2em; text-transform: uppercase; }
+.ga-invite { margin: 0 0 10px; font: italic 500 1.2rem/1.4 var(--ga-serif); }
+.ga-names { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 0 .22em; margin: 0; font: 500 clamp(2.8rem, 6.4vw, 5.4rem)/1.02 var(--ga-serif); letter-spacing: -.005em; overflow-wrap: anywhere; }
+.ga-names .ga-amp { font-size: 1.22em; line-height: .8; }
+.ga-names .vbadge { margin-left: .1em; vertical-align: .3em; }
+.ga-names .vbadge .icon { width: .36em; height: .36em; }
+.ga-date { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 20px 0 6px; font: 600 .8rem/1.3 var(--w-body); letter-spacing: .18em; text-transform: uppercase; }
+.ga-date > span { flex: 0 1 46px; height: 1px; background: var(--ga-leaf); }
+.ga-place { margin: 0; font-size: .98rem; }
+.ga-tagline { max-width: 44ch; margin: 16px auto 0; font: italic 500 1.25rem/1.45 var(--ga-serif); }
+.ga-next { margin: 26px 0 10px; color: var(--ga-leaf); font: 600 .68rem/1.3 var(--w-body); letter-spacing: .18em; text-transform: uppercase; }
+.wpage--tpl-garden .ga-count { display: grid; grid-template-columns: repeat(4, minmax(0, 78px)); justify-content: center; gap: 10px; max-width: none; margin: 0 auto; }
+.wpage--tpl-garden .ga-count span { display: grid; justify-items: center; gap: 6px; padding: 13px 4px 11px; border: 1px solid var(--ga-line); border-radius: 18px; background: color-mix(in srgb, var(--ga-leaf) 5%, #fff); font: 600 .56rem/1 var(--w-body); letter-spacing: .14em; text-transform: uppercase; }
+.wpage--tpl-garden .ga-count b { color: var(--ga-leaf); font: 500 2rem/1 var(--ga-serif); letter-spacing: 0; }
+.ga-card .btn-row { justify-content: center; gap: 10px; margin-top: 26px; }
+.ga-card .w-gift { justify-content: center; margin-top: 18px; }
+.ga-hash { margin: 16px 0 0; color: var(--ga-leaf); font: italic 500 1.1rem/1.3 var(--ga-serif); }
+.ga-hero__foot .w-buzz { justify-content: center; margin: 0; padding: 22px 0 30px; border-top: 0; }
+.ga-hero__foot .w-buzz a { color: var(--ga-ink) !important; }
+.ga-hero__foot .w-buzz :is(.icon, .linkish) { color: var(--ga-leaf); }
+
+/* Photo beside the card */
+.ga-hero:is(.ga-hero--left, .ga-hero--right) .ga-hero__in { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); align-items: center; justify-items: stretch; }
+.ga-hero:is(.ga-hero--left, .ga-hero--right) .ga-photo > :is(.cover-img, .cover-art), .ga-hero:is(.ga-hero--left, .ga-hero--right) .ga-photo--art { aspect-ratio: 4 / 5; }
+.ga-hero:is(.ga-hero--left, .ga-hero--right) .ga-card { width: auto; margin: 0 0 0 -72px; }
+.ga-hero--right .ga-photo { order: 2; }
+.ga-hero--right .ga-card { margin: 0 -72px 0 0; }
+
+/* ---------------------------------------------------------------- Sections */
+.wpage--tpl-garden .w-sec { padding-block: clamp(60px, 8vw, 110px); }
+.wpage--tpl-garden .w-sec:not(.w-sec--dark):not(.w-sec--pattern) { background: var(--ga-paper); }
+.wpage--tpl-garden .w-sec.w-sec--tint { background: color-mix(in srgb, var(--ga-leaf) 6%, var(--ga-paper)); }
+.wpage--tpl-garden .w-head { margin-inline: auto; text-align: center; }
+.wpage--tpl-garden .w-head--row { flex-direction: column; align-items: center; }
+.wpage--tpl-garden .w-head__aside { margin-inline: auto; }
+.wpage--tpl-garden .w-head::before { margin: 0 auto 14px; -webkit-mask-position: center; mask-position: center; }
+.wpage--tpl-garden .w-eyebrow { justify-content: center; color: var(--ga-leaf); }
+.wpage--tpl-garden .w-title { font: 500 clamp(2.3rem, 4.8vw, 3.9rem)/1.04 var(--ga-serif); letter-spacing: -.005em; }
+.wpage--tpl-garden :is(.w-sec--dark, .w-sec--pattern) .w-eyebrow { color: color-mix(in srgb, var(--ga-blush) 70%, #fff); }
+
+/* Cards: white, rounded, a leaf-tinted hairline */
+.wpage--tpl-garden.wpage--lux :is(.card-form, .gift, .vend, .note, .photo, .quiz, .live__card, .spray__counter, .wall-form, .pass__ticket, .ig-follow, .squad__card, .opens-card, .rsvp__closed) { border: 1px solid var(--ga-line); border-radius: 24px; background: #fff; color: var(--ga-ink); box-shadow: var(--ga-soft); }
+.wpage--tpl-garden .live__card { color: var(--ga-ink) !important; }
+.wpage--tpl-garden .note { --tilt: 0deg !important; }
+.wpage--tpl-garden :is(.gift, .vend__pic)[class*="tone-"] { --tone: color-mix(in srgb, var(--ga-blush) 20%, #fff); }
+.wpage--tpl-garden .gift:nth-child(even) { --tone: color-mix(in srgb, var(--ga-leaf) 10%, #fff); }
+.wpage--tpl-garden .gift__pic { border-bottom: 1px solid var(--ga-line); }
+.wpage--tpl-garden :is(.gift__type, .vend__type) { border-radius: 999px; }
+.wpage--tpl-garden :is(.gift__body h3, .vend__body h3, .squad__card h4, .quiz__q) { font-family: var(--ga-serif); font-weight: 600; }
+.wpage--tpl-garden :is(.meter i, .gift .meter i) { background: var(--ga-leaf); }
+.wpage--tpl-garden .squad__side { border: 0; background: color-mix(in srgb, #fff 16%, transparent); color: inherit; font: italic 500 1.3rem/1.2 var(--ga-serif); }
+.wpage--tpl-garden :is(.w-sec--dark, .w-sec--pattern) :is(.quiz, .card-form, .live__card) .w-title { color: var(--ga-ink); }
+.wpage--tpl-garden :is(.w-sec--dark, .w-sec--pattern) :is(.quiz, .card-form, .live__card) .w-eyebrow { color: var(--ga-leaf); }
+.wpage--tpl-garden .quiz__opts button { border: 1px solid var(--ga-line); border-radius: 999px; background: #fff; }
+
+/* ---------------------------------------------------------------- Our wedding days */
+.ga-letter { position: relative; max-width: 680px; margin: 0 auto clamp(34px, 5vw, 60px); padding: clamp(34px, 4.4vw, 48px) clamp(22px, 5vw, 58px) clamp(26px, 3.6vw, 40px); border: 1px solid var(--ga-line); border-radius: 26px; background: color-mix(in srgb, #fff 72%, transparent); box-shadow: var(--ga-soft); text-align: center; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.ga-letter__sprig { position: absolute; top: -40px; left: 50%; width: 52px; color: var(--ga-leaf); transform: translateX(-50%) rotate(-24deg); }
+.ga-letter p { margin: 0; font: italic 500 clamp(1.2rem, 1.9vw, 1.5rem)/1.55 var(--ga-serif); }
+.ga-days { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(16px, 2.4vw, 26px); margin: 0; padding: 0; list-style: none; }
+.ga-day { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1 1 280px; max-width: 370px; padding: 32px 24px 26px; border: 1px solid var(--ga-line); border-radius: 28px; background: #fff; box-shadow: var(--ga-soft); text-align: center; }
+.ga-day__icon { display: grid; place-items: center; width: 54px; height: 54px; margin-bottom: 6px; border-radius: 50%; background: color-mix(in srgb, var(--ga-leaf) 10%, #fff); color: var(--ga-leaf); }
+.ga-day__type { margin: 0; color: var(--ga-leaf); font: 600 .66rem/1.35 var(--w-body); letter-spacing: .18em; text-transform: uppercase; }
+.ga-day h3 { margin: 0; font: 600 1.75rem/1.1 var(--ga-serif); }
+.ga-private { margin: 0; padding: .35em .9em; border-radius: 999px; background: color-mix(in srgb, var(--ga-blush) 28%, #fff); font: 600 .6rem/1.3 var(--w-body); letter-spacing: .14em; text-transform: uppercase; }
+.ga-day__date { display: grid; justify-items: center; gap: 4px; margin: 8px 0 2px; }
+.ga-script { color: var(--ga-blush-deep); font: 400 1.9rem/1 var(--ga-script); }
+.ga-day__date b { font: 600 .78rem/1.3 var(--w-body); letter-spacing: .14em; text-transform: uppercase; }
+.ga-day__date small { font-size: .92rem; opacity: .8; }
+.ga-day__place { margin: 0; font-size: .95rem; }
+.ga-day__note { margin: 0; font: italic 500 1.05rem/1.4 var(--ga-serif); }
+.ga-day__dress { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px; margin: 4px 0 0; }
+.ga-day__dress > span { color: var(--ga-leaf); font: 600 .6rem/1.3 var(--w-body); letter-spacing: .16em; text-transform: uppercase; }
+.ga-day__dress .swatch { width: 16px; height: 16px; border: 1px solid var(--ga-line); border-radius: 50%; }
+.ga-plan { display: grid; width: 100%; margin: 12px 0 0; padding: 10px 0 0; border-top: 1px dashed var(--ga-line); list-style: none; text-align: left; }
+.ga-plan li { display: grid; grid-template-columns: 5em minmax(0, 1fr); gap: 10px; padding: 5px 0; }
+.ga-plan b { color: var(--ga-leaf); font-size: .86rem; }
+.ga-plan small { display: block; opacity: .75; }
+.ga-day__links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: auto; padding-top: 14px; }
+.ga-day__links a { display: inline-flex; align-items: center; gap: 6px; padding: .55em 1em; border-radius: 999px; background: color-mix(in srgb, var(--ga-leaf) 9%, #fff); color: var(--ga-leaf) !important; font: 600 .76rem/1.2 var(--w-body); text-decoration: none; }
+.ga-day__links a:hover { background: color-mix(in srgb, var(--ga-leaf) 16%, #fff); }
+
+/* ---------------------------------------------------------------- Pressed memories */
+.ga-polas { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(24px, 3.4vw, 42px); margin: 0; padding: 14px 0 0; list-style: none; }
+.ga-pola { --tilt: -2deg; position: relative; flex: 0 1 300px; padding: 14px 14px 24px; background: #fff; box-shadow: 0 24px 44px -28px color-mix(in srgb, var(--ga-ink) 60%, transparent), 0 1px 2px rgba(0, 0, 0, .05); transform: rotate(var(--tilt)); transition: transform .3s; }
+.ga-pola:nth-child(even) { --tilt: 1.6deg; margin-top: 28px; }
+.ga-pola:nth-child(3n) { --tilt: -.8deg; }
+.ga-pola:hover { transform: rotate(0deg) translateY(-4px); }
+.ga-pola::before { content: ""; position: absolute; top: -12px; left: 50%; z-index: 1; width: 96px; height: 26px; background: color-mix(in srgb, var(--ga-blush) 50%, transparent); transform: translateX(-50%) rotate(-3deg); }
+.ga-pola__pic { display: grid; place-items: center; aspect-ratio: 1; margin: 0 0 14px; background: color-mix(in srgb, var(--ga-leaf) 7%, var(--ga-paper)); overflow: hidden; }
+.ga-pola__pic img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ga-pola__pic .ga-sprig { width: 40%; color: var(--ga-leaf); }
+.ga-pola__when { margin: 0; color: var(--ga-blush-deep); font: 400 1.7rem/1.1 var(--ga-script); }
+.ga-pola h3 { margin: 4px 0 6px; font: 600 1.45rem/1.15 var(--ga-serif); }
+.ga-pola__text { margin: 0; font-size: .95rem; line-height: 1.6; }
+
+/* ---------------------------------------------------------------- Sign-off */
+.ga-sign { border-top: 1px solid var(--ga-line); background: radial-gradient(90% 100% at 50% 100%, color-mix(in srgb, var(--ga-blush) 24%, var(--ga-paper)) 0%, var(--ga-paper) 70%); color: var(--ga-ink); text-align: center; }
+.ga-sign__in { padding-block: clamp(46px, 7vw, 88px); }
+.ga-sign .ga-wreath { width: 170px; margin: 0 auto 12px; }
+.ga-sign__kicker { margin: 0; color: var(--ga-leaf); font: 600 .72rem/1.5 var(--w-body); letter-spacing: .2em; text-transform: uppercase; }
+.ga-sign__names { margin: 6px 0 0; font: 500 clamp(2.3rem, 5vw, 3.7rem)/1.1 var(--ga-serif); }
+.ga-sign__names .ga-amp { font-size: 1.2em; }
+.ga-sign__date { margin: 8px 0 0; font: italic 500 1.15rem/1.3 var(--ga-serif); }
+.wpage--tpl-garden .w-viral { border-top: 0; }
+
+/* ---------------------------------------------------------------- Tablets & phones */
+@media (max-width: 860px) {
+	.ga-hero:is(.ga-hero--left, .ga-hero--right) .ga-hero__in { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+	.ga-hero--right .ga-photo { order: 0; }
+	.ga-hero:is(.ga-hero--left, .ga-hero--right) .ga-card { width: min(100% - 24px, 780px); margin: -64px auto 0; }
+	.ga-photo > :is(.cover-img, .cover-art), .ga-photo--art, .ga-hero:is(.ga-hero--left, .ga-hero--right) .ga-photo > :is(.cover-img, .cover-art), .ga-hero:is(.ga-hero--left, .ga-hero--right) .ga-photo--art { aspect-ratio: 4 / 3.8; border-radius: 26px; }
+}
+@media (max-width: 700px) {
+	.ga-polas { flex-wrap: nowrap; justify-content: flex-start; margin-inline: calc(-1 * var(--gutter)); padding: 18px var(--gutter) 34px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+	.ga-polas::-webkit-scrollbar { display: none; }
+	.ga-pola { flex: 0 0 78%; scroll-snap-align: center; }
+	.ga-pola:nth-child(even) { margin-top: 0; }
+}
+@media (max-width: 600px) {
+	.ga-card, .ga-hero:is(.ga-hero--left, .ga-hero--right) .ga-card { width: calc(100% - 12px); margin-top: -46px; padding: 30px 18px 26px; border-radius: 24px; }
+	.ga-photo__sprig { bottom: -30px; width: 58px; }
+	.ga-photo__sprig--l { left: -10px; }
+	.ga-photo__sprig--r { right: -10px; }
+	.ga-names { font-size: clamp(2.5rem, 11vw, 3.3rem); }
+	.wpage--tpl-garden .ga-count { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+	.wpage--tpl-garden .ga-count b { font-size: 1.6rem; }
+	.ga-photo--art .ga-wreath { width: 56%; margin-bottom: 10%; }
+}
+
+/* ---------------------------------------------------------------- Polish */
+.wpage--tpl-garden :is(.check, .checks) input { accent-color: var(--ga-leaf); }
+.ga-photo--art { background: radial-gradient(closest-side, #fff 0%, color-mix(in srgb, #fff 40%, transparent) 60%, transparent 100%), color-mix(in srgb, var(--ga-blush) 13%, var(--ga-paper)); }
+.ga-sign { background: radial-gradient(90% 100% at 50% 100%, color-mix(in srgb, var(--ga-blush) 15%, var(--ga-paper)) 0%, var(--ga-paper) 70%); }
+.ga-pola:nth-child(3n+2) .ga-pola__pic .ga-sprig { transform: scaleX(-1) rotate(10deg); }
+.ga-pola:nth-child(3n) .ga-pola__pic .ga-sprig { transform: rotate(-16deg); }
+.ga-head + .ga-letter { margin-top: clamp(52px, 6vw, 64px); }
+
+/* ================================================================================================
+ * AURORA — Garden. The line-drawn botanicals are its signature, so they are drawn finer and
+ * allowed to grow across the edges of sections rather than sitting politely inside them.
+ * The paper stays vellum: warm, barely-there, with the light coming through it.
+ * ============================================================================================= */
+
+.wpage--tpl-garden {
+	--ga-glass: color-mix(in srgb, #fff 62%, transparent);
+	--ga-edge: color-mix(in srgb, #fff 58%, var(--ga-line));
+	--ga-shadow-1: 0 1px 2px color-mix(in srgb, var(--ga-ink) 5%, transparent), 0 10px 26px color-mix(in srgb, var(--ga-ink) 8%, transparent);
+	--ga-shadow-2: 0 3px 8px color-mix(in srgb, var(--ga-ink) 6%, transparent), 0 26px 64px color-mix(in srgb, var(--ga-ink) 14%, transparent);
+	/* A climbing stem that can run along any edge. */
+	--ga-vine: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='56'%3E%3Cg fill='none' stroke='%23000' stroke-opacity='.3' stroke-width='1.1' stroke-linecap='round'%3E%3Cpath d='M0 40c26 0 38-13 54-13s22 11 38 11 26-14 44-14 38 10 64 10'/%3E%3Cpath d='M38 33c-5-7-4-14 2-18 3 6 2 13-2 18zM82 31c6-6 13-6 18-1-5 5-12 6-18 1zM128 28c-5-7-4-15 2-19 3 6 2 14-2 19zM170 30c6-6 13-6 18-1-5 5-12 6-18 1z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Vellum: the paper has light behind it. */
+.wpage--tpl-garden .ga-card,
+.wpage--tpl-garden :is(.card-form, .gift, .vend, .quiz, .live__card, .squad__card, .story__card, .invite__card, .event, .opens-card) {
+	background: var(--ga-glass);
+	-webkit-backdrop-filter: blur(20px) saturate(1.4);
+	backdrop-filter: blur(20px) saturate(1.4);
+	border: 1px solid var(--ga-edge);
+	box-shadow: var(--ga-shadow-1), inset 0 1px 0 rgba(255, 255, 255, .6);
+}
+.wpage--tpl-garden .ga-card { box-shadow: var(--ga-shadow-2), inset 0 1px 0 rgba(255, 255, 255, .6); }
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+	.wpage--tpl-garden .ga-card,
+	.wpage--tpl-garden :is(.card-form, .gift, .vend, .quiz, .live__card, .squad__card, .story__card, .invite__card, .event, .opens-card) {
+		background: color-mix(in srgb, #fff 92%, var(--ga-paper));
+	}
+}
+
+/* The vine grows along the top edge of every tinted section, and along the foot of the page. */
+.wpage--tpl-garden .w-sec--tint, .wpage--tpl-garden .ga-sign { position: relative; }
+.wpage--tpl-garden .w-sec--tint::before, .wpage--tpl-garden .ga-sign::before {
+	content: "";
+	position: absolute;
+	inset: 0 0 auto 0;
+	height: 56px;
+	pointer-events: none;
+	background-image: var(--ga-vine);
+	background-repeat: repeat-x;
+	background-size: 200px 56px;
+	color: var(--ga-leaf);
+	opacity: .5;
+	-webkit-mask-image: var(--ga-vine);
+	mask-image: var(--ga-vine);
+	-webkit-mask-repeat: repeat-x;
+	mask-repeat: repeat-x;
+	-webkit-mask-size: 200px 56px;
+	mask-size: 200px 56px;
+	background: var(--ga-leaf);
+}
+
+/* The sprigs breathe: a very slow sway, as if there were a window open. */
+.wpage--tpl-garden .ga-photo__sprig { transform-origin: 50% 0; animation: gaSway 14s ease-in-out infinite alternate; }
+.wpage--tpl-garden .ga-photo__sprig--r { animation-delay: -7s; }
+@keyframes gaSway {
+	from { transform: rotate(-14deg); }
+	to { transform: rotate(-9.5deg); }
+}
+.wpage--tpl-garden .ga-photo__sprig--r { transform: scaleX(-1) rotate(-14deg); }
+@media (prefers-reduced-motion: reduce) {
+	.wpage--tpl-garden .ga-photo__sprig { animation: none; }
+}
+/* The script ampersand is the loudest thing on the page, and it should be. */
+.wpage--tpl-garden .ga-amp, .wpage--tpl-garden .w-amp {
+	font-family: var(--ga-script);
+	font-size: 1.5em;
+	font-style: normal;
+	color: var(--ga-blush-deep);
+	line-height: .8;
+}

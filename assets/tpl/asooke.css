@@ -1,0 +1,107 @@
+/*
+ * Aso-oke: bold & modern. Big names in strong capitals, a woven aso-oke strip & clean blocks of colour.
+ * Wine = the couple's main colour, gold = their second colour.
+ */
+.wpage--tpl-asooke {
+	--st-r: 4px;
+	--st-btn-r: 4px;
+	--st-head-w: 800;
+	--st-head-case: uppercase;
+	--st-head-track: -.01em;
+	--st-label: 700 .7rem/1.4 var(--w-body);
+	--st-label-track: .2em;
+	--st-line: color-mix(in srgb, var(--w-ink) 16%, transparent);
+	--st-shadow: 0 0 0 transparent;
+	--st-tint: color-mix(in srgb, var(--w-accent) 18%, var(--w-bg));
+	--weave: repeating-linear-gradient(90deg, var(--w-primary) 0 14px, var(--w-accent) 14px 18px, var(--w-ink) 18px 20px, var(--w-accent) 20px 24px, var(--w-primary) 24px 38px, var(--w-bg) 38px 40px), repeating-linear-gradient(0deg, transparent 0 6px, color-mix(in srgb, #000 14%, transparent) 6px 7px);
+}
+.st-strip { position: absolute; z-index: 0; background: var(--weave); background-blend-mode: multiply; }
+.wpage--tpl-asooke .st-hero > .st-strip { top: 0; bottom: 0; left: 50%; width: 40px; transform: translateX(-50%); background-image: repeating-linear-gradient(0deg, var(--w-primary) 0 14px, var(--w-accent) 14px 18px, var(--w-ink) 18px 20px, var(--w-accent) 20px 24px, var(--w-primary) 24px 38px, var(--w-bg) 38px 40px), repeating-linear-gradient(90deg, transparent 0 6px, color-mix(in srgb, #000 14%, transparent) 6px 7px); }
+.wpage--tpl-asooke :is(.st-hero--top, .st-hero--names) > .st-strip { top: auto; bottom: 0; left: 0; right: 0; width: auto; height: 22px; transform: none; background: var(--weave); }
+.wpage--tpl-asooke .st-hero { padding-bottom: 22px; }
+.wpage--tpl-asooke .st-hero__text { text-align: left; }
+.wpage--tpl-asooke .st-names { justify-items: start; line-height: .92; font-size: clamp(3rem, 7vw, 6.2rem); }
+.wpage--tpl-asooke .st-names .st-amp { color: var(--w-accent); font-style: normal; font-weight: 400; font-size: .7em; }
+.wpage--tpl-asooke .st-names__two { color: var(--w-primary); }
+.wpage--tpl-asooke .st-hero__text :is(.btn-row, .w-gift, .st-date) { justify-content: flex-start; }
+.wpage--tpl-asooke .st-hero__text .st-count { justify-content: start; }
+.wpage--tpl-asooke :is(.st-hero--top, .st-hero--names) .st-hero__text { text-align: center; }
+.wpage--tpl-asooke :is(.st-hero--top, .st-hero--names) .st-names { justify-items: center; }
+.wpage--tpl-asooke :is(.st-hero--top, .st-hero--names) .st-hero__text :is(.btn-row, .w-gift, .st-date) { justify-content: center; }
+.wpage--tpl-asooke :is(.st-hero--top, .st-hero--names) .st-hero__text .st-count { justify-content: center; }
+.wpage--tpl-asooke .st-rule { justify-content: flex-start; }
+.wpage--tpl-asooke .st-rule i { width: 120px; height: 10px; background: var(--weave); }
+.wpage--tpl-asooke :is(.st-hero--top, .st-hero--names) .st-rule { justify-content: center; }
+.wpage--tpl-asooke .st-photo__frame { border-radius: var(--st-r); box-shadow: 14px 14px 0 var(--w-accent); }
+.wpage--tpl-asooke .st-hero--right .st-photo__frame { box-shadow: -14px 14px 0 var(--w-accent); }
+.wpage--tpl-asooke .st-status { border-radius: 2px; background: var(--w-ink); color: var(--w-bg); }
+.wpage--tpl-asooke .st-count span { border: 2px solid var(--w-ink); }
+.wpage--tpl-asooke .w-title::after { content: ""; display: block; width: 90px; height: 10px; margin: 16px auto 0; background: var(--weave); }
+.wpage--tpl-asooke.wpage--lux :is(.card-form, .gift, .vend, .note, .invite__card, .event, .story__card, .quiz, .wall-form, .squad__card) { border: 2px solid var(--w-ink); box-shadow: 6px 6px 0 var(--w-accent); }
+.wpage--tpl-asooke .w-sec--tint { background: var(--st-tint); }
+.wpage--tpl-asooke .st-sign { padding-top: 22px; background: var(--w-ink); color: var(--w-bg); }
+.wpage--tpl-asooke .st-sign > .st-strip { top: 0; left: 0; right: 0; height: 22px; }
+.wpage--tpl-asooke .st-sign :is(.st-mono, .st-sign__kicker, .st-amp) { color: var(--w-accent); }
+.wpage--tpl-asooke .st-mono { border-width: 2px; border-radius: 4px; }
+@media (max-width: 860px) {
+	.wpage--tpl-asooke .st-hero > .st-strip { top: auto; bottom: 0; left: 0; right: 0; width: auto; height: 22px; transform: none; background: var(--weave); }
+	.wpage--tpl-asooke .st-hero__text { text-align: center; }
+	.wpage--tpl-asooke .st-names { justify-items: center; }
+	.wpage--tpl-asooke .st-hero__text :is(.btn-row, .w-gift, .st-date, .st-rule) { justify-content: center; }
+	.wpage--tpl-asooke .st-hero__text .st-count { justify-content: center; }
+	.wpage--tpl-asooke .st-photo__frame, .wpage--tpl-asooke .st-hero--right .st-photo__frame { box-shadow: 10px 10px 0 var(--w-accent); }
+}
+
+/* ================================================================================================
+ * AURORA — Aso-oke is the typographic design: the names should be the loudest thing in the set,
+ * and the woven strip should read as real cloth, with a warp running one way and a weft the other.
+ * ============================================================================================= */
+
+.wpage--tpl-asooke {
+	--ao-warp: repeating-linear-gradient(90deg,
+		var(--w-primary) 0 9px,
+		color-mix(in srgb, var(--w-primary) 74%, #000) 9px 10px,
+		var(--w-accent) 10px 15px,
+		color-mix(in srgb, var(--w-accent) 76%, #000) 15px 16px,
+		color-mix(in srgb, var(--w-primary) 62%, var(--w-accent)) 16px 23px,
+		color-mix(in srgb, var(--w-primary) 80%, #000) 23px 24px);
+	--ao-weft: repeating-linear-gradient(0deg,
+		rgba(255, 255, 255, .16) 0 1px,
+		transparent 1px 3px,
+		rgba(0, 0, 0, .14) 3px 4px,
+		transparent 4px 6px);
+}
+
+/* The cloth strip: warp under weft, so it has the texture of something woven. */
+.wpage--tpl-asooke .st-band, .wpage--tpl-asooke .st-rule {
+	height: 18px;
+	background-image: var(--ao-weft), var(--ao-warp);
+	border-radius: 0;
+}
+.wpage--tpl-asooke .st-rule i, .wpage--tpl-asooke .st-rule span { display: none; }
+
+/* The names, set as large and as tight as the page will carry. */
+.wpage--tpl-asooke .st-names {
+	font-size: clamp(3rem, 12vw, 7.5rem);
+	font-weight: 700;
+	line-height: .86;
+	letter-spacing: -.05em;
+	text-transform: uppercase;
+	text-wrap: balance;
+}
+.wpage--tpl-asooke .st-hero__in { padding-block: clamp(26px, 5vw, 60px); }
+/* Blocks of colour, hard-edged, the way the cloth is cut. */
+.st-page.wpage--tpl-asooke .w-sec.w-sec--tint { background: var(--w-primary); color: color-mix(in srgb, #fff 94%, var(--w-accent)); }
+.st-page.wpage--tpl-asooke .w-sec.w-sec--tint :is(.w-title, .w-eyebrow) { color: inherit; }
+.st-page.wpage--tpl-asooke .w-sec.w-sec--tint .w-eyebrow { color: var(--w-accent); }
+.wpage--tpl-asooke .w-title { font-weight: 700; text-transform: uppercase; letter-spacing: -.035em; }
+.wpage--tpl-asooke .w-title::after {
+	content: "";
+	display: block;
+	width: 76px;
+	height: 10px;
+	margin: 16px auto 0;
+	background-image: var(--ao-weft), var(--ao-warp);
+}
+.wpage--tpl-asooke .st-photo__frame { border-radius: 0; box-shadow: var(--st-shadow-2); }
+.wpage--tpl-asooke .st-count span { border-radius: 2px; }

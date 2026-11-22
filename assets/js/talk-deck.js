@@ -26,8 +26,9 @@
 	function setSaved(list) {
 		try { localStorage.setItem(SAVE_KEY, JSON.stringify(list.slice(-400))); } catch (e) {}
 	}
-	function isSaved(id) { return saved().indexOf(String(id)) !== -1; }
+	function isSaved(id) { return !!id && saved().indexOf(String(id)) !== -1; }
 	function toggleSaved(id) {
+		if (!id) { return false; }
 		var list = saved();
 		var i = list.indexOf(String(id));
 		if (i === -1) { list.push(String(id)); } else { list.splice(i, 1); }
@@ -87,6 +88,7 @@
 	}
 
 	function save(card) {
+		if (!card.dataset.talk) { return; }
 		var on = toggleSaved(card.dataset.talk);
 		if (on) { stamp(card, 'save'); }
 		layout();
@@ -167,7 +169,7 @@
 			savedBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
 			var list = saved();
 			cards.forEach(function (c) {
-				c.hidden = on && list.indexOf(String(c.dataset.talk)) === -1;
+				c.hidden = on && (!c.dataset.talk || list.indexOf(String(c.dataset.talk)) === -1);
 			});
 			cards = Array.prototype.slice.call(feed.querySelectorAll('.talk:not([hidden])'));
 			if (!cards.length) {

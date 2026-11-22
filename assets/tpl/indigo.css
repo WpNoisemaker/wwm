@@ -1,0 +1,87 @@
+/*
+ * Indigo: adire-inspired. Indigo blues, tie-dye circles, a wide photo & a deep indigo band for the names.
+ * Indigo = the couple's main colour, sky = their second colour.
+ */
+.wpage--tpl-indigo {
+	--st-r: 16px;
+	--st-head-w: 500;
+	--st-label: 600 .7rem/1.4 var(--w-body);
+	--st-label-track: .24em;
+	--st-line: color-mix(in srgb, var(--w-primary) 18%, transparent);
+	--st-tint: color-mix(in srgb, var(--w-accent) 20%, var(--w-bg));
+	--dots: radial-gradient(circle, color-mix(in srgb, var(--w-accent) 55%, transparent) 1.4px, transparent 1.8px) 0 0 / 14px 14px;
+}
+.wpage--tpl-indigo .st-hero { padding-top: clamp(20px, 3vw, 40px); background: var(--w-bg); }
+.wpage--tpl-indigo .st-hero__text { position: relative; padding: clamp(30px, 4vw, 52px) clamp(22px, 4vw, 56px); border-radius: var(--st-r); background: var(--dots), var(--w-primary); color: #fff; box-shadow: var(--st-shadow); }
+.wpage--tpl-indigo .st-hero--top .st-hero__text { width: min(100%, 780px); margin-top: calc(-1 * clamp(60px, 8vw, 120px)); }
+.wpage--tpl-indigo :is(.st-kicker, .st-next, .st-hash, .st-amp, .st-date b) { color: var(--w-accent); }
+.wpage--tpl-indigo .st-hero__text .w-btn--ghost { color: #fff !important; }
+.wpage--tpl-indigo .st-hero__text :is(.w-btn, .btn--ink) { --btn-bg: #fff; --btn-bd: #fff; color: var(--w-primary) !important; }
+.wpage--tpl-indigo .st-hero__text .st-count span { border-color: color-mix(in srgb, #fff 26%, transparent); background: color-mix(in srgb, #fff 10%, transparent); color: #fff; }
+.wpage--tpl-indigo .st-hero__text .st-count b { color: #fff; }
+.wpage--tpl-indigo .st-hero__text .w-gift { color: #fff; }
+.wpage--tpl-indigo .st-hero__text .w-gift a { color: #fff !important; }
+.wpage--tpl-indigo .st-rule::before, .wpage--tpl-indigo .st-rule::after { content: ""; width: 60px; height: 0; border-top: 2px dotted var(--w-accent); }
+.wpage--tpl-indigo .st-hero__text .st-rule { color: var(--w-accent); }
+.wpage--tpl-indigo .st-hero__text .st-rule:empty { display: none; }
+.st-adire { position: absolute; width: clamp(140px, 18vw, 260px); height: auto; fill: none; stroke: color-mix(in srgb, var(--w-primary) 18%, transparent); stroke-width: 6; stroke-dasharray: 2 9; stroke-linecap: round; }
+.wpage--tpl-indigo .st-hero .st-adire:first-child { top: -40px; left: -50px; }
+.wpage--tpl-indigo .st-hero .st-adire:last-child { right: -60px; bottom: 60px; }
+.wpage--tpl-indigo .st-photo__frame { border-radius: var(--st-r); }
+.wpage--tpl-indigo .w-title::after { content: ""; display: block; width: 26px; height: 26px; margin: 14px auto 0; border-radius: 50%; background: radial-gradient(circle, var(--w-primary) 0 3px, transparent 3.5px 6px, var(--w-primary) 6.5px 7.5px, transparent 8px 10px, var(--w-primary) 10.5px 11.5px, transparent 12px); }
+.wpage--tpl-indigo .w-sec--tint { background: var(--dots), var(--st-tint); }
+.wpage--tpl-indigo .st-sign { background: var(--dots), var(--w-primary); color: #fff; }
+.wpage--tpl-indigo .st-sign :is(.st-mono, .st-sign__kicker, .st-amp) { color: var(--w-accent); }
+.wpage--tpl-indigo .st-sign .st-adire { left: 50%; top: 50%; width: 420px; transform: translate(-50%, -50%); stroke: color-mix(in srgb, #fff 14%, transparent); }
+@media (max-width: 860px) {
+	.wpage--tpl-indigo .st-hero--top .st-hero__text { margin-top: -40px; width: calc(100% - 16px); }
+}
+
+/* ================================================================================================
+ * AURORA — Indigo owns the adire resist. Real eleko is irregular: the dye creeps where the cassava
+ * paste was thin, and no two rings are the same. That irregularity is the design.
+ * ============================================================================================= */
+
+.wpage--tpl-indigo {
+	--in-deep: color-mix(in srgb, var(--w-primary) 86%, #05101f);
+	--in-resist: color-mix(in srgb, var(--w-accent) 72%, #fff);
+	/* Three ring clusters at different sizes and offsets, so the repeat never reads as a grid. */
+	--in-eleko: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-opacity='.16' stroke-width='1.6'%3E%3Ccircle cx='54' cy='48' r='31'/%3E%3Ccircle cx='54' cy='48' r='21.5'/%3E%3Ccircle cx='54' cy='48' r='12'/%3E%3Ccircle cx='55' cy='49' r='4.5'/%3E%3Ccircle cx='176' cy='96' r='25'/%3E%3Ccircle cx='176' cy='96' r='15'/%3E%3Ccircle cx='177' cy='97' r='6'/%3E%3Ccircle cx='96' cy='182' r='35'/%3E%3Ccircle cx='96' cy='182' r='24'/%3E%3Ccircle cx='95' cy='181' r='13'/%3E%3Ccircle cx='206' cy='206' r='18'/%3E%3Ccircle cx='206' cy='206' r='9'/%3E%3C/g%3E%3Cg fill='%23FFFFFF' fill-opacity='.12'%3E%3Ccircle cx='128' cy='28' r='3'/%3E%3Ccircle cx='24' cy='128' r='2.4'/%3E%3Ccircle cx='222' cy='48' r='2.4'/%3E%3Ccircle cx='150' cy='146' r='2'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* The hero is a vat of indigo with the resist pattern floating in it. */
+.wpage--tpl-indigo .st-hero {
+	position: relative;
+	background-color: var(--in-deep);
+	background-image: var(--in-eleko);
+	background-size: 240px 240px;
+	color: color-mix(in srgb, #fff 92%, var(--w-accent));
+}
+.wpage--tpl-indigo .st-hero::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	/* The uneven depth of a hand-dyed cloth. */
+	background:
+		radial-gradient(60% 50% at 24% 16%, color-mix(in srgb, var(--w-accent) 20%, transparent) 0%, transparent 72%),
+		radial-gradient(54% 48% at 84% 82%, rgba(0, 0, 0, .26) 0%, transparent 70%);
+}
+.wpage--tpl-indigo .st-hero__in { position: relative; z-index: 1; }
+.wpage--tpl-indigo .st-names, .wpage--tpl-indigo .st-hero .st-kicker { color: inherit; }
+.wpage--tpl-indigo .st-hero .st-count span { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .2); color: #fff; }
+.wpage--tpl-indigo .st-hero .st-count b { color: var(--w-accent); }
+
+/* Section headings are stamped with a single resist ring. */
+.wpage--tpl-indigo .w-title::after {
+	content: "";
+	display: block;
+	width: 30px;
+	height: 30px;
+	margin: 16px auto 0;
+	border-radius: 50%;
+	border: 1.6px solid color-mix(in srgb, var(--w-primary) 46%, transparent);
+	box-shadow: inset 0 0 0 5px transparent, inset 0 0 0 6.6px color-mix(in srgb, var(--w-primary) 30%, transparent);
+}
+.st-page.wpage--tpl-indigo .w-sec.w-sec--tint { background-color: var(--st-tint); background-image: var(--in-eleko); background-size: 300px 300px; background-blend-mode: multiply; }
+.wpage--tpl-indigo .st-photo__frame { border-radius: var(--st-r); box-shadow: var(--st-shadow-2); }

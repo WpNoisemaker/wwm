@@ -1,0 +1,338 @@
+/*
+ * PEARL — the quiet one.
+ *
+ * Pearl buys space, not ornament. One framed photograph, one pearl-ringed monogram, one string of
+ * pearls, and after that nothing but paper and type. Everything is set hard to the left on a single
+ * spine, so the eye always knows where the next line starts, and the right-hand margin is left
+ * deliberately, expensively empty. Corners are round, light is champagne, motion is slow.
+ *
+ * Colour comes only from the couple: --w-primary, --w-accent, --w-bg, --w-ink, --w-head, --w-body.
+ * Two derived tones do the work: --pe-deep (their colour pulled toward their own ink, so small
+ * caps and white-on-fill always pass AA) and --pe-champ-ink (their accent pulled toward ink, for
+ * the warm champagne text). Pure --w-primary / --w-accent are kept for light, hairlines & pearls,
+ * where no contrast is owed.
+ *
+ * Loads after wedding.css & aurora-wedding.css, only on pages that use Pearl.
+ */
+
+/* ================================================================ Tokens */
+
+.wpage--tpl-pearl {
+	--pe-paper: var(--w-bg);
+	--pe-ink: var(--w-ink);
+	--pe-rose: var(--w-primary);
+	--pe-champ: var(--w-accent);
+	--pe-deep: color-mix(in srgb, var(--w-primary) 48%, var(--w-ink));
+	--pe-champ-ink: color-mix(in srgb, var(--pe-champ) 30%, var(--w-ink));
+	--pe-champ-deep: var(--pe-champ-ink); /* the old name, kept alive */
+	--pe-muted: color-mix(in srgb, var(--w-ink) 74%, var(--w-bg));
+	--pe-line: color-mix(in srgb, var(--w-ink) 11%, transparent);
+	--pe-line-2: color-mix(in srgb, var(--pe-champ) 48%, transparent);
+	--pe-wash: color-mix(in srgb, var(--pe-champ) 24%, var(--w-bg));
+	--pe-tint: color-mix(in srgb, var(--pe-champ) 20%, var(--w-bg));
+	/* Layered glass: a pale pane, a white inner edge, a shadow that falls a long way. */
+	--pe-glass: color-mix(in srgb, #fff 62%, transparent);
+	--pe-solid: color-mix(in srgb, var(--w-bg) 86%, #fff);
+	--pe-blur: blur(20px) saturate(1.25);
+	--pe-inner: inset 0 1px 0 color-mix(in srgb, #fff 66%, transparent);
+	--pe-soft: 0 1px 2px color-mix(in srgb, var(--w-ink) 5%, transparent), 0 26px 54px -36px color-mix(in srgb, var(--w-ink) 30%, transparent);
+	--pe-lift: 0 2px 6px color-mix(in srgb, var(--w-ink) 5%, transparent), 0 46px 84px -44px color-mix(in srgb, var(--w-ink) 42%, transparent);
+	/* One pearl, drawn once, reused everywhere a pearl is wanted. */
+	--pe-pearl: radial-gradient(circle at 34% 28%, #fff 0 16%, color-mix(in srgb, var(--pe-champ) 74%, #fff) 46%, color-mix(in srgb, var(--pe-champ) 62%, var(--w-ink)) 100%);
+	--pe-r: clamp(16px, var(--w-r, 30px), 34px);
+	--pe-r-lg: calc(var(--pe-r) + 12px);
+	--pe-r-sm: calc(var(--pe-r) * .55);
+	--pe-rail: clamp(26px, 4vw, 56px);
+	--pe-serif: var(--w-head);
+	--pe-caps: 500 .68rem/1.5 var(--w-body);
+	--pe-ease: cubic-bezier(.22, .7, .2, 1);
+	background: var(--pe-paper);
+	color: var(--pe-ink);
+	accent-color: var(--pe-rose);
+}
+
+/* ================================================================ Buttons, fields & small parts */
+
+.wpage--tpl-pearl .btn { --btn-bd: var(--pe-line-2); min-height: 50px; padding: .9em 1.7em; border: 1px solid var(--btn-bd); border-radius: 999px; background: var(--btn-bg); color: var(--btn-fg); box-shadow: none; font: 500 .72rem/1.1 var(--w-body); letter-spacing: .18em; text-transform: uppercase; }
+.wpage--tpl-pearl :is(.w-btn, .btn--ink) { --btn-bg: var(--pe-deep); --btn-fg: #fff; --btn-bd: var(--pe-deep); background: var(--pe-deep); color: #fff !important; }
+.wpage--tpl-pearl :is(.w-btn--accent, .btn--marigold) { --btn-bg: var(--pe-tint); --btn-bd: var(--pe-line-2); background: var(--pe-tint); color: var(--pe-ink) !important; }
+.wpage--tpl-pearl .w-btn--ghost { --btn-bg: transparent; --btn-bd: var(--pe-line-2); background: transparent; color: var(--pe-deep) !important; }
+.wpage--tpl-pearl.wpage--lux .btn:hover { transform: translateY(-1px); box-shadow: 0 16px 30px -20px color-mix(in srgb, var(--w-ink) 55%, transparent); }
+.wpage--tpl-pearl .btn:active { transform: scale(.985); box-shadow: none; }
+.wpage--tpl-pearl :is(input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="file"]):not([type="range"]), select, textarea) { border: 1px solid var(--pe-line); border-radius: var(--pe-r-sm); background: color-mix(in srgb, var(--w-bg) 70%, #fff); }
+.wpage--tpl-pearl :is(input, select, textarea):focus { border-color: var(--pe-deep); outline: 3px solid color-mix(in srgb, var(--w-primary) 22%, transparent); outline-offset: 0; box-shadow: none; }
+.wpage--tpl-pearl :is(.seg span, .note-pick span) { border: 1px solid var(--pe-line); border-radius: 999px; background: color-mix(in srgb, var(--w-bg) 70%, #fff); }
+.wpage--tpl-pearl :is(.seg, .note-pick) input:checked + span { border-color: var(--pe-deep); background: var(--pe-deep); color: #fff; }
+.wpage--tpl-pearl .pe-amp { color: var(--pe-champ-ink); font-family: var(--pe-serif); font-style: italic; font-weight: 400; }
+.wpage--tpl-pearl :is(.meter i, .meter__fill, .gift .meter i) { background: var(--pe-deep); }
+.wpage--tpl-pearl .quiz__opts button { border: 1px solid var(--pe-line); border-radius: 999px; background: color-mix(in srgb, var(--w-bg) 70%, #fff); }
+
+/* ================================================================ The three ornaments Pearl allows */
+
+/* A string of pearls that starts at the margin & runs out into the white. */
+.pe-pearls { display: flex; align-items: center; gap: 8px; margin: clamp(22px, 3vw, 32px) 0; color: color-mix(in srgb, var(--pe-champ) 62%, var(--w-ink)); }
+.pe-pearls::after { content: ""; flex: 0 1 clamp(54px, 16vw, 190px); height: 1px; margin-left: 4px; background: linear-gradient(90deg, currentColor, transparent); opacity: .7; }
+.pe-pearls i { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--pe-pearl); box-shadow: 0 1px 2px color-mix(in srgb, var(--w-ink) 22%, transparent); }
+.pe-pearls i:nth-child(2) { width: 7px; height: 7px; }
+.pe-pearls i:nth-child(3) { width: 6px; height: 6px; }
+.pe-pearls i:nth-child(4) { width: 5px; height: 5px; }
+.pe-pearls i:nth-child(5) { width: 4px; height: 4px; }
+
+/* The monogram: initials inside a ring the page draws, once, as it opens. */
+.pe-mono { display: block; width: clamp(76px, 8vw, 100px); height: auto; margin: 0 0 clamp(22px, 3vw, 34px); color: var(--pe-deep); overflow: visible; }
+.pe-mono__ring { fill: none; stroke: var(--pe-line-2); stroke-width: 1; stroke-dasharray: 277; }
+.pe-mono__pearl { fill: color-mix(in srgb, var(--pe-champ) 72%, #fff); stroke: color-mix(in srgb, var(--pe-champ) 52%, var(--w-ink)); stroke-width: .35; }
+.pe-mono__text { fill: currentColor; font: 400 25px/1 var(--pe-serif); letter-spacing: .06em; }
+
+/* ================================================================ Section nav */
+
+.wpage--tpl-pearl.wpage--lux .w-nav { display: flex; align-items: center; gap: clamp(10px, 2vw, 20px); padding: 0 var(--gutter); border-bottom: 1px solid var(--pe-line); background: color-mix(in srgb, var(--w-bg) 84%, transparent); -webkit-backdrop-filter: var(--pe-blur); backdrop-filter: var(--pe-blur); }
+.wpage--tpl-pearl .w-nav ul { flex: 1; width: auto; margin: 0; padding: 12px 0; }
+.wpage--tpl-pearl.wpage--lux .w-nav a { padding: .8em 1em; border-radius: 999px; color: var(--pe-muted) !important; font: var(--pe-caps); letter-spacing: .16em; text-transform: uppercase; }
+.wpage--tpl-pearl.wpage--lux .w-nav a:hover { background: color-mix(in srgb, var(--w-accent) 18%, transparent); color: var(--pe-ink) !important; }
+.wpage--tpl-pearl.wpage--lux .w-nav a.is-on { background: none; color: var(--pe-deep) !important; box-shadow: inset 0 -1px 0 var(--pe-deep); }
+.wpage--tpl-pearl.wpage--lux .w-nav a.w-nav__mono { display: grid; place-items: center; flex: none; padding: 0 4px 0 0; background: none; color: var(--pe-deep) !important; font: 400 1.25rem/1 var(--pe-serif); letter-spacing: .06em; text-transform: none; box-shadow: none; }
+
+/* ================================================================ The top of the page */
+
+.pe-hero { position: relative; isolation: isolate; padding: clamp(34px, 6vw, 96px) 0 0; background: var(--pe-paper); color: var(--pe-ink); overflow: hidden; }
+/* The only mesh on the page: a slow champagne light, mixed from the couple's own two colours. */
+.pe-hero::before {
+	content: "";
+	position: absolute;
+	inset: -24% -14% 14%;
+	z-index: -1;
+	pointer-events: none;
+	background:
+		radial-gradient(42% 38% at 74% 10%, color-mix(in srgb, var(--w-accent) 52%, transparent) 0%, transparent 72%),
+		radial-gradient(38% 34% at 14% 28%, color-mix(in srgb, var(--w-primary) 13%, transparent) 0%, transparent 74%),
+		radial-gradient(62% 40% at 54% 90%, color-mix(in srgb, var(--w-accent) 24%, transparent) 0%, transparent 76%);
+	animation: peDrift 34s ease-in-out infinite alternate;
+}
+.pe-hero__in { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); align-items: center; gap: clamp(32px, 7vw, 108px); max-width: min(100% - 2 * var(--gutter), 1180px); }
+
+/* The single framed photograph: a fine champagne rule stepped out behind it, and a pearl's lustre on the glass. */
+.pe-photo { position: relative; margin: 0; padding: 0 0 clamp(16px, 2vw, 26px) clamp(16px, 2vw, 26px); }
+.pe-photo::before { content: ""; position: absolute; inset: clamp(16px, 2vw, 26px) clamp(16px, 2vw, 26px) 0 0; border: 1px solid var(--pe-line-2); border-radius: var(--pe-r-lg); pointer-events: none; }
+.pe-photo__frame { position: relative; z-index: 1; display: block; border-radius: var(--pe-r-lg); background: var(--pe-wash); overflow: hidden; box-shadow: var(--pe-lift); }
+.pe-photo__frame::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; border-radius: inherit; box-shadow: inset 0 0 0 1px color-mix(in srgb, #fff 42%, transparent); background: linear-gradient(118deg, color-mix(in srgb, #fff 38%, transparent) 0%, transparent 26%, transparent 64%, color-mix(in srgb, var(--w-accent) 30%, transparent) 88%, color-mix(in srgb, var(--w-primary) 20%, transparent) 100%); mix-blend-mode: soft-light; }
+.pe-photo__frame > :is(.cover-img, .cover-art) { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; }
+.pe-status { position: absolute; left: clamp(16px, 2vw, 26px); bottom: clamp(30px, 4vw, 44px); z-index: 3; margin: 0; padding: .6em 1.15em; border: 1px solid color-mix(in srgb, #fff 50%, transparent); border-radius: 999px; background: color-mix(in srgb, #fff 72%, transparent); -webkit-backdrop-filter: var(--pe-blur); backdrop-filter: var(--pe-blur); color: var(--pe-ink); font: var(--pe-caps); font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; box-shadow: var(--pe-soft); }
+.pe-status--inline { position: static; display: inline-block; margin: 0 0 16px; background: var(--pe-tint); border-color: var(--pe-line-2); box-shadow: none; }
+
+/* The text: one spine, hard left, nothing centred. */
+.pe-hero__text { position: relative; max-width: 34rem; text-align: left; }
+.pe-kicker { margin: 0 0 clamp(14px, 2vw, 20px); color: var(--pe-deep); font: var(--pe-caps); letter-spacing: .26em; text-transform: uppercase; }
+.pe-names { display: grid; justify-items: start; gap: .01em; margin: 0; font: 400 clamp(2.9rem, 6.4vw, 5.6rem)/.98 var(--pe-serif); letter-spacing: -.012em; overflow-wrap: anywhere; }
+.pe-names .pe-amp { margin: .1em 0 .06em .08em; font-size: .3em; line-height: 1; }
+.pe-names .vbadge { margin-left: .14em; vertical-align: .3em; }
+.pe-names .vbadge .icon { width: .34em; height: .34em; }
+.pe-hero__meta { display: grid; gap: 7px; margin: clamp(18px, 2.4vw, 26px) 0 0; padding-top: clamp(16px, 2vw, 22px); border-top: 1px solid var(--pe-line); }
+.pe-date { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: 0; font: var(--pe-caps); letter-spacing: .2em; text-transform: uppercase; }
+.pe-date span { color: var(--pe-champ-ink); }
+.pe-place { margin: 0; color: var(--pe-muted); font-size: 1.02rem; }
+.pe-tagline { max-width: 34ch; margin: clamp(20px, 2.6vw, 30px) 0 0; font: italic 400 clamp(1.15rem, 1.7vw, 1.4rem)/1.55 var(--pe-serif); }
+.pe-next { margin: clamp(30px, 4vw, 46px) 0 16px; color: var(--pe-deep); font: var(--pe-caps); letter-spacing: .22em; text-transform: uppercase; }
+
+/* The countdown loses its boxes: four numerals on a hairline comb. */
+.wpage--tpl-pearl .pe-count { display: flex; flex-wrap: wrap; gap: 0; max-width: none; margin: 0; }
+.wpage--tpl-pearl .pe-count span { display: grid; justify-items: start; gap: 9px; padding: 2px clamp(16px, 2.4vw, 30px) 2px 0; border: 0; border-radius: 0; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none; color: var(--pe-muted); font: 500 .58rem/1 var(--w-body); letter-spacing: .18em; text-transform: uppercase; }
+.wpage--tpl-pearl .pe-count span + span { padding-left: clamp(16px, 2.4vw, 30px); border-left: 1px solid var(--pe-line); }
+.wpage--tpl-pearl .pe-count b { color: var(--pe-ink); font: 400 clamp(2rem, 3.4vw, 2.9rem)/1 var(--pe-serif); letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.pe-hero__text .btn-row { justify-content: flex-start; gap: 10px; margin-top: clamp(28px, 3.4vw, 42px); }
+.pe-hero__text .w-gift { justify-content: flex-start; margin-top: 20px; color: var(--pe-muted); }
+.pe-hero__text .w-gift .icon { color: var(--pe-deep); }
+.pe-hash { margin: clamp(20px, 2.4vw, 28px) 0 0; color: var(--pe-champ-ink); font: italic 400 1.08rem/1.3 var(--pe-serif); }
+.pe-hero__foot { max-width: min(100% - 2 * var(--gutter), 1180px); }
+.pe-hero__foot .w-buzz { justify-content: flex-start; margin: clamp(44px, 6vw, 88px) 0 0; padding: clamp(18px, 2vw, 24px) 0 clamp(34px, 5vw, 58px); border-top: 1px solid var(--pe-line); color: var(--pe-muted); font-size: .86rem; }
+.pe-hero__foot .w-buzz a { color: var(--pe-ink) !important; }
+.pe-hero__foot .w-buzz :is(.icon, .linkish) { color: var(--pe-deep); }
+
+/* The other three hero layouts keep the same spine. */
+.pe-hero--right .pe-photo { order: 2; padding: 0 clamp(16px, 2vw, 26px) clamp(16px, 2vw, 26px) 0; }
+.pe-hero--right .pe-photo::before { inset: clamp(16px, 2vw, 26px) 0 0 clamp(16px, 2vw, 26px); }
+.pe-hero--top .pe-hero__in, .pe-hero--names .pe-hero__in { grid-template-columns: minmax(0, 1fr); justify-items: start; gap: clamp(32px, 5vw, 64px); }
+.pe-hero--top .pe-photo { width: 100%; }
+.pe-hero--top .pe-photo__frame > :is(.cover-img, .cover-art) { aspect-ratio: 2 / 1; }
+.pe-hero--top .pe-hero__text, .pe-hero--names .pe-hero__text { max-width: 46rem; }
+.pe-hero--names { padding-top: clamp(60px, 10vw, 150px); }
+.pe-hero--names .pe-mono { width: clamp(92px, 10vw, 126px); }
+.pe-hero--names .pe-names { font-size: clamp(3rem, 7.6vw, 6.2rem); }
+
+/* ================================================================ Sections & heads */
+
+.wpage--tpl-pearl .w-sec { padding-block: clamp(72px, 10vw, 150px); }
+.wpage--tpl-pearl .w-sec:not(.w-sec--dark):not(.w-sec--pattern) { background: var(--pe-paper); }
+.wpage--tpl-pearl .w-sec--tint { background: var(--pe-wash); }
+/* Pearl will not shout a cloth: the couple's pattern stays, under a veil of their own paper. */
+.wpage--tpl-pearl.wpage--lux .w-sec--pattern { background-color: var(--pe-wash); background-image: linear-gradient(color-mix(in srgb, var(--w-bg) 88%, transparent), color-mix(in srgb, var(--w-bg) 88%, transparent)), var(--w-pattern); border-block: 1px solid var(--pe-line-2); color: var(--pe-ink); }
+.wpage--tpl-pearl.wpage--lux .w-sec--pattern .w-head { width: auto; padding: 0; border: 0; background: none; box-shadow: none; }
+.wpage--tpl-pearl .w-sec--pattern .w-eyebrow { color: var(--pe-deep); }
+.wpage--tpl-pearl .w-sec--dark .w-eyebrow { color: color-mix(in srgb, var(--w-accent) 70%, #fff); }
+.wpage--tpl-pearl .w-head { max-width: 44rem; margin-bottom: clamp(36px, 5vw, 68px); text-align: left; }
+.wpage--tpl-pearl .w-head--row { max-width: none; flex-direction: row; align-items: flex-end; }
+.wpage--tpl-pearl .w-head::before { display: none; }
+.wpage--tpl-pearl .w-eyebrow { justify-content: flex-start; color: var(--pe-deep); font: var(--pe-caps); letter-spacing: .26em; }
+.wpage--tpl-pearl .w-eyebrow .icon { display: none; }
+.wpage--tpl-pearl .w-title { max-width: 19ch; font: 400 clamp(2.1rem, 4.2vw, 3.5rem)/1.1 var(--pe-serif); letter-spacing: -.01em; }
+.wpage--tpl-pearl.wpage--lux .w-head .w-title::after, .wpage--tpl-pearl .w-title::after { content: ""; display: block; width: 8px; height: 8px; margin: clamp(18px, 2.2vw, 26px) auto 0 0; border-radius: 50%; background: var(--pe-pearl); }
+.wpage--tpl-pearl .w-head__aside { max-width: 42ch; margin: 0; color: var(--pe-muted); }
+
+/* Shared furniture: pale glass, a hairline, and a shadow that falls a long way. */
+.wpage--tpl-pearl.wpage--lux :is(.card-form, .gift, .vend, .note, .photo, .quiz, .wall-form, .ig-follow, .squad__card, .opens-card, .rsvp__closed, .event, .pe-day) {
+	border: 1px solid var(--pe-line);
+	border-radius: var(--pe-r);
+	background: var(--pe-glass);
+	-webkit-backdrop-filter: var(--pe-blur);
+	backdrop-filter: var(--pe-blur);
+	color: var(--pe-ink);
+	box-shadow: var(--pe-soft), var(--pe-inner);
+}
+/* Anything that sits on a photo or on the ink section stays solid, so the type keeps its contrast. */
+.wpage--tpl-pearl.wpage--lux :is(.live__card, .spray__counter, .pass__ticket) { border: 1px solid var(--pe-line); border-radius: var(--pe-r); background: var(--pe-solid); color: var(--pe-ink) !important; box-shadow: var(--pe-soft); }
+.wpage--tpl-pearl .note { --tilt: 0deg !important; }
+.wpage--tpl-pearl :is(.gift, .vend__pic)[class*="tone-"] { --tone: var(--pe-tint); }
+.wpage--tpl-pearl .gift:nth-child(even) { --tone: color-mix(in srgb, var(--w-primary) 8%, var(--w-bg)); }
+.wpage--tpl-pearl .gift__pic { border-bottom: 1px solid var(--pe-line); }
+.wpage--tpl-pearl :is(.gift__type, .vend__type) { border-radius: 999px; background: var(--pe-tint); color: var(--pe-ink); }
+.wpage--tpl-pearl :is(.gift__body h3, .vend__body h3, .squad__card h4, .quiz__q) { font-family: var(--pe-serif); font-weight: 400; }
+.wpage--tpl-pearl .squad__side { border: 0; background: color-mix(in srgb, #fff 16%, transparent); color: inherit; font: italic 400 1.3rem/1.25 var(--pe-serif); }
+.wpage--tpl-pearl :is(.w-sec--dark, .w-sec--pattern) :is(.quiz, .card-form, .live__card) .w-title { color: var(--pe-ink); }
+.wpage--tpl-pearl :is(.w-sec--dark, .w-sec--pattern) :is(.quiz, .card-form, .live__card) .w-eyebrow { color: var(--pe-deep); }
+.wpage--tpl-pearl.wpage--lux :is(a.gift:hover, a.ig-follow:hover, a.vend:hover) { transform: translateY(-3px); box-shadow: var(--pe-lift), var(--pe-inner); }
+
+/* ================================================================ The invitation */
+
+/* No card, no double rule: the couple's note is simply the biggest quiet thing on the page. */
+.pe-letter { position: relative; max-width: 40ch; margin: 0 0 clamp(54px, 7vw, 98px); padding: clamp(22px, 2.6vw, 32px) 0 0; border: 0; border-top: 1px solid var(--pe-line-2); border-radius: 0; background: none; box-shadow: none; text-align: left; }
+.pe-letter p { margin: 0; font: italic 400 clamp(1.25rem, 2.2vw, 1.7rem)/1.5 var(--pe-serif); }
+.pe-days { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 282px), 1fr)); gap: clamp(18px, 2.6vw, 34px); margin: 0; padding: 0; list-style: none; }
+.pe-day { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: clamp(28px, 3.2vw, 44px) clamp(22px, 2.6vw, 34px); text-align: left; }
+.pe-day__icon { display: grid; place-items: center; width: 46px; height: 46px; margin-bottom: 10px; border: 1px solid var(--pe-line-2); border-radius: 50%; color: var(--pe-deep); }
+.pe-day__type { margin: 0; color: var(--pe-deep); font: var(--pe-caps); letter-spacing: .22em; text-transform: uppercase; }
+.pe-day h3 { margin: 0; font: 400 clamp(1.45rem, 2.2vw, 1.85rem)/1.2 var(--pe-serif); }
+.pe-private { margin: 2px 0 0; padding: .4em .95em; border: 1px solid var(--pe-line-2); border-radius: 999px; background: var(--pe-tint); color: var(--pe-ink); font: var(--pe-caps); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; }
+.pe-day__date { display: flex; align-items: baseline; gap: 14px; width: 100%; margin: 14px 0 2px; padding: 16px 0 0; border-top: 1px solid var(--pe-line); }
+.pe-day__date b { color: var(--pe-deep); font: 400 clamp(2.4rem, 3.4vw, 3rem)/.9 var(--pe-serif); }
+.pe-day__date span { display: grid; gap: 4px; text-align: left; font: var(--pe-caps); letter-spacing: .16em; text-transform: uppercase; }
+.pe-day__date small { color: var(--pe-muted); font-size: .92em; letter-spacing: .04em; text-transform: none; }
+.pe-day__place { margin: 0; color: var(--pe-muted); font-size: .97rem; }
+.pe-day__note { margin: 0; font: italic 400 1.02rem/1.5 var(--pe-serif); }
+.pe-day__dress { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin: 6px 0 0; }
+.pe-day__dress > span { color: var(--pe-deep); font: var(--pe-caps); font-size: .6rem; letter-spacing: .16em; text-transform: uppercase; }
+.pe-day__dress .swatch { width: 15px; height: 15px; border: 1px solid var(--pe-line); border-radius: 50%; }
+.pe-plan { display: grid; width: 100%; margin: 14px 0 0; padding: 14px 0 0; border-top: 1px solid var(--pe-line); list-style: none; text-align: left; }
+.pe-plan li { display: grid; grid-template-columns: 5.2em minmax(0, 1fr); gap: 12px; padding: 5px 0; }
+.pe-plan b { color: var(--pe-deep); font-size: .84rem; font-weight: 500; letter-spacing: .06em; }
+.pe-plan small { display: block; color: var(--pe-muted); }
+.pe-day__links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 18px; }
+.pe-day__links a { display: inline-flex; align-items: center; gap: 6px; padding: .55em 1.05em; border: 1px solid var(--pe-line-2); border-radius: 999px; color: var(--pe-deep) !important; font: 500 .74rem/1.2 var(--w-body); text-decoration: none; }
+.pe-day__links a:hover { background: var(--pe-tint); }
+
+/* ================================================================ Our story */
+
+/* One rail down the left margin, strung with pearls. Nothing alternates; the spine never moves. */
+.pe-line { position: relative; display: grid; gap: clamp(46px, 6vw, 104px); max-width: 1020px; margin: 0; padding: 4px 0 4px var(--pe-rail); list-style: none; }
+.pe-line::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 1px; background: linear-gradient(180deg, transparent, var(--pe-line-2) 7%, var(--pe-line-2) 93%, transparent); }
+.pe-chapter { position: relative; display: grid; grid-template-columns: minmax(0, .86fr) minmax(0, 1.14fr); align-items: center; gap: clamp(26px, 4.4vw, 64px); }
+.pe-chapter::before { content: ""; position: absolute; top: .45em; left: calc(-1 * var(--pe-rail)); width: 11px; height: 11px; margin-left: -5px; border-radius: 50%; background: var(--pe-pearl); box-shadow: 0 0 0 6px var(--pe-paper); }
+.pe-chapter__pic { margin: 0; border-radius: var(--pe-r); overflow: hidden; box-shadow: var(--pe-soft); }
+.pe-chapter__pic img { display: block; width: 100%; aspect-ratio: 5 / 4; object-fit: cover; }
+.pe-chapter__text { max-width: 46ch; text-align: left; }
+.pe-chapter.is-text .pe-chapter__text { grid-column: 2; }
+.pe-chapter__when { margin: 0 0 6px; color: var(--pe-champ-ink); font: var(--pe-caps); letter-spacing: .22em; text-transform: uppercase; }
+.pe-chapter h3 { margin: 0 0 10px; font: 400 clamp(1.4rem, 2vw, 1.75rem)/1.2 var(--pe-serif); }
+.pe-chapter__text p:last-child { margin: 0; color: var(--pe-muted); font-size: 1rem; line-height: 1.75; }
+
+/* ================================================================ Sign-off */
+
+.pe-sign { position: relative; border-top: 1px solid var(--pe-line); background: linear-gradient(180deg, var(--pe-paper) 0%, var(--pe-wash) 100%); color: var(--pe-ink); text-align: left; overflow: hidden; }
+.pe-sign__in { max-width: min(100% - 2 * var(--gutter), 1180px); padding-block: clamp(70px, 9vw, 140px); }
+.pe-mono--sign { width: clamp(84px, 9vw, 112px); }
+.pe-sign__kicker { margin: 0; color: var(--pe-deep); font: var(--pe-caps); letter-spacing: .26em; text-transform: uppercase; }
+.pe-sign__names { margin: 12px 0 0; font: 400 clamp(2.3rem, 5vw, 3.8rem)/1.08 var(--pe-serif); letter-spacing: -.012em; }
+.pe-sign__date { margin: 14px 0 0; color: var(--pe-champ-ink); font: italic 400 1.08rem/1.4 var(--pe-serif); }
+.wpage--tpl-pearl .w-viral { border-top: 0; }
+
+/* ================================================================ Motion: slow, and only on arrival */
+
+@keyframes peRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes peFrame { from { opacity: 0; transform: scale(1.02); } to { opacity: 1; transform: none; } }
+@keyframes peFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes peRing { from { stroke-dashoffset: 277; } to { stroke-dashoffset: 0; } }
+@keyframes peDrift { from { transform: translate3d(-1.5%, -1%, 0) scale(1); } to { transform: translate3d(2%, 1.5%, 0) scale(1.06); } }
+
+.pe-photo { animation: peFrame 1.3s var(--pe-ease) .08s backwards; }
+.pe-hero__text > * { animation: peRise .9s var(--pe-ease) backwards; }
+.pe-hero__text > :nth-child(1) { animation-delay: .06s; }
+.pe-hero__text > :nth-child(2) { animation-delay: .13s; }
+.pe-hero__text > :nth-child(3) { animation-delay: .2s; }
+.pe-hero__text > :nth-child(4) { animation-delay: .27s; }
+.pe-hero__text > :nth-child(5) { animation-delay: .34s; }
+.pe-hero__text > :nth-child(6) { animation-delay: .41s; }
+.pe-hero__text > :nth-child(n + 7) { animation-delay: .48s; }
+.pe-mono__ring { animation: peRing 1.9s var(--pe-ease) .3s backwards; }
+.pe-mono__pearl { animation: peFade 1.4s ease .55s backwards; }
+.pe-sign .pe-mono__ring { animation-delay: 0s; }
+
+/* ================================================================ Tablets & phones */
+
+@media (max-width: 900px) {
+	.pe-hero__in { grid-template-columns: minmax(0, 1fr); justify-items: stretch; }
+	.pe-hero--right .pe-photo { order: 0; padding: 0 0 clamp(14px, 2vw, 22px) clamp(14px, 2vw, 22px); }
+	.pe-hero--right .pe-photo::before { inset: clamp(14px, 2vw, 22px) clamp(14px, 2vw, 22px) 0 0; }
+	.pe-photo { width: min(100%, 540px); }
+	.pe-hero--top .pe-photo { width: 100%; }
+	.pe-hero--top .pe-photo__frame > :is(.cover-img, .cover-art) { aspect-ratio: 4 / 3; }
+	.pe-hero__text { max-width: 36rem; }
+	.pe-chapter, .pe-chapter.is-text { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+	.pe-chapter__pic { max-width: 520px; }
+	.pe-chapter.is-text .pe-chapter__text, .pe-chapter.is-text:nth-child(even) .pe-chapter__text { grid-column: 1; }
+	.pe-chapter::before { top: .3em; }
+}
+@media (max-width: 600px) {
+	.pe-names { font-size: clamp(2.5rem, 12vw, 3.5rem); }
+	.pe-hero--names .pe-names { font-size: clamp(2.7rem, 13vw, 3.8rem); }
+	.wpage--tpl-pearl .pe-count b { font-size: 1.6rem; }
+	.wpage--tpl-pearl .pe-count span { padding-right: 13px; gap: 7px; }
+	.wpage--tpl-pearl .pe-count span + span { padding-left: 13px; }
+	.pe-photo { padding: 0 0 12px 12px; }
+	.pe-photo::before { inset: 12px 12px 0 0; }
+	.pe-hero--right .pe-photo { padding: 0 0 12px 12px; }
+	.pe-hero--right .pe-photo::before { inset: 12px 12px 0 0; }
+	.pe-status { bottom: 24px; left: 12px; }
+	.pe-line { --pe-rail: 22px; }
+	.wpage--tpl-pearl .w-title, .pe-chapter__text, .pe-letter { max-width: none; }
+}
+
+/* ================================================================ Fallbacks */
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+	.wpage--tpl-pearl.wpage--lux :is(.card-form, .gift, .vend, .note, .photo, .quiz, .wall-form, .ig-follow, .squad__card, .opens-card, .rsvp__closed, .event, .pe-day),
+	.wpage--tpl-pearl.wpage--lux .w-nav,
+	.wpage--tpl-pearl .pe-status { background: var(--pe-solid); }
+	.wpage--tpl-pearl .pe-count span { background: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+	.wpage--tpl-pearl.wpage--lux :is(.card-form, .gift, .vend, .note, .photo, .quiz, .wall-form, .ig-follow, .squad__card, .opens-card, .rsvp__closed, .event, .pe-day),
+	.wpage--tpl-pearl.wpage--lux .w-nav,
+	.wpage--tpl-pearl .pe-status {
+		-webkit-backdrop-filter: none !important;
+		backdrop-filter: none !important;
+		background: var(--pe-solid) !important;
+	}
+	.wpage--tpl-pearl .pe-count span { background: none !important; }
+	.pe-photo__frame::after { background: none; box-shadow: inset 0 0 0 1px color-mix(in srgb, #fff 42%, transparent); }
+	.pe-hero::before { opacity: .5; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.pe-hero::before, .pe-photo, .pe-hero__text > *, .pe-mono__ring, .pe-mono__pearl { animation: none !important; }
+	.pe-mono__ring { stroke-dasharray: none; }
+	.wpage--tpl-pearl .btn:hover, .wpage--tpl-pearl.wpage--lux :is(a.gift:hover, a.ig-follow:hover, a.vend:hover) { transform: none; }
+}
+@media print {
+	.pe-hero::before, .pe-photo__frame::after { display: none; }
+	.pe-hero, .pe-sign { background: #fff; }
+	.wpage--tpl-pearl.wpage--lux :is(.card-form, .gift, .vend, .note, .photo, .quiz, .wall-form, .squad__card, .event, .pe-day) { background: #fff !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; box-shadow: none !important; }
+	.pe-photo__frame { box-shadow: none; }
+}
