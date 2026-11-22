@@ -1,0 +1,40 @@
+# ----------------------------------------------------------------------------------------------
+# Namecheap / cPanel entry point.
+#
+# This file is here so you can upload the WHOLE folder into public_html without having to change
+# the domain's document root. Everything the web is allowed to see lives in public/; this rewrite
+# sends every request there, and the app/, db/ and config/ folders refuse to be served at all.
+#
+# If you CAN point the document root straight at public/ (cPanel > Domains > the pencil icon),
+# do that instead — it is one less rewrite on every request. This file does no harm either way.
+# ----------------------------------------------------------------------------------------------
+
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+
+	# The one-time installer, served directly so it works before anything else is configured.
+	RewriteRule ^install\.php$ - [L]
+
+	# Never let anything outside public/ be fetched, whatever the request looks like.
+	RewriteRule ^(app|db|config)(/|$) - [F,L]
+
+	# A real file or folder inside public/ is served as itself.
+	RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+	RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-d
+	RewriteRule ^ public/index.php [L]
+
+	# Assets and anything else map straight into public/.
+	RewriteCond %{REQUEST_URI} !^/public/
+	RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Stop a stray dot-file or backup ever being downloaded.
+<FilesMatch "(^\.|\.(sql|md|log|bak|save|swp|dist|sample)$)">
+	Require all denied
+	<IfModule !mod_authz_core.c>
+		Order deny,allow
+		Deny from all
+	</IfModule>
+</FilesMatch>

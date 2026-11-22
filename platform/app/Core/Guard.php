@@ -1,0 +1,101 @@
+<?php
+declare(strict_types=1);
+
+/**
+ * Form protection and one-shot messages. Both ride on the PHP session, which is only started when
+ * something actually needs it — a visitor who only reads pages never gets a session cookie.
+ */
+final class Guard
+{
+    private static function boot(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start([
+                'cookie_httponly' => true,
+                'cookie_samesite' => 'Lax',
+                'cookie_secure'   => !empty($_SERVER['HTTPS']),
+            ]);
+        }
+    }
+
+    /** The token to put in every form that changes something. */
+    public static function token(): string
+    {
+        self::boot();
+        if (empty($_SESSION['_t'])) {
+            $_SESSION['_t'] = bin2hex(random_bytes(32));
+        }
+        return (string) $_SESSION['_t'];
+    }
+
+    /** A ready-made hidden field. */
+    public static function field(): string
+    {
+        return '<input type="hidden" name="_t" value="' . htmlspecialchars(self::token(), ENT_QUOTES) . '">';
+    }
+
+    /** True when the posted token matches. Compared in constant time. */
+    public static function ok(): bool
+    {
+        self::boot();
+        $sent = (string) ($_POST['_t'] ?? '');
+        return $sent !== '' && !empty($_SESSION['_t']) && hash_equals((string) $_SESSION['_t'], $sent);
+    }
+
+    /** Refuse the request outright when the token is missing or stale. */
+    public static function must(): void
+    {
+        if (!self::ok()) {
+            http_response_code(419);
+            exit('Your form expired. Go back, reload the page and try again.');
+        }
+    }
+
+    /** Leave a message for the next page load. */
+    public static function flash(string $kind, string $msg): void
+    {
+        self::boot();
+        $_SESSION['_f'][] = ['kind' => $kind, 'msg' => $msg];
+    }
+
+    /** Take every pending message, clearing them. */
+    public static function takeFlash(): array
+    {
+        self::boot();
+        $f = $_SESSION['_f'] ?? [];
+        unset($_SESSION['_f']);
+        return is_array($f) ? $f : [];
+    }
+
+    /** Keep a form's values so a failed submit does not wipe what the visitor typed. */
+    public static function keep(array $values): void
+    {
+        self::boot();
+        $_SESSION['_old'] = $values;
+    }
+
+    public static function old(string $key, string $fallback = ''): string
+    {
+        self::boot();
+        return (string) ($_SESSION['_old'][$key] ?? $fallback);
+    }
+
+    public static function dropOld(): void
+    {
+        self::boot();
+        unset($_SESSION['_old']);
+    }
+
+    /** Simple per-action throttle, so a shared host is not a free brute-force target. */
+    public static function tooMany(string $action, int $limit = 8, int $minutes = 15): bool
+    {
+        $key = substr($action . ':' . (string) ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0'), 0, 120);
+        Db::run('DELETE FROM throttle WHERE expires_at < NOW()');
+        Db::run(
+            'INSERT INTO throttle (bucket, hits, expires_at) VALUES (?, 1, DATE_ADD(NOW(), INTERVAL ? MINUTE))
+             ON DUPLICATE KEY UPDATE hits = hits + 1',
+            [$key, $minutes]
+        );
+        return (int) Db::val('SELECT hits FROM throttle WHERE bucket = ?', [$key], 0) > $limit;
+    }
+}

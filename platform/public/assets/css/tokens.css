@@ -3,22 +3,27 @@
  */
 :root {
 	/* Canvas: the near-white of the Superpower and pills screens. Not pure white — a warm grey. */
-	--bg: #F0EFED;
-	--bg-2: #E8E7E4;
+	--bg: #F4F3F1;
+	--bg-2: #EAE8E5;
 	--card: rgba(255, 255, 255, .62);
 	--card-2: rgba(255, 255, 255, .78);
 	--card-solid: #FBFBFA;
 	--edge: rgba(255, 255, 255, .72);
 	--hair: rgba(20, 20, 24, .07);
 
-	--ink: #16161A;
-	--ink-2: #45454C;
-	--muted: #8A8A92;
-	--faint: #B4B4BA;
+	--ink: #160E22;
+	--ink-2: #3A3147;
+	--muted: #6E6680;
+	--faint: #9A93A8;
 
-	/* The acid pill — exact value off the "Best Seller" and "Ibuprofen" badges. */
-	--acid: #E8FA4F;
-	--acid-ink: #1B2104;
+	/* The brand. Yellow leads everything; --acid is kept as the name every component already
+	 * uses, so the whole system re-colours from this one pair. */
+	--sun: #FFD426;
+	--sun-deep: #F5B800;
+	--sun-lite: #FFF0A8;
+	--sun-wash: #FFFBEA;
+	--acid: var(--sun);
+	--acid-ink: #160E22;
 
 	/* Blob colours sampled from the pills screen. */
 	--blob-orange: #FF8A3D;

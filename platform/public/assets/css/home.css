@@ -297,7 +297,7 @@
 	background: var(--tone, #E8FA4F);
 	color: #16140A;
 }
-.ftile--butter   { --tone: #F6DC72; }
+.ftile--butter   { --tone: var(--sun); }
 .ftile--mint     { --tone: #9FE0B8; }
 .ftile--coral    { --tone: #F6A98E; }
 .ftile--sky      { --tone: #A6CCF2; }
