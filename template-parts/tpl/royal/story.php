@@ -1,7 +1,7 @@
 <?php
 /**
- * Royal: the love story as a chronicle. A gold line down the middle, a medallion for each chapter
- * & the chapters set left & right of it.
+ * Royal: the love story as a chronicle. A gold line down the middle capped at both ends with a
+ * foil lozenge, a medallion for each chapter & the chapters set left & right of it.
  *
  * @package WWMD
  */
@@ -15,6 +15,8 @@ $wd_d = $args['d'];
 			<p class="ro-kicker"><?php esc_html_e( 'Our story', 'wwmd' ); ?></p>
 			<h2 class="ro-title"><?php esc_html_e( 'The chronicle of us', 'wwmd' ); ?></h2>
 		</div>
+		<div class="ro-chron__roll">
+		<span class="ro-chron__cap ro-chron__cap--top" aria-hidden="true"></span>
 		<ol class="ro-chron__list">
 			<?php foreach ( $wd_d['story'] as $wd_i => $wd_s ) : ?>
 				<li class="ro-chron__item">
@@ -28,5 +30,7 @@ $wd_d = $args['d'];
 				</li>
 			<?php endforeach; ?>
 		</ol>
+		<span class="ro-chron__cap ro-chron__cap--end" aria-hidden="true"></span>
+		</div>
 	</div>
 </section>

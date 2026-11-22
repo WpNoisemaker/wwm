@@ -88,7 +88,17 @@
 /* The first tile on a screen carries the brand mesh, so every page has one warm anchor. */
 .stat-grid > .stat:first-child { background: var(--mesh-sun); color: #160E22; border-color: transparent; box-shadow: var(--shadow-sun); }
 .stat-grid > .stat:first-child > span { color: rgba(22, 14, 34, .66); }
-.stat b { font: 250 clamp(1.7rem, 3vw, 2.5rem)/1 var(--font-num); letter-spacing: -.04em; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.stat b {
+	font: 250 clamp(1.3rem, 2.1vw, 1.95rem)/1.05 var(--font-num);
+	letter-spacing: -.04em;
+	white-space: nowrap;
+	max-width: 100%;
+}
+/* A figure wider than its tile shrinks rather than being cut off. */
+@supports (container-type: inline-size) {
+	.stat { container-type: inline-size; }
+	.stat b { font-size: clamp(1.3rem, 13cqi, 1.95rem); }
+}
 
 .share-panel { background: var(--mesh-sun); color: #160E22; border-color: transparent; }
 .share-panel__qr { border: 1px solid rgba(22, 14, 34, .12); border-radius: var(--r-sm); background: #fff; box-shadow: var(--shadow-1); }
@@ -100,7 +110,15 @@
 
 /* ================================================================ Tables become cards on a phone */
 
-.table-wrap { border-radius: var(--r-card); }
+.table-wrap {
+	border: 1px solid var(--edge);
+	border-radius: var(--r-card);
+	background: var(--glass);
+	-webkit-backdrop-filter: var(--blur);
+	backdrop-filter: var(--blur);
+	box-shadow: none;
+}
+.panel .table-wrap { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
 @media (max-width: 760px) {
 	.table-wrap { border: 0; background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; overflow: visible; }
 	.table, .table tbody, .table tr, .table td { display: block; width: 100%; }

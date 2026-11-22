@@ -1392,3 +1392,191 @@ body.wd-flat::before { opacity: .5; }
 @media (max-width: 520px) {
 	.section--talk .wrap--talk { width: min(100% - 2 * var(--gutter), var(--wrap)); }
 }
+
+/* ================================================================ 18  The sweep
+ * Everything main.css draws with the old language — a 3px ink outline and a hard offset shadow —
+ * answered here in one place. Grouped by what the thing is, not by where it lives, so a component
+ * keeps its layout from main.css and takes only its surface from Aurora.
+ */
+
+/* ---- Cards: anything that was an outlined white box becomes a glass pane. */
+:is(.w-card, .v-card, .b-card, .l-card, .ig-post, .feature, .svc, .addon, .plan, .news__item,
+.billboard, .map-card, .fold__panel, .chart-one, .bk, .invoice, .inv-mini, .tcard, .pass__ticket,
+.req-list > li, .rep__row, .chat-list, .order-list li, .squad-wait__item, .prog-count-list li,
+.coin-list li, .payout-acct, .escrow-steps li, .lp-trio a, .join-as__opt span, .plan-pick span,
+.pay-opt, .tpl-card, .lay-card, .price-mode .check, .toggle__ui, .fee-table, .partner-nudge,
+.auth__card, .spot-strip, .sell-cta, .market-hero) {
+	border: 1px solid var(--edge);
+	border-radius: var(--r-card);
+	background: var(--glass);
+	-webkit-backdrop-filter: var(--blur);
+	backdrop-filter: var(--blur);
+	box-shadow: var(--shadow-1), var(--inset-top);
+}
+:is(a.w-card, a.v-card, a.b-card, a.l-card, a.feature, a.svc, a.news__item, a.lp-trio, .fold__panel) {
+	transition: transform var(--t) var(--spring), box-shadow var(--t) var(--ease);
+}
+:is(a.w-card, a.v-card, a.b-card, a.l-card, a.feature, a.svc, a.news__item):hover {
+	transform: translateY(-3px);
+	box-shadow: var(--shadow-3), var(--inset-top);
+}
+/* Inner rules that used to be 3px ink dividers. */
+:is(.w-card, .v-card, .b-card, .l-card, .billboard, .map-card, .spot-strip, .chart-one, .invoice) :is(.w-card__media, .v-card__pic, .b-card__media, .l-card__media, .map-card__map, .chart-one__pic) {
+	border: 0;
+	border-bottom: 1px solid var(--hair);
+}
+
+/* ---- Pastel-filled things become their mesh, so a tone is a gradient not a flat block. */
+:is(.feature, .svc, .addon, .fold__panel, .lp-trio a, .svc-strip--app .svc)[class*="tone-"] {
+	background: var(--tone-mesh, var(--glass));
+	color: var(--tone-ink, var(--ink));
+	border-color: transparent;
+}
+
+/* ---- Pills, segments, toggles & filter bars. */
+:is(.filters, .toggle, .seg, .ig-bar, .ig-chips, .plans-box, .subnav) {
+	border-radius: var(--r-pill);
+	box-shadow: none;
+}
+.filters {
+	border: 1px solid var(--edge);
+	background: var(--glass-2);
+	-webkit-backdrop-filter: var(--blur-sm);
+	backdrop-filter: var(--blur-sm);
+	box-shadow: var(--shadow-1);
+}
+.filters:focus-within { border-color: var(--sun-deep); box-shadow: 0 0 0 4px rgba(255, 212, 38, .28); }
+.toggle { border: 1px solid var(--edge); background: var(--glass-2); padding: 4px; }
+.toggle > :is(a, button) { border: 0; border-radius: var(--r-pill); background: none; color: var(--muted); }
+.toggle > .is-on, .toggle > [aria-pressed="true"] { background: var(--ink); color: var(--canvas); }
+.seg span, .join-as__opt span, .plan-pick span, .price-mode .check {
+	border: 1px solid var(--hair-2);
+	border-radius: var(--r-sm);
+	background: var(--glass-2);
+	box-shadow: none;
+}
+.seg input:checked + span, .join-as__opt input:checked + span, .plan-pick input:checked + span,
+.price-mode .check:has(input:checked), .tpl-card:has(input:checked), .lay-card:has(input:checked) {
+	border-color: var(--sun-deep);
+	background: color-mix(in srgb, var(--sun) 22%, var(--glass-2));
+	box-shadow: 0 0 0 3px rgba(255, 212, 38, .3);
+}
+.ig-chip { border: 1px solid var(--edge); border-radius: var(--r-pill); background: var(--glass-2); }
+.ig-chip.is-on { background: var(--ink); color: var(--canvas); border-color: transparent; }
+.pill { border-radius: var(--r-pill); background: var(--glass-2); border: 1px solid var(--edge); }
+.pill--ok { background: color-mix(in srgb, var(--lime) 26%, transparent); border-color: transparent; }
+.pill--warn { background: color-mix(in srgb, var(--sun) 32%, transparent); border-color: transparent; }
+.pill--premium { background: var(--mesh-sun); color: #160E22; border-color: transparent; }
+
+/* ---- Empty states stop being dashed boxes and become a quiet pane. */
+:is(.empty, .empty-note, .rsvp__closed, .squad-invite__off, .bk-empty) {
+	border: 1px dashed var(--hair-2);
+	border-radius: var(--r-card);
+	background: var(--glass-2);
+	-webkit-backdrop-filter: var(--blur-sm);
+	backdrop-filter: var(--blur-sm);
+	box-shadow: none;
+}
+
+/* ---- Meters & progress. */
+.meter, .meter--lg { border: 0; border-radius: var(--r-pill); background: var(--hair); overflow: hidden; }
+.meter > i, .meter--lg > i { background: var(--mesh-sun); border-radius: inherit; }
+
+/* ---- Toast, help chat and every other floating thing. */
+.toast {
+	border: 1px solid var(--edge-dark);
+	border-radius: var(--r-pill);
+	background: var(--glass-dark-2);
+	-webkit-backdrop-filter: var(--blur);
+	backdrop-filter: var(--blur);
+	color: #F3F0F8;
+	box-shadow: var(--shadow-3);
+	bottom: calc(var(--tab-h) + var(--safe-b) + 16px);
+}
+@media (min-width: 900px) { .toast { bottom: 24px; } }
+.help__fab {
+	border: 0;
+	background: var(--mesh-sun);
+	color: #160E22;
+	box-shadow: var(--shadow-sun);
+	bottom: calc(var(--tab-h) + var(--safe-b) + 14px);
+}
+@media (min-width: 900px) { .help__fab { bottom: 22px; } }
+.help__panel {
+	border: 1px solid var(--edge);
+	border-radius: var(--r-pane);
+	background: var(--glass-3);
+	-webkit-backdrop-filter: var(--blur-lg);
+	backdrop-filter: var(--blur-lg);
+	box-shadow: var(--shadow-3);
+}
+.help__head { background: var(--mesh-sun); color: #160E22; border: 0; }
+
+/* ---- The Buzz Chart. */
+.section--chart { background: none; }
+.section--chart::after { display: none; }
+.billboard.billboard { border-radius: var(--r-pane); }
+.chart-one.chart-one { background: var(--mesh-sun); color: #160E22; border-color: transparent; }
+.chart-row { border-bottom: 1px solid var(--hair); }
+.chart-row:hover { background: color-mix(in srgb, var(--sun) 12%, transparent); }
+.chart-row__pic, .chart-one__pic { border: 1px solid var(--edge); border-radius: var(--r-sm); }
+.rank-bubble { border: 0; background: var(--ink); color: var(--canvas); box-shadow: var(--shadow-2); }
+.chart-row__more summary { border: 1px solid var(--edge); background: var(--glass-2); box-shadow: var(--shadow-1); }
+
+/* ---- Plans: the ladder is told in depth, not in outlines. */
+.plan.plan--pro { background: var(--glass-2); }
+.plan.plan--premium { background: var(--mesh-sun); color: #160E22; border-color: transparent; box-shadow: var(--shadow-sun); }
+.plan.plan--premium :is(h3, p, b, .fine, li) { color: #160E22; }
+.plan.plan--society { background: var(--mesh-noir); color: #F3F0F8; border-color: transparent; box-shadow: var(--shadow-3); }
+.plan.plan--society :is(h3, p, b, .fine, li) { color: #F3F0F8; }
+.plan__ribbon { background: var(--ink); color: var(--canvas); border: 0; border-radius: var(--r-pill); }
+.fee-row { border-bottom: 1px solid var(--hair); }
+.fee-row--head { background: transparent; color: var(--muted); }
+
+/* ---- Map. */
+.map-pin__dot { border: 2px solid #fff; box-shadow: var(--shadow-2); }
+.map-pin__label { border: 1px solid var(--edge); border-radius: var(--r-pill); background: var(--glass-3); -webkit-backdrop-filter: var(--blur-sm); backdrop-filter: var(--blur-sm); box-shadow: var(--shadow-1); }
+
+/* ---- Sections that used to be flat bands. */
+.section--alt { background: color-mix(in srgb, var(--sun) 9%, transparent); }
+.section--dark, .w-viral { background: var(--mesh-noir); color: #F3F0F8; border: 0; border-radius: var(--r-pane); }
+.section--cta .cta-band { background: var(--mesh-sun); color: #160E22; border: 0; }
+.cta-band::before { display: none; }
+
+/* ---- Verified marks and other hardcoded purple. */
+.verified, .vbadge .icon, .icon--verified, .l-tick .icon { color: var(--sun-deep); }
+.ig-ring, .talk__ring { background: var(--mesh-sun); }
+.ig-ring--plain { background: var(--hair-2); }
+.upsell { background: var(--mesh-sun); color: #160E22; border: 0; border-radius: var(--r-pane); box-shadow: var(--shadow-sun); }
+.upsell :is(.eyebrow, p) { color: inherit; }
+.upsell .btn--ink { --btn-bg: #160E22; --btn-fg: #fff; }
+.req-list li.is-new { border-color: var(--sun-deep); box-shadow: 0 0 0 3px rgba(255, 212, 38, .28); }
+input[type="checkbox"], input[type="radio"], .check input, .checks input, .table input[type="checkbox"] { accent-color: var(--sun-deep); }
+
+/* ---- Auth, sign-in. */
+.auth__art { background: var(--mesh-sun); color: #160E22; border: 0; }
+.auth__quote { color: inherit; }
+
+/* ---- The payment dialog is a sheet on a phone like every other dialog. */
+.pay-dialog {
+	border: 1px solid var(--edge);
+	border-radius: var(--r-pane);
+	background: var(--glass-3);
+	-webkit-backdrop-filter: var(--blur-lg);
+	backdrop-filter: var(--blur-lg);
+	box-shadow: var(--shadow-3);
+}
+.pay-dialog::backdrop, .lightbox::backdrop { background: rgba(22, 14, 34, .5); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.lightbox img { border: 1px solid var(--edge); border-radius: var(--r-card); box-shadow: var(--shadow-3); }
+@media (max-width: 759px) {
+	.pay-dialog[open] {
+		position: fixed; inset: auto 0 0 0; width: 100%; max-width: none; max-height: 88dvh; margin: 0;
+		border-radius: var(--r-pane) var(--r-pane) 0 0; padding-bottom: calc(20px + var(--safe-b));
+		animation: gSheetUp var(--t-slow) var(--spring);
+	}
+}
+
+/* ---- Prose images stop wearing an ink frame. */
+.prose img, .post__cover { border: 1px solid var(--edge); border-radius: var(--r-card); box-shadow: var(--shadow-1); }
+.post__head { background: none; border: 0; }
+.post__cta { background: var(--mesh-sun); color: #160E22; border: 0; border-radius: var(--r-pane); }

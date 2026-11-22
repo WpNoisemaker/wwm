@@ -1,7 +1,8 @@
 <?php
 /**
- * Royal: the top of the page as a royal proclamation. Kente bands, the crest, the names in gold foil
- * & the date set like an engraved card, beside the couple's portrait in a gold frame.
+ * Royal: the top of the page as a royal proclamation. Woven kente bands, an engine-turned crest,
+ * the names in gold foil & the date engraved on a glass plate with cut foil corners, beside the
+ * couple's portrait in a gold frame. The veil & the rosette behind it are drawn in royal.css.
  *
  * @package WWMD
  */
@@ -17,6 +18,7 @@ $wd_place = wd_tpl_place( $wd_d );
 ?>
 <section class="ro-hero ro-hero--<?php echo esc_attr( $wd_lay ); ?>" id="top">
 	<div class="ro-band" aria-hidden="true"></div>
+	<div class="ro-hero__veil" aria-hidden="true"></div>
 	<div class="wrap ro-hero__in">
 		<?php if ( 'names' !== $wd_lay ) : ?>
 			<figure class="ro-portrait">
@@ -24,8 +26,8 @@ $wd_place = wd_tpl_place( $wd_d );
 				<?php if ( $wd_st[1] ) : ?><figcaption class="ro-portrait__status"><?php echo esc_html( $wd_st[1] ); ?></figcaption><?php endif; ?>
 			</figure>
 		<?php endif; ?>
-		<div class="ro-procl">
-			<span class="ro-crest"><?php echo wd_orn( 'crest', wd_initials( $wd_d ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
+		<div class="ro-procl ro-plate">
+			<span class="ro-crest ro-crest--hero"><i class="ro-crest__bead" aria-hidden="true"></i><?php echo wd_orn( 'crest', wd_initials( $wd_d ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
 			<?php if ( 'names' === $wd_lay && $wd_st[1] ) : ?><p class="ro-status"><?php echo esc_html( $wd_st[1] ); ?></p><?php endif; ?>
 			<p class="ro-kicker"><?php echo esc_html( $wd_d['invite']['hosts'] ? $wd_d['invite']['hosts'] : __( 'Together with their families', 'wwmd' ) ); ?></p>
 			<p class="ro-request"><?php esc_html_e( 'request the honour of your presence at the marriage of', 'wwmd' ); ?></p>
@@ -42,6 +44,7 @@ $wd_place = wd_tpl_place( $wd_d );
 				</p>
 			<?php endif; ?>
 			<?php if ( $wd_place ) : ?><p class="ro-place"><?php echo esc_html( $wd_place ); ?></p><?php endif; ?>
+			<?php if ( $wd_d['tagline'] || $wd_d['hashtag'] ) : ?><span class="ro-rule ro-rule--sm" aria-hidden="true"></span><?php endif; ?>
 			<?php if ( $wd_d['tagline'] ) : ?><p class="ro-tagline"><?php echo esc_html( $wd_d['tagline'] ); ?></p><?php endif; ?>
 			<?php if ( $wd_d['hashtag'] ) : ?><p class="ro-hash">#<?php echo esc_html( $wd_d['hashtag'] ); ?></p><?php endif; ?>
 			<?php if ( $wd_next[0] ) : ?>

@@ -1,7 +1,8 @@
 <?php
 /**
- * Pearl: clean & light. The photo in a soft frame with a fine offset line, a pearl-ringed monogram,
- * the names set calmly in two lines, a string of pearls & quiet, outlined details.
+ * Pearl: calm & expensive. One framed photograph with a fine champagne rule stepped out behind it,
+ * a pearl-ringed monogram that draws itself, and the names set hard to the left on a single spine
+ * with the right-hand margin left deliberately empty.
  *
  * @package WWMD
  */
@@ -33,8 +34,12 @@ $wd_place = wd_tpl_place( $wd_d );
 				<span><?php echo esc_html( $wd_d['p2'] ); ?><?php echo wd_vbadge( $wd_id, 24 ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
 			</h1>
 			<?php echo wd_pe_pearls(); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-			<?php if ( $wd_d['date'] ) : ?><p class="pe-date"><?php echo esc_html( wd_date( $wd_d['date'], 'l' ) ); ?><span aria-hidden="true">·</span><?php echo esc_html( wd_date( $wd_d['date'], 'j F Y' ) ); ?></p><?php endif; ?>
-			<?php if ( $wd_place ) : ?><p class="pe-place"><?php echo esc_html( $wd_place ); ?></p><?php endif; ?>
+			<?php if ( $wd_d['date'] || $wd_place ) : ?>
+				<div class="pe-hero__meta">
+					<?php if ( $wd_d['date'] ) : ?><p class="pe-date"><?php echo esc_html( wd_date( $wd_d['date'], 'l' ) ); ?><span aria-hidden="true">·</span><?php echo esc_html( wd_date( $wd_d['date'], 'j F Y' ) ); ?></p><?php endif; ?>
+					<?php if ( $wd_place ) : ?><p class="pe-place"><?php echo esc_html( $wd_place ); ?></p><?php endif; ?>
+				</div>
+			<?php endif; ?>
 			<?php if ( $wd_d['tagline'] ) : ?><p class="pe-tagline"><?php echo esc_html( $wd_d['tagline'] ); ?></p><?php endif; ?>
 			<?php if ( $wd_next[0] ) : ?>
 				<p class="pe-next"><?php echo esc_html( $wd_next[1] ? sprintf( /* translators: 1: program 2: date */ __( 'Next: %1$s, %2$s', 'wwmd' ), $wd_next[1]['title'], wd_date( $wd_next[1]['date'], 'D j M' ) ) : __( 'Counting down', 'wwmd' ) ); ?></p>

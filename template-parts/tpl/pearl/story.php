@@ -1,7 +1,7 @@
 <?php
 /**
- * Pearl: the love story on a single fine line strung with pearls. Chapters sit to either side of it
- * on big screens & under each other on phones.
+ * Pearl: the love story on one fine rail down the left margin, strung with pearls. Chapters hang off
+ * it in order; nothing alternates, so the spine never moves.
  *
  * @package WWMD
  */

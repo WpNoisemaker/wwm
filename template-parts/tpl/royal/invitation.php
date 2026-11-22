@@ -1,7 +1,8 @@
 <?php
 /**
  * Royal: the order of ceremonies. The couple's message, then each program numbered in Roman
- * numerals like an engraved programme, with its own order of the day.
+ * numerals like an engraved programme, with its own order of the day — the whole lot bound
+ * inside one engraved register with cut foil corners.
  *
  * @package WWMD
  */
@@ -18,6 +19,7 @@ $wd_progs = wd_programs( $wd_d );
 			<?php if ( $wd_d['invite']['message'] ) : ?><p class="ro-decree"><?php echo nl2br( esc_html( $wd_d['invite']['message'] ) ); ?></p><?php endif; ?>
 		</div>
 		<?php if ( $wd_progs ) : ?>
+			<div class="ro-register">
 			<ol class="ro-ledger">
 				<?php foreach ( $wd_progs as $wd_n => $wd_e ) : ?>
 					<?php $wd_time = wd_prog_time( $wd_e ); ?>
@@ -43,6 +45,7 @@ $wd_progs = wd_programs( $wd_d );
 					</li>
 				<?php endforeach; ?>
 			</ol>
+			</div>
 		<?php endif; ?>
 	</div>
 </section>

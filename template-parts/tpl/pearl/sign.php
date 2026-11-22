@@ -1,6 +1,7 @@
 <?php
 /**
- * Pearl: the sign-off. The pearl-ringed monogram, a thank-you, the names & the date.
+ * Pearl: the sign-off. The pearl-ringed monogram, a thank-you, the names & the date, left-aligned on
+ * a slow champagne wash.
  *
  * @package WWMD
  */

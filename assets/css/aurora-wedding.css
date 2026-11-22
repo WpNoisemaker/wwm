@@ -214,3 +214,70 @@
 	.wpage--t-premium .w-hero::before { display: none; }
 	.wpage .card, .wpage .panel, .wpage .w-card { background: #fff !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; box-shadow: none !important; border: 1px solid #ccc !important; }
 }
+
+/* ================================================================ The sweep
+ * Every piece of shared wedding furniture that wedding.css still draws with a 3px ink outline and
+ * a hard offset shadow. All of it is tinted by the couple's own variables, so it reads as their
+ * page; the tier blocks above then decide how much depth each one is allowed.
+ */
+
+.wpage :is(.invite__card, .story__card, .squad__card, .wall-form, .wall > li, .note, .photo,
+.gift, .vend, .quiz, .live__card, .spray__counter, .opens-card, .event, .rsvp__closed, .ig-follow,
+.pass__ticket, .card-form, .w-hero--classic .w-hero__pic, .w-hero--classic .w-hero__text) {
+	border: var(--w-line) solid var(--w-edge);
+	border-radius: var(--w-r);
+	background: var(--w-glass-2);
+	box-shadow: var(--w-shadow-1);
+}
+.wpage a:is(.gift, .vend, .photo, .squad__card) { transition: transform .26s cubic-bezier(.2,.8,.2,1), box-shadow .26s; }
+.wpage a:is(.gift, .vend, .photo, .squad__card):hover { transform: translateY(-3px); box-shadow: var(--w-shadow-2); }
+
+/* The guest-photo drop zone. */
+.wpage .drop { border: 1.5px dashed var(--w-edge-2); border-radius: var(--w-r); background: var(--w-tint); box-shadow: none; }
+.wpage .drop:hover, .wpage .drop.is-over { border-color: var(--w-primary); background: color-mix(in srgb, var(--w-primary) 10%, var(--w-bg)); }
+
+/* The toggle rail and the section nav. */
+.wpage .toggle { border: var(--w-line) solid var(--w-edge); border-radius: 999px; background: var(--w-glass-2); box-shadow: none; padding: 4px; }
+.wpage .toggle > :is(a, button) { border: 0; border-radius: 999px; background: none; }
+.wpage .toggle > .is-on { background: var(--w-primary); color: #fff; }
+
+/* The table QR card keeps the couple's colour rather than the old purple. */
+.wpage .tcard, .tcard { --c: var(--w-primary, #160E22); }
+
+/* The viral band and the owner bar take the couple's palette, not ours. */
+.wpage .w-viral { background: var(--w-mesh); color: #fff; border: 0; border-radius: var(--w-r-lg); }
+.wpage .owner-fab { border: 0; border-radius: 999px; background: var(--w-accent); color: var(--w-ink); box-shadow: var(--w-shadow-2); bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+
+/* Dialogs on a wedding page behave like the rest of the product: sheets on a phone. */
+.wpage .pay-dialog, .wpage .lightbox {
+	border: var(--w-line) solid var(--w-edge);
+	border-radius: var(--w-r-lg);
+	background: color-mix(in srgb, var(--w-bg) 92%, #fff);
+	box-shadow: var(--w-shadow-2);
+}
+@media (max-width: 759px) {
+	.wpage .pay-dialog[open] {
+		position: fixed; inset: auto 0 0 0; width: 100%; max-width: none; max-height: 88dvh; margin: 0;
+		border-radius: var(--w-r-lg) var(--w-r-lg) 0 0;
+		padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+	}
+}
+
+/* A free page is black and white, so its furniture must not inherit a colour it does not have. */
+.wpage--t-free :is(.invite__card, .story__card, .squad__card, .wall-form, .note, .photo, .gift,
+.vend, .quiz, .live__card, .spray__counter, .opens-card, .event, .pass__ticket, .card-form) {
+	background: #fff;
+	border-color: rgba(17, 17, 17, .12);
+	box-shadow: none;
+}
+.wpage--t-free .w-viral { background: #111; color: #fff; }
+
+/* Premium furniture is frosted and lifted. */
+.wpage--t-premium :is(.invite__card, .story__card, .squad__card, .wall-form, .note, .photo, .gift,
+.vend, .quiz, .live__card, .spray__counter, .opens-card, .event, .pass__ticket, .card-form) {
+	background: var(--w-glass);
+	-webkit-backdrop-filter: var(--w-blur);
+	backdrop-filter: var(--w-blur);
+	border-color: color-mix(in srgb, #fff 42%, var(--w-edge));
+	box-shadow: var(--w-shadow-2), inset 0 1px 0 color-mix(in srgb, #fff 48%, transparent);
+}

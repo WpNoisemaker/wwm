@@ -1,7 +1,7 @@
 <?php
 /**
- * Pearl: the couple's note in a card with a fine double line, then one clean card for each program,
- * in a centred row.
+ * Pearl: the couple's note set large & quiet under a single hairline — no card, no frame — then one
+ * pale glass card for each program, left-aligned in a calm grid.
  *
  * @package WWMD
  */
