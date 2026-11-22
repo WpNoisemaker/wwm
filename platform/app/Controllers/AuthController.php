@@ -124,10 +124,19 @@ final class AuthController
                     "INSERT INTO tokens (user_id, kind, token, expires_at) VALUES (?, 'reset', ?, DATE_ADD(NOW(), INTERVAL 2 HOUR))",
                     [$u['id'], $tok]
                 );
-                // Shared hosting mail is unreliable and this container cannot send at all, so in
-                // debug the link is shown rather than pretended.
+                $url = App::url('/reset/' . $tok);
+                Mailer::send(
+                    $email,
+                    'Reset your password',
+                    "Hello,\n\nSomebody asked to reset the password on your Wedding Websites & More account.\n"
+                    . "To choose a new one, open this link:\n\n" . $url . "\n\n"
+                    . "It works once and expires in 2 hours. If this was not you, ignore this email "
+                    . "and nothing will change.\n\n— Wedding Websites & More\n"
+                );
+                // In debug the link is also shown on screen, so the flow can be tested on a machine
+                // that cannot send mail. A live site never shows it.
                 if (App::config('debug')) {
-                    $link = App::url('/reset/' . $tok);
+                    $link = $url;
                 }
             }
             // The same answer whether or not the address exists.

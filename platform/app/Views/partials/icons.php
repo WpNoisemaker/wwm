@@ -70,8 +70,16 @@ function photo(?string $path, string $alt = '', bool $eager = false): string
     if ($path === '') {
         return '';
     }
+    // An attachment WordPress no longer has. Showing nothing lets the colour fallback stand in,
+    // which beats a broken-image icon on somebody's wedding page.
+    if (str_starts_with($path, 'wp:')) {
+        return '';
+    }
     if (str_starts_with($path, 'http') || str_starts_with($path, '/')) {
         $src = $path;
+    } elseif (str_starts_with($path, 'wp-content/uploads/')) {
+        // The importer keeps WordPress's own layout (2025/09/file.jpg); the files live in assets/uploads.
+        $src = App::asset('assets/uploads/' . substr($path, strlen('wp-content/uploads/')));
     } elseif (str_starts_with($path, 'wp-content/')) {
         $src = App::url('/' . $path);
     } else {

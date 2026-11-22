@@ -282,7 +282,7 @@ CREATE TABLE listings (
   partner_id INT UNSIGNED NOT NULL,
   slug       VARCHAR(160) NOT NULL,
   title      VARCHAR(190) NOT NULL,
-  kind       ENUM('stay','ride','honeymoon','service','rental','other') NOT NULL DEFAULT 'service',
+  kind       ENUM('stay','ride','honeymoon','service','asoebi','rental','other') NOT NULL DEFAULT 'service',
   about      MEDIUMTEXT   NULL,
   city       VARCHAR(120) NOT NULL DEFAULT '',
   state      VARCHAR(120) NOT NULL DEFAULT '',

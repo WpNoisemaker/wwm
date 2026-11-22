@@ -1,12 +1,13 @@
 # ----------------------------------------------------------------------------------------------
 # Namecheap / cPanel entry point.
 #
-# This file is here so you can upload the WHOLE folder into public_html without having to change
-# the domain's document root. Everything the web is allowed to see lives in public/; this rewrite
-# sends every request there, and the app/, db/ and config/ folders refuse to be served at all.
+# This file is what lets you upload the WHOLE folder into a domain's document root without having
+# to change the document root. Everything the web is allowed to see lives in public/; the rules
+# below send each request there, and refuse app/, db/ and config/ outright.
 #
 # If you CAN point the document root straight at public/ (cPanel > Domains > the pencil icon),
-# do that instead — it is one less rewrite on every request. This file does no harm either way.
+# that is one rewrite fewer on every request — but install.php lives outside public/, so run the
+# installer FIRST, then switch the document root.
 # ----------------------------------------------------------------------------------------------
 
 Options -Indexes
@@ -14,23 +15,27 @@ Options -Indexes
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 
-	# The one-time installer, served directly so it works before anything else is configured.
-	RewriteRule ^install\.php$ - [L]
-
-	# Never let anything outside public/ be fetched, whatever the request looks like.
+	# Never serve code, settings or the schema, whatever the URL looks like.
 	RewriteRule ^(app|db|config)(/|$) - [F,L]
 
-	# A real file or folder inside public/ is served as itself.
-	RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
-	RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-d
-	RewriteRule ^ public/index.php [L]
+	# The one-time installer sits outside public/, so it is served from here until it is deleted.
+	RewriteRule ^install\.php$ - [L]
 
-	# Assets and anything else map straight into public/.
-	RewriteCond %{REQUEST_URI} !^/public/
+	# A request that has already been pointed into public/ is left alone. This is also what stops
+	# the two rules below from looping.
+	RewriteRule ^public/ - [L]
+
+	# Anything that really exists inside public/ is served as itself: CSS, JS, images, fonts.
+	# The test has to look in public/ — the file is not in the folder root, and checking the root
+	# sent every stylesheet to the app, which answered 404 and left the site unstyled.
+	RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f
 	RewriteRule ^(.*)$ public/$1 [L]
+
+	# Everything else is a page. Hand it to the front controller.
+	RewriteRule ^ public/index.php [L]
 </IfModule>
 
-# Stop a stray dot-file or backup ever being downloaded.
+# Stop a stray dot-file, dump or backup ever being downloaded.
 <FilesMatch "(^\.|\.(sql|md|log|bak|save|swp|dist|sample)$)">
 	Require all denied
 	<IfModule !mod_authz_core.c>

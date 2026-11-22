@@ -17,6 +17,7 @@ rsync -a \
 	--exclude 'dist' \
 	--exclude 'node_modules' \
 	--exclude 'build-zip.sh' \
+	--exclude 'smoke.php' \
 	--exclude 'config/config.php' \
 	--exclude '*.log' \
 	--exclude '.DS_Store' \
@@ -28,20 +29,16 @@ rm -f "$OUT/$NAME/config/config.php"
 
 # A writable spot for uploads, in case the host does not create it.
 mkdir -p "$OUT/$NAME/public/assets/uploads"
-printf 'Require all denied\n' > "$OUT/$NAME/public/assets/uploads/.htaccess-DENY-PHP"
 cat > "$OUT/$NAME/public/assets/uploads/.htaccess" <<'HTA'
 # Uploads are files, never programs. Even if something unexpected lands here, it cannot run.
-<FilesMatch "\.(php|phar|phtml|pl|py|cgi|sh)$">
+<FilesMatch "\.(php|phar|phtml|php[0-9]|pl|py|cgi|sh)$">
 	Require all denied
 	<IfModule !mod_authz_core.c>
 		Order deny,allow
 		Deny from all
 	</IfModule>
 </FilesMatch>
-Options -ExecCGI -Indexes
-AddHandler cgi-script .php .phtml .phar
 HTA
-rm -f "$OUT/$NAME/public/assets/uploads/.htaccess-DENY-PHP"
 
 # Zip the CONTENTS, not the folder. Wrapping them in a wwm-platform/ directory meant File Manager's
 # Extract made public_html/wwm-platform/..., so .htaccess and install.php never sat at the domain's

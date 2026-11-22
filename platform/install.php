@@ -118,6 +118,17 @@ if (!$installed && $ready && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 }
             }
 
+            // Mail has to appear to come from the site's own domain. An owner address at gmail.com would
+            // be rejected or sent to spam by anyone checking that the sending server may speak for it.
+            // Local test addresses (an IP, "localhost") have no domain to use, so they fall back to the owner.
+            // Named $siteHost, NOT $host: $host already holds the DATABASE host from the form, and reusing
+            // it here overwrote that with the site's domain just before the config was written.
+            $siteHost = strtolower((string) (parse_url($url, PHP_URL_HOST) ?: ''));
+            $siteHost = (string) preg_replace('/^www\./', '', $siteHost);
+            $mailFrom = ($siteHost !== '' && str_contains($siteHost, '.') && !filter_var($siteHost, FILTER_VALIDATE_IP))
+                      ? 'noreply@' . $siteHost
+                      : $email;
+
             $cfg = "<?php\n"
                  . "/** Written by install.php. Keep it out of version control. */\n"
                  . "return array(\n"
@@ -126,7 +137,7 @@ if (!$installed && $ready && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                  . "\t'url'   => " . var_export($url, true) . ",\n"
                  . "\t'name'  => 'Wedding Websites & More',\n"
                  . "\t'key'   => " . var_export(bin2hex(random_bytes(24)), true) . ",\n"
-                 . "\t'mail'  => array('from' => " . var_export($email, true) . ", 'name' => 'Wedding Websites & More'),\n"
+                 . "\t'mail'  => array('from' => " . var_export($mailFrom, true) . ", 'name' => 'Wedding Websites & More'),\n"
                  . "\t'debug' => false,\n"
                  . "\t'tz'    => 'Africa/Lagos',\n"
                  . ");\n";

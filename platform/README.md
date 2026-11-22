@@ -19,6 +19,9 @@ app/Core          App  config + autoloader + url/asset helpers
                   View    plain-PHP templates, render / capture / partial
                   Auth    database-backed sessions
                   Guard   CSRF, flash messages, old input, throttling
+                  LegacyHash  checks the password hashes WordPress wrote ($P$ and $wp$),
+                              so imported people sign in with the password they already have
+                  Mailer  plain-text email through the host's own mail()
 app/Models        Site Wedding Talk Vendor Listing
 app/Controllers   one per area
 app/Views         templates. No template language — it is PHP.

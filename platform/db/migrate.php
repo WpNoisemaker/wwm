@@ -176,6 +176,53 @@ function dt(?string $v): ?string
 
 $count = [];
 $memo  = [];
+/**
+ * Turn whatever the old theme stored for an image into something this site can render.
+ *
+ * The theme kept an image in three different shapes: a numeric attachment id (an uploaded photo),
+ * "photo:NAME" (one of the photographs bundled with the theme), or a plain URL. Copying that across
+ * untouched is what would have left every imported cover as a broken image.
+ */
+function img_ref(mixed $v): string
+{
+    $v = trim((string) $v);
+    if ($v === '' || $v === '0') {
+        return '';
+    }
+    if (ctype_digit($v)) {
+        return 'wp:' . $v;                       // resolved to a real path once the media step has run
+    }
+    if (str_starts_with($v, 'photo:')) {
+        return 'photos/' . preg_replace('/[^A-Za-z0-9_-]/', '', substr($v, 6)) . '.jpg';   // ships in assets/img/photos
+    }
+    return $v;                                   // a URL, a wp: reference, or an already-final path
+}
+
+/** WordPress's own featured image for a post, as an img_ref. */
+function thumb_ref(PDO $src, string $P, int $post): string
+{
+    return img_ref(wp_meta($src, $P, $post, '_thumbnail_id') ?? '');
+}
+
+/** A vendor's type is a taxonomy term (wd_vtype) on the old site; the new site keeps it as plain text. */
+function vendor_type(PDO $src, string $P, int $post): string
+{
+    foreach (['term_relationships', 'term_taxonomy', 'terms'] as $t) {
+        if (!has_table($src, $P . $t)) {
+            return '';
+        }
+    }
+    $q = $src->prepare(
+        "SELECT t.name FROM {$P}term_relationships tr
+         JOIN {$P}term_taxonomy tt ON tt.term_taxonomy_id = tr.term_taxonomy_id AND tt.taxonomy = 'wd_vtype'
+         JOIN {$P}terms t ON t.term_id = tt.term_id
+         WHERE tr.object_id = ? ORDER BY t.term_id LIMIT 1"
+    );
+    $q->execute([$post]);
+    // WordPress stores term names HTML-encoded ("Photography &amp; film").
+    return html_entity_decode((string) ($q->fetchColumn() ?: ''), ENT_QUOTES, 'UTF-8');
+}
+
 function tally(string $k, int $n = 1): void
 {
     global $count;
@@ -206,9 +253,9 @@ if (want('users')) {
             $name = trim(($meta['first_name'] ?? '') . ' ' . ($meta['last_name'] ?? '')) ?: $u['user_login'];
         }
         $data = [
-            // WordPress password hashes are portable: password_verify() reads $P$ and $wp$ hashes
-            // on PHP 8.4+, and Auth falls back to a phpass check on older versions, so nobody has
-            // to reset a password they already have.
+            // The WordPress hash is carried across untouched. PHP's password_verify() cannot read it,
+            // so Auth checks it through LegacyHash ($P$ phpass and the $wp$ form from WordPress 6.8)
+            // and replaces it with a modern hash on that person's first successful sign-in.
             'pass'       => (string) $u['user_pass'],
             'name'       => $name,
             'phone'      => (string) ($meta['wd_phone'] ?? ''),
@@ -264,7 +311,7 @@ if (want('weddings')) {
             'city'       => (string) ($d['city'] ?? ''),
             'country'    => (string) ($d['country'] ?? 'Nigeria'),
             'venue'      => (string) ($d['venue'] ?? ''),
-            'cover'      => (string) ($d['cover'] ?? ''),
+            'cover'      => img_ref($d['cover'] ?? ''),
             'plan'       => $plan,
             'template'   => (string) ($design['template'] ?? 'classic'),
             'design'     => $design ? json_encode($design, JSON_UNESCAPED_UNICODE) : null,
@@ -325,7 +372,7 @@ if (want('weddings')) {
                     'side'       => in_array($p['side'] ?? '', ['bride', 'groom'], true) ? $p['side'] : 'both',
                     'name'       => (string) ($p['name'] ?? ''),
                     'role'       => (string) ($p['role'] ?? ''),
-                    'photo'      => (string) ($p['photo'] ?? ''),
+                    'photo'      => img_ref($p['photo'] ?? ''),
                     'words'      => (string) ($p['words'] ?? ''),
                     'instagram'  => (string) ($p['ig'] ?? ''),
                     'status'     => !empty($p['name']) ? 'joined' : 'invited',
@@ -341,7 +388,7 @@ if (want('weddings')) {
                     'wedding_id' => $id,
                     'title'      => (string) ($g['name'] ?? ($g['title'] ?? 'Gift')),
                     'note'       => (string) ($g['note'] ?? ''),
-                    'image'      => (string) ($g['image'] ?? ''),
+                    'image'      => img_ref($g['image'] ?? ''),
                     'target'     => (int) ($g['target'] ?? 0),
                     'raised'     => (int) ($g['raised'] ?? 0),
                     'kind'       => in_array($g['kind'] ?? '', ['cash', 'item', 'fund'], true) ? $g['kind'] : 'cash',
@@ -422,7 +469,7 @@ if (want('wall')) {
                 'kind'       => 'photo',
                 'name'       => (string) $p['name'],
                 'body'       => (string) $p['caption'],
-                'image'      => 'wp:' . (int) $p['attachment_id'],
+                'image'      => img_ref((int) $p['attachment_id'] ?: ''),
                 'likes'      => max(0, (int) $p['likes']),
                 'status'     => $p['status'] === 'approved' ? 'live' : ($p['status'] === 'pending' ? 'held' : 'hidden'),
                 'created_at' => dt($p['created']) ?? date('Y-m-d H:i:s'),
@@ -510,6 +557,8 @@ if (want('vendors')) {
             'city'     => (string) (wp_meta($src, $P, $wpId, '_wd_city') ?? ''),
             'rating'   => (float) (wp_meta($src, $P, $wpId, '_wd_rating') ?? 0),
             'reviews'  => (int) (wp_meta($src, $P, $wpId, '_wd_reviews') ?? 0),
+            'category' => vendor_type($src, $P, $wpId),
+            'logo'     => thumb_ref($src, $P, $wpId),
             'wp_id'    => $wpId,
             'created_at' => dt($v['post_date']) ?? date('Y-m-d H:i:s'),
         ];
@@ -546,12 +595,29 @@ if (want('listings')) {
         $wpId = (int) $l['ID'];
         $partner = mapped('user', (int) $l['post_author']);
         if (!$partner || $dry) { if ($dry) { logged('listing', $wpId, null); tally('listings'); } continue; }
+        // The old theme keeps a listing as ONE array under _wl (sector, city, price, unit, about,
+        // photos, price_mode). The _wl_city and _wl_price keys are only search copies of two of its
+        // fields; reading the _wd_* keys instead — which is what this used to do — found nothing.
+        $wl   = wp_meta($src, $P, $wpId, '_wl');
+        $wl   = is_array($wl) ? $wl : [];
+        $ask  = (($wl['price_mode'] ?? 'fixed') === 'ask');
+        $refs = [];
+        foreach ((array) ($wl['photos'] ?? []) as $ph) {
+            $r = img_ref($ph);
+            if ($r !== '') { $refs[] = $r; }
+        }
+        if (!$refs && ($t = thumb_ref($src, $P, $wpId)) !== '') { $refs[] = $t; }
+        $kinds = ['stays' => 'stay', 'rides' => 'ride', 'travel' => 'honeymoon', 'asoebi' => 'asoebi'];
         $data = [
             'partner_id' => $partner,
             'title'      => (string) $l['post_title'],
-            'about'      => (string) $l['post_content'],
-            'city'       => (string) (wp_meta($src, $P, $wpId, '_wd_city') ?? ''),
-            'price'      => (int) (wp_meta($src, $P, $wpId, '_wd_price') ?? 0),
+            'kind'       => $kinds[(string) ($wl['sector'] ?? wp_meta($src, $P, $wpId, '_wl_sector') ?? '')] ?? 'other',
+            'about'      => trim((string) ($wl['about'] ?? '')) !== '' ? (string) $wl['about'] : (string) $l['post_content'],
+            'city'       => (string) ($wl['city'] ?? wp_meta($src, $P, $wpId, '_wl_city') ?? ''),
+            'price'      => $ask ? 0 : (int) ($wl['price'] ?? wp_meta($src, $P, $wpId, '_wl_price') ?? 0),
+            'price_unit' => (string) ($wl['unit'] ?? ''),
+            'on_ask'     => $ask ? 1 : 0,
+            'photos'     => json_encode(array_values($refs)),
             'status'     => $l['post_status'] === 'publish' ? 'live' : 'draft',
             'wp_id'      => $wpId,
             'created_at' => dt($l['post_date']) ?? date('Y-m-d H:i:s'),
@@ -678,6 +744,7 @@ if (want('posts')) {
             'title'   => (string) $p['post_title'],
             'excerpt' => mb_substr(trim(strip_tags((string) ($p['post_excerpt'] ?: $p['post_content']))), 0, 480),
             'body'    => (string) $p['post_content'],
+            'cover'   => thumb_ref($src, $P, $wpId),
             'status'  => $p['post_status'] === 'publish' ? 'live' : 'draft',
             'wp_id'   => $wpId,
             'published_at' => dt($p['post_date']),
@@ -726,10 +793,35 @@ if (want('media')) {
         tally('media');
     }
     say('media rows: ' . ($count['media'] ?? 0) . '  (files themselves are copied separately — see below)');
+
+    // Every attachment id has a path now, so swap the "wp:123" placeholders written above for it.
+    if (!$dry) {
+        $fixed = 0;
+        foreach ([['weddings', 'cover'], ['squad', 'photo'], ['gifts', 'image'], ['wall', 'image'], ['vendors', 'logo'], ['posts', 'cover']] as [$t, $c]) {
+            $fixed += Db::run("UPDATE `$t` x JOIN media m ON x.`$c` = CONCAT('wp:', m.wp_id) SET x.`$c` = m.path");
+        }
+        foreach (Db::all("SELECT id, photos FROM listings WHERE photos LIKE '%wp:%'") as $l) {
+            $list = json_decode((string) $l['photos'], true) ?: [];
+            foreach ($list as $i => $ref) {
+                if (is_string($ref) && preg_match('/^wp:(\d+)$/', $ref, $mm)) {
+                    $path = Db::val('SELECT path FROM media WHERE wp_id = ?', [(int) $mm[1]]);
+                    if ($path) { $list[$i] = $path; $fixed++; }
+                }
+            }
+            Db::update('listings', ['photos' => json_encode(array_values($list))], 'id=?', [(int) $l['id']]);
+        }
+        say("image references resolved: $fixed");
+        $left = (int) Db::val("SELECT (SELECT COUNT(*) FROM weddings WHERE cover LIKE 'wp:%') + (SELECT COUNT(*) FROM wall WHERE image LIKE 'wp:%')", [], 0);
+        if ($left) {
+            say("  $left image(s) point at an attachment WordPress no longer has. They will show the colour fallback.");
+        }
+    }
 }
 
 say("\nDone." . ($dry ? ' Nothing was written.' : ''));
 if (!$dry && ($count['media'] ?? 0)) {
-    say("Copy the uploads folder across so the images resolve:");
-    say("  rsync -a /path/to/old/wp-content/uploads/  public/uploads/");
+    say("Copy the old uploads folder across so the images resolve. Over SSH:");
+    say("  rsync -a /path/to/old/wp-content/uploads/  public/assets/uploads/");
+    say("Or in cPanel File Manager: upload the contents of wp-content/uploads into public/assets/uploads/,");
+    say("keeping the year/month folders exactly as they were.");
 }

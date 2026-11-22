@@ -52,11 +52,25 @@ final class Auth
     public static function attempt(string $email, string $pass): ?array
     {
         $u = Db::one('SELECT * FROM users WHERE email = ? LIMIT 1', [strtolower(trim($email))]);
-        if (!$u || !password_verify($pass, (string) $u['pass'])) {
+        if (!$u) {
+            return null;
+        }
+        $stored = (string) $u['pass'];
+        if (LegacyHash::handles($stored)) {
+            // Somebody moved across from the old WordPress site. PHP cannot read that hash, so it
+            // is checked here — and on a correct password replaced with a modern one straight away,
+            // which means each account only ever goes through this branch once.
+            if (!LegacyHash::verify($pass, $stored)) {
+                return null;
+            }
+            Db::update('users', ['pass' => password_hash($pass, PASSWORD_DEFAULT)], 'id = ?', [$u['id']]);
+            return $u;
+        }
+        if (!password_verify($pass, $stored)) {
             return null;
         }
         // Rehash if the cost has moved on since they last signed in.
-        if (password_needs_rehash((string) $u['pass'], PASSWORD_DEFAULT)) {
+        if (password_needs_rehash($stored, PASSWORD_DEFAULT)) {
             Db::update('users', ['pass' => password_hash($pass, PASSWORD_DEFAULT)], 'id = ?', [$u['id']]);
         }
         return $u;

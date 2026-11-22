@@ -43,21 +43,15 @@ column.
 
 So: not always `public_html`. If cPanel lists a different document root for the domain, use that one.
 
-### Do not extract this over a live WordPress site
+### If WordPress is still on that domain, do not extract over it
 
-If the domain currently runs your WordPress site, **do not extract into its folder.** The zip contains
-a root `.htaccess`, and extracting would replace WordPress's — breaking its permalinks and taking the
-live site down.
+The zip contains a root `.htaccess`, and extracting would replace WordPress's — breaking its
+permalinks and taking a live site down. Install into a subdomain instead (cPanel → **Domains** → *Create
+A New Domain*, e.g. `new.yourdomain.com`), check it there, then point the real domain's Document Root
+at the new folder when you are ready.
 
-Do it in two stages instead:
-
-1. Create a subdomain, e.g. `new.yourdomain.com` (cPanel → **Domains** → *Create A New Domain*).
-2. Install into that subdomain's own folder and check everything there, including the import in step 5.
-3. When you are happy, point the real domain at the new folder (cPanel → **Domains** → the pencil beside
-   the domain → change its Document Root), or move the files across. The old WordPress site stays
-   untouched in its folder until you decide it can go.
-
-That also keeps your promise that installing this never erases anything on the live site.
+**Already removed WordPress? Skip that — extract straight into the domain's folder.** But read step 5
+first: removing WordPress can remove the data you wanted to bring across.
 
 ### Extract
 
@@ -81,7 +75,9 @@ It must be there.
 
 **Optional, slightly faster:** set the domain's document root to the `public` folder inside it
 (cPanel → **Domains** → the pencil). The root `.htaccess` then has nothing to do. If your plan does not
-offer that, skip it — the site behaves identically either way.
+offer that, skip it — the site behaves identically either way. **Do it after step 3, not before:**
+`install.php` lives outside `public/`, so once the document root is `public/` the installer can no longer
+be reached.
 
 ---
 
@@ -117,37 +113,80 @@ Sign-in cookies are marked secure automatically when the site is served over HTT
 
 ## 5. Bring your WordPress data across (only if you are moving from the old site)
 
-The importer **only ever reads** from WordPress. It writes nothing back, touches no WordPress
-table, and can be run as many times as you like — running it twice does not duplicate anything.
+### What it needs, and what it does not
 
-Even so, work from a copy:
+| | |
+|---|---|
+| **The old WordPress database** | **Needed.** The users, weddings, RSVPs, payments, vendors and listings all live there. |
+| WordPress's own files (core, themes, plugins) | Not needed. They can be gone. |
+| The old `wp-content/uploads` folder | Needed only for the **photos** (covers, guest photos, vendor logos). |
 
-1. In the old site's cPanel → **phpMyAdmin** → select the WordPress database → **Export** → Go.
-2. Make a second database (step 1 again), call it `wpold`, and **Import** that file into it.
-3. Edit `db/migrate.php` and set the WordPress connection details near the top to that copy.
-4. Run it. Two ways:
+### Did removing WordPress take the database with it?
 
-   **Terminal** (cPanel → Terminal, if your plan has it):
-   ```bash
-   cd ~/public_html && php db/migrate.php --dry-run
-   ```
-   Read what it says it will do, then run it for real:
-   ```bash
-   cd ~/public_html && php db/migrate.php
-   ```
+Check before anything else: cPanel → **MySQL® Databases** → *Current Databases*. Look for the old
+WordPress one.
 
-   **No Terminal?** cPanel → **Cron Jobs** → add a job for one minute from now:
-   ```
-   /usr/local/bin/php /home/YOURCPUSER/public_html/db/migrate.php
-   ```
-   Let it fire once, then delete the cron job.
+- **Still listed — you are fine.** Carry on below. The files being gone does not matter.
+- **Gone.** Some "remove installation" tools (Softaculous is one) delete the database together with the
+  files unless you untick that option. You will need a backup to restore it from: a `.sql` export you made
+  earlier, cPanel → **Backup** if you ever made one there, or ask Namecheap support whether they hold a recent
+  backup of your account. Restore it with cPanel → **phpMyAdmin** → select an empty database → **Import**.
+- **Gone, no backup.** Then the old users, weddings and payments cannot be brought across, and the new site
+  starts empty. Nothing is broken — people simply sign up afresh.
 
-What comes across: users, weddings (with their programs, squad and registry), guests and RSVPs,
-the guest wall, payments, payouts, vendors and reviews, marketplace listings and orders, messages,
-community posts and replies, blog posts, settings and media references.
+### Run the import
 
-Existing WordPress users keep their email addresses. Their old password hashes do not carry over,
-so ask them to use **Forgot password** the first time.
+The importer **only ever reads** from WordPress. It never writes to it, so it is safe to point at the old
+database directly. (If the old site is still live, point it at an exported copy anyway.) You can run it
+as many times as you like — a second run updates what is there, it never duplicates.
+
+It is a command-line script, so it needs the cPanel Terminal (or SSH, if your plan has it). Preview first:
+
+```bash
+cd ~/public_html
+php db/migrate.php --wp-db=cpuser_wp123 --wp-user=cpuser_wp123 --wp-pass='the-database-password' --wp-prefix=wp_ --dry-run
+```
+
+It lists what it would bring across and changes nothing. If that looks right, run it for real — the same
+line without `--dry-run`.
+
+`--wp-prefix` is the table prefix, `wp_` unless you chose something else when WordPress was installed. If
+you are not sure, open phpMyAdmin and read the start of the table names.
+
+**No Terminal on your plan?** cPanel → **Cron Jobs** → add a job for a minute or two from now with the
+same command, using the full path to PHP:
+
+```
+/usr/local/bin/php /home/YOURCPUSER/public_html/db/migrate.php --wp-db=cpuser_wp123 --wp-user=cpuser_wp123 --wp-pass='the-database-password' --wp-prefix=wp_
+```
+
+Let it fire once, then **delete the cron job** — the database password is sitting in it.
+
+### Then copy the photos
+
+The importer ends by reminding you. Upload the **contents** of the old `wp-content/uploads` folder into
+`public/assets/uploads/`, keeping the year and month folders exactly as they were (`2025/09/...`). In File
+Manager that is: open `public/assets/uploads`, **Upload**, and drag the year folders in (or upload a zip
+of them and **Extract**).
+
+Any photo whose file or attachment WordPress no longer has simply shows the page's colour instead of a
+broken-image icon, and the importer prints how many it could not match.
+
+### What comes across
+
+Users, with their **existing passwords** (see below) · wedding pages with programs, squad and registry ·
+guests and RSVPs · the wall of love, with photos · payments and payouts · vendors, with their type and
+logo · reviews · marketplace listings, with their kind, city, price or *price on request*, unit and photos ·
+bookings and messages · community posts and replies · blog posts, with their cover · settings.
+
+WordPress administrators become **owners** here.
+
+### Passwords
+
+People sign in with the password they already had — the old WordPress hash is checked on their first sign-in
+and replaced with a modern one straight away. If an account had no email address on the old site it is given
+a placeholder (`wp123@imported.local`) so it can still be imported; that account cannot receive a reset
+email, so edit its address in the database or ask the person to make a fresh account.
 
 ---
 
@@ -188,6 +227,12 @@ Settings → *Show hidden files*). If your host disallows `.htaccess`, point the
 **Styles missing, page looks like plain text**
 The `public/assets` folder did not extract. Re-upload it.
 
+**“Forgot password” says it sent a link but nothing arrives**
+The site sends through your host's own mail. Check the spam folder first. If it never arrives, make sure
+the `mail` → `from` address in `config/config.php` is a real mailbox on **your own domain** (the installer sets it to `noreply@yourdomain`; create that mailbox in
+cPanel → **Email Accounts**): receiving servers distrust mail that claims to come from a domain the sending
+server does not belong to. Create the mailbox, set it as `from`, and try again.
+
 **“Your form expired”**
 A stale tab. Reload the page and submit again.
 
@@ -196,7 +241,7 @@ A stale tab. Reload the page and submit again.
 ## Where things live
 
 ```
-app/Core          App, Db, Router, View, Auth, Guard
+app/Core          App, Db, Router, View, Auth, Guard, LegacyHash, Mailer
 app/Models        Site, Wedding, Talk, Vendor, Listing
 app/Controllers   one per area of the site
 app/Views         plain PHP templates — no template language to learn
