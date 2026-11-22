@@ -16,7 +16,10 @@ final class SiteController
         $look  = isset($_GET['look']) && isset(self::LOOKS[$_GET['look']]) ? (string) $_GET['look'] : 'data';
         [$name, $class] = self::LOOKS[$look];
 
-        View::render('site/home', Site::home() + [
+        $data = Site::home();
+
+        View::render('site/home', $data + [
+            'footCities' => $data['cities'],
             'title'     => 'Wedding Websites & More — Nigerian & African weddings, everywhere',
             'desc'      => 'Browse real wedding pages, see the Buzz Chart, book verified vendors, and make your own wedding page free.',
             'tab'       => 'home',

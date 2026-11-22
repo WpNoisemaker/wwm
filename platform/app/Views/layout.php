@@ -18,6 +18,7 @@
 	<?php if (empty($bare)): ?><?= View::partial('partials/bar', get_defined_vars()) ?><?php endif; ?>
 	<?php if (empty($bare) && !empty($rail)): ?><?= View::partial('partials/rail', get_defined_vars()) ?><?php endif; ?>
 	<main class="main" id="main"><?= $content ?></main>
+	<?php if (empty($bare) && empty($rail)): ?><?= View::partial('partials/footer', get_defined_vars()) ?><?php endif; ?>
 	<?php if (empty($bare)): ?><?= View::partial('partials/tabs', get_defined_vars()) ?><?php endif; ?>
 </div>
 <div class="scrim" data-scrim></div>

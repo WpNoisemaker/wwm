@@ -21,6 +21,10 @@ function icon(string $n, int $s = 22): string {
         'lock'    => '<rect x="5" y="10.5" width="14" height="10" rx="3"/><path d="M8.5 10.5v-3a3.5 3.5 0 0 1 7 0v3"/>',
         'back'    => '<path d="M19 12H6M11 6l-6 6 6 6"/>',
         'bell'    => '<path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 19a2 2 0 0 0 4 0"/>',
+        'ticket'  => '<path d="M3 9.5V7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2.5a2.5 2.5 0 0 0 0 5V17a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2.5a2.5 2.5 0 0 0 0-5z"/><path d="M14 6v12"/>',
+        'play'    => '<circle cx="12" cy="12" r="8.5"/><path d="m10.3 9.2 4.6 2.8-4.6 2.8z"/>',
+        'qr'      => '<rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1.4"/><rect x="14" y="3.5" width="6.5" height="6.5" rx="1.4"/><rect x="3.5" y="14" width="6.5" height="6.5" rx="1.4"/><path d="M14 14h3v3h-3zM20.5 14v3M17.5 20.5h3M14 20.5h.01"/>',
+        'pin'     => '<path d="M12 21s6.5-6 6.5-10.5a6.5 6.5 0 1 0-13 0C5.5 15 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.4"/>',
         'check'   => '<path d="m5 12.5 4.5 4.5L19 7"/>',
     ];
     $d = $p[$n] ?? $p['spark'];

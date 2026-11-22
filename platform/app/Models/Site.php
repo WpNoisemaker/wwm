@@ -16,6 +16,8 @@ final class Site
             'vendors'  => self::vendors(6),
             'listings' => self::listings(6),
             'talks'    => Talk::feed('', 'top', 4),
+            'wall'     => self::wall(7),
+            'posts'    => self::posts(3),
             'stats'    => self::stats(),
         ];
     }
@@ -77,5 +79,38 @@ final class Site
     public static function tier(string $plan): string
     {
         return ['free' => 'Free', 'pro' => 'Pro', 'premium' => 'Premium', 'society' => 'High Society'][$plan] ?? 'Free';
+    }
+
+    /** @return array<int,array<string,mixed>> The latest wedding tips and how-tos. */
+    public static function posts(int $n = 3): array
+    {
+        return Db::all(
+            "SELECT * FROM posts WHERE status='live' ORDER BY published_at DESC, id DESC LIMIT ?",
+            [$n]
+        );
+    }
+
+    /**
+     * Love notes and photos guests have left, newest first. The wall is the clearest proof that
+     * these are real pages real guests used, so the homepage shows it rather than describing it.
+     *
+     * @return array<int,array<string,mixed>>
+     */
+    public static function wall(int $n = 8): array
+    {
+        return Db::all(
+            "SELECT wa.*, w.slug, w.partner_a, w.partner_b
+             FROM wall wa JOIN weddings w ON w.id = wa.wedding_id
+             WHERE wa.status='live' AND w.visibility='public'
+             ORDER BY wa.created_at DESC LIMIT ?",
+            [$n]
+        );
+    }
+
+    /** A saved setting, with a fallback for a fresh install that has not been configured yet. */
+    public static function setting(string $key, string $fallback = ''): string
+    {
+        $v = Db::val('SELECT v FROM settings WHERE k = ?', [$key]);
+        return $v === null || $v === '' ? $fallback : (string) $v;
     }
 }
