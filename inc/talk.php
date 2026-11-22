@@ -328,7 +328,21 @@ function wd_talk_query( $a = array() ) {
 		'ignore_sticky_posts' => true,
 	);
 	if ( $a['topic'] && isset( wd_talk_topics()[ $a['topic'] ] ) ) {
-		$args['meta_query'] = array( array( 'key' => '_wd_topic', 'value' => $a['topic'] ) ); // phpcs:ignore WordPress.DB.SlowDBQuery
+		// Posts written before the topics were reorganised still carry their old key, so a filter
+		// matches the new key and every old key that now lives under it. Nothing falls off the feed.
+		$keys = array( $a['topic'] );
+		foreach ( wd_talk_topic_map() as $was => $now ) {
+			if ( $now === $a['topic'] ) {
+				$keys[] = $was;
+			}
+		}
+		$args['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery
+			array(
+				'key'     => '_wd_topic',
+				'value'   => array_values( array_unique( $keys ) ),
+				'compare' => 'IN',
+			),
+		);
 	}
 	if ( 'top' === $a['sort'] ) {
 		$args['meta_key'] = '_wd_likes'; // phpcs:ignore WordPress.DB.SlowDBQuery

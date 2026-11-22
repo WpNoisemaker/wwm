@@ -13,8 +13,10 @@ of modals, horizontal snap rails, big tap targets, `100dvh`.
 
 ## Kept from the old theme (do not change)
 
-- **Fonts.** `--font-display` = Adventor (TeX Gyre Adventor / Avant Garde) for headings, buttons,
-  numerals. `--font-body` = Plus Jakarta Sans for text. No new font files.
+- **Fonts.** `--font-display` and `--font-num` = **Outfit** (variable 100–900, OFL, bundled):
+  geometric, with the light weights the oversized figures need. `--font-body` = Plus Jakarta Sans,
+  unchanged. `--font-logo` = TeX Gyre Adventor, reserved for the wordmark, so the logo is exactly
+  the logo it was.
 - **Logo, seal, wordmark** and the `.logo`/`.coin` markup.
 - **Ink** `#1C0B33` survives as the near-black text + dark-surface colour.
 - **Butter** `#FFD84D` and **marigold** `#FFC21A` survive and are **promoted to primary**.
@@ -95,6 +97,17 @@ guest wall, the tab rails. Those pick up glass + soft shadow + larger radii, tin
 couple's own `--w-primary` / `--w-accent` rather than by brand yellow, so each design still reads
 as itself. A template that defines its own treatment for a piece (e.g. Royal's `--w-r: 0px`
 square corners) always wins — Aurora chrome is written so templates can override it.
+
+## What shipped
+
+- `assets/css/aurora.css` — tokens, dark mode, glass, meshes, type, buttons, forms, cards, stats,
+  rails, sheets, app chrome, the African layer, the community deck, and the sweep that answers
+  every remaining component in main.css.
+- `assets/css/aurora-app.css` — the couple's dashboard and HQ.
+- `assets/css/aurora-wedding.css` — the wedding page and the free → pro → premium ladder.
+- `assets/js/aurora.js` — light/dark, the reacting header, press feedback, reveals, rails, sheets,
+  counting numerals. `assets/js/talk-deck.js` — the community swipe deck.
+- `inc/aurora.php` — enqueues, the light/dark switch, the notification channels, the safe upgrade.
 
 ## Two more motifs seen across the references
 
