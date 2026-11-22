@@ -75,25 +75,25 @@
 	W.WWM = { fmt: fmt, toast: toast, dots: setDots, naira: naira, text: setText };
 
 	/* ---------- theme: follows the device until the visitor picks ---------- */
-	var THEMES = ['auto', 'day', 'night'], NAMES = { auto: 'Auto, following your device', day: 'Day', night: 'Night' };
-	function stored() { try { return localStorage.getItem('wwm-theme') || 'auto'; } catch (e) { return 'auto'; } }
+	/* Night is the look of the site, all day, every day. The button switches to day and back, and the
+	   choice is remembered on this phone. */
+	function stored() { try { return localStorage.getItem('wwm-theme') === 'day' ? 'day' : 'night'; } catch (e) { return 'night'; } }
 	function applyTheme(choice) {
 		if (root.hasAttribute('data-fixed')) { return; }
 		var q = new URLSearchParams(location.search).get('theme');
-		var t = (q === 'day' || q === 'night') ? q : (choice === 'day' || choice === 'night' ? choice : (matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day'));
+		var t = (q === 'day' || q === 'night') ? q : choice;
 		root.setAttribute('data-theme', t);
-		d.querySelectorAll('[data-theme-toggle] use').forEach(function (u) { u.setAttribute('href', '#i-' + (choice === 'day' ? 'sun' : choice === 'night' ? 'moon' : 'auto')); });
+		d.querySelectorAll('[data-theme-toggle] use').forEach(function (u) { u.setAttribute('href', '#i-' + (t === 'day' ? 'sun' : 'moon')); });
 		var m = d.querySelector('meta[name="theme-color"]'); if (m) { m.content = m.getAttribute(t === 'night' ? 'data-night' : 'data-day') || m.content; }
 	}
 	applyTheme(stored());
-	try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { applyTheme(stored()); }); } catch (e) {}
 	d.addEventListener('click', function (e) {
 		var b = e.target.closest('[data-theme-toggle]'); if (!b) { return; }
-		var next = THEMES[(THEMES.indexOf(stored()) + 1) % 3];
+		var next = stored() === 'day' ? 'night' : 'day';
 		try { localStorage.setItem('wwm-theme', next); } catch (er) {}
 		var go = function () { applyTheme(next); };
 		if (d.startViewTransition) { d.startViewTransition(go); } else { go(); }
-		toast('Theme: ' + NAMES[next]); buzz();
+		toast(next === 'day' ? 'Day mode' : 'Night mode'); buzz();
 	});
 
 	/* ---------- headers go glassy once the page moves ---------- */
@@ -254,7 +254,7 @@
 				c.querySelectorAll('a').forEach(function (a) { a.tabIndex = n === i ? 0 : -1; });
 			});
 			front = cards[i];
-			if (pos) { pos.textContent = (i + 1) + ' of ' + cards.length; }
+			if (pos) { pos.textContent = (i + 1) + ' of ' + cards.length + (deck.dataset.more ? (i === cards.length - 1 ? ' · swipe again for the community' : ' · swipe for more') : ''); }
 			var like = d.querySelector('[data-post-like]'), save = d.querySelector('[data-post-save]'), open = d.querySelector('[data-post-open]');
 			if (like) { var on = front.dataset.liked === '1'; like.classList.toggle('is-on', on); like.setAttribute('aria-pressed', on); }
 			if (save) { var sv = !!saved[front.dataset.id]; save.classList.toggle('is-on', sv); save.setAttribute('aria-pressed', sv); }
@@ -263,6 +263,12 @@
 		}
 		function go(dir) {
 			var n = i + dir;
+			// A short deck (the homepage) hands over to the full community after its last post.
+			if (n >= cards.length && deck.dataset.more) {
+				front.classList.add('is-gone-l'); buzz();
+				setTimeout(function () { location.href = deck.dataset.more; }, 260);
+				return;
+			}
 			if (n < 0 || n >= cards.length) { if (front) { front.style.transform = ''; } toast(n < 0 ? 'This is the newest post' : 'You have seen them all'); return; }
 			i = n; lay(); buzz();
 		}
@@ -375,6 +381,18 @@
 		bip.prompt(); bip.userChoice.then(function () { bip = null; inst.forEach(function (x) { x.classList.remove('is-on'); }); });
 	});
 	addEventListener('appinstalled', function () { inst.forEach(function (x) { x.classList.remove('is-on'); }); toast('Installed. Find it on your home screen.'); });
+
+	/* ---------- a photo picked for the wall ---------- */
+	d.addEventListener('change', function (e) {
+		var i = e.target.closest('[data-photo-input]'); if (!i) { return; }
+		var lab = i.closest('.photo-pick'), n = lab && lab.querySelector('[data-photo-name]');
+		if (n) { n.textContent = i.files && i.files[0] ? i.files[0].name : 'Add a photo from the day'; }
+		if (lab) { lab.classList.toggle('is-set', !!(i.files && i.files[0])); }
+	});
+	d.addEventListener('click', function (e) {
+		if (!e.target.closest('[data-photo-add]')) { return; }
+		var i = d.querySelector('[data-photo-input]'); if (i) { e.preventDefault(); i.closest('form').scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(function () { i.click(); }, 450); }
+	});
 
 	/* ---------- the wedding page's quiz ---------- */
 	d.querySelectorAll('[data-quiz]').forEach(function (q) {

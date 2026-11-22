@@ -20,7 +20,7 @@ $fixTheme = $fixTheme ?? null;       // a wedding template that is always day or
 $tone     = $tone ?? '';             // 'mono' for a Free page
 $ink      = $ink ?? '';              // 'dark' on the light, paper-like templates
 $htmlAttr = '';
-if ($fixTheme) { $htmlAttr .= ' data-theme="' . e($fixTheme) . '" data-fixed'; }
+if ($fixTheme) { $htmlAttr .= ' data-theme="' . e($fixTheme) . '" data-fixed'; } else { $htmlAttr .= ' data-theme="night"'; }
 if ($tone)     { $htmlAttr .= ' data-tone="' . e($tone) . '"'; }
 if ($ink)      { $htmlAttr .= ' data-ink="' . e($ink) . '"'; }
 if (!empty($wtpl)) { $htmlAttr .= ' data-tpl="' . e($wtpl) . '"'; }
@@ -35,7 +35,7 @@ $og    = $ogImage ?? App::url('assets/img/brand/og.jpg');
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title><?= e($title ?? 'Wedding Websites & More') ?></title>
 <?php if (!empty($desc)): ?><meta name="description" content="<?= e($desc) ?>"><?php endif; ?>
-<meta name="theme-color" content="<?= e($themeColor ?? '#6F8590') ?>" data-day="<?= e($themeColor ?? '#6F8590') ?>" data-night="<?= e($themeColorNight ?? '#1E242E') ?>">
+<meta name="theme-color" content="<?= e($fixTheme ? ($themeColor ?? '#6F8590') : ($themeColorNight ?? '#1E242E')) ?>" data-day="<?= e($themeColor ?? '#6F8590') ?>" data-night="<?= e($themeColorNight ?? '#1E242E') ?>">
 <link rel="manifest" href="<?= e(App::url('manifest.webmanifest')) ?>">
 <link rel="icon" href="<?= e(App::url('assets/img/brand/favicon.ico')) ?>" sizes="48x48">
 <link rel="icon" href="<?= e(App::url('assets/img/brand/icon-192.png')) ?>" type="image/png" sizes="192x192">
@@ -51,7 +51,7 @@ $og    = $ogImage ?? App::url('assets/img/brand/og.jpg');
 <link rel="preload" as="font" type="font/woff2" href="<?= e(App::url('assets/fonts/urbanist-latin.woff2')) ?>" crossorigin>
 <link rel="stylesheet" href="<?= e(App::asset('assets/css/wwm.css')) ?>">
 <?php if (!$fixTheme): ?>
-<script>(function(){var t,q=new URLSearchParams(location.search).get('theme');try{t=localStorage.getItem('wwm-theme')}catch(e){}if(q==='day'||q==='night')t=q;if(t!=='day'&&t!=='night')t=matchMedia('(prefers-color-scheme: dark)').matches?'night':'day';document.documentElement.setAttribute('data-theme',t)})()</script>
+<script>(function(){var t='night',q=new URLSearchParams(location.search).get('theme');try{if(localStorage.getItem('wwm-theme')==='day')t='day'}catch(e){}if(q==='day'||q==='night')t=q;document.documentElement.setAttribute('data-theme',t)})()</script>
 <?php endif; ?>
 <script type="speculationrules"><?= json_encode(['prefetch' => [[
 	'where' => ['and' => [
@@ -72,8 +72,8 @@ $og    = $ogImage ?? App::url('assets/img/brand/og.jpg');
 		<?php else: ?>
 			<a class="cbtn" href="<?= e($home) ?>" aria-label="Wedding Websites &amp; More, home"><span class="logo">&amp;</span></a>
 		<?php endif; ?>
-		<p class="appbar__title"><?= e($appTitle) ?></p>
-		<?= $action ?? '<button class="cbtn" type="button" data-theme-toggle aria-label="Switch between day and night">' . icon('auto') . '</button>' ?>
+		<p class="appbar__title<?= mb_strlen($appTitle) > 16 ? ' appbar__title--long' : '' ?>"><?= e($appTitle) ?></p>
+		<?= $action ?? '<button class="cbtn" type="button" data-theme-toggle aria-label="Switch between day and night">' . icon('moon') . '</button>' ?>
 	</header>
 <?php endif; ?>
 <main id="main"<?= !empty($mainClass) ? ' class="' . e($mainClass) . '"' : '' ?>><?= $content ?></main>

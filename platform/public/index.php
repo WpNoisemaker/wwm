@@ -61,4 +61,12 @@ register_shutdown_function(static function (): void {
 
 $r = new Router();
 require $root . '/app/routes.php';
-$r->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $_SERVER['REQUEST_URI'] ?? '/');
+// A site installed in a folder (example.com/weddings/) routes the same as one at the root.
+$uri  = (string) parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+$base = rtrim((string) parse_url((string) App::config('url', ''), PHP_URL_PATH), '/');
+if ($base !== '' && str_starts_with($uri, $base . '/')) {
+    $uri = substr($uri, strlen($base));
+} elseif ($base !== '' && $uri === $base) {
+    $uri = '/';
+}
+$r->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $uri);

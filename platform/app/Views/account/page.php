@@ -22,7 +22,8 @@ $isPremium = Wedding::rank((string) $w['plan']) >= Wedding::rank('premium');
 				<label class="field"><span>Time</span><input class="input" name="time" type="time" value="<?= e($w['wed_time'] ? substr((string) $w['wed_time'], 0, 5) : '') ?>"></label>
 				<label class="field span-2"><span>Venue</span><input class="input" name="venue" value="<?= e($w['venue']) ?>"></label>
 				<label class="field"><span>City</span><input class="input" name="city" value="<?= e($w['city']) ?>"></label>
-				<label class="field"><span>State</span><input class="input" name="state" value="<?= e($w['state']) ?>"></label>
+				<label class="field"><span>State or region</span><input class="input" name="state" value="<?= e($w['state']) ?>"></label>
+				<label class="field span-2"><span>Country</span><select class="input" name="country"><?php foreach (Wedding::COUNTRIES as $c): ?><option<?= (string) $w['country'] === $c ? ' selected' : '' ?>><?= e($c) ?></option><?php endforeach; ?></select></label>
 			</div>
 		</section>
 		<section class="glass glass--plain glass--tight acct-card">
@@ -42,6 +43,13 @@ $isPremium = Wedding::rank((string) $w['plan']) >= Wedding::rank('premium');
 				<p class="note gap-t-sm"><?= icon('lock') ?><span>Your own colours come with Pro. <a href="<?= e(App::url('/pricing')) ?>">See the plans</a></span></p>
 			<?php endif; ?>
 		</section>
+		<?php if (Wedding::has($w, 'live')): ?>
+		<section class="glass glass--plain glass--tight acct-card" id="live">
+			<h2 class="h3">Livestream</h2>
+			<label class="field"><span>YouTube link for the day</span><input class="input" name="live_url" type="url" inputmode="url" value="<?= e($d['live_url'] ?? '') ?>" placeholder="https://youtube.com/live/…"></label>
+			<p class="help">Start a YouTube live (or schedule one), paste its link here, and it plays right on your page.</p>
+		</section>
+		<?php endif; ?>
 		<section class="glass glass--plain glass--tight acct-card" id="visibility">
 			<h2 class="h3">Who can see it</h2>
 			<div class="radios">

@@ -1,7 +1,7 @@
 <?php
 /** The wedding directory: search, a row of sorts and styles, the cities, then the pages. */
 $q = static function (array $over) use ($f): string {
-	$all = array_filter(array_merge(['q' => $f['q'], 'city' => $f['city'], 'style' => $f['style'], 'sort' => $f['sort']], $over), static fn ($v) => $v !== '' && $v !== null);
+	$all = array_filter(array_merge(['q' => $f['q'], 'plan' => $f['plan'], 'country' => $f['country'], 'city' => $f['city'], 'style' => $f['style'], 'sort' => $f['sort']], $over), static fn ($v) => $v !== '' && $v !== null);
 	return App::url('/weddings') . ($all ? '?' . http_build_query($all) : '');
 };
 ?>
@@ -9,15 +9,21 @@ $q = static function (array $over) use ($f): string {
 	<header class="page-head">
 		<span class="eyebrow">Real pages, real guests</span>
 		<h1><?= $f['q'] !== '' ? 'Weddings matching “' . e($f['q']) . '”' : 'Wedding pages' ?></h1>
-		<p class="lede"><?= e(number_format($total)) ?> page<?= $total === 1 ? '' : 's' ?><?= $f['city'] !== '' ? ' in ' . e($f['city']) : '' ?><?= $f['style'] !== '' ? ' · ' . e($f['style']) : '' ?></p>
+		<p class="lede"><?= e(number_format($total)) ?><?= $f['plan'] !== '' ? ' ' . e(Site::tier($f['plan'])) : '' ?> page<?= $total === 1 ? '' : 's' ?><?= $f['city'] !== '' ? ' in ' . e($f['city']) : ($f['country'] !== '' ? ' in ' . e($f['country']) : '') ?><?= $f['style'] !== '' ? ' · ' . e($f['style']) : '' ?></p>
 	</header>
 
 	<form class="searchbox narrow" method="get" action="<?= e(App::url('/weddings')) ?>" role="search">
 		<?= icon('search') ?>
 		<input class="input" type="search" name="q" value="<?= e($f['q']) ?>" placeholder="A couple, a city or a hashtag" aria-label="Search weddings">
-		<?php foreach (['city', 'style', 'sort'] as $k): if ($f[$k] !== '' && !($k === 'sort' && $f[$k] === 'soon')): ?><input type="hidden" name="<?= $k ?>" value="<?= e($f[$k]) ?>"><?php endif; endforeach; ?>
+		<?php foreach (['plan', 'country', 'city', 'style', 'sort'] as $k): if ($f[$k] !== '' && !($k === 'sort' && $f[$k] === 'soon')): ?><input type="hidden" name="<?= $k ?>" value="<?= e($f[$k]) ?>"><?php endif; endforeach; ?>
 	</form>
 
+	<nav class="seg seg--center seg--plans gap-t-sm" aria-label="Plan">
+		<a class="seg__a<?= $f['plan'] === '' ? ' is-on' : '' ?>" href="<?= e($q(['plan' => null, 'page' => null])) ?>">All plans</a>
+		<?php foreach ($plans as $pk => $pn): if (!$pn) { continue; } ?>
+			<a class="seg__a<?= $f['plan'] === $pk ? ' is-on' : '' ?>" href="<?= e($q(['plan' => $f['plan'] === $pk ? null : $pk, 'page' => null])) ?>"><?= e(Site::tier($pk)) ?> <span class="chip__n"><?= (int) $pn ?></span></a>
+		<?php endforeach; ?>
+	</nav>
 	<nav class="chips chips--center gap-t-sm" aria-label="Sort and style">
 		<?php foreach ([['soon', 'Coming up'], ['new', 'Just added'], ['buzz', 'Most buzz']] as [$k, $label]): ?>
 			<a class="chip<?= $f['sort'] === $k ? ' is-on' : '' ?>" href="<?= e($q(['sort' => $k === 'soon' ? null : $k, 'page' => null])) ?>"<?= $f['sort'] === $k ? ' aria-current="true"' : '' ?>><?= e($label) ?></a>
@@ -26,7 +32,15 @@ $q = static function (array $over) use ($f): string {
 			<a class="chip<?= $f['style'] === $st ? ' is-on' : '' ?>" href="<?= e($q(['style' => $f['style'] === $st ? null : $st, 'page' => null])) ?>"><?= e($st) ?></a>
 		<?php endforeach; ?>
 	</nav>
-	<?php if ($cities): ?>
+	<?php if (count($countries) > 1): ?>
+		<nav class="chips chips--center chips--quiet" aria-label="Countries">
+			<a class="chip<?= $f['country'] === '' ? ' is-on' : '' ?>" href="<?= e($q(['country' => null, 'city' => null, 'page' => null])) ?>">Everywhere</a>
+			<?php foreach ($countries as $c): ?>
+				<a class="chip<?= $f['country'] === $c['country'] ? ' is-on' : '' ?>" href="<?= e($q(['country' => $f['country'] === $c['country'] ? null : $c['country'], 'city' => null, 'page' => null])) ?>"><?= e($c['country']) ?> <span class="chip__n"><?= (int) $c['n'] ?></span></a>
+			<?php endforeach; ?>
+		</nav>
+	<?php endif; ?>
+	<?php if ($cities && $f['country'] === ''): ?>
 		<nav class="chips chips--center chips--quiet" aria-label="Cities">
 			<?php foreach ($cities as $c): ?>
 				<a class="chip<?= $f['city'] === $c['city'] ? ' is-on' : '' ?>" href="<?= e($q(['city' => $f['city'] === $c['city'] ? null : $c['city'], 'page' => null])) ?>"><?= e($c['city']) ?> <span class="chip__n"><?= (int) $c['n'] ?></span></a>
@@ -43,9 +57,9 @@ $q = static function (array $over) use ($f): string {
 	<?php else: ?>
 		<div class="cards gap-t">
 			<?php foreach ($rows as $w): ?>
-				<?= wedding_card($w, trim(Wedding::short($w) . ' · ' . (string) $w['city'], ' ·'), Site::tier((string) $w['plan'])) ?>
+				<?= wedding_card($w, trim(Wedding::short($w) . ' · ' . Wedding::place($w), ' ·'), Site::tier((string) $w['plan'])) ?>
 			<?php endforeach; ?>
 		</div>
-		<?= pager($page, $pages, ['q' => $f['q'], 'city' => $f['city'], 'style' => $f['style'], 'sort' => $f['sort'] === 'soon' ? '' : $f['sort']]) ?>
+		<?= pager($page, $pages, ['q' => $f['q'], 'plan' => $f['plan'], 'country' => $f['country'], 'city' => $f['city'], 'style' => $f['style'], 'sort' => $f['sort'] === 'soon' ? '' : $f['sort']]) ?>
 	<?php endif; ?>
 </div>

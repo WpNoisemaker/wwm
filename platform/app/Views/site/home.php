@@ -8,6 +8,7 @@
  * @var array $wall @var array $posts @var array $stats @var array $samples
  */
 $pro   = (int) Site::setting('pro_price', '198000');
+$countries = $countries ?? [];
 $prem  = (int) Site::setting('premium_price', '448000');
 $lead  = $samples['ivory'] ?? ($chart[0] ?? null);
 $other = null;
@@ -15,50 +16,63 @@ foreach ($chart as $c) { if (!$lead || $c['id'] !== $lead['id']) { $other = $c; 
 $free  = $samples['free'] ?? null;
 $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 ?>
-<section class="hero wrap" id="start">
-	<div class="hero__head">
-		<span class="eyebrow">Wedding pages for African couples</span>
-		<h1 class="hero__title">One beautiful page for your whole wedding</h1>
-		<p class="lede">Invite, RSVP, gifts, spraying and livestream in one link. Then watch your wedding climb the Buzz Chart.</p>
+<section class="hero hero--brand wrap" id="start">
+	<div class="hero__head hero__head--show">
+		<p class="greet" aria-label="Congratulations, in nine languages">
+			<?php foreach (['Barka da aure!', 'Ẹ kú ayẹyẹ!', 'Hongera kwa harusi!', 'Ayekoo!', 'Una go last o!', 'Halala!', 'Félicitations!', 'Congratulations!', 'Nnọọ!'] as $gi => $g): ?>
+				<span style="--i:<?= $gi ?>" aria-hidden="true"><?= e($g) ?></span>
+			<?php endforeach; ?>
+		</p>
+		<h1 class="hero__title">The African weddings everyone is talking about</h1>
+		<p class="lede">Make a beautiful wedding page free. Watch it climb the Buzz Chart. Book vendors couples trust, shop aso-ebi and stays, and say what you can&rsquo;t say at home in the community. From Lagos to London, Accra to Houston, Nairobi to Dubai.</p>
+		<form class="searchbox hero__search" method="get" action="<?= e(App::url('/weddings')) ?>" role="search">
+			<?= icon('search') ?>
+			<input class="input" type="search" name="q" placeholder="Find a couple, a city or a hashtag" aria-label="Search weddings">
+		</form>
 		<div class="hero__ctas">
 			<a class="pill" href="<?= e(App::url('/join')) ?>">Create your page, free</a>
-			<a class="pill pill--glass" href="<?= e(App::url('/templates')) ?>">See every design</a>
+			<a class="pill pill--glass" href="<?= e(App::url('/weddings')) ?>">Browse weddings</a>
 		</div>
 	</div>
-	<div class="trio">
-		<?php foreach ([['trio__a', $lead], ['trio__b', $other]] as [$slot, $w]): if (!$w) { continue; } ?>
-			<a class="<?= $slot ?>" href="<?= e(App::url('/w/' . $w['slug'])) ?>">
-				<span class="sq-label"><?= e(Wedding::names($w)) ?></span>
-				<?= sq((string) $w['cover'], Wedding::names($w), '', $slot === 'trio__a', initials($w)) ?>
+	<?php $show = $world ?? []; if ($show): ?>
+	<div class="showcase">
+		<?php foreach ($show as $n => $w): ?>
+			<a class="card showcase__i" href="<?= e(App::url('/w/' . $w['slug'])) ?>">
+				<?= sq((string) $w['cover'], Wedding::names($w), '', $n < 2, initials($w)) ?>
+				<span class="card__cap"><span class="card__t"><?= e(Wedding::names($w)) ?></span><span class="card__s"><?= e(Wedding::place($w)) ?></span></span>
 			</a>
 		<?php endforeach; ?>
-		<div class="trio__c">
-			<div class="glass">
-				<p class="glass__q">How many guests are you inviting?</p>
-				<div class="counter" data-counter data-min="10" data-max="2000" data-step="10" data-value="150" id="guests">
-					<button class="cbtn cbtn--lg" type="button" data-dec aria-label="Fewer guests"><?= icon('minus') ?></button>
-					<div class="counter__mid" aria-live="polite">
-						<?= dots('150', '', true) ?>
-						<span class="counter__unit" data-unit="Guest|Guests">Guests</span>
-					</div>
-					<button class="cbtn cbtn--lg" type="button" data-inc aria-label="More guests"><?= icon('plus') ?></button>
-				</div>
-				<div class="total" data-plans='<?= e(json_encode(['pro' => $pro, 'premium' => $prem])) ?>'>
-					<p class="total__k" id="plan-k">Pro page</p>
-					<p class="total__v" id="plan-v"><?= money(number_format($pro)) ?></p>
-				</div>
-			</div>
-			<a class="pill pill--block" href="<?= e(App::url('/join')) ?>">Create your wedding page</a>
-			<p class="after-pill">Or start <a href="<?= e(App::url($free ? '/w/' . $free['slug'] : '/join')) ?>">free, in black &amp; white</a></p>
-		</div>
 	</div>
+	<?php endif; ?>
 </section>
 
 <section class="wrap stats reveal" aria-label="The platform today">
 	<div class="tile"><?= dots((string) $stats['weddings'], 'dotnum--md') ?><span class="k">Wedding pages</span></div>
 	<div class="tile"><?= dots((string) $stats['guests'], 'dotnum--md') ?><span class="k">Guests replied</span></div>
-	<div class="tile"><?= dots((string) $stats['cities'], 'dotnum--md') ?><span class="k">Cities</span></div>
+	<div class="tile"><?= dots((string) $stats['countries'], 'dotnum--md') ?><span class="k">Countries</span></div>
 	<div class="tile"><?= dots((string) $stats['vendors'], 'dotnum--md') ?><span class="k">Vendors</span></div>
+</section>
+
+<section class="sec wrap">
+	<div class="sec-head reveal">
+		<span class="eyebrow">One platform for the whole wedding</span>
+		<h2>Everything, in one place</h2>
+		<p>Your page, your guests, your money, the people who make the day and the conversations around it.</p>
+	</div>
+	<div class="mosaic feat reveal">
+		<?php foreach ([
+			['s-ring', 'Wedding pages', 'Thirteen designs. Story, schedule, venue map and dress code in one link.', '/templates'],
+			['s-users', 'RSVP &amp; guest list', 'Guests reply in seconds, no account. Entry passes at the gate.', '/pricing'],
+			['s-gift', 'Gifts &amp; spraying', 'A registry and spraying from the seat, from anywhere in the world.', '/pricing'],
+			['s-live', 'Livestream', 'Family abroad watch the ceremony right on your page.', '/pricing'],
+			['s-crown', 'The Buzz Chart', 'The most-loved weddings this week, ranked by what guests did.', '/rankings'],
+			['s-store', 'Vendors', 'Photographers, planners, caterers and gele, reviewed by couples.', '/vendors'],
+			['s-bag', 'Marketplace', 'Aso-ebi, stays, rides and honeymoons, with payment held safe.', '/market'],
+			['s-chat', 'Community', 'Say what you can&rsquo;t say at home, under any pen name.', '/community'],
+		] as [$i, $t, $sub, $href]): ?>
+			<a class="tile tile--w2" href="<?= e(App::url($href)) ?>"><?= icon($i) ?><span class="v"><?= $t ?></span><span class="k"><?= $sub ?></span></a>
+		<?php endforeach; ?>
+	</div>
 </section>
 
 <?php if ($chart): ?>
@@ -77,54 +91,6 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 </section>
 <?php endif; ?>
 
-<section class="sec wrap">
-	<div class="sec-head reveal">
-		<span class="eyebrow">Your dashboard</span>
-		<h2>Your wedding, at a glance</h2>
-		<p>This is what couples see. Try the switches and drag the sliders.</p>
-	</div>
-	<div class="mosaic mosaic--wide reveal">
-		<button class="tile tile--glyph tile--sq is-on" type="button" data-toggle aria-pressed="true" data-toast-on="Your page is live" data-toast-off="Your page is hidden"><?= icon('s-power') ?><span data-on="Live" data-off="Off">Live</span></button>
-		<a class="tile tile--glyph tile--sq" href="<?= e(App::url($lead ? '/w/' . $lead['slug'] . '#story' : '/weddings')) ?>"><?= icon('s-book') ?><span>Story</span></a>
-		<div class="tile tile--w2"><span class="k">Page design</span><span class="v">Ivory &amp; Gold</span></div>
-		<button class="tile tile--glyph tile--sq" type="button" data-toggle aria-pressed="false" data-toast-on="Guests can spray from their seats" data-toast-off="Spraying is off"><?= icon('s-wallet') ?><span data-on="Spray on" data-off="Spray">Spray</span></button>
-		<button class="tile tile--glyph tile--sq" type="button" data-toggle aria-pressed="false" data-toast-on="Only guests with your code can open it" data-toast-off="Anyone with the link can open it"><?= icon('s-shield') ?><span data-on="Private" data-off="Public">Public</span></button>
-		<div class="slider" data-slider data-value="68" aria-label="RSVPs in"><div class="slider__fill"><span class="slider__txt"><span class="slider__val">68 %</span><span class="slider__lab">RSVPs in</span></span><i class="slider__grip"></i></div></div>
-		<div class="tile tile--w2"><span class="k">Dress code</span><span class="v">Ivory, beige &amp; gold</span></div>
-		<div class="tile tile--w2 tile--h2 tile--ticks">
-			<div><span class="k">Guests coming</span><span class="v">312</span><span class="k gap-k">Gifts</span><span class="v"><?= money('1.84m') ?></span><span class="k gap-k">Sprayed so far</span><span class="v"><?= money('420k') ?></span></div>
-			<div class="ticks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i class="is-on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-		</div>
-		<div class="slider" data-slider data-value="39" aria-label="Gifts funded"><div class="slider__fill"><span class="slider__txt"><span class="slider__val">39 %</span><span class="slider__lab">Gifts funded</span></span><i class="slider__grip"></i></div></div>
-		<button class="tile tile--glyph tile--sq" type="button" data-toast="Reminders go to guests who have not replied"><?= icon('s-warning') ?><span>Remind</span></button>
-		<button class="tile tile--glyph tile--sq" type="button" data-toggle aria-pressed="false" data-toast-on="Livestream is on your page" data-toast-off="Livestream is off"><?= icon('s-bulb') ?><span data-on="Live on" data-off="Stream">Stream</span></button>
-		<div class="tile tile--w2 tile--num"><div><span class="k">Days to go</span><span class="v">Sat, 24 Dec</span></div><?= dots('20', 'dotnum--sm') ?></div>
-		<div class="tile tile--w2"><span class="k">Reception</span><span class="v">Are Osan, Ilorin</span></div>
-		<div class="tile tile--w2"><span class="k">Guests arrive</span><span class="v">11:00 am</span></div>
-	</div>
-</section>
-
-<section class="sec wrap">
-	<div class="sec-head reveal">
-		<span class="eyebrow">One link on every invitation</span>
-		<h2>Everything your guests need</h2>
-	</div>
-	<div class="mosaic feat reveal">
-		<?php foreach ([
-			['s-ring', 'Your page', 'Story, schedule, venue map and dress code in one beautiful link.'],
-			['s-users', 'RSVP &amp; guest list', 'Guests answer in seconds, no account. You see who is coming, live.'],
-			['s-gift', 'Gifts &amp; cash', 'A registry that pays the couple, with a note from every guest.'],
-			['s-wallet', 'Spraying', 'Guests spray from their seats, or from London. The total climbs on screen.'],
-			['s-live', 'Livestream', 'Family abroad watch the ceremony right on your page.'],
-			['s-crown', 'Buzz Chart', 'The week&rsquo;s most-loved weddings, city by city.'],
-			['s-store', 'Marketplace', 'Aso-ebi, gele, stays, rides and honeymoons.'],
-			['s-chat', 'Community', 'Say what you can&rsquo;t say at home, under any pen name.'],
-		] as [$i, $t, $s]): ?>
-			<div class="tile tile--w2"><?= icon($i) ?><span class="v"><?= $t ?></span><span class="k"><?= $s ?></span></div>
-		<?php endforeach; ?>
-	</div>
-</section>
-
 <section class="sec wrap" id="designs">
 	<div class="sec-head reveal">
 		<span class="eyebrow">Ten Premium designs and counting</span>
@@ -141,6 +107,21 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 	</div>
 	<p class="sec-more reveal"><a class="pill pill--glass pill--sm" href="<?= e(App::url('/templates')) ?>">Compare every design <?= icon('arrow') ?></a></p>
 </section>
+
+<?php if (count($countries) > 1): ?>
+<section class="sec wrap" id="world">
+	<div class="sec-head reveal">
+		<span class="eyebrow">Wherever the family is</span>
+		<h2>African weddings, around the world</h2>
+		<p>Lagos, Abuja, Accra, Nairobi and Kigali. London, Houston, Toronto, Melbourne, Auckland and Dubai. Every page in its own currency.</p>
+	</div>
+	<div class="mosaic world reveal">
+		<?php foreach ($countries as $c): ?>
+			<a class="tile world__i" href="<?= e(App::url('/weddings?country=' . urlencode((string) $c['country']))) ?>"><span class="k"><?= (int) $c['n'] ?> page<?= (int) $c['n'] === 1 ? '' : 's' ?></span><span class="v"><?= e($c['country']) ?></span></a>
+		<?php endforeach; ?>
+	</div>
+</section>
+<?php endif; ?>
 
 <section class="sec wrap" id="plans">
 	<div class="sec-head reveal">
@@ -264,14 +245,26 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 			</div>
 			<a class="pill" href="<?= e(App::url('/community')) ?>">Open the community</a>
 		</div>
-		<?php if ($talks): $t = $talks[0]; ?>
-			<a class="post-solo reveal" href="<?= e(App::url('/community/' . $t['id'])) ?>">
-				<article class="post <?= e(talk_colour((string) $t['bg'])) ?>">
-					<span class="post__topic"><?= e(Talk::topic((string) $t['topic'])) ?></span>
-					<p class="post__text<?= mb_strlen((string) $t['body']) > 140 ? ' post__text--long' : '' ?>"><?= e(mb_strimwidth((string) $t['body'], 0, 220, '…')) ?></p>
-					<span class="post__meta"><?= e($t['pen_name'] ?: 'Someone') ?> · <?= (int) $t['likes'] ?> likes</span>
-				</article>
-			</a>
+		<?php if ($talks): ?>
+			<div class="home-deck reveal">
+				<div class="deck" data-deck data-more="<?= e(App::url('/community')) ?>" tabindex="0" aria-label="Community posts. Swipe to move between them.">
+					<?php foreach (array_slice($talks, 0, 3) as $t): ?>
+						<article class="post <?= e(talk_colour((string) $t['bg'])) ?>" data-id="<?= (int) $t['id'] ?>" data-href="<?= e(App::url('/community/' . $t['id'])) ?>" data-like="<?= e(App::url('/community/' . $t['id'] . '/like')) ?>" data-likes="<?= (int) $t['likes'] ?>" data-replies="<?= (int) $t['replies'] ?>" data-liked="0">
+							<span class="post__topic"><?= e(Talk::topic((string) $t['topic'])) ?></span>
+							<p class="post__text<?= mb_strlen((string) $t['body']) > 140 ? ' post__text--long' : '' ?>"><?= e(mb_strimwidth((string) $t['body'], 0, 240, '…')) ?></p>
+							<span class="post__meta"><?= e($t['pen_name'] ?: 'Someone') ?> · <?= (int) $t['replies'] ?> replies</span>
+						</article>
+					<?php endforeach; ?>
+				</div>
+				<p class="deck-pos" data-deck-pos aria-live="polite">1 of 3 · swipe for more</p>
+				<div class="actions">
+					<div class="act"><button class="cbtn cbtn--lg" type="button" data-deck-go="-1" aria-label="Previous post"><?= icon('back') ?></button></div>
+					<div class="act"><button class="cbtn cbtn--lg" type="button" data-post-like aria-label="Like" aria-pressed="false"><?= icon('heart') ?></button><span class="count" data-count="likes"><?= (int) $talks[0]['likes'] ?></span></div>
+					<div class="act"><a class="cbtn cbtn--lg" href="<?= e(App::url('/community/' . $talks[0]['id'])) ?>" data-post-open aria-label="Open the replies"><?= icon('chat') ?></a><span class="count" data-count="replies"><?= (int) $talks[0]['replies'] ?></span></div>
+					<div class="act"><button class="cbtn cbtn--lg" type="button" data-deck-go="1" aria-label="Next post"><?= icon('next') ?></button></div>
+				</div>
+				<?= Guard::field() ?>
+			</div>
 		<?php endif; ?>
 	</div>
 </section>
@@ -321,17 +314,3 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 		</div>
 	</div>
 </section>
-
-<script>
-	(function () {
-		var g = document.getElementById('guests'); if (!g) { return; }
-		var box = document.querySelector('[data-plans]'), p = JSON.parse(box.getAttribute('data-plans'));
-		var k = document.getElementById('plan-k'), v = document.getElementById('plan-v');
-		g.addEventListener('change', function (e) {
-			var n = e.detail;
-			if (n <= 100) { k.textContent = 'Free page'; WWM.text(v, '₦0'); }
-			else if (n < 400) { k.textContent = 'Pro page'; WWM.text(v, '₦' + WWM.fmt(p.pro)); }
-			else { k.textContent = 'Premium page'; WWM.text(v, '₦' + WWM.fmt(p.premium)); }
-		});
-	})();
-</script>

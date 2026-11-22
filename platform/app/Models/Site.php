@@ -15,7 +15,9 @@ final class Site
             'cities'   => self::cities(8),
             'vendors'  => self::vendors(6),
             'listings' => self::listings(6),
-            'talks'    => Talk::feed('', 'top', 4),
+            'talks'    => Talk::feed('', 'top', 3),
+            'countries' => Wedding::countryList(),
+            'world'    => self::world(5),
             'wall'     => self::wall(7),
             'posts'    => self::posts(3),
             'stats'    => self::stats(),
@@ -31,6 +33,18 @@ final class Site
              ORDER BY w.buzz DESC, w.views DESC LIMIT ?",
             [$n]
         );
+    }
+
+    /** @return array<int,array<string,mixed>> The most-talked-about page in each country, busiest first. */
+    public static function world(int $n = 5): array
+    {
+        $out = [];
+        foreach (Db::all("SELECT * FROM weddings WHERE visibility='public' ORDER BY buzz DESC") as $w) {
+            $c = (string) $w['country'];
+            if (!isset($out[$c])) { $out[$c] = $w; }
+            if (count($out) >= $n) { break; }
+        }
+        return array_values($out);
     }
 
     /** @return array<int,array<string,mixed>> Coming up soonest. */
@@ -71,6 +85,7 @@ final class Site
             'guests'   => (int) Db::val('SELECT COUNT(*) FROM guests', [], 0),
             'vendors'  => (int) Db::val('SELECT COUNT(*) FROM vendors', [], 0),
             'cities'   => (int) Db::val("SELECT COUNT(DISTINCT city) FROM weddings WHERE city<>''", [], 0),
+            'countries' => (int) Db::val("SELECT COUNT(DISTINCT country) FROM weddings WHERE country<>'' AND visibility='public'", [], 0),
             'raised'   => (int) Db::val("SELECT COALESCE(SUM(amount),0) FROM payments WHERE status IN ('paid','released')", [], 0),
         ];
     }

@@ -22,17 +22,13 @@ Options -Indexes
 	RewriteRule ^install\.php$ - [L]
 
 	# A request that has already been pointed into public/ is left alone. This is also what stops
-	# the two rules below from looping.
+	# the rule below from looping.
 	RewriteRule ^public/ - [L]
 
-	# Anything that really exists inside public/ is served as itself: CSS, JS, images, fonts.
-	# The test has to look in public/ — the file is not in the folder root, and checking the root
-	# sent every stylesheet to the app, which answered 404 and left the site unstyled.
-	RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f
+	# Everything else goes into public/, whose own .htaccess serves real files (CSS, JS, photos,
+	# fonts) as themselves and hands every other address to the app. Done this way, with no
+	# reference to the server's document root, it works at a domain's root and inside a folder.
 	RewriteRule ^(.*)$ public/$1 [L]
-
-	# Everything else is a page. Hand it to the front controller.
-	RewriteRule ^ public/index.php [L]
 </IfModule>
 
 # Stop a stray dot-file, dump or backup ever being downloaded.

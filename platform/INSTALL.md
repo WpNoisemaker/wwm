@@ -29,10 +29,17 @@ so there is no upgrade step to run.
    - **Couples from the old site → Ibrahim & Ummi → Restore.** Their Premium page comes back in the
      Ivory & Gold design with their account. Their old password still works. If the old demo page was
      sitting at `/w/ibrahim-ummi`, it is replaced; a real page there is never touched.
-   - **Demo content → Remove all demo content**, then **Add demo content**, to get the new demo: one
-     wedding page for every design and plan.
+   - **Demo content → Remove all demo content**, then **Add demo content**, to get the new demo: a
+     wedding page for every design and plan, and African couples in the UK, US, Canada, Australia,
+     Dubai, New Zealand, Kenya, Ghana and Rwanda, each in their own currency.
+   The site is dark by default; visitors can switch to day with the moon button. It also works if
+   you install it inside a folder of a domain (example.com/weddings) instead of at its root: set the
+   site address to that folder in the installer and everything follows.
 5. Open the site on your phone → browser menu → **Install app** (Android) or **Share → Add to Home
    Screen** (iPhone). It opens full screen like an app and keeps working when the signal drops.
+
+Guest photos uploaded to wedding pages are saved in `public/assets/uploads/` (the folder must be
+writable, which it is by default on cPanel). Back that folder up with the database.
 
 Optional tidy-up: these files from the previous version are no longer used and can be deleted —
 `public/assets/css/` (everything except `wwm.css`), `public/assets/js/app.js`, `public/assets/js/deck.js`,

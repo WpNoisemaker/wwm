@@ -11,6 +11,8 @@ final class WeddingController
             'q'     => trim((string) ($_GET['q'] ?? '')),
             'city'  => trim((string) ($_GET['city'] ?? '')),
             'style' => Wedding::styleKey((string) ($_GET['style'] ?? '')),
+            'plan'  => isset(Wedding::PLANS[$_GET['plan'] ?? '']) ? (string) $_GET['plan'] : '',
+            'country' => trim((string) ($_GET['country'] ?? '')),
             'sort'  => in_array($_GET['sort'] ?? '', ['soon', 'new', 'buzz'], true) ? (string) $_GET['sort'] : 'soon',
         ];
         $per   = 12;
@@ -27,6 +29,8 @@ final class WeddingController
             'page'    => $page,
             'f'       => $filter,
             'cities'  => Wedding::cityList(14),
+            'countries' => Wedding::countryList(),
+            'plans'   => Wedding::planCounts(),
             'styles'  => array_keys(Wedding::STYLES),
         ]);
     }
@@ -94,6 +98,8 @@ final class WeddingController
             'left'     => $next ? Wedding::until($next['when']) : null,
             'locked'   => $mine ? Wedding::locked($w) : [],
             'sponsors' => Wedding::has($w, 'quiet')   ? [] : Wedding::sponsors(2),
+            'vendors'  => Wedding::vendors($w),
+            'pass'     => $_SESSION['passes'][(string) $w['slug']] ?? null,
         ]);
     }
 
@@ -118,6 +124,7 @@ final class WeddingController
             self::back($slug, 'rsvp');
         }
 
+        $pass = Wedding::rank((string) $w['plan']) >= Wedding::rank('pro') && $coming !== 'no' ? strtoupper(bin2hex(random_bytes(3))) : null;
         Db::insert('guests', [
             'wedding_id' => $w['id'],
             'name'       => $name,
@@ -127,8 +134,12 @@ final class WeddingController
             'coming'     => $coming,
             'note'       => trim((string) ($_POST['note'] ?? '')),
             // A pass code only means something once the page can check people in.
-            'pass_code'  => Wedding::rank((string) $w['plan']) >= Wedding::rank('pro') ? strtoupper(bin2hex(random_bytes(3))) : null,
+            'pass_code'  => $pass,
         ]);
+        // The guest's entry pass is shown on the page straight away, and stays on this phone.
+        if ($pass !== null) {
+            $_SESSION['passes'][(string) $w['slug']] = ['code' => $pass, 'name' => $name, 'party' => $party];
+        }
         Db::run('UPDATE weddings SET buzz = buzz + 12 WHERE id = ?', [$w['id']]);
 
         Guard::flash('ok', $coming === 'no'
@@ -152,21 +163,31 @@ final class WeddingController
 
         $name = trim((string) ($_POST['name'] ?? ''));
         $body = trim((string) ($_POST['body'] ?? ''));
-        if ($name === '' || $body === '') {
+        // Guests on a Pro page and up can add a photo with their note.
+        $image = null;
+        if (Wedding::has($w, 'gallery') && !empty($_FILES['photo']['name'])) {
+            $image = Images::store($_FILES['photo'], 'wall/' . (int) $w['id']);
+            if ($image === null) {
+                Guard::flash('bad', 'That photo could not be used. Try a JPEG or PNG under 12 MB.');
+                self::back($slug, 'wall');
+            }
+        }
+        if ($name === '' || ($body === '' && $image === null)) {
             Guard::flash('bad', 'A note needs your name and a few words.');
             self::back($slug, 'wall');
         }
 
         Db::insert('wall', [
             'wedding_id' => $w['id'],
-            'kind'       => 'note',
+            'kind'       => $image !== null ? 'photo' : 'note',
             'name'       => mb_substr($name, 0, 160),
             'body'       => mb_substr($body, 0, 1000),
+            'image'      => $image ?? '',
             'status'     => 'live',
         ]);
-        Db::run('UPDATE weddings SET buzz = buzz + 6 WHERE id = ?', [$w['id']]);
-        Guard::flash('ok', 'Your note is on their wall.');
-        self::back($slug, 'wall');
+        Db::run('UPDATE weddings SET buzz = buzz + ? WHERE id = ?', [$image !== null ? 10 : 6, $w['id']]);
+        Guard::flash('ok', $image !== null ? 'Your photo is in their gallery.' : 'Your note is on their wall.');
+        self::back($slug, $image !== null ? 'photos' : 'wall');
     }
 
     /* ---------------------------------------------------------------------------------------- */

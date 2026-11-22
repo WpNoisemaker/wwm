@@ -2,7 +2,8 @@
 Options -Indexes
 <IfModule mod_rewrite.c>
 	RewriteEngine On
-	RewriteBase /
+	# No RewriteBase: the rules below are relative to this folder, so the site works at a domain's
+	# root or inside a folder of it.
 	# Serve real files and folders directly.
 	RewriteCond %{REQUEST_FILENAME} -f [OR]
 	RewriteCond %{REQUEST_FILENAME} -d

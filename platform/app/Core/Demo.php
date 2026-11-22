@@ -18,6 +18,14 @@ final class Demo
     /** Published on purpose: these accounts exist to be signed in to, and go when the demo does. */
     public const PASSWORD = 'DemoPass2026!';
 
+    /** What a guest gives, in each currency, so a London registry is in pounds that make sense. */
+    private const AMOUNTS = [
+        'NGN' => [5000, 10000, 20000, 25000, 50000, 100000], 'GBP' => [20, 30, 50, 75, 100, 150], 'USD' => [25, 50, 75, 100, 150, 250],
+        'CAD' => [25, 50, 75, 100, 150, 250], 'AUD' => [25, 50, 75, 100, 150, 250], 'NZD' => [25, 50, 75, 100, 150, 250],
+        'AED' => [100, 150, 200, 300, 500, 1000], 'KES' => [1000, 2000, 3000, 5000, 10000, 20000], 'GHS' => [100, 200, 300, 500, 800, 1000],
+        'RWF' => [10000, 20000, 30000, 50000, 100000, 200000], 'ZAR' => [200, 300, 500, 800, 1000, 2000],
+    ];
+
     /** Plans from which a guest pass code is issued, matching the real RSVP flow. */
     private const PASSES_FROM = ['pro', 'premium', 'society'];
 
@@ -161,10 +169,10 @@ final class Demo
                 'owner_id' => $uid[$w['email']], 'slug' => $w['slug'], 'partner_a' => $w['a'], 'partner_b' => $w['b'],
                 'hashtag' => $w['hashtag'], 'tagline' => $w['tagline'], 'story' => $w['story'],
                 'wed_date' => date('Y-m-d', $when), 'wed_time' => $w['time'],
-                'city' => $w['city'], 'state' => $w['state'], 'country' => 'Nigeria', 'venue' => $w['venue'],
+                'city' => $w['city'], 'state' => $w['state'], 'country' => $w['country'] ?? 'Nigeria', 'venue' => $w['venue'],
                 'cover' => $w['cover'], 'plan' => $w['plan'], 'template' => $w['template'],
                 'design' => json_encode(['primary' => $w['colours'][0], 'accent' => $w['colours'][1], 'photo2' => $w['photo2'] ?? '']),
-                'currency' => 'NGN', 'visibility' => $w['visibility'] ?? 'public', 'pass_code' => $w['pass_code'] ?? '',
+                'currency' => Wedding::CURRENCY[$w['country'] ?? 'Nigeria'] ?? 'NGN', 'visibility' => $w['visibility'] ?? 'public', 'pass_code' => $w['pass_code'] ?? '',
                 'buzz' => $w['buzz'], 'views' => $w['views'], 'created_at' => $ago(86400 * mt_rand(20, 90)),
             ]);
 
@@ -188,19 +196,20 @@ final class Demo
                 ]);
                 $sum = 0;
                 for ($p = mt_rand(4, 8); $p > 0; $p--) {
-                    $amount = $pick([5000, 10000, 20000, 25000, 50000, 100000]);
+                    $amount = $pick(self::AMOUNTS[Wedding::CURRENCY[$w['country'] ?? 'Nigeria'] ?? 'NGN'] ?? self::AMOUNTS['NGN']);
                     $sum += $amount;
                     $age = mt_rand(86400, 20 * 86400);
                     self::put('payments', [
                         'ref' => 'DEMO-' . strtoupper(substr($w['key'], 0, 3)) . '-' . (++$n), 'purpose' => 'gift',
                         'wedding_id' => $wid, 'gift_id' => $gid, 'payer_name' => $person(),
                         'message' => $pick($c['gift_messages']), 'amount' => $amount, 'fee' => (int) round($amount * $fee),
-                        'currency' => 'NGN', 'gateway' => 'demo', 'gateway_ref' => 'demo-' . $n,
+                        'currency' => Wedding::CURRENCY[$w['country'] ?? 'Nigeria'] ?? 'NGN', 'gateway' => 'demo', 'gateway_ref' => 'demo-' . $n,
                         'status' => $age > 10 * 86400 ? 'released' : 'paid',
                         'paid_at' => $ago($age), 'created_at' => $ago($age),
                     ]);
                 }
-                Db::update('gifts', ['raised' => $sum, 'target' => (int) (ceil($sum * (1.6 + mt_rand(0, 12) / 10) / 50000) * 50000)], 'id = ?', [$gid]);
+                $round = max(10, (int) (max(self::AMOUNTS[Wedding::CURRENCY[$w['country'] ?? 'Nigeria'] ?? 'NGN']) / 2));
+                Db::update('gifts', ['raised' => $sum, 'target' => (int) (ceil($sum * (1.6 + mt_rand(0, 12) / 10) / $round) * $round)], 'id = ?', [$gid]);
             }
 
             // Guests: a believable spread of yes, maybe and no, with pass codes where the plan issues them.
@@ -317,6 +326,27 @@ final class Demo
                 $row('Traditional wedding', 'traditional', $at(0, '11:00'), $venue, 'Aso-oke, gele and agbada'),
                 $row('Church service', 'church', $at(1, '10:00'), "Cathedral Church, {$city}", 'Suits and long dresses'),
                 $row('Reception', 'reception', $at(1, '14:00'), $venue, 'Black tie'),
+            ],
+            'ghana' => [
+                $row('Knocking ceremony', 'traditional', $at(-1, '10:00'), "The bride's family house, {$city}", 'Kente, family colours'),
+                $row('Engagement', 'traditional', $at(0, '09:00'), "The bride's family house, {$city}", 'Kente and kaba'),
+                $row('Church wedding', 'church', $at(0, '14:00'), "Holy Spirit Cathedral, {$city}", 'Suits and long dresses'),
+                $row('Reception', 'reception', $at(0, '18:00'), $venue, 'Kente accents'),
+            ],
+            'kenya' => [
+                $row('Ruracio (dowry)', 'traditional', $at(-14, '10:00'), "The bride's family home, {$city}", 'Kitenge and shukas'),
+                $row('Church wedding', 'church', $at(0, '10:00'), "All Saints Cathedral, {$city}", 'Suits and long dresses'),
+                $row('Reception', 'reception', $at(0, '14:00'), $venue, 'Garden formal'),
+            ],
+            'rwanda' => [
+                $row('Gusaba (traditional)', 'traditional', $at(-1, '11:00'), "The bride's family home, {$city}", 'Imishanana and umukenyero'),
+                $row('Church wedding', 'church', $at(0, '10:00'), "Sainte-Famille Church, {$city}", 'Suits and long dresses'),
+                $row('Reception', 'reception', $at(0, '15:00'), $venue, 'Smart, gold accents'),
+            ],
+            'diaspora' => [
+                $row('Traditional wedding', 'traditional', $at(-1, '13:00'), $venue, 'Aso-oke, gele and agbada'),
+                $row('White wedding', 'church', $at(0, '11:00'), "St. Mary's Church, {$city}", 'Suits and long dresses'),
+                $row('Reception', 'reception', $at(0, '17:00'), $venue, 'Black tie'),
             ],
             default => [
                 $row('White wedding', 'church', $at(0, '11:00'), "Chapel, {$city}", 'Suits and long dresses'),

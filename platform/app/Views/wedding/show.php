@@ -22,6 +22,10 @@ if ($photo2 === '' && $photos) { $photo2 = (string) $photos[0]['image']; }
 $canGive = Site::setting('pay_public', '') !== '';
 $pageUrl = App::url('/w/' . $slug);
 $timeline = is_array($dz['timeline'] ?? null) ? $dz['timeline'] : [];
+// Guests give in the couple's own money: naira in Lagos, pounds in London, cedis in Accra.
+[$curName, $curMin, $curStart] = ['NGN' => ['Naira', 500, 5000], 'GBP' => ['Pounds', 5, 20], 'USD' => ['Dollars', 5, 20], 'CAD' => ['Dollars', 5, 20],
+    'AUD' => ['Dollars', 5, 20], 'NZD' => ['Dollars', 5, 20], 'EUR' => ['Euros', 5, 20], 'AED' => ['Dirhams', 10, 50], 'KES' => ['Shillings', 100, 1000],
+    'GHS' => ['Cedis', 10, 50], 'RWF' => ['Francs', 1000, 5000], 'ZAR' => ['Rand', 20, 100]][(string) $w['currency']] ?? ['Naira', 500, 5000];
 // A Pro page wears the couple's own two colours: in the glow, the squircles and the ticks.
 if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
     $pc = (string) ($dz['primary'] ?? ''); $ac = (string) ($dz['accent'] ?? '');
@@ -42,9 +46,26 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 
 <article class="wed wed--<?= e($key) ?>" data-hero="<?= e($hero) ?>">
 	<div class="wrap"><?= flashes() ?></div>
+	<?php if (!empty($pass)): ?>
+		<section class="wrap pass-wrap">
+			<div class="pass glass">
+				<span class="eyebrow">Your entry pass · <?= e($names) ?></span>
+				<p class="pass__name"><?= e($pass['name']) ?><?= (int) $pass['party'] > 1 ? ' + ' . ((int) $pass['party'] - 1) : '' ?></p>
+				<p class="pass__code" aria-label="Pass code <?= e(implode(' ', str_split($pass['code']))) ?>"><?php foreach (str_split((string) $pass['code']) as $ch): ?><span><?= e($ch) ?></span><?php endforeach; ?></p>
+				<p class="pass__when"><?= e(Wedding::when($w)) ?><?= ($where = Wedding::where($w)) !== '' ? ' · ' . e($where) : '' ?></p>
+				<p class="after-pill">Show this at the gate. Take a screenshot so you have it without signal.</p>
+			</div>
+		</section>
+	<?php endif; ?>
 
-	<?php if ($isFree): ?>
-		<div class="plan-flag"><span>Free page · black &amp; white<?php if ($mine): ?> <a href="<?= e(App::url('/pricing')) ?>">Add colour</a><?php endif; ?></span></div>
+	<?php /* Every page says which plan it is on, right at the top. */
+	$planName = Site::tier((string) $w['plan']);
+	$planLine = $isFree ? 'black &amp; white' : ($key === 'classic' ? 'their own colours' : e($design['name']) . ' design'); ?>
+	<div class="plan-flag plan-flag--<?= e((string) $w['plan']) ?>">
+		<span><?php if (Wedding::has($w, 'badge')): ?><?= icon('s-shield') ?><?php endif; ?><b><?= e($planName) ?> page</b> · <?= $planLine ?><?php if ($isFree && $mine): ?> <a href="<?= e(App::url('/pricing')) ?>">Add colour</a><?php endif; ?></span>
+	</div>
+	<?php if (Wedding::has($w, 'monogram')): ?>
+		<div class="monogram" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" pathLength="360" stroke-dasharray="0 9"/><circle cx="50" cy="50" r="40" pathLength="360" stroke-dasharray="0 4.5" class="monogram__in"/></svg><b><?= e(mb_strtoupper(mb_substr((string) $w['partner_a'], 0, 1))) ?><span>&amp;</span><?= e(mb_strtoupper(mb_substr((string) $w['partner_b'], 0, 1))) ?></b></div>
 	<?php endif; ?>
 	<?php if ($mine): ?>
 		<p class="wed-owner wrap"><?= icon('lock') ?><span>This is your page<?= (string) $w['visibility'] !== 'public' ? ', and it is private' : '' ?>. <a href="<?= e(App::url('/account/page')) ?>">Edit it</a></span></p>
@@ -156,9 +177,9 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 				<div class="w-head"><span class="eyebrow">From your seat, or from London</span><h2>Spray the couple</h2></div>
 				<div class="glass">
 					<p class="glass__q">How much are you spraying?</p>
-					<div class="counter" data-counter data-min="500" data-max="1000000" data-step="500" data-value="5000" data-comma data-input="#g-amount" id="spray-counter">
+					<div class="counter" data-counter data-min="<?= $curMin ?>" data-max="<?= $curMin * 2000 ?>" data-step="<?= $curMin ?>" data-value="<?= $curStart ?>" data-comma data-input="#g-amount" id="spray-counter">
 						<button class="cbtn cbtn--lg" type="button" data-dec aria-label="Less"><?= icon('minus') ?></button>
-						<div class="counter__mid" aria-live="polite"><?= dots('5,000', 'dotnum--md', true) ?><span class="counter__unit">Naira</span></div>
+						<div class="counter__mid" aria-live="polite"><?= dots(number_format($curStart), 'dotnum--md', true) ?><span class="counter__unit"><?= e($curName) ?></span></div>
 						<button class="cbtn cbtn--lg" type="button" data-inc aria-label="More"><?= icon('plus') ?></button>
 					</div>
 					<div class="total"><p class="total__k">Sprayed so far</p><p class="total__v"><?= money(number_format((int) Db::val("SELECT COALESCE(SUM(amount),0) FROM payments WHERE wedding_id = ? AND purpose = 'spray' AND status IN ('paid','released')", [$w['id']], 0)), (string) $w['currency']) ?></p></div>
@@ -189,9 +210,15 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	</section>
 	<?php endif; ?>
 
-	<?php if (Wedding::has($w, 'live')): ?>
-	<section class="sec wrap w-live-sec">
-		<div class="tile w-live reveal">
+	<?php if (Wedding::has($w, 'live')):
+		$yt = '';
+		if (preg_match('~(?:youtu\.be/|youtube\.com/(?:watch\?v=|live/|embed/))([A-Za-z0-9_-]{11})~', (string) ($dz['live_url'] ?? ''), $m)) { $yt = $m[1]; } ?>
+	<section class="sec wrap w-live-sec" id="live">
+		<?php if ($yt !== ''): ?>
+			<div class="w-head reveal"><span class="eyebrow">Wherever you are</span><h2>Watch live</h2></div>
+			<div class="live-player reveal"><iframe src="https://www.youtube-nocookie.com/embed/<?= e($yt) ?>" title="<?= e($names) ?> livestream" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>
+		<?php endif; ?>
+		<div class="tile w-live reveal<?= $yt !== '' ? ' gap-t-sm' : '' ?>">
 			<span class="live__dot" aria-hidden="true"></span>
 			<div><span class="v">Watch live</span><span class="k"><?= e($dz['live'] ?? 'The ceremony streams right here on the day.') ?></span></div>
 			<button class="pill pill--sm pill--glass" type="button" data-toggle aria-pressed="false" data-toast-on="We will remind you when it starts" data-toast-off="Reminder off"><span data-on="Reminder on" data-off="Remind me">Remind me</span></button>
@@ -199,16 +226,19 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	</section>
 	<?php endif; ?>
 
-	<?php if ($photos): ?>
+	<?php if (Wedding::has($w, 'gallery')): ?>
 	<section class="sec wrap" id="photos">
-		<div class="w-head reveal"><span class="eyebrow"><?= (int) $tally['photos'] ?> from guests</span><h2>Photos</h2></div>
-		<div class="gallery reveal">
-			<?php foreach (array_slice($photos, 0, 8) as $ph): ?><?= sq((string) $ph['image'], (string) $ph['body']) ?><?php endforeach; ?>
-		</div>
+		<div class="w-head reveal"><span class="eyebrow"><?= (int) $tally['photos'] ? (int) $tally['photos'] . ' from guests' : 'From guests' ?></span><h2>Photos</h2></div>
+		<?php if ($photos): ?>
+			<div class="gallery reveal">
+				<?php foreach (array_slice($photos, 0, 12) as $ph): ?><?= sq((string) $ph['image'], (string) $ph['body']) ?><?php endforeach; ?>
+			</div>
+		<?php endif; ?>
+		<p class="center gap-t-sm reveal"><a class="pill pill--glass" href="#wall" data-photo-add><?= icon('camera') ?>Add your photo</a></p>
 	</section>
 	<?php endif; ?>
 
-	<?php $quiz = is_array($dz['quiz'] ?? null) ? $dz['quiz'] : []; if ($quiz && $premium): ?>
+	<?php $quiz = Wedding::has($w, 'squad') ? Wedding::quiz($w, $programs, $squad) : []; if ($quiz): ?>
 	<section class="sec wrap" id="quiz">
 		<div class="w-head reveal"><span class="eyebrow">How well do you know them?</span><h2>The quiz</h2></div>
 		<div class="glass glass--plain quiz reveal" data-quiz>
@@ -230,12 +260,31 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	</section>
 	<?php endif; ?>
 
+	<?php if ($vendors): ?>
+	<section class="sec wrap" id="vendors">
+		<div class="w-head reveal"><span class="eyebrow">Booked and reviewed by <?= e($names) ?></span><h2>The people behind our day</h2></div>
+		<div class="rows narrow reveal" style="width:min(100%,720px)">
+			<?php foreach ($vendors as $v): ?>
+				<a class="row-item" href="<?= e(App::url('/vendors/' . $v['slug'])) ?>">
+					<?= sq((string) $v['logo'], '', 'row-item__pic') ?>
+					<span><span class="row-item__t"><?= e($v['name']) ?><?php if ((int) $v['verified']): ?> <span class="badge"><?= icon('check') ?>Verified</span><?php endif; ?></span><span class="row-item__s"><?= e($v['category'] . ' · ' . $v['city']) ?></span><?php if ($v['said']): ?><span class="row-item__s">“<?= e(mb_strimwidth((string) $v['said'], 0, 90, '…')) ?>”</span><?php endif; ?></span>
+					<span class="row-item__end"><?= str_repeat('★', max(0, min(5, (int) $v['stars']))) ?></span>
+				</a>
+			<?php endforeach; ?>
+		</div>
+	</section>
+	<?php endif; ?>
+
 	<section class="sec wrap w-wall" id="wall">
 		<div class="w-head reveal"><span class="eyebrow"><?= (int) $tally['notes'] ? (int) $tally['notes'] . ' wishes so far' : 'Be the first' ?></span><h2>Wall of love</h2></div>
-		<form class="wish-compose reveal" method="post" action="<?= e(App::url('/w/' . $slug . '/note')) ?>">
+		<?php $canPhoto = Wedding::has($w, 'gallery'); ?>
+		<form class="wish-compose reveal" method="post" action="<?= e(App::url('/w/' . $slug . '/note')) ?>"<?= $canPhoto ? ' enctype="multipart/form-data"' : '' ?>>
 			<?= Guard::field() ?>
 			<label class="sr" for="n-body">Your wish</label>
-			<textarea class="input" id="n-body" name="body" rows="3" maxlength="1000" required placeholder="Write something they will keep…"></textarea>
+			<textarea class="input" id="n-body" name="body" rows="3" maxlength="1000"<?= $canPhoto ? '' : ' required' ?> placeholder="<?= $canPhoto ? 'Write something they will keep, or add a photo…' : 'Write something they will keep…' ?>"></textarea>
+			<?php if ($canPhoto): ?>
+				<label class="photo-pick"><input type="file" name="photo" accept="image/jpeg,image/png,image/webp" data-photo-input><?= icon('camera') ?><span data-photo-name>Add a photo from the day</span></label>
+			<?php endif; ?>
 			<div class="wish-compose__row">
 				<label class="sr" for="n-name">Your name</label>
 				<input class="input" id="n-name" name="name" required placeholder="Your name" autocomplete="name">
@@ -330,12 +379,12 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		<a class="cbtn cbtn--sm" href="#" data-close aria-label="Close"><?= icon('close') ?></a>
 		<h2 id="give-t" data-give-title>A gift</h2><span></span>
 	</div>
-	<div class="counter counter--sheet" data-counter data-min="500" data-max="1000000" data-step="500" data-value="5000" data-comma data-input="#g-amount">
+	<div class="counter counter--sheet" data-counter data-min="<?= $curMin ?>" data-max="<?= $curMin * 2000 ?>" data-step="<?= $curMin ?>" data-value="<?= $curStart ?>" data-comma data-input="#g-amount">
 		<button class="cbtn" type="button" data-dec aria-label="Less"><?= icon('minus') ?></button>
-		<div class="counter__mid"><?= dots('5,000', 'dotnum--md', true) ?><span class="counter__unit">Naira</span></div>
+		<div class="counter__mid"><?= dots(number_format($curStart), 'dotnum--md', true) ?><span class="counter__unit"><?= e($curName) ?></span></div>
 		<button class="cbtn" type="button" data-inc aria-label="More"><?= icon('plus') ?></button>
 	</div>
-	<input type="hidden" id="g-amount" value="5000">
+	<input type="hidden" id="g-amount" value="<?= $curStart ?>">
 	<?php if ($canGive): ?>
 		<button class="pill pill--block" type="button">Continue to pay</button>
 	<?php else: ?>

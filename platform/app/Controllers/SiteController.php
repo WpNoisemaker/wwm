@@ -7,12 +7,13 @@ final class SiteController
     public function home(): void
     {
         $data = Site::home();
+        $shown = array_map(static fn ($w) => (int) $w['id'], array_merge(array_slice($data['chart'], 0, 4), $data['world']));
         View::render('site/home', $data + [
-            'title'    => 'Wedding Websites & More: wedding pages for African couples',
-            'desc'     => 'One beautiful page for your whole wedding: invite, RSVP, gifts, spraying and livestream in one link. See the Buzz Chart, book vendors, make yours free.',
+            'title'    => 'Wedding Websites & More: the African weddings everyone is talking about',
+            'desc'     => 'Wedding pages, the Buzz Chart, vendors, a marketplace and a community for African weddings, from Lagos to London, Accra to Houston. Make your wedding page free.',
             'tab'      => 'home',
-            'appTitle' => 'Wedding Pages',
-            'samples'  => self::samples(),
+            'appTitle' => 'Wedding Websites & More',
+            'samples'  => self::samples($shown),
         ]);
     }
 
@@ -29,10 +30,16 @@ final class SiteController
         ]);
     }
 
-    /** One public page per design, so a design is always shown on a real wedding. */
-    public static function samples(): array
+    /**
+     * One public page per design, so a design is always shown on a real wedding. Pages already
+     * shown elsewhere on the screen ($skip ids) are passed over when another page wears the design.
+     */
+    public static function samples(array $skip = []): array
     {
         $rows = Db::all("SELECT * FROM weddings WHERE visibility = 'public' ORDER BY buzz DESC");
+        if ($skip) {
+            usort($rows, static fn ($a, $b) => (int) in_array((int) $a['id'], $skip, true) <=> (int) in_array((int) $b['id'], $skip, true));
+        }
         $out = [];
         foreach ($rows as $w) {
             $d = Design::forWedding($w);
@@ -61,8 +68,8 @@ final class SiteController
             'display'          => 'standalone',
             'display_override' => ['standalone', 'minimal-ui'],
             'orientation'      => 'portrait',
-            'background_color' => '#7B8F9B',
-            'theme_color'      => '#6F8590',
+            'background_color' => '#1F2531',
+            'theme_color'      => '#1E242E',
             'categories'       => ['lifestyle', 'social'],
             'icons'            => [
                 ['src' => App::url('assets/img/brand/icon-192.png'), 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any'],

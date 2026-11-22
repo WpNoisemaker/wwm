@@ -160,6 +160,18 @@ final class Wedding
             $args[]  = $city;
         }
 
+        $country = trim((string) ($f['country'] ?? ''));
+        if ($country !== '') {
+            $where[] = 'w.country = ?';
+            $args[]  = $country;
+        }
+
+        $plan = (string) ($f['plan'] ?? '');
+        if (isset(self::PLANS[$plan])) {
+            $where[] = 'w.plan = ?';
+            $args[]  = $plan;
+        }
+
         $style = self::styleKey((string) ($f['style'] ?? ''));
         if ($style !== '') {
             $bits = [];
@@ -219,6 +231,25 @@ final class Wedding
     }
 
     /** @return array<int,array{city:string,n:int}> Every city with a public page, busiest first. */
+    /** @return array<int,array{country:string,n:int}> Countries with at least one public page. */
+    public static function countryList(): array
+    {
+        return Db::all(
+            "SELECT country, COUNT(*) n FROM weddings
+             WHERE visibility = 'public' AND country <> '' GROUP BY country ORDER BY n DESC, country"
+        );
+    }
+
+    /** @return array<string,int> How many public pages each plan has, in plan order. */
+    public static function planCounts(): array
+    {
+        $out = array_fill_keys(array_keys(self::PLANS), 0);
+        foreach (Db::all("SELECT plan, COUNT(*) n FROM weddings WHERE visibility = 'public' GROUP BY plan") as $r) {
+            $out[(string) $r['plan']] = (int) $r['n'];
+        }
+        return $out;
+    }
+
     public static function cityList(int $n = 24): array
     {
         return Db::all(
@@ -234,6 +265,13 @@ final class Wedding
      * ------------------------------------------------------------------------------------- */
 
     public const PLANS = ['free' => 0, 'pro' => 1, 'premium' => 2, 'society' => 3];
+
+    /** Where African couples are getting married, and the money their guests give in. */
+    public const COUNTRIES = ['Nigeria', 'Ghana', 'Kenya', 'Rwanda', 'South Africa', 'United Kingdom', 'United States', 'Canada',
+                              'Australia', 'New Zealand', 'United Arab Emirates'];
+    public const CURRENCY = ['Nigeria' => 'NGN', 'Ghana' => 'GHS', 'Kenya' => 'KES', 'Rwanda' => 'RWF', 'South Africa' => 'ZAR',
+                             'United Kingdom' => 'GBP', 'United States' => 'USD', 'Canada' => 'CAD', 'Australia' => 'AUD',
+                             'New Zealand' => 'NZD', 'United Arab Emirates' => 'AED'];
 
     /** The lowest plan that unlocks each part of the page. */
     private const NEEDS = [
@@ -463,6 +501,82 @@ final class Wedding
         }
         $t = (int) strtotime((string) $w['wed_date']);
         return date((date('Y', $t) === date('Y') ? 'j M' : 'j M Y'), $t);
+    }
+
+    /** The vendors the couple booked: the ones this couple has reviewed. */
+    public static function vendors(array $w): array
+    {
+        return Db::all(
+            "SELECT v.*, MAX(r.stars) stars, MAX(r.body) said FROM vendors v JOIN reviews r ON r.vendor_id = v.id
+             WHERE r.status = 'live' AND r.name = ? GROUP BY v.id ORDER BY v.verified DESC, v.name",
+            [self::names($w)]
+        );
+    }
+
+    /**
+     * The guest quiz. A couple can write their own; until they do, one is made from what is already
+     * on the page (the city, the date, the venues, the squad), so every Pro page and up has one.
+     *
+     * @return array<int,array{0:string,1:array<int,string>,2:int}>
+     */
+    public static function quiz(array $w, array $programs, array $squad): array
+    {
+        $own = self::design($w)['quiz'] ?? null;
+        if (is_array($own) && $own) {
+            return $own;
+        }
+        mt_srand((int) $w['id'] * 7919);
+        $q = [];
+        $ask = static function (string $text, string $right, array $wrong) use (&$q): void {
+            $wrong = array_values(array_unique(array_filter($wrong, static fn ($x) => $x !== '' && $x !== $right)));
+            if (count($wrong) < 2 || $right === '') {
+                return;
+            }
+            $opts = array_slice($wrong, 0, 3);
+            $opts[] = $right;
+            shuffle($opts);
+            $q[] = [$text, $opts, (int) array_search($right, $opts, true)];
+        };
+        $others = array_map(static fn ($r) => (string) $r['city'], Db::all("SELECT DISTINCT city FROM weddings WHERE city <> '' AND city <> ? LIMIT 12", [(string) $w['city']]));
+        shuffle($others);
+        $ask('Which city is hosting the celebration?', (string) $w['city'], $others);
+        if (!empty($w['wed_date'])) {
+            $t = (int) strtotime((string) $w['wed_date']);
+            $ask('When is the big day?', date('D j M', $t), [date('D j M', $t - 7 * 86400), date('D j M', $t + 14 * 86400), date('D j M', $t - 28 * 86400)]);
+        }
+        if (trim((string) $w['hashtag']) !== '') {
+            $tags = array_map(static fn ($r) => (string) $r['hashtag'], Db::all("SELECT hashtag FROM weddings WHERE hashtag <> '' AND id <> ? LIMIT 10", [$w['id']]));
+            shuffle($tags);
+            $ask('What is their hashtag?', (string) $w['hashtag'], $tags);
+        }
+        $venues = array_values(array_filter(array_map(static fn ($p) => trim((string) $p['venue']), $programs)));
+        foreach (array_slice($programs, 0, 2) as $p) {
+            if (trim((string) $p['venue']) !== '') {
+                $pool = array_map(static fn ($r) => (string) $r['venue'], Db::all("SELECT DISTINCT venue FROM programs WHERE venue <> '' AND wedding_id <> ? LIMIT 10", [$w['id']]));
+                shuffle($pool);
+                $ask('Where is the ' . (string) $p['title'] . '?', (string) $p['venue'], array_merge(array_diff($venues, [(string) $p['venue']]), $pool));
+            }
+        }
+        foreach ($squad as $s) {
+            if (preg_match('/^(chief bridesmaid|best man|maid of honour)$/i', (string) $s['role'])) {
+                $names = array_map(static fn ($x) => (string) $x['name'], $squad);
+                shuffle($names);
+                $ask('Who is the ' . strtolower((string) $s['role']) . '?', (string) $s['name'], $names);
+            }
+        }
+        mt_srand();
+        return array_slice($q, 0, 6);
+    }
+
+    /** "Lagos" at home, "London, United Kingdom" abroad: the city, and the country when it is not Nigeria. */
+    public static function place(array $w): string
+    {
+        $city = trim((string) ($w['city'] ?? ''));
+        $country = trim((string) ($w['country'] ?? ''));
+        if ($country === '' || $country === 'Nigeria') {
+            return $city;
+        }
+        return $city !== '' ? $city . ', ' . $country : $country;
     }
 
     /** The date as dot numerals: "24.12.26". */

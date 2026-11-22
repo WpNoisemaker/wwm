@@ -102,10 +102,20 @@ final class AccountController
         $w = $this->need();
         if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             Guard::must();
-            $design = json_encode(array_filter([
-                'primary' => self::hex((string) ($_POST['primary'] ?? '')),
-                'accent'  => self::hex((string) ($_POST['accent'] ?? '')),
-            ]));
+            // Only the fields on this form change. Everything else the design holds (a custom design,
+            // the story diary, the quiz, the colours of the day) is kept as it was.
+            $d = Wedding::design($w);
+            foreach (['primary', 'accent'] as $k) {
+                $hex = self::hex((string) ($_POST[$k] ?? ''));
+                if ($hex !== '') { $d[$k] = $hex; }
+            }
+            if (array_key_exists('live_url', $_POST)) {
+                $live = trim((string) $_POST['live_url']);
+                if ($live === '' || preg_match('~^https://(www\.)?(youtube\.com|youtu\.be)/~i', $live)) {
+                    $d['live_url'] = $live;
+                }
+            }
+            $design = json_encode($d, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             // Going public from private is the one change email confirmation gates. A page that is
             // already public is left alone when it is edited — pulling it down would punish somebody
             // for a check they were never asked to pass.
@@ -125,6 +135,8 @@ final class AccountController
                 'wed_time'   => ($_POST['time'] ?? '') !== '' ? (string) $_POST['time'] : null,
                 'city'       => trim((string) ($_POST['city'] ?? '')),
                 'state'      => trim((string) ($_POST['state'] ?? '')),
+                'country'    => in_array($_POST['country'] ?? '', Wedding::COUNTRIES, true) ? (string) $_POST['country'] : (string) $w['country'],
+                'currency'   => Wedding::CURRENCY[(string) ($_POST['country'] ?? $w['country'])] ?? (string) $w['currency'],
                 'venue'      => trim((string) ($_POST['venue'] ?? '')),
                 'template'   => array_key_exists((string) ($_POST['template'] ?? ''), Design::choices($w)) ? (string) $_POST['template'] : (string) $w['template'],
                 'design'     => $design,

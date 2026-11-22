@@ -21,8 +21,10 @@ function icon(string $n, int $s = 0, string $cls = ''): string {
  * reader; the drawn sign is hidden from it so the amount is not read as "N 2.7m".
  */
 function money(string $amount, string $cur = 'NGN'): string {
-    $sign = ['NGN' => '<span class="ngn">N</span>', 'USD' => '$', 'GHS' => 'GH₵', 'KES' => 'KSh', 'ZAR' => 'R'];
-    $sym  = ['NGN' => '₦', 'USD' => '$', 'GHS' => '₵', 'KES' => 'KSh', 'ZAR' => 'R'];
+    $sign = ['NGN' => '<span class="ngn">N</span>', 'USD' => '$', 'GHS' => 'GH₵', 'KES' => 'KSh ', 'ZAR' => 'R', 'GBP' => '£', 'EUR' => '€',
+             'CAD' => 'C$', 'AUD' => 'A$', 'NZD' => 'NZ$', 'AED' => 'AED ', 'RWF' => 'FRw '];
+    $sym  = ['NGN' => '₦', 'USD' => '$', 'GHS' => 'GH₵', 'KES' => 'KSh ', 'ZAR' => 'R', 'GBP' => '£', 'EUR' => '€',
+             'CAD' => 'C$', 'AUD' => 'A$', 'NZD' => 'NZ$', 'AED' => 'AED ', 'RWF' => 'FRw '];
     $draw = $sign[$cur] ?? e($cur) . ' ';
     $read = $sym[$cur] ?? $cur;
     return '<span class="money"><span class="sr">' . e($read . $amount) . '</span><span aria-hidden="true">' . $draw . e($amount) . '</span></span>';
@@ -70,17 +72,30 @@ function photo(?string $path, string $alt = '', bool $eager = false, string $siz
     } else {
         $src = App::asset('assets/img/' . $path);
     }
-    // Our own photos come with a 640px copy beside them, so a phone never downloads the big one.
-    $set = '';
-    if (!str_starts_with($path, 'http') && !str_starts_with($path, '/') && !str_starts_with($path, 'wp-content/') && str_ends_with($path, '.jpg')) {
-        $small = substr($path, 0, -4) . '.640.jpg';
-        if (is_file(App::root() . '/public/assets/img/' . $small)) {
-            $set = ' srcset="' . e(App::url('assets/img/' . $small)) . ' 640w, ' . e(App::url('assets/img/' . $path)) . ' 1600w"'
-                 . ' sizes="' . e($sizes !== '' ? $sizes : '(min-width: 960px) 30vw, 60vw') . '"';
+    // Our own photos (the library and guest uploads) sit beside smaller and WebP copies of
+    // themselves. A phone gets the 640px WebP; a big screen the 1600px one; an old browser the JPEG.
+    // A photo whose file is missing is left out, so the squircle's colour stands in for it.
+    $local = !str_starts_with($path, 'http') && !str_starts_with($path, '/') && !str_starts_with($path, 'wp-content/');
+    $sizes = $sizes !== '' ? $sizes : '(min-width: 960px) 30vw, 60vw';
+    $lazy  = ' loading="' . ($eager ? 'eager' : 'lazy') . '" decoding="async"' . ($eager ? ' fetchpriority="high"' : '');
+    $fail  = ' onerror="this.onerror=null;this.style.visibility=\'hidden\'"';
+    if ($local) {
+        $dir  = str_starts_with($path, 'uploads/') ? 'assets/' : 'assets/img/';
+        $disk = App::root() . '/public/' . $dir;
+        if (!is_file($disk . $path)) {
+            return '';
         }
+        $stem = (string) preg_replace('/\.(jpe?g|png)$/i', '', $path);
+        $url  = static fn (string $p): string => e(App::url($dir . $p));
+        if ($stem !== $path && is_file($disk . $stem . '-640.jpg')) {
+            $webp = is_file($disk . $stem . '.webp') && is_file($disk . $stem . '-640.webp')
+                ? '<source type="image/webp" srcset="' . $url($stem . '-640.webp') . ' 640w, ' . $url($stem . '.webp') . ' 1600w" sizes="' . e($sizes) . '">'
+                : '';
+            return '<picture>' . $webp . '<img src="' . $url($path) . '" srcset="' . $url($stem . '-640.jpg') . ' 640w, ' . $url($path) . ' 1600w" sizes="' . e($sizes) . '" alt="' . e($alt) . '"' . $lazy . $fail . '></picture>';
+        }
+        return '<img src="' . $url($path) . '" alt="' . e($alt) . '"' . $lazy . $fail . '>';
     }
-    return '<img src="' . e($src) . '"' . $set . ' alt="' . e($alt) . '"'
-         . ' loading="' . ($eager ? 'eager' : 'lazy') . '" decoding="async"' . ($eager ? ' fetchpriority="high"' : '') . '>';
+    return '<img src="' . e($src) . '" alt="' . e($alt) . '"' . $lazy . $fail . '>';
 }
 
 /** Listings keep a JSON array of photos; the homepage only ever wants the first. */

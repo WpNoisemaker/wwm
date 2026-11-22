@@ -12,7 +12,7 @@ $nav = require __DIR__ . '/nav.php';
 	</nav>
 	<div class="site-tools">
 		<a class="cbtn" href="<?= e(App::url('/search')) ?>" aria-label="Search"><?= icon('search') ?></a>
-		<button class="cbtn" type="button" data-theme-toggle aria-label="Switch between day and night"><?= icon('auto') ?></button>
+		<button class="cbtn" type="button" data-theme-toggle aria-label="Switch between day and night"><?= icon('moon') ?></button>
 		<?php if (Auth::check()): ?>
 			<a class="pill pill--sm" href="<?= e(App::url('/account')) ?>">Your page</a>
 		<?php else: ?>
