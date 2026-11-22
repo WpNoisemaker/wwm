@@ -1,0 +1,93 @@
+/*
+ * LOOK 4 — DATA. Built to the Superpower reference: an off-white sheet, a light wordmark, two
+ * plain-word tabs with the active one in a dark pill, a large light name, a row of dot-matrix
+ * figures each with its own small pill, frosted pill rows down the left, and two mesh cards.
+ */
+.look-data {
+	--bg: #EFEFED;
+	--ink: #121214;
+	--ink-2: #4C4C52;
+	--muted: #8E8E95;
+	--faint: #B9B9BF;
+	--card: rgba(255,255,255,.72);
+	--card-2: rgba(255,255,255,.84);
+	--card-solid: #FBFBFA;
+	--edge: rgba(255,255,255,.9);
+	--hair: rgba(18,18,20,.06);
+	--acid: #E4F94B;
+	--acid-ink: #1D2405;
+	--r-lg: 26px;
+	--r: 22px;
+	background: #EFEFED;
+}
+.look-data::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: #EFEFED; }
+.look-data::before { opacity: .4; }
+
+.dt-word { font-size: 1.02rem; font-weight: 500; letter-spacing: -.03em; }
+.dt-tabs { display: flex; align-items: baseline; gap: 18px; margin: 14px 0 10px; }
+.dt-tabs a { font-size: 1.75rem; font-weight: 400; letter-spacing: -.035em; color: var(--faint); }
+.dt-tabs a.is-on { color: var(--ink); }
+.dt-name { font-size: clamp(2rem, 7.4vw, 2.9rem); font-weight: 400; letter-spacing: -.04em; margin: 2px 0 20px; }
+
+/* The figure row: a dot numeral with its own pill beside it. */
+.dt-figs { display: flex; flex-wrap: wrap; gap: 26px 30px; margin-bottom: 22px; }
+.dt-fig { display: grid; gap: 4px; }
+.dt-fig__t { display: flex; align-items: center; gap: 9px; }
+.dt-fig__n { font-size: 1.95rem; }
+.dt-fig__p { display: inline-flex; align-items: center; min-height: 24px; padding: 0 10px; border-radius: 999px; background: rgba(18,18,20,.06); color: var(--ink-2); font-size: .72rem; font-weight: 500; }
+.dt-fig__p--acid { background: var(--acid); color: var(--acid-ink); }
+
+/* The wide frosted strip with scattered dots and a card riding on top of it. */
+.dt-strip { position: relative; display: flex; align-items: center; gap: 12px; min-height: 74px; padding: 0 22px; border-radius: 999px; background: var(--card); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border: 1px solid var(--edge); overflow: hidden; margin-bottom: 22px; }
+.dt-strip__dots {
+	position: absolute; inset: 0; opacity: .9;
+	background-image:
+		radial-gradient(circle, #D6D6D9 40%, transparent 42%),
+		radial-gradient(circle, #DEDEE1 38%, transparent 40%),
+		radial-gradient(circle, #E4E4E7 36%, transparent 38%);
+	background-size: 27px 27px, 23px 19px, 31px 25px;
+	background-position: 0 4px, 11px 13px, 7px 21px;
+}
+/* A handful of colour dots, placed rather than tiled, the way the reference scatters them. */
+.dt-strip__dots i:nth-child(1) { left: 14%; top: 30%; background: #F0A23E; }
+.dt-strip__dots i:nth-child(2) { left: 29%; top: 62%; background: #E2607F; }
+.dt-strip__dots i:nth-child(3) { left: 57%; top: 26%; background: #64A6E0; }
+.dt-strip__dots i:nth-child(4) { left: 71%; top: 68%; background: #6FBF6B; }
+.dt-strip__dots i:nth-child(5) { left: 86%; top: 38%; background: #C79BE8; }
+.dt-strip__dots i { position: absolute; width: 7px; height: 7px; border-radius: 50%; }
+.dt-strip__card { position: relative; margin-left: auto; margin-right: auto; display: grid; gap: 1px; padding: 11px 18px; border-radius: 18px; background: #fff; box-shadow: 0 6px 20px -8px rgba(18,18,20,.2); }
+.dt-strip__card b { display: flex; align-items: center; gap: 6px; font-size: .88rem; font-weight: 500; }
+.dt-strip__card small { font-size: .74rem; color: var(--muted); }
+.dt-strip__m { position: relative; flex: none; font-size: .76rem; color: var(--muted); }
+
+.dt-row { display: flex; align-items: center; gap: 12px; min-height: 58px; padding: 0 18px; border-radius: 999px; background: var(--card); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); border: 1px solid var(--edge); }
+.dt-row svg { color: var(--ink-2); flex: none; }
+.dt-row b { flex: 1; min-width: 0; font-size: .97rem; font-weight: 450; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dt-row em { font-style: normal; display: inline-flex; align-items: center; min-height: 26px; padding: 0 11px; border-radius: 999px; background: rgba(18,18,20,.055); color: var(--muted); font-size: .76rem; }
+.dt-rows { display: grid; gap: 8px; }
+
+.dt-mesh { position: relative; display: grid; align-content: space-between; min-height: 210px; padding: 18px; border-radius: var(--r-lg); color: #fff; overflow: hidden; }
+.dt-mesh__k { text-align: center; font-size: .9rem; opacity: .95; }
+.dt-mesh__n { justify-self: center; align-self: center; font-size: clamp(2.4rem, 9vw, 3.1rem); }
+.dt-mesh__s { text-align: center; font-size: .82rem; opacity: .95; }
+/* The two gradients from the reference, matched stop for stop. */
+.dt-mesh--score { background: radial-gradient(120% 96% at 16% 2%, #F6CE94 0%, transparent 56%), radial-gradient(128% 118% at 84% 98%, #2E9E44 0%, transparent 62%), linear-gradient(172deg, #F2B45F 0%, #93C95E 44%, #2FA043 100%); }
+.dt-mesh--age   { background: radial-gradient(120% 96% at 14% 4%, #D3E2F2 0%, transparent 54%), radial-gradient(128% 118% at 86% 96%, #EF8938 0%, transparent 60%), linear-gradient(170deg, #C2D6EA 0%, #E8B68B 50%, #F08B38 100%); }
+/* A soft scrim so a thin dot numeral survives the gradient underneath it. */
+.dt-mesh::after { content: ""; position: absolute; inset: 0; background: radial-gradient(58% 42% at 50% 50%, rgba(0,0,0,.13) 0%, transparent 72%); pointer-events: none; }
+.dt-mesh > * { position: relative; z-index: 1; }
+
+.dt-h { font-size: 1.32rem; font-weight: 450; letter-spacing: -.03em; margin: 26px 0 3px; }
+.dt-sub { font-size: .86rem; color: var(--muted); margin-bottom: 13px; }
+.dt-small { display: grid; gap: 4px; padding: 16px; border-radius: var(--r); background: var(--card); border: 1px solid var(--edge); }
+.dt-small__k { display: flex; align-items: center; gap: 8px; font-size: .82rem; color: var(--muted); }
+.dt-small__v { font-size: 1.42rem; }
+.dt-small__u { font-size: .78rem; color: var(--muted); }
+
+.look-data .bar { background: rgba(239,239,237,.72); }
+.look-data .bar__mark { background: #121214; color: var(--acid); }
+.look-data .ico { background: #fff; border-color: rgba(18,18,20,.05); }
+.look-data .tabs { background: rgba(18,18,20,.94); }
+.look-data .rail-nav a.is-on { background: #121214; }
+.look-data .btn:not(.btn--acid) { background: #121214; color: #fff; }
+.look-data .btn--acid { background: var(--acid); color: var(--acid-ink); }

@@ -11,7 +11,7 @@ final class HomeController
             'hello'  => 'Tolu & Ayo',
             'sub'    => 'Your page is live. 418 guests have replied, and 106 are still to.',
             'days'   => '84',
-            'raised' => '₦2.7m',
+            'raised' => '2.7m', 'raisedCur' => 'NGN',
             'raisedSub' => '+₦44,357 this week',
             'stats'  => [
                 ['n' => '418', 'l' => 'RSVPs', 'pill' => 'Total'],

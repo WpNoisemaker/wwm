@@ -26,3 +26,15 @@ function icon(string $n, int $s = 22): string {
     $d = $p[$n] ?? $p['spark'];
     return '<svg viewBox="0 0 24 24" width="' . $s . '" height="' . $s . '" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . $d . '</svg>';
 }
+
+/**
+ * An amount, with the naira drawn rather than typed. $raw gives the plain text for a screen
+ * reader; the drawn sign is hidden from it so the amount is not read as "N 2.7m".
+ */
+function money(string $amount, string $cur = 'NGN'): string {
+    $sign = ['NGN' => '<i class="ngn" aria-hidden="true"></i>', 'USD' => '$', 'GHS' => 'GH₵', 'KES' => 'KSh', 'ZAR' => 'R'];
+    $sym  = ['NGN' => '₦', 'USD' => '$', 'GHS' => '₵', 'KES' => 'KSh', 'ZAR' => 'R'];
+    $draw = $sign[$cur] ?? e($cur) . ' ';
+    $read = $sym[$cur] ?? $cur;
+    return '<span class="money"><span class="sr-only">' . e($read . $amount) . '</span><span aria-hidden="true">' . $draw . e($amount) . '</span></span>';
+}

@@ -1,0 +1,104 @@
+/*
+ * LOOK 1 — MIDNIGHT. Built to the dark control-panel reference: a deep navy gradient lit from the
+ * upper left, dark translucent tiles with a hairline of light on their top edge, small grey labels
+ * over white values, slider pills with a grip, and a thin tick scale down the right.
+ */
+.look-midnight {
+	--bg: #0B1020;
+	--ink: #EEF2FA;
+	--ink-2: #C3CBDC;
+	--muted: #8F9AB3;
+	--faint: #5E6880;
+	--card: rgba(255, 255, 255, .055);
+	--card-2: rgba(255, 255, 255, .085);
+	--card-solid: #141B30;
+	--edge: rgba(255, 255, 255, .1);
+	--hair: rgba(255, 255, 255, .08);
+	--acid: #E8FA4F;
+	--acid-ink: #1B2104;
+	--r-lg: 22px;
+	--r: 18px;
+	--r-sm: 14px;
+	color-scheme: dark;
+	background: #0B1020;
+}
+/* The light in the room: a wide cool glow from the upper left falling to near-black. */
+.look-midnight::after {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background:
+		radial-gradient(120% 90% at 12% -6%, #33406B 0%, rgba(51,64,107,0) 58%),
+		radial-gradient(90% 70% at 88% 18%, #1E2A4D 0%, rgba(30,42,77,0) 62%),
+		linear-gradient(168deg, #152041 0%, #0D1428 46%, #070B16 100%);
+}
+.look-midnight::before { opacity: .22; }
+
+.mn { display: grid; gap: 10px; }
+.mn-tile {
+	position: relative;
+	display: grid;
+	gap: 4px;
+	align-content: start;
+	min-height: 92px;
+	padding: 14px 16px;
+	border-radius: var(--r-lg);
+	background: var(--card);
+	-webkit-backdrop-filter: blur(26px) saturate(1.3); backdrop-filter: blur(26px) saturate(1.3);
+	border: 1px solid var(--edge);
+	/* The hairline of light along the top edge is what makes these read as glass, not as boxes. */
+	box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 18px 40px -26px rgba(0,0,0,.9);
+	color: var(--ink);
+}
+.mn-tile__k { font-size: .72rem; color: var(--muted); letter-spacing: -.005em; }
+.mn-tile__v { font-size: 1.12rem; font-weight: 450; letter-spacing: -.025em; }
+.mn-tile__v--big { font-size: 1.9rem; font-weight: 300; letter-spacing: -.04em; }
+.mn-tile--pad { padding: 16px; }
+
+/* The power control: a round icon with its state underneath. */
+.mn-pow { display: grid; gap: 8px; justify-items: start; }
+.mn-pow__btn { display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid var(--edge); border-radius: 50%; background: rgba(255,255,255,.07); color: var(--ink); }
+.mn-pow__btn.is-on { background: var(--acid); color: var(--acid-ink); border-color: transparent; box-shadow: 0 0 22px -4px rgba(232,250,79,.5); }
+.mn-pow__s { font-size: .74rem; color: var(--muted); }
+
+/* The slider pill with a grip, straight off the 39% / 68% controls. */
+.mn-slide {
+	position: relative;
+	display: flex; align-items: center; justify-content: space-between;
+	min-height: 44px; padding: 0 12px 0 16px;
+	border-radius: var(--r);
+	background: rgba(255,255,255,.07);
+	border: 1px solid var(--edge);
+	overflow: hidden;
+	font-size: .92rem; font-weight: 450;
+}
+.mn-slide__fill { position: absolute; inset: 0 auto 0 0; width: var(--p, 50%); background: rgba(255,255,255,.2); box-shadow: inset -1px 0 0 rgba(255,255,255,.32); }
+.mn-slide > * { position: relative; }
+.mn-slide__grip { display: flex; gap: 2.5px; }
+.mn-slide__grip i { width: 2px; height: 15px; border-radius: 2px; background: rgba(255,255,255,.45); }
+
+/* Square-cornered icon buttons, the way the warning and Lights controls are drawn. */
+.mn-btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 48px; padding: 0 16px; border: 1px solid var(--edge); border-radius: var(--r); background: rgba(255,255,255,.07); color: var(--ink); font-size: .92rem; }
+.mn-btn--wide { width: 100%; }
+.mn-btn.is-on { background: rgba(255,255,255,.14); }
+
+/* The tick scale down the right edge. */
+.mn-scale { display: grid; align-content: space-between; gap: 2px; padding: 4px 0; }
+.mn-scale i { display: block; height: 1px; background: rgba(255,255,255,.3); }
+.mn-scale i:nth-child(5n+1) { background: rgba(255,255,255,.62); }
+.mn-scale__n { font-size: .68rem; color: var(--faint); }
+
+.look-midnight .bar { background: rgba(11,16,32,.55); }
+.look-midnight .bar__mark { background: var(--acid); color: var(--acid-ink); }
+.look-midnight .bar__name .muted { color: var(--faint); }
+.look-midnight .ico { background: rgba(255,255,255,.07); border-color: var(--edge); color: var(--ink); }
+.look-midnight .tabs { background: rgba(255,255,255,.07); border: 1px solid var(--edge); -webkit-backdrop-filter: blur(26px); backdrop-filter: blur(26px); }
+.look-midnight .rail-nav a { color: var(--ink-2); }
+.look-midnight .rail-nav a:hover { background: rgba(255,255,255,.06); color: #fff; }
+.look-midnight .rail-nav a.is-on { background: rgba(255,255,255,.14); color: #fff; }
+.look-midnight .rail-nav hr { border-top-color: var(--hair); }
+.look-midnight .btn, .look-midnight .btn--acid { background: var(--acid); color: var(--acid-ink); border-color: transparent; }
+.look-midnight .btn--ghost { background: rgba(255,255,255,.07); color: var(--ink); border-color: var(--edge); }
+.look-midnight .btn--ghost { background: rgba(255,255,255,.07); color: var(--ink); border-color: var(--edge); }

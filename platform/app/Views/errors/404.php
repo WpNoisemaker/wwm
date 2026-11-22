@@ -1,0 +1,1 @@
+<div class="wrap" style="padding:60px 0"><h1>Not found</h1><p class="lede" style="margin-top:8px">That page does not exist.</p><a class="btn" style="margin-top:20px" href="<?= e(App::url('/')) ?>">Go home</a></div>

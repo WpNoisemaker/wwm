@@ -56,7 +56,7 @@ button { cursor: pointer; }
 .bar.is-hidden { transform: translateY(-100%); }
 .bar.is-stuck { box-shadow: 0 1px 0 var(--hair); }
 .bar__brand { display: flex; align-items: center; gap: 9px; font-weight: 600; font-size: 1.02rem; letter-spacing: -.03em; }
-.bar__mark { width: 26px; height: 26px; border-radius: 9px; background: var(--ink); display: grid; place-items: center; color: var(--acid); font-size: 13px; font-weight: 700; }
+.bar__mark { width: 28px; height: 28px; border-radius: 10px; background: var(--ink); display: grid; place-items: center; color: var(--acid); font-size: 15px; font-weight: 600; line-height: 1; padding-bottom: 1px; }
 .bar__sp { flex: 1; }
 
 /* ---------------------------------------------------------------- Type */
@@ -267,3 +267,31 @@ body.locked { overflow: hidden; }
 }
 @media (max-width: 899px) { .rail-nav { display: none; } .cols { display: block; } .cols__side { display: grid; gap: 14px; margin-top: 22px; } }
 @media (min-width: 1280px) { .shell { grid-template-columns: 276px minmax(0, 1fr); } }
+
+/* ---------------------------------------------------------------- The naira
+ * Outfit has no ₦ (U+20A6), so the browser falls back to a system face whose bar overhangs the
+ * letter and reads as a strikethrough across the amount — "₦2.7m" looks crossed out. The sign is
+ * drawn here instead: Outfit's own N with two bars across it, so it scales and weights with the
+ * text it sits in and matches the figures beside it.
+ */
+.ngn {
+	position: relative;
+	display: inline-block;
+	font-style: normal;
+	line-height: 1;
+}
+.ngn::before { content: "N"; }
+.ngn::after {
+	content: "";
+	position: absolute;
+	left: -.035em;
+	right: -.035em;
+	top: .33em;
+	height: .075em;
+	background: currentColor;
+	box-shadow: 0 .18em 0 currentColor;
+	pointer-events: none;
+}
+/* Inside a dot-matrix figure the sign takes the dots too, so it does not sit solid beside them. */
+.dot .ngn::before { background-image: inherit; background-size: inherit; -webkit-background-clip: text; background-clip: text; }
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }

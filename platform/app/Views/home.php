@@ -15,8 +15,8 @@
 		</a>
 		<a class="tile m-age" href="<?= e(App::url('/account/money')) ?>">
 			<span class="tile__cap">Raised so far</span>
-			<b class="tile__big dot" style="--dot-color:#fff;font-size:clamp(1.9rem,7.6vw,2.6rem)"><?= e($raised) ?></b>
-			<span class="tile__foot"><?= e($raisedSub) ?></span>
+			<b class="tile__big dot" style="--dot-color:#fff;font-size:clamp(1.9rem,7.6vw,2.6rem)"><?= money($raised) ?></b>
+			<span class="tile__foot">+<?= money('44,357') ?> this week</span>
 		</a>
 	</div>
 </section>
@@ -50,7 +50,7 @@
 				<?php if (!empty($t['done'])): ?>
 					<span class="pill"><?= icon('check', 13) ?>Done</span>
 				<?php else: ?>
-					<span class="row__v"><?= e($t['v'] ?? '') ?></span>
+					<span class="row__v"><?= isset($t['money']) ? money($t['money']) : e($t['v'] ?? '') ?></span>
 				<?php endif; ?>
 			</a>
 		<?php endforeach; ?>
