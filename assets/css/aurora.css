@@ -43,6 +43,18 @@
 	--sun-wash: #FFFBEA;
 	--acid: #E9F64A;
 
+	/* Ink that must NOT follow the colour scheme. A mesh is painted the same in light and dark,
+	 * so the text on it is fixed; using --ink here would turn it near-white in dark mode. */
+	--ink-fixed: #160E22;
+	--paper-fixed: #F3F0F8;
+	--surface-dark: #1C1228;
+
+	/* Semantic. */
+	--like: #FF2D6F;
+	--save: #4D7CFE;
+	--danger: #D34030;
+	--on-blush: #3A0F22;
+
 	/* Ink & neutrals. */
 	--ink: #160E22;
 	--ink-2: #3A3147;
@@ -382,7 +394,7 @@ body.wd-wedding::before, body.wd-wedding::after { display: none; }
 	-webkit-backdrop-filter: var(--blur);
 	backdrop-filter: var(--blur);
 	border-color: var(--edge-dark);
-	color: #F3F0F8;
+	color: var(--paper-fixed);
 	box-shadow: var(--shadow-3), inset 0 1px 0 rgba(255, 255, 255, .08);
 }
 .glass--dark .muted, .glass--dark .fine, .glass--dark small { color: rgba(243, 240, 248, .66); }
@@ -390,16 +402,16 @@ body.wd-wedding::before, body.wd-wedding::after { display: none; }
 /* Where backdrop-filter is missing, fall back to an opaque card so nothing is unreadable. */
 @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
 	.glass, .g-card, .g-pane, .glass--thin, .glass--deep { background: var(--canvas-3); }
-	.glass--dark { background: #1C1228; }
+	.glass--dark { background: var(--surface-dark); }
 }
 
 /* ================================================================ 4  Mesh gradients & blobs */
 
 .mesh { position: relative; background: var(--mesh-sun); color: #fff; border: 0; box-shadow: var(--shadow-2); overflow: hidden; }
-.mesh--sun { background: var(--mesh-sun); color: #160E22; }
-.mesh--sun, .mesh--citrus, .mesh--reef, .stat--mesh { --on-mesh: #160E22; --on-mesh-soft: rgba(22, 14, 34, .66); }
-.mesh--blush { --on-mesh: #3A0F22; --on-mesh-soft: rgba(58, 15, 34, .7); }
-.mesh--dusk, .mesh--noir { --on-mesh: #fff; --on-mesh-soft: rgba(255, 255, 255, .82); }
+.mesh--sun { background: var(--mesh-sun); color: var(--ink-fixed); }
+.mesh--sun, .mesh--citrus, .mesh--reef, .stat--mesh { --on-mesh: var(--ink-fixed); --on-mesh-soft: rgba(22, 14, 34, .72); --mesh-pill: rgba(255, 255, 255, .58); }
+.mesh--blush { --on-mesh: var(--on-blush); --on-mesh-soft: rgba(58, 15, 34, .86); --mesh-pill: rgba(255, 255, 255, .58); }
+.mesh--dusk, .mesh--noir { --on-mesh: #fff; --on-mesh-soft: rgba(255, 255, 255, .82); --mesh-pill: rgba(255, 255, 255, .17); }
 /* Anything inside a mesh takes the right ink for that mesh, at a readable weight. */
 .mesh > span, .mesh small, .mesh .fine, .mesh .muted,
 [class*="mesh--"] > span, [class*="mesh--"] small, [class*="mesh--"] .fine, [class*="mesh--"] .muted {
@@ -409,10 +421,10 @@ body.wd-wedding::before, body.wd-wedding::after { display: none; }
 }
 [class*="mesh--"] > b, [class*="mesh--"] h1, [class*="mesh--"] h2, [class*="mesh--"] h3 { color: var(--on-mesh, #fff); }
 .mesh--citrus { background: var(--mesh-citrus); color: var(--ink); }
-.mesh--blush { background: var(--mesh-blush); color: #3A0F22; }
+.mesh--blush { background: var(--mesh-blush); color: var(--on-blush); }
 .mesh--dusk { background: var(--mesh-dusk); color: #fff; }
 .mesh--reef { background: var(--mesh-reef); color: var(--ink); }
-.mesh--noir { background: var(--mesh-noir); color: #F3F0F8; }
+.mesh--noir { background: var(--mesh-noir); color: var(--paper-fixed); }
 .mesh--scrim::after { content: ""; position: absolute; inset: 0; background: var(--mesh-scrim); pointer-events: none; }
 .mesh > * { position: relative; z-index: 1; }
 
@@ -427,7 +439,7 @@ body.wd-wedding::before, body.wd-wedding::after { display: none; }
 	filter: blur(22px);
 	opacity: .92;
 }
-.g-blob--sun { --blob: radial-gradient(circle at 36% 32%, #FFE89B, #F5B800 72%); }
+.g-blob--sun { --blob: radial-gradient(circle at 36% 32%, #FFE89B, var(--sun-deep) 72%); }
 .g-blob--blush { --blob: radial-gradient(circle at 36% 32%, #FFD9B8, #FF7FB0 72%); }
 .g-blob--reef { --blob: radial-gradient(circle at 36% 32%, #D7F3B9, #7FD6D2 72%); }
 .g-blob--dusk { --blob: radial-gradient(circle at 36% 32%, #D9C6FF, #9BB4FF 72%); }
@@ -443,7 +455,7 @@ h2 { font-size: clamp(1.8rem, 3.8vw, 3.1rem); letter-spacing: -.032em; }
 h3 { font-size: 1.28rem; letter-spacing: -.022em; }
 a { color: var(--ink); text-decoration-color: color-mix(in srgb, var(--ink) 30%, transparent); }
 a:hover { color: var(--sun-deep); }
-::selection { background: var(--sun); color: #160E22; }
+::selection { background: var(--sun); color: var(--ink-fixed); }
 
 .eyebrow {
 	display: inline-flex; align-items: center; gap: .45em;
@@ -495,7 +507,7 @@ a:hover { color: var(--sun-deep); }
 .btn--ink { --btn-bg: var(--ink); --btn-fg: var(--canvas); --btn-bd: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
 .btn--ink:hover { box-shadow: var(--shadow-2); filter: brightness(1.12); }
 .btn--brand, .btn--marigold {
-	--btn-fg: #160E22; --btn-bd: transparent;
+	--btn-fg: var(--ink-fixed); --btn-bd: transparent;
 	background: var(--mesh-sun);
 	-webkit-backdrop-filter: none; backdrop-filter: none;
 	box-shadow: var(--shadow-sun);
@@ -505,7 +517,7 @@ a:hover { color: var(--sun-deep); }
 .btn--ghost:hover { --btn-bg: var(--glass-2); box-shadow: var(--shadow-1); }
 .btn--ghost-light { --btn-bg: rgba(255, 255, 255, .14); --btn-fg: #fff; --btn-bd: rgba(255, 255, 255, .3); }
 .btn--ghost-light:hover { --btn-bg: rgba(255, 255, 255, .26); --btn-fg: #fff; box-shadow: var(--shadow-2); }
-.btn--danger { --btn-bg: #D34030; --btn-fg: #fff; --btn-bd: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.btn--danger { --btn-bg: var(--danger); --btn-fg: #fff; --btn-bd: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
 .btn--wa { --btn-bg: #25D366; --btn-fg: #06351A; --btn-bd: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
 .btn--sm { min-height: 40px; padding: .52em 1.1em; font-size: .88rem; }
 .btn--lg { min-height: 60px; padding: 1em 2em; font-size: 1.08rem; }
@@ -555,7 +567,7 @@ a.chip:hover, button.chip:hover, .g-pill:hover { background: var(--glass-3); col
 	background: var(--acid); color: #1C2206; border-color: transparent;
 	-webkit-backdrop-filter: none; backdrop-filter: none;
 }
-.tag--premium { background: var(--mesh-sun); color: #160E22; }
+.tag--premium { background: var(--mesh-sun); color: var(--ink-fixed); }
 .tag--sample { background: transparent; border: 1px dashed var(--hair-2); box-shadow: none; }
 
 /* Circular frosted icon button with a thin arrow — the reference's signature affordance. */
@@ -573,8 +585,8 @@ a.chip:hover, button.chip:hover, .g-pill:hover { background: var(--glass-3); col
 .g-ico:active { transform: scale(.92); }
 .g-ico--lg { width: 48px; height: 48px; }
 .g-ico--sm { width: 32px; height: 32px; }
-.g-ico--dark { background: var(--glass-dark); border-color: var(--edge-dark); color: #F3F0F8; }
-.g-ico--sun { background: var(--mesh-sun); border-color: transparent; color: #160E22; box-shadow: var(--shadow-sun); }
+.g-ico--dark { background: var(--glass-dark); border-color: var(--edge-dark); color: var(--paper-fixed); }
+.g-ico--sun { background: var(--mesh-sun); border-color: transparent; color: var(--ink-fixed); box-shadow: var(--shadow-sun); }
 .g-ico--arrow::before { content: ""; width: 16px; height: 16px; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M9 7h8v8'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M9 7h8v8'/%3E%3C/svg%3E") center / contain no-repeat; }
 
 /* ================================================================ 7  Forms */
@@ -673,13 +685,13 @@ a.card:hover, a.wd-card:hover, a.vendor-card:hover, a.listing-card:hover, a.post
 	font-variant-numeric: tabular-nums;
 }
 .stat small, .g-stat small { color: inherit; opacity: .66; font-size: .82rem; }
-.stat--mesh { background: var(--mesh-sun); color: #160E22; border-color: transparent; }
+.stat--mesh { background: var(--mesh-sun); color: var(--ink-fixed); border-color: transparent; }
 .stat > span, .g-stat > span { opacity: 1; color: var(--on-mesh-soft, var(--muted)); font-weight: 600; }
 /* A toned or mesh tile paints its own text, so it reads the same in light and dark. */
-.stat[class*="tone-"], .stat--mesh, .stat--noir { color: var(--tone-ink, #160E22); }
+.stat[class*="tone-"], .stat--mesh, .stat--noir { color: var(--tone-ink, var(--ink-fixed)); }
 .stat[class*="tone-"] :is(span, b, small), .stat--mesh :is(span, b, small) { color: inherit; }
 .stat[class*="tone-"] :is(span, small), .stat--mesh :is(span, small) { opacity: .68; }
-.stat--noir { background: var(--mesh-noir); color: #F3F0F8; border-color: transparent; }
+.stat--noir { background: var(--mesh-noir); color: var(--paper-fixed); border-color: transparent; }
 
 .meter { height: 8px; border-radius: var(--r-pill); background: var(--hair); overflow: hidden; box-shadow: none; border: 0; }
 .meter > i, .meter > span, .meter__fill { display: block; height: 100%; border-radius: inherit; background: var(--mesh-sun); }
@@ -768,7 +780,7 @@ dialog::backdrop { background: rgba(22, 14, 34, .42); -webkit-backdrop-filter: b
 
 .notice, .empty { padding: 16px 20px; border-radius: var(--r-card); }
 .notice--ok { background: color-mix(in srgb, var(--lime) 20%, var(--glass-2)); }
-.notice--bad { background: color-mix(in srgb, #D34030 14%, var(--glass-2)); }
+.notice--bad { background: color-mix(in srgb, var(--danger) 14%, var(--glass-2)); }
 
 .form-actions--sticky {
 	border: 1px solid var(--edge);
@@ -785,8 +797,8 @@ dialog::backdrop { background: rgba(22, 14, 34, .42); -webkit-backdrop-filter: b
 .page-hero { position: relative; padding-block: clamp(32px, 6vw, 84px) clamp(26px, 4vw, 56px); }
 .page-hero h1 { letter-spacing: -.04em; }
 .section { padding-block: clamp(34px, 5vw, 76px); }
-.section--dark, .dark-features { background: var(--mesh-noir); color: #F3F0F8; border: 0; border-radius: var(--r-pane); }
-.cta-band { background: var(--mesh-sun); color: #160E22; border: 0; border-radius: var(--r-pane); box-shadow: var(--shadow-3); }
+.section--dark, .dark-features { background: var(--mesh-noir); color: var(--paper-fixed); border: 0; border-radius: var(--r-pane); }
+.cta-band { background: var(--mesh-sun); color: var(--ink-fixed); border: 0; border-radius: var(--r-pane); box-shadow: var(--shadow-3); }
 .kente-strip { height: 7px; background: var(--kente); border: 0; opacity: .9; }
 
 /* ================================================================ 13  Header, menu sheet, footer, tab bar */
@@ -890,7 +902,7 @@ body:has(.tabbar) { padding-bottom: calc(var(--tab-h) + var(--safe-b)); }
 		backdrop-filter: none !important;
 		background-color: var(--canvas-3) !important;
 	}
-	.glass--dark, .g-ico--dark { background-color: #1C1228 !important; }
+	.glass--dark, .g-ico--dark { background-color: var(--surface-dark) !important; }
 	body::before { opacity: .35; }
 }
 
@@ -999,7 +1011,7 @@ body.has-sheet { overflow: hidden; }
 	padding: 0 1.4em;
 	border-radius: var(--r-pill);
 	background: var(--mesh-sun);
-	color: #160E22;
+	color: var(--ink-fixed);
 	font: 700 1rem/1 var(--font-display);
 	letter-spacing: -.01em;
 	box-shadow: var(--shadow-sun);
@@ -1080,7 +1092,7 @@ body.has-sheet { overflow: hidden; }
 	border: 0;
 	border-radius: 30px;
 	background: var(--st-bg, #fff);
-	color: var(--st-on, #160E22);
+	color: var(--st-on, var(--ink-fixed));
 	box-shadow: var(--shadow-3);
 	overflow: hidden;
 	isolation: isolate;
@@ -1188,7 +1200,7 @@ body.has-sheet { overflow: hidden; }
 .talk__likes:hover { background: color-mix(in srgb, currentColor 22%, transparent); }
 .talk__likes:active { transform: scale(.92); }
 .talk__likes svg { transition: transform var(--t) var(--spring); }
-.talk__likes.is-on { color: #FF2D6F; background: color-mix(in srgb, #FF2D6F 16%, transparent); }
+.talk__likes.is-on { color: var(--like); background: color-mix(in srgb, var(--like) 16%, transparent); }
 .talk__likes.is-on svg path { fill: currentColor; }
 .talk__likes.is-on svg { transform: scale(1.12); }
 
@@ -1250,8 +1262,8 @@ body.has-sheet { overflow: hidden; }
 	pointer-events: none;
 	transition: opacity .2s var(--ease), transform .3s var(--spring);
 }
-.talk__stamp--like { background: #FF2D6F; color: #fff; }
-.talk__stamp--save { background: #4D7CFE; color: #fff; }
+.talk__stamp--like { background: var(--like); color: #fff; }
+.talk__stamp--save { background: var(--save); color: #fff; }
 .talk__stamp.is-on { opacity: 1; transform: translate(-50%, -50%) rotate(-8deg) scale(1); }
 
 /* The four round buttons. */
@@ -1276,11 +1288,11 @@ body.has-sheet { overflow: hidden; }
 .talk-act:active { transform: scale(.9); }
 .talk-act[disabled] { opacity: .4; pointer-events: none; }
 .talk-act--back svg { transform: rotate(180deg); }
-.talk-act--like { color: #FF2D6F; }
-.talk-act--like.is-on { background: #FF2D6F; color: #fff; border-color: transparent; box-shadow: 0 8px 22px rgba(255, 45, 111, .4); }
+.talk-act--like { color: var(--like); }
+.talk-act--like.is-on { background: var(--like); color: #fff; border-color: transparent; box-shadow: 0 8px 22px rgba(255, 45, 111, .4); }
 .talk-act--like.is-on svg path { fill: currentColor; }
-.talk-act--save { color: #4D7CFE; }
-.talk-act--save.is-on { background: #4D7CFE; color: #fff; border-color: transparent; box-shadow: 0 8px 22px rgba(77, 124, 254, .4); }
+.talk-act--save { color: var(--save); }
+.talk-act--save.is-on { background: var(--save); color: #fff; border-color: transparent; box-shadow: 0 8px 22px rgba(77, 124, 254, .4); }
 .talk-act--save.is-on svg path { fill: currentColor; }
 .talk-act--like, .talk-act--save { width: 62px; height: 62px; }
 
@@ -1292,7 +1304,7 @@ body.has-sheet { overflow: hidden; }
 .talk-reply__text { font-size: .95rem; line-height: 1.55; }
 .talk-reply__name { font-family: var(--font-display); font-weight: 600; }
 .talk-reply .talk-av { width: 36px; height: 36px; flex: none; display: grid; place-items: center; border: 1px solid var(--edge); border-radius: 50%; background: var(--glass-2); color: var(--ink-soft); font: 600 .88rem/1 var(--font-display); }
-.talk__tag--op { background: var(--sun); color: #160E22; }
+.talk__tag--op { background: var(--sun); color: var(--ink-fixed); }
 .talk-reply-form {
 	display: flex;
 	flex-wrap: wrap;
@@ -1343,7 +1355,7 @@ body.has-sheet { overflow: hidden; }
 	backdrop-filter: none !important;
 	background-color: var(--canvas-3);
 }
-.wd-flat .glass--dark, .wd-flat .g-ico--dark, .wd-flat .app--hq .app__side { background-color: #1C1228; }
+.wd-flat .glass--dark, .wd-flat .g-ico--dark, .wd-flat .app--hq .app__side { background-color: var(--surface-dark); }
 body.wd-flat::before { opacity: .5; }
 
 /* Share sits beside the date, so the card keeps its clean shape. */
@@ -1471,7 +1483,7 @@ body.wd-flat::before { opacity: .5; }
 .pill { border-radius: var(--r-pill); background: var(--glass-2); border: 1px solid var(--edge); }
 .pill--ok { background: color-mix(in srgb, var(--lime) 26%, transparent); border-color: transparent; }
 .pill--warn { background: color-mix(in srgb, var(--sun) 32%, transparent); border-color: transparent; }
-.pill--premium { background: var(--mesh-sun); color: #160E22; border-color: transparent; }
+.pill--premium { background: var(--mesh-sun); color: var(--ink-fixed); border-color: transparent; }
 
 /* ---- Empty states stop being dashed boxes and become a quiet pane. */
 :is(.empty, .empty-note, .rsvp__closed, .squad-invite__off, .bk-empty) {
@@ -1494,7 +1506,7 @@ body.wd-flat::before { opacity: .5; }
 	background: var(--glass-dark-2);
 	-webkit-backdrop-filter: var(--blur);
 	backdrop-filter: var(--blur);
-	color: #F3F0F8;
+	color: var(--paper-fixed);
 	box-shadow: var(--shadow-3);
 	bottom: calc(var(--tab-h) + var(--safe-b) + 16px);
 }
@@ -1502,7 +1514,7 @@ body.wd-flat::before { opacity: .5; }
 .help__fab {
 	border: 0;
 	background: var(--mesh-sun);
-	color: #160E22;
+	color: var(--ink-fixed);
 	box-shadow: var(--shadow-sun);
 	bottom: calc(var(--tab-h) + var(--safe-b) + 14px);
 }
@@ -1515,13 +1527,13 @@ body.wd-flat::before { opacity: .5; }
 	backdrop-filter: var(--blur-lg);
 	box-shadow: var(--shadow-3);
 }
-.help__head { background: var(--mesh-sun); color: #160E22; border: 0; }
+.help__head { background: var(--mesh-sun); color: var(--ink-fixed); border: 0; }
 
 /* ---- The Buzz Chart. */
 .section--chart { background: none; }
 .section--chart::after { display: none; }
 .billboard.billboard { border-radius: var(--r-pane); }
-.chart-one.chart-one { background: var(--mesh-sun); color: #160E22; border-color: transparent; }
+.chart-one.chart-one { background: var(--mesh-sun); color: var(--ink-fixed); border-color: transparent; }
 .chart-row { border-bottom: 1px solid var(--hair); }
 .chart-row:hover { background: color-mix(in srgb, var(--sun) 12%, transparent); }
 .chart-row__pic, .chart-one__pic { border: 1px solid var(--edge); border-radius: var(--r-sm); }
@@ -1530,10 +1542,10 @@ body.wd-flat::before { opacity: .5; }
 
 /* ---- Plans: the ladder is told in depth, not in outlines. */
 .plan.plan--pro { background: var(--glass-2); }
-.plan.plan--premium { background: var(--mesh-sun); color: #160E22; border-color: transparent; box-shadow: var(--shadow-sun); }
-.plan.plan--premium :is(h3, p, b, .fine, li) { color: #160E22; }
-.plan.plan--society { background: var(--mesh-noir); color: #F3F0F8; border-color: transparent; box-shadow: var(--shadow-3); }
-.plan.plan--society :is(h3, p, b, .fine, li) { color: #F3F0F8; }
+.plan.plan--premium { background: var(--mesh-sun); color: var(--ink-fixed); border-color: transparent; box-shadow: var(--shadow-sun); }
+.plan.plan--premium :is(h3, p, b, .fine, li) { color: var(--ink-fixed); }
+.plan.plan--society { background: var(--mesh-noir); color: var(--paper-fixed); border-color: transparent; box-shadow: var(--shadow-3); }
+.plan.plan--society :is(h3, p, b, .fine, li) { color: var(--paper-fixed); }
 .plan__ribbon { background: var(--ink); color: var(--canvas); border: 0; border-radius: var(--r-pill); }
 .fee-row { border-bottom: 1px solid var(--hair); }
 .fee-row--head { background: transparent; color: var(--muted); }
@@ -1544,22 +1556,22 @@ body.wd-flat::before { opacity: .5; }
 
 /* ---- Sections that used to be flat bands. */
 .section--alt { background: color-mix(in srgb, var(--sun) 9%, transparent); }
-.section--dark, .w-viral { background: var(--mesh-noir); color: #F3F0F8; border: 0; border-radius: var(--r-pane); }
-.section--cta .cta-band { background: var(--mesh-sun); color: #160E22; border: 0; }
+.section--dark, .w-viral { background: var(--mesh-noir); color: var(--paper-fixed); border: 0; border-radius: var(--r-pane); }
+.section--cta .cta-band { background: var(--mesh-sun); color: var(--ink-fixed); border: 0; }
 .cta-band::before { display: none; }
 
 /* ---- Verified marks and other hardcoded purple. */
 .verified, .vbadge .icon, .icon--verified, .l-tick .icon { color: var(--sun-deep); }
 .ig-ring, .talk__ring { background: var(--mesh-sun); }
 .ig-ring--plain { background: var(--hair-2); }
-.upsell { background: var(--mesh-sun); color: #160E22; border: 0; border-radius: var(--r-pane); box-shadow: var(--shadow-sun); }
+.upsell { background: var(--mesh-sun); color: var(--ink-fixed); border: 0; border-radius: var(--r-pane); box-shadow: var(--shadow-sun); }
 .upsell :is(.eyebrow, p) { color: inherit; }
-.upsell .btn--ink { --btn-bg: #160E22; --btn-fg: #fff; }
+.upsell .btn--ink { --btn-bg: var(--ink-fixed); --btn-fg: #fff; }
 .req-list li.is-new { border-color: var(--sun-deep); box-shadow: 0 0 0 3px rgba(255, 212, 38, .28); }
 input[type="checkbox"], input[type="radio"], .check input, .checks input, .table input[type="checkbox"] { accent-color: var(--sun-deep); }
 
 /* ---- Auth, sign-in. */
-.auth__art { background: var(--mesh-sun); color: #160E22; border: 0; }
+.auth__art { background: var(--mesh-sun); color: var(--ink-fixed); border: 0; }
 .auth__quote { color: inherit; }
 
 /* ---- The payment dialog is a sheet on a phone like every other dialog. */
@@ -1584,10 +1596,63 @@ input[type="checkbox"], input[type="radio"], .check input, .checks input, .table
 /* ---- Prose images stop wearing an ink frame. */
 .prose img, .post__cover { border: 1px solid var(--edge); border-radius: var(--r-card); box-shadow: var(--shadow-1); }
 .post__head { background: none; border: 0; }
-.post__cta { background: var(--mesh-sun); color: #160E22; border: 0; border-radius: var(--r-pane); }
+.post__cta { background: var(--mesh-sun); color: var(--ink-fixed); border: 0; border-radius: var(--r-pane); }
 
 /* How we reach you — only ever rendered when HQ has a channel live. */
 .notify-pick { margin: 4px 0 0; padding: 16px 18px; border: 1px solid var(--edge); border-radius: var(--r-card); background: var(--glass-2); }
 .notify-pick legend { padding: 0 8px; color: var(--muted); font: 600 .72rem/1.2 var(--font-body); letter-spacing: .1em; text-transform: uppercase; }
 .notify-pick .check { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; }
 .notify-pick .hint { margin: 10px 0 0; }
+
+/* ---------------------------------------------------------------- Pills on a painted surface
+ * A mesh does not change with the colour scheme, so a pill sitting on one cannot borrow the
+ * theme's glass: in dark mode that paints a dark pill under the dark text a light mesh needs.
+ * Each painted surface declares --mesh-pill, and every pill on it uses that instead.
+ */
+.upsell, .cta-band, .chart-one, .plan.plan--premium, .share-panel, .auth__art, .help__head,
+.section--cta .cta-band, .w-upsell {
+	--on-mesh: var(--ink-fixed);
+	--on-mesh-soft: rgba(22, 14, 34, .72);
+	--mesh-pill: rgba(255, 255, 255, .58);
+}
+.section--dark, .w-viral, .plan.plan--society, .stat--noir, .glass--dark {
+	--on-mesh: #fff;
+	--on-mesh-soft: rgba(255, 255, 255, .82);
+	--mesh-pill: rgba(255, 255, 255, .17);
+}
+:is(.mesh, [class*="mesh--"], .upsell, .cta-band, .chart-one, .share-panel, .auth__art,
+.help__head, .section--dark, .w-viral, .stat--mesh, .stat--noir, .plan.plan--premium,
+.plan.plan--society, .stat[class*="tone-"]) :is(.eyebrow, .tag, .chip, .pill, .talk__topic) {
+	background: var(--mesh-pill, rgba(255, 255, 255, .58));
+	border-color: color-mix(in srgb, var(--on-mesh, var(--ink-fixed)) 14%, transparent);
+	color: var(--on-mesh, inherit);
+	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
+	box-shadow: none;
+}
+:is(.mesh, [class*="mesh--"], .upsell, .cta-band, .chart-one, .section--dark, .w-viral) .eyebrow svg {
+	color: var(--on-mesh, inherit);
+}
+
+/* ---------------------------------------------------------------- Touch targets
+ * Measured on a 390px viewport: the community deck is the most-used surface on a phone and
+ * several of its controls were between 20px and 38px tall. WCAG 2.2 asks for 24px as a floor;
+ * a thumb wants 44px. These are raised with padding so nothing moves visually.
+ */
+@media (pointer: coarse), (max-width: 899px) {
+	.talk-bar__sort a, .talk-saved-btn { min-height: 40px; padding-block: 0; }
+	.talk-bar__sort { padding: 3px; }
+	.talk-bar__topics .chip, .chip--pick { height: 44px; }
+	.talk__topic { min-height: 34px; padding-block: 0; }
+	.talk__likes { min-height: 44px; }
+	.talk__read { min-height: 44px; align-items: center; }
+	.talk__share { width: 38px; height: 38px; }
+	.chip, .g-pill { height: 44px; }
+	.btn--sm { min-height: 44px; }
+	.linkish { min-height: 32px; display: inline-flex; align-items: center; }
+	.app__nav a { min-height: 44px; }
+	.brand { display: inline-flex; align-items: center; min-height: 44px; }
+	.talk-bar__sort a svg, .talk-saved-btn svg { flex: none; }
+}
+/* The four deck buttons are already 56/62px; keep them comfortably apart from the card edge. */
+@media (max-width: 420px) { .talk-acts { gap: 12px; } }
