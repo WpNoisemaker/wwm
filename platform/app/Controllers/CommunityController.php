@@ -10,19 +10,23 @@ declare(strict_types=1);
  */
 final class CommunityController
 {
-    private const BGS = ['paper', 'ink', 'sun', 'citrus', 'blush', 'dusk', 'noir'];
+    private const BGS = ['dusk', 'sky', 'night', 'blue', 'slate', 'cream'];
 
     public function index(): void
     {
         $topic = isset($_GET['topic']) && isset(Talk::TOPICS[$_GET['topic']]) ? (string) $_GET['topic'] : '';
         $sort  = ($_GET['sort'] ?? '') === 'new' ? 'new' : 'top';
 
+        $liked = [];
+        foreach (Db::all("SELECT subject_id FROM likes WHERE subject = 'talk' AND voter = ?", [self::key()]) as $l) {
+            $liked[(int) $l['subject_id']] = true;
+        }
         View::render('community/index', [
-            'title'  => 'The anonymous community',
-            'desc'   => 'Love, family, money, faith, in-laws and starting over. No account, no real names.',
+            'title'  => 'The community: say it here instead',
+            'desc'   => 'Love, family, money, faith, in-laws and starting over. No account, any pen name.',
             'tab'    => 'community',
-            'css'    => ['community'],
-            'js'     => ['deck'],
+            'action' => '<button class="cbtn" type="button" data-open="compose" aria-label="Write a post">' . icon('pen') . '</button>',
+            'liked'  => $liked,
             'rows'   => Talk::feed($topic, $sort, 40),
             'topic'  => $topic,
             'sort'   => $sort,
@@ -39,10 +43,12 @@ final class CommunityController
             return;
         }
         View::render('community/show', [
-            'title'   => Talk::topic((string) $t['topic']),
+            'title'   => Talk::topic((string) $t['topic']) . ' · Community',
             'desc'    => mb_strimwidth((string) $t['body'], 0, 150, '…'),
             'tab'     => 'community',
-            'css'     => ['community'],
+            'appTitle'=> 'Community',
+            'back'    => App::url('/community'),
+            'liked'   => (bool) Db::val("SELECT 1 FROM likes WHERE subject = 'talk' AND subject_id = ? AND voter = ?", [(int) $t['id'], self::key()]),
             't'       => $t,
             'replies' => Db::all("SELECT * FROM talk_replies WHERE talk_id = ? AND status = 'live' ORDER BY created_at", [$t['id']]),
         ]);
@@ -67,11 +73,11 @@ final class CommunityController
             // Any name they like. It is a label on the thread, not an identity.
             'pen_name'   => mb_substr($pen !== '' ? $pen : 'Someone', 0, 60),
             'body'       => mb_substr($body, 0, 2000),
-            'bg'         => self::BGS[array_rand(self::BGS)],
+            'bg'         => in_array($_POST['bg'] ?? '', self::BGS, true) ? (string) $_POST['bg'] : self::BGS[array_rand(self::BGS)],
             'status'     => 'live',
             'writer_key' => self::key(),
         ]);
-        Guard::flash('ok', 'Posted. Nobody can tell it was you.');
+        Guard::flash('ok', 'Posted under your pen name.');
         self::go('/community?sort=new');
     }
 
@@ -94,6 +100,7 @@ final class CommunityController
             'writer_key' => self::key(),
         ]);
         Db::run('UPDATE talks SET replies = replies + 1 WHERE id = ?', [(int) $id]);
+        Guard::flash('ok', 'Replied under your pen name.');
         self::go('/community/' . (int) $id);
     }
 
@@ -109,6 +116,12 @@ final class CommunityController
         } else {
             Db::run("INSERT IGNORE INTO likes (subject, subject_id, voter) VALUES ('talk', ?, ?)", [(int) $id, $key]);
             Db::run('UPDATE talks SET likes = likes + 1 WHERE id = ?', [(int) $id]);
+        }
+        // The deck likes without leaving the page: it asks for JSON and gets the new count back.
+        if (str_contains((string) ($_SERVER['HTTP_ACCEPT'] ?? ''), 'application/json')) {
+            header('Content-Type: application/json');
+            echo json_encode(['likes' => (int) Db::val('SELECT likes FROM talks WHERE id = ?', [(int) $id], 0), 'liked' => !$had]);
+            exit;
         }
         self::go('/community/' . (int) $id);
     }

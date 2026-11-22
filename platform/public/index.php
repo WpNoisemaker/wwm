@@ -18,6 +18,7 @@ require $root . '/app/Core/App.php';
 App::boot($root);
 require $root . '/app/Core/View.php';
 require $root . '/app/Views/partials/icons.php';
+require $root . '/app/Views/partials/ui.php';
 
 session_set_cookie_params([
     'lifetime' => 0,

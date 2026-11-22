@@ -1,60 +1,39 @@
-<?php
-/** The site footer. A landing page has to end somewhere a visitor can keep moving. */
-$nav = require __DIR__ . '/nav.php';
-?>
-<footer class="foot">
-	<div class="wrap foot__in">
-		<div class="foot__brand">
-			<a class="bar__brand" href="<?= e(App::url('/')) ?>">
-				<span class="bar__mark">&amp;</span>
-				<span class="bar__name">Wedding Websites<span class="muted"> &amp; More</span></span>
-			</a>
-			<p class="foot__tag">Where Nigerian and African weddings everywhere come to be seen, celebrated and ranked.</p>
-			<a class="btn btn--ghost btn--sm" href="<?= e(App::url('/help')) ?>"><?= icon('talk', 16) ?> Talk to us</a>
+<?php /** The footer: compact on a phone, a proper site footer on desktop. */ ?>
+<footer class="site-foot wrap">
+	<div class="site-foot__grid">
+		<div class="site-foot__brand">
+			<a class="brand" href="<?= e(App::url('/')) ?>"><span class="cbtn"><span class="logo">&amp;</span></span>Wedding Websites &amp; More</a>
+			<p>Wedding pages for African couples: invite, RSVP, gifts, spraying and livestream in one link, ranked every week.</p>
+			<div class="install" data-install>
+				<span class="cbtn cbtn--sm"><span class="logo" style="font-size:20px">&amp;</span></span>
+				<div><b>Get the app</b><span data-install-hint>Add it to your home screen</span></div>
+				<button class="pill pill--sm" type="button" data-install-go>Install</button>
+			</div>
 		</div>
-
-		<nav class="foot__col" aria-label="Weddings">
-			<b>Weddings</b>
-			<a href="<?= e(App::url('/weddings')) ?>">Explore weddings</a>
-			<a href="<?= e(App::url('/rankings')) ?>">The Buzz Chart</a>
-			<a href="<?= e(App::url('/join')) ?>">Create a wedding page</a>
-			<a href="<?= e(App::url('/pricing')) ?>">Pricing</a>
-		</nav>
-
-		<nav class="foot__col" aria-label="Marketplace">
-			<b>Marketplace</b>
-			<a href="<?= e(App::url('/market')) ?>">Stays &amp; apartments</a>
-			<a href="<?= e(App::url('/market?kind=ride')) ?>">Rides &amp; convoys</a>
-			<a href="<?= e(App::url('/market?kind=honeymoon')) ?>">Honeymoons</a>
-			<a href="<?= e(App::url('/vendors')) ?>">Vendors</a>
-			<a href="<?= e(App::url('/sell')) ?>">Become a seller</a>
-		</nav>
-
-		<nav class="foot__col" aria-label="More">
-			<b>More</b>
-			<a href="<?= e(App::url('/community')) ?>">Anonymous community</a>
-			<a href="<?= e(App::url('/blog')) ?>">Wedding tips</a>
-			<a href="<?= e(App::url('/about')) ?>">About us</a>
-			<a href="<?= e(App::url('/help')) ?>">Help</a>
-		</nav>
-
-		<?php if (!empty($footCities)): ?>
-			<nav class="foot__col foot__col--wide" aria-label="Weddings by city">
-				<b>Weddings in</b>
-				<span class="foot__cities">
-					<?php foreach ($footCities as $fc): ?>
-						<a href="<?= e(App::url('/weddings?city=' . urlencode((string) $fc['city']))) ?>"><?= e($fc['city']) ?></a>
-					<?php endforeach; ?>
-				</span>
-			</nav>
-		<?php endif; ?>
+		<div class="site-foot__cols">
+			<div><h2>Platform</h2><ul>
+				<li><a href="<?= e(App::url('/weddings')) ?>">Wedding pages</a></li>
+				<li><a href="<?= e(App::url('/rankings')) ?>">Buzz Chart</a></li>
+				<li><a href="<?= e(App::url('/community')) ?>">Community</a></li>
+				<li><a href="<?= e(App::url('/blog')) ?>">Stories</a></li>
+			</ul></div>
+			<div><h2>Shop</h2><ul>
+				<li><a href="<?= e(App::url('/vendors')) ?>">Vendors</a></li>
+				<li><a href="<?= e(App::url('/market')) ?>">Marketplace</a></li>
+				<li><a href="<?= e(App::url('/pricing')) ?>">Pricing</a></li>
+			</ul></div>
+			<div><h2>Samples</h2><ul>
+				<li><a href="<?= e(App::url('/w/ibrahim-ummi')) ?>">Premium page</a></li>
+				<li><a href="<?= e(App::url('/templates')) ?>">All designs</a></li>
+				<li><a href="<?= e(App::url('/w/kola-lara')) ?>">Free page</a></li>
+			</ul></div>
+			<div><h2>Help</h2><ul>
+				<li><a href="<?= e(App::url('/help')) ?>">Help</a></li>
+				<li><a href="<?= e(App::url('/about')) ?>">About</a></li>
+				<li><a href="<?= e(App::url('/terms')) ?>">Terms</a></li>
+				<li><a href="<?= e(App::url('/privacy')) ?>">Privacy</a></li>
+			</ul></div>
+		</div>
 	</div>
-
-	<div class="wrap foot__bottom">
-		<span>&copy; <?= e(date('Y')) ?> Wedding Websites &amp; More</span>
-		<span class="foot__legal">
-			<a href="<?= e(App::url('/terms')) ?>">Terms</a>
-			<a href="<?= e(App::url('/privacy')) ?>">Privacy</a>
-		</span>
-	</div>
+	<div class="site-foot__base"><span>&copy; <?= date('Y') ?> Wedding Websites &amp; More</span><span>Made in Lagos</span></div>
 </footer>

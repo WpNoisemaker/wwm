@@ -25,7 +25,7 @@ $routes = array_filter([
     '/community', '/community?sort=new',
     '/sign-in', '/join', '/forgot',
     '/account', '/hq',
-    '/looks',
+    '/templates', '/offline', '/manifest.webmanifest', '/sw.js', '/w/ibrahim-ummi', '/w/tolu-ayo', '/rankings?city=Lagos', '/vendors?category=Photography', '/market?kind=asoebi', '/nope-not-a-page',
     $wed    ? "/w/$wed"            : null,
     $vendor ? "/vendors/$vendor"   : null,
     $list   ? "/market/$list"      : null,
@@ -43,11 +43,12 @@ foreach ($routes as $r) {
 
     // A 302 to sign-in is the right answer for the account and HQ areas when signed out.
     $gated = in_array($code, [302, 303], true) && str_starts_with($r, '/account') === false ? false : true;
-    $ok    = $code === 200 || (in_array($code, [302, 303], true) && (str_starts_with($r, '/account') || str_starts_with($r, '/hq')));
+    $ok    = $code === 200 || (in_array($code, [302, 303], true) && (str_starts_with($r, '/account') || str_starts_with($r, '/hq')))
+          || ($r === '/w/tolu-ayo' && $code === 401) || ($r === '/nope-not-a-page' && $code === 404);
 
     // A page that returns 200 but printed a PHP error is not actually fine.
     $err = '';
-    if ($code === 200 && preg_match('/(Fatal error|Parse error|Warning:|Notice:|Uncaught)/i', $body, $m)) {
+    if (preg_match('/(Fatal error|Parse error|Warning:|Notice:|Deprecated:|Uncaught)/', $body, $m)) {
         $ok = false;
         $err = ' <- ' . $m[1] . ' in output';
     }

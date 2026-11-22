@@ -1,71 +1,104 @@
-<section class="sec wrap talk__top">
-	<?php foreach (Guard::takeFlash() as $f): ?><p class="note note--<?= e($f['kind']) ?>"><?= e($f['msg']) ?></p><?php endforeach; ?>
-	<h1 class="talk__h">Say the thing you<br>cannot say out loud.</h1>
-	<p class="lede talk__lede">Love, family, money, faith, in-laws, fertility, starting over. Post under any name you like &mdash; there is no account, and no real name is attached to anything here.</p>
+<?php
+/**
+ * The community. Posts are words on colour; swipe left and right to move between them, the
+ * buttons underneath like and save. Anyone can post, no account.
+ *
+ * @var array $rows @var string $topic @var string $sort @var array $topics @var array $liked
+ */
+$topicUrl = static fn (string $t, string $s): string => App::url('/community?' . http_build_query(array_filter(['topic' => $t, 'sort' => $s === 'top' ? '' : $s])));
+?>
+<div class="page wrap">
+	<header class="page-head">
+		<span class="eyebrow">No account · any pen name</span>
+		<h1>Say it here instead</h1>
+		<p class="lede">Love, family, money, faith, in-laws and starting over. Words on colour, under any name you like.</p>
+	</header>
+	<div class="wrap-narrow-flash"><?= flashes() ?></div>
 
-	<div class="rail chips">
-		<a class="chip<?= $topic === '' ? ' is-on' : '' ?>" href="<?= e(App::url('/community?sort=' . $sort)) ?>">Everything</a>
+	<nav class="chips chips--center" aria-label="Topics">
+		<a class="chip<?= $topic === '' ? ' is-on' : '' ?>" href="<?= e($topicUrl('', $sort)) ?>">Everything</a>
 		<?php foreach ($topics as $k => $label): ?>
-			<a class="chip<?= $topic === $k ? ' is-on' : '' ?>" href="<?= e(App::url('/community?topic=' . urlencode($k) . '&sort=' . $sort)) ?>"><?= e($label) ?></a>
+			<a class="chip<?= $topic === $k ? ' is-on' : '' ?>" href="<?= e($topicUrl($k, $sort)) ?>"><?= e($label) ?></a>
 		<?php endforeach; ?>
-	</div>
-	<div class="rail chips">
-		<?php foreach (['top' => 'Most felt', 'new' => 'Newest'] as $k => $label): ?>
-			<a class="chip<?= $sort === $k ? ' is-on' : '' ?>" href="<?= e(App::url('/community?sort=' . $k . ($topic !== '' ? '&topic=' . urlencode($topic) : ''))) ?>"><?= e($label) ?></a>
-		<?php endforeach; ?>
-	</div>
-</section>
+	</nav>
+	<nav class="seg seg--center gap-t-sm" aria-label="Order">
+		<a class="seg__a<?= $sort === 'top' ? ' is-on' : '' ?>" href="<?= e($topicUrl($topic, 'top')) ?>">Most felt</a>
+		<a class="seg__a<?= $sort === 'new' ? ' is-on' : '' ?>" href="<?= e($topicUrl($topic, 'new')) ?>">Newest</a>
+	</nav>
 
-<?php if (!$rows): ?>
-	<section class="sec wrap"><div class="blank"><p class="blank__h">Nothing here yet.</p><p class="sub">Be the first to say it.</p></div></section>
-<?php else: ?>
-<section class="sec wrap">
-	<!-- With JavaScript off this is a plain list; deck.js turns it into a swipeable deck. -->
-	<div class="deck" data-deck>
-		<?php foreach ($rows as $i => $t): ?>
-			<article class="post post--<?= e($t['bg']) ?>" data-card data-i="<?= e($i) ?>" data-id="<?= e($t['id']) ?>">
-				<span class="post__mark" aria-hidden="true">Wedding Websites &amp; More · Wedding Websites &amp; More · Wedding Websites &amp; More</span>
-				<header class="post__top">
-					<em class="post__topic"><?= e(Talk::topic((string) $t['topic'])) ?></em>
-					<span class="post__ago"><?= e(ago((string) $t['created_at'])) ?></span>
-				</header>
-				<p class="post__says"><?= e((string) $t['body']) ?></p>
-				<footer class="post__foot">
-					<span><?= e((int) $t['replies']) ?> repl<?= (int) $t['replies'] === 1 ? 'y' : 'ies' ?></span>
-					<span><?= icon('heart', 13) ?> <?= e((int) $t['likes']) ?></span>
-				</footer>
-			</article>
-		<?php endforeach; ?>
+	<?php if (!$rows): ?>
+		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('chat') ?></span><p>Nothing here yet. Be the first to say it.</p><button class="pill" type="button" data-open="compose">Write a post</button></div>
+	<?php else: ?>
+	<div class="talk gap-t">
+		<div class="talk__main">
+			<div class="deck" data-deck tabindex="0" aria-label="Posts. Swipe, or use the arrow keys, to move between them.">
+				<?php foreach ($rows as $t): $long = mb_strlen((string) $t['body']) > 150; ?>
+					<article class="post <?= e(talk_colour((string) $t['bg'])) ?>" data-id="<?= (int) $t['id'] ?>" data-href="<?= e(App::url('/community/' . $t['id'])) ?>"
+					         data-like="<?= e(App::url('/community/' . $t['id'] . '/like')) ?>" data-likes="<?= (int) $t['likes'] ?>" data-replies="<?= (int) $t['replies'] ?>" data-liked="<?= isset($liked[(int) $t['id']]) ? '1' : '0' ?>">
+						<span class="post__topic"><?= e(Talk::topic((string) $t['topic'])) ?></span>
+						<p class="post__text<?= $long ? ' post__text--long' : '' ?>"><?= e(mb_strimwidth((string) $t['body'], 0, 320, '…')) ?></p>
+						<span class="post__meta"><?= e($t['pen_name'] ?: 'Someone') ?> · <?= e(ago((string) $t['created_at'])) ?></span>
+					</article>
+				<?php endforeach; ?>
+			</div>
+			<p class="deck-pos" data-deck-pos aria-live="polite">1 of <?= count($rows) ?></p>
+			<div class="actions">
+				<div class="act"><button class="cbtn cbtn--lg" type="button" data-deck-go="-1" aria-label="Previous post"><?= icon('back') ?></button><span class="count">Back</span></div>
+				<div class="act"><button class="cbtn cbtn--lg" type="button" data-post-like aria-label="Like" aria-pressed="false"><?= icon('heart') ?></button><span class="count" data-count="likes"><?= (int) $rows[0]['likes'] ?></span></div>
+				<div class="act"><a class="cbtn cbtn--lg" href="<?= e(App::url('/community/' . $rows[0]['id'])) ?>" data-post-open aria-label="Open the replies"><?= icon('chat') ?></a><span class="count" data-count="replies"><?= (int) $rows[0]['replies'] ?></span></div>
+				<div class="act"><button class="cbtn cbtn--lg" type="button" data-post-save aria-label="Save on this phone" aria-pressed="false"><?= icon('bookmark') ?></button><span class="count">Save</span></div>
+				<div class="act"><button class="cbtn cbtn--lg" type="button" data-deck-go="1" aria-label="Next post"><?= icon('next') ?></button><span class="count">Next</span></div>
+			</div>
+			<button class="pill pill--block gap-t-sm" type="button" data-open="compose">Write a post</button>
+			<p class="after-pill">No account needed. Only your pen name appears.</p>
+		</div>
+		<aside class="talk__side">
+			<div class="block-head"><h2 class="h2"><?= $sort === 'new' ? 'Just posted' : 'Most felt' ?></h2></div>
+			<div class="rows">
+				<?php foreach (array_slice($rows, 0, 6) as $t): ?>
+					<a class="row-item row-item--plain talk__row" href="<?= e(App::url('/community/' . $t['id'])) ?>">
+						<span><span class="talk__dot <?= e(talk_colour((string) $t['bg'])) ?>" aria-hidden="true"></span><span class="row-item__t talk__ex"><?= e(mb_strimwidth((string) $t['body'], 0, 90, '…')) ?></span><span class="row-item__s"><?= e(Talk::topic((string) $t['topic'])) ?> · <?= (int) $t['replies'] ?> replies</span></span>
+						<span class="row-item__end"><?= (int) $t['likes'] ?><span class="sub">likes</span></span>
+					</a>
+				<?php endforeach; ?>
+			</div>
+		</aside>
 	</div>
+	<?php endif; ?>
+</div>
+<?= Guard::field() ?>
 
-	<!-- The buttons do the liking and saving. Swiping only moves between posts. -->
-	<div class="deck__bar" data-bar hidden>
-		<button class="deck__b" type="button" data-prev aria-label="Previous post"><?= icon('back', 20) ?></button>
-		<form method="post" class="deck__like" data-likeform action="<?= e(App::url('/community/0/like')) ?>">
-			<?= Guard::field() ?>
-			<button class="deck__b deck__b--like" type="submit" aria-label="Like this post"><?= icon('heart', 22) ?></button>
-		</form>
-		<button class="deck__b deck__b--save" type="button" data-save aria-label="Save this post"><?= icon('lock', 20) ?></button>
-		<a class="deck__b" data-open href="#" aria-label="Open replies"><?= icon('talk', 20) ?></a>
-		<button class="deck__b" type="button" data-next aria-label="Next post"><?= icon('arrow', 20) ?></button>
+<div class="sheet" id="compose" role="dialog" aria-modal="true" aria-labelledby="compose-t">
+	<div class="sheet__grab" aria-hidden="true"></div>
+	<div class="sheet__head">
+		<a class="cbtn cbtn--sm" href="#" data-close aria-label="Close"><?= icon('close') ?></a>
+		<h2 id="compose-t">New post</h2><span></span>
 	</div>
-	<p class="deck__hint" data-hint hidden>Swipe to move between posts. The buttons like and save.</p>
-</section>
-<?php endif; ?>
-
-<section class="sec wrap">
-	<form method="post" action="<?= e(App::url('/community/post')) ?>" class="form form--card say">
+	<form class="compose-form" method="post" action="<?= e(App::url('/community/post')) ?>">
 		<?= Guard::field() ?>
-		<h3 class="form__g">Say yours</h3>
-		<label for="t-topic">What is it about</label>
-		<select id="t-topic" name="topic">
-			<?php foreach ($topics as $k => $label): ?><option value="<?= e($k) ?>"<?= $topic === $k ? ' selected' : '' ?>><?= e($label) ?></option><?php endforeach; ?>
-		</select>
-		<label for="t-body">Say it</label>
-		<textarea id="t-body" name="body" rows="5" required minlength="12" placeholder="Nobody will know it was you."></textarea>
-		<label for="t-pen">A name to post under</label>
-		<input id="t-pen" name="pen_name" maxlength="60" placeholder="Anything you like">
-		<small class="gate__hint">Any name at all. It is a label on the thread, not your identity, and it is never shown on the post itself.</small>
-		<button class="btn btn--acid" type="submit">Post it</button>
+		<div class="compose">
+			<label class="sr" for="c-body">Your post</label>
+			<textarea id="c-body" name="body" rows="4" maxlength="600" minlength="12" required placeholder="What's on your mind?"></textarea>
+			<span class="compose__count" data-compose-count>0 / 600</span>
+		</div>
+		<div class="swatches" role="radiogroup" aria-label="Colour">
+			<?php $first = true; foreach (talk_colours() as $k => $label): ?>
+				<label class="<?= e(talk_colour($k)) ?>"><input type="radio" name="bg" value="<?= e($k) ?>"<?= $first ? ' checked' : '' ?>><span class="sr"><?= e($label) ?></span></label>
+			<?php $first = false; endforeach; ?>
+		</div>
+		<div class="chips chips--center chips--radio" role="radiogroup" aria-label="Topic">
+			<?php foreach ($topics as $k => $label): ?>
+				<label class="chip"><input type="radio" name="topic" value="<?= e($k) ?>"<?= ($topic !== '' ? $topic === $k : $k === 'love') ? ' checked' : '' ?>><?= e($label) ?></label>
+			<?php endforeach; ?>
+		</div>
+		<label class="field"><span>Pen name: anything you like</span><input class="input" name="pen_name" maxlength="40" placeholder="Quiet Storm" autocomplete="off"></label>
+		<button class="pill pill--block" type="submit">Post</button>
+		<p class="after-pill">Only your pen name appears on the post.</p>
 	</form>
-</section>
+</div>
+<script>
+	(function () {
+		var t = document.getElementById('c-body'), c = document.querySelector('[data-compose-count]'); if (!t) { return; }
+		t.addEventListener('input', function () { c.textContent = t.value.length + ' / 600'; t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 260) + 'px'; });
+	})();
+</script>

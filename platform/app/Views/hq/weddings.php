@@ -1,12 +1,11 @@
-<?= View::partial('account/_head', ['h' => 'Weddings']) ?>
-<section class="sec wrap">
+<?= View::partial('hq/_head', ['h' => 'Weddings', 'now' => 'weddings']) ?>
 	<div class="rows">
 		<?php foreach ($rows as $w): ?>
-			<a class="row" href="<?= e(App::url('/w/' . $w['slug'])) ?>">
-				<span class="row__ico"><?= icon('rings', 18) ?></span>
-				<span class="row__t"><?= e(Wedding::names($w)) ?> <span class="sub">&middot; <?= e($w['city'] ?: 'no city') ?> &middot; <?= e($w['email'] ?: 'no owner') ?></span></span>
-				<span class="row__v"><em class="pill"><?= e(Site::tier((string) $w['plan'])) ?></em> <?= e($w['visibility']) ?></span>
+			<a class="row-item" href="<?= e(App::url('/w/' . $w['slug'])) ?>">
+				<?= sq((string) $w['cover'], '', 'row-item__pic', false, initials($w)) ?>
+				<span><span class="row-item__t"><?= e(Wedding::names($w)) ?></span><span class="row-item__s"><?= e($w['city'] ?: 'No city') ?> · <?= e($w['email'] ?: 'No owner') ?> · <?= e(Design::forWedding($w)['name']) ?></span></span>
+				<span class="row-item__end"><span class="badge"><?= e(Site::tier((string) $w['plan'])) ?></span><span class="sub"><?= e($w['visibility']) ?></span></span>
 			</a>
 		<?php endforeach; ?>
 	</div>
-</section>
+</div>

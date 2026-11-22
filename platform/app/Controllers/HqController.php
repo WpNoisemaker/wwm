@@ -16,7 +16,7 @@ final class HqController
 
     private function show(string $tpl, array $d): void
     {
-        View::render('hq/' . $tpl, $d + ['rail' => true, 'css' => ['account'], 'tab' => 'account']);
+        View::render('hq/' . $tpl, $d + ['tab' => 'account', 'appTitle' => 'HQ', 'back' => $tpl === 'index' ? null : App::url('/hq')]);
     }
 
     public function index(): void
@@ -123,6 +123,23 @@ final class HqController
             Guard::flash('ok', 'Demo content added. The demo logins are listed below.');
         } catch (Throwable $e) {
             Guard::flash('bad', 'The demo content was not added: ' . $e->getMessage());
+        }
+        header('Location: ' . App::url('/hq/settings'));
+        exit;
+    }
+
+    /** Put a real couple's page from the old site back, if it is not here already. */
+    public function packAdd(string $key): void
+    {
+        $this->ownerOnly();
+        Guard::must();
+        try {
+            $r = Pack::install($key);
+            Guard::flash('ok', $r === 'added'
+                ? (Pack::ALL[$key] ?? 'The') . "'s page is back, with their account. Their old password still works."
+                : (Pack::ALL[$key] ?? 'That') . "'s page is already on this site, so nothing was changed.");
+        } catch (Throwable $e) {
+            Guard::flash('bad', 'The page was not added: ' . $e->getMessage());
         }
         header('Location: ' . App::url('/hq/settings'));
         exit;

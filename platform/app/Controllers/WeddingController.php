@@ -51,7 +51,10 @@ final class WeddingController
             }
         }
 
-        if (!$mine) {
+        // A page fetched ahead of a tap (Chrome's prefetch, or our service worker) is not a visit.
+        $ahead = str_contains((string) ($_SERVER['HTTP_SEC_PURPOSE'] ?? $_SERVER['HTTP_PURPOSE'] ?? ''), 'prefetch')
+              || ($_SERVER['HTTP_X_PURPOSE'] ?? '') === 'prefetch';
+        if (!$mine && !$ahead) {
             Db::run('UPDATE weddings SET views = views + 1 WHERE id = ?', [$w['id']]);
         }
 
@@ -59,17 +62,28 @@ final class WeddingController
         $programs = Wedding::programs($id);
         $next     = Wedding::nextMoment($w, $programs);
 
+        $design = Design::forWedding($w);
+        $dz     = Wedding::design($w);
+        $pal    = Wedding::palette($w);
         View::render('wedding/show', [
+            'wed'      => true,
+            'wtpl'     => $design['key'],
+            'fixTheme' => $design['theme'] === 'auto' ? null : $design['theme'],
+            'tone'     => (string) $w['plan'] === 'free' ? 'mono' : '',
+            'ink'      => $design['ink'] === 'dark' ? 'dark' : '',
+            'themeColor'      => $design['theme'] === 'auto' ? ((string) $w['plan'] === 'free' ? '#6E6E6E' : '#6F8590') : $design['swatch'][0],
+            'themeColorNight' => $design['theme'] === 'auto' ? ((string) $w['plan'] === 'free' ? '#141414' : '#1E242E') : $design['swatch'][0],
+            'ogImage'  => (string) $w['cover'] !== '' && !str_starts_with((string) $w['cover'], 'http') ? App::url('assets/img/' . $w['cover']) : null,
+            'design'   => $design,
+            'dz'       => $dz,
             'title'    => Wedding::names($w) . ' — ' . Wedding::when($w),
             'desc'     => trim((string) $w['tagline']) !== ''
                 ? (string) $w['tagline']
                 : Wedding::names($w) . ' are getting married. RSVP, send a gift and leave them a note.',
             'tab'      => 'weddings',
-            'css'      => ['wedding'],
-            'bare'     => false,
             'w'        => $w,
             'mine'     => $mine,
-            'pal'      => Wedding::palette($w),
+            'pal'      => $pal,
             'programs' => $programs,
             'squad'    => Wedding::has($w, 'squad')   ? Wedding::squad($id)  : [],
             'gifts'    => Wedding::gifts($id),
@@ -173,15 +187,16 @@ final class WeddingController
         http_response_code(401);
         View::render('wedding/locked', [
             'title' => 'This page is private',
-            'css'   => ['wedding'],
-            'bare'  => true,
+            'appTitle' => 'Private page',
             'w'     => $w,
         ]);
     }
 
     private static function back(string $slug, string $anchor): never
     {
-        header('Location: ' . App::url('/w/' . $slug) . '#' . $anchor);
+        // The RSVP lives in a sheet that opens from #rsvp, so after sending one the guest lands at the
+        // top of the page, where the confirmation is, instead of back inside the sheet.
+        header('Location: ' . App::url('/w/' . $slug) . ($anchor !== '' && $anchor !== 'rsvp' ? '#' . $anchor : ''));
         exit;
     }
 

@@ -455,6 +455,22 @@ final class Wedding
         return $out;
     }
 
+    /** "12 Dec" or "12 Dec 2027" when it is not this year: short enough for a card. */
+    public static function short(array $w): string
+    {
+        if (empty($w['wed_date'])) {
+            return 'Date to come';
+        }
+        $t = (int) strtotime((string) $w['wed_date']);
+        return date((date('Y', $t) === date('Y') ? 'j M' : 'j M Y'), $t);
+    }
+
+    /** The date as dot numerals: "24.12.26". */
+    public static function dotDate(array $w): string
+    {
+        return empty($w['wed_date']) ? '' : date('d.m.y', (int) strtotime((string) $w['wed_date']));
+    }
+
     /** Where it is happening, as one line, skipping the parts that are blank. */
     public static function where(array $w): string
     {

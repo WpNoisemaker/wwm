@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Demo content: ten wedding pages across all four plans, their guests, gifts and notes, eight
+ * Demo content: thirteen wedding pages, one for every design and plan, their guests, gifts and notes, eight
  * vendors with reviews, eight marketplace listings, and the 45 community conversations — plus the
  * accounts to sign in and look around.
  *
@@ -48,10 +48,10 @@ final class Demo
     public static function logins(): array
     {
         return [
-            ['email' => 'society@demo.test', 'who' => 'Couple — High Society', 'shows' => 'Yusuf & Halima: the top plan, with the monogram and gold'],
-            ['email' => 'premium@demo.test', 'who' => 'Couple — Premium',       'shows' => 'Chidi & Amaka: full-bleed cover, spraying, livestream'],
-            ['email' => 'pro@demo.test',     'who' => 'Couple — Pro',           'shows' => 'Seyi & Folake: squad, gallery, their own colours'],
-            ['email' => 'free@demo.test',    'who' => 'Couple — Free',          'shows' => 'Kola & Lara: the free page, with its upgrade nudge'],
+            ['email' => 'society@demo.test', 'who' => 'Couple — High Society', 'shows' => 'Yusuf & Halima: the Savannah design'],
+            ['email' => 'premium@demo.test', 'who' => 'Couple — Premium',       'shows' => 'Chidi & Amaka: the Royal design, spraying, livestream'],
+            ['email' => 'emeka@demo.test',   'who' => 'Couple — Pro',           'shows' => 'Emeka & Ngozi: Classic in their own colours, squad, gallery'],
+            ['email' => 'free@demo.test',    'who' => 'Couple — Free',          'shows' => 'Kola & Lara: the free page, black & white'],
             ['email' => 'vendor@demo.test',  'who' => 'Vendor',                 'shows' => 'Owns the Golden Lens profile'],
             ['email' => 'seller@demo.test',  'who' => 'Marketplace seller',     'shows' => 'Owns the marketplace listings'],
             ['email' => 'staff@demo.test',   'who' => 'Staff',                  'shows' => 'Can open HQ (but not remove the demo content)'],
@@ -163,7 +163,7 @@ final class Demo
                 'wed_date' => date('Y-m-d', $when), 'wed_time' => $w['time'],
                 'city' => $w['city'], 'state' => $w['state'], 'country' => 'Nigeria', 'venue' => $w['venue'],
                 'cover' => $w['cover'], 'plan' => $w['plan'], 'template' => $w['template'],
-                'design' => json_encode(['primary' => $w['colours'][0], 'accent' => $w['colours'][1]]),
+                'design' => json_encode(['primary' => $w['colours'][0], 'accent' => $w['colours'][1], 'photo2' => $w['photo2'] ?? '']),
                 'currency' => 'NGN', 'visibility' => $w['visibility'] ?? 'public', 'pass_code' => $w['pass_code'] ?? '',
                 'buzz' => $w['buzz'], 'views' => $w['views'], 'created_at' => $ago(86400 * mt_rand(20, 90)),
             ]);

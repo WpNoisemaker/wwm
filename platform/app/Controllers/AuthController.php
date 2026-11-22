@@ -42,10 +42,10 @@ final class AuthController
         }
 
         View::render('auth/sign-in', [
-            'title' => 'Sign in',
-            'css'   => ['auth'],
-            'bare'  => true,
-            'to'    => $to,
+            'title'    => 'Sign in',
+            'appTitle' => 'Sign in',
+            'tab'      => 'account',
+            'to'       => $to,
         ]);
     }
 
@@ -118,7 +118,7 @@ final class AuthController
             self::go('/account');
         }
 
-        View::render('auth/join', ['title' => 'Create your free wedding page', 'css' => ['auth'], 'bare' => true]);
+        View::render('auth/join', ['title' => 'Create your free wedding page', 'appTitle' => 'Make your page', 'back' => App::url('/'), 'tab' => 'account']);
     }
 
     public function signOut(): void
@@ -163,7 +163,7 @@ final class AuthController
                 self::go('/forgot');
             }
         }
-        View::render('auth/forgot', ['title' => 'Forgot password', 'css' => ['auth'], 'bare' => true, 'link' => $link]);
+        View::render('auth/forgot', ['title' => 'Forgot password', 'appTitle' => 'Password', 'back' => App::url('/sign-in'), 'link' => $link]);
     }
 
     /** The link in the confirmation email. Works signed in or out, and only once. */
@@ -203,7 +203,7 @@ final class AuthController
             self::go('/sign-in');
         }
 
-        View::render('auth/reset', ['title' => 'Choose a new password', 'css' => ['auth'], 'bare' => true, 'token' => $token]);
+        View::render('auth/reset', ['title' => 'Choose a new password', 'appTitle' => 'Password', 'token' => $token]);
     }
 
     /* ---------------------------------------------------------------------------------------- */

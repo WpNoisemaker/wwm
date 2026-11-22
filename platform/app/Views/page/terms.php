@@ -1,4 +1,4 @@
-<section class="sec wrap prose">
+<article class="page wrap prose">
 	<h1 class="prose__h">Terms of use</h1>
 	<p class="note note--bad"><b>A starting point, not finished legal advice.</b> These terms are written in plain English to describe how the service actually works. Have a lawyer in your jurisdiction review and complete them before you rely on them.</p>
 	<h2>Your account</h2>
@@ -15,4 +15,4 @@
 	<p>Impersonating somebody else, posting content you have no right to, harassing other people, or using the community to identify or expose anybody.</p>
 	<h2>Ending it</h2>
 	<p>You can delete your account whenever you want. We may suspend an account that breaks these terms.</p>
-</section>
+</article>

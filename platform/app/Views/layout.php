@@ -1,28 +1,86 @@
-<?php /** @var string $content */ ?>
+<?php
+/**
+ * The one page frame.
+ *
+ * Phone: an app. A round button and a centred light title at the top, a glass tab bar at the
+ * bottom, nothing else. Desktop: a website, with the sections across a top header and a full
+ * footer. A wedding page brings its own header and action bar ($wed) and wears its own palette.
+ *
+ * @var string $content
+ */
+$tab      = $tab ?? '';
+$wed      = !empty($wed);
+$bare     = !empty($bare);
+$tabTitles = ['home' => 'Wedding Pages', 'weddings' => 'Weddings', 'rankings' => 'Buzz Chart', 'vendors' => 'Vendors', 'market' => 'Market',
+              'community' => 'Community', 'blog' => 'Stories', 'pricing' => 'Pricing', 'account' => 'Your Page', 'hq' => 'HQ', 'search' => 'Search'];
+$appTitle = $appTitle ?? ($tabTitles[$tab] ?? mb_strimwidth((string) ($title ?? 'Wedding Websites & More'), 0, 22, '…'));
+$back     = $back ?? null;           // a URL turns the left button into a back arrow
+$action   = $action ?? null;         // HTML for the right-hand button
+$fixTheme = $fixTheme ?? null;       // a wedding template that is always day or always night
+$tone     = $tone ?? '';             // 'mono' for a Free page
+$ink      = $ink ?? '';              // 'dark' on the light, paper-like templates
+$htmlAttr = '';
+if ($fixTheme) { $htmlAttr .= ' data-theme="' . e($fixTheme) . '" data-fixed'; }
+if ($tone)     { $htmlAttr .= ' data-tone="' . e($tone) . '"'; }
+if ($ink)      { $htmlAttr .= ' data-ink="' . e($ink) . '"'; }
+if (!empty($wtpl)) { $htmlAttr .= ' data-tpl="' . e($wtpl) . '"'; }
+$home  = App::url('/');
+$base  = (string) parse_url($home, PHP_URL_PATH);
+$og    = $ogImage ?? App::url('assets/img/brand/og.jpg');
+?>
 <!doctype html>
-<html lang="en">
+<html lang="en"<?= $htmlAttr ?>>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#F0EFED">
 <title><?= e($title ?? 'Wedding Websites & More') ?></title>
 <?php if (!empty($desc)): ?><meta name="description" content="<?= e($desc) ?>"><?php endif; ?>
-<link rel="preload" as="font" type="font/woff2" href="<?= e(App::url('assets/fonts/outfit-latin.woff2')) ?>" crossorigin>
-<link rel="stylesheet" href="<?= e(App::asset('assets/css/tokens.css')) ?>">
-<link rel="stylesheet" href="<?= e(App::asset('assets/css/dots.css')) ?>">
-<link rel="stylesheet" href="<?= e(App::asset('assets/css/app.css')) ?>">
-<?php foreach (($css ?? []) as $sheet): ?><link rel="stylesheet" href="<?= e(App::asset('assets/css/' . $sheet . '.css')) ?>"><?php endforeach; ?>
+<meta name="theme-color" content="<?= e($themeColor ?? '#6F8590') ?>" data-day="<?= e($themeColor ?? '#6F8590') ?>" data-night="<?= e($themeColorNight ?? '#1E242E') ?>">
+<link rel="manifest" href="<?= e(App::url('manifest.webmanifest')) ?>">
+<link rel="icon" href="<?= e(App::url('assets/img/brand/favicon.ico')) ?>" sizes="48x48">
+<link rel="icon" href="<?= e(App::url('assets/img/brand/icon-192.png')) ?>" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="<?= e(App::url('assets/img/brand/apple-touch-icon.png')) ?>">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Weddings">
+<meta property="og:title" content="<?= e($title ?? 'Wedding Websites & More') ?>">
+<?php if (!empty($desc)): ?><meta property="og:description" content="<?= e($desc) ?>"><?php endif; ?>
+<meta property="og:image" content="<?= e($og) ?>">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" as="font" type="font/woff2" href="<?= e(App::url('assets/fonts/urbanist-latin.woff2')) ?>" crossorigin>
+<link rel="stylesheet" href="<?= e(App::asset('assets/css/wwm.css')) ?>">
+<?php if (!$fixTheme): ?>
+<script>(function(){var t,q=new URLSearchParams(location.search).get('theme');try{t=localStorage.getItem('wwm-theme')}catch(e){}if(q==='day'||q==='night')t=q;if(t!=='day'&&t!=='night')t=matchMedia('(prefers-color-scheme: dark)').matches?'night':'day';document.documentElement.setAttribute('data-theme',t)})()</script>
+<?php endif; ?>
+<script type="speculationrules"><?= json_encode(['prefetch' => [[
+	'where' => ['and' => [
+		['href_matches' => rtrim($base, '/') . '/*'],
+		['not' => ['href_matches' => [rtrim($base, '/') . '/sign-out', rtrim($base, '/') . '/hq/demo/*']]],
+		['not' => ['selector_matches' => '[data-no-prefetch], [download], [target=_blank]']],
+	]],
+	'eagerness' => 'moderate',
+]]], JSON_UNESCAPED_SLASHES) ?></script>
 </head>
-<body class="<?= e(trim(($bodyClass ?? '') . (empty($rail) ? '' : ' has-rail'))) ?>">
-<div class="shell">
-	<?php if (empty($bare)): ?><?= View::partial('partials/bar', get_defined_vars()) ?><?php endif; ?>
-	<?php if (empty($bare) && !empty($rail)): ?><?= View::partial('partials/rail', get_defined_vars()) ?><?php endif; ?>
-	<main class="main" id="main"><?= $content ?></main>
-	<?php if (empty($bare) && empty($rail)): ?><?= View::partial('partials/footer', get_defined_vars()) ?><?php endif; ?>
-	<?php if (empty($bare)): ?><?= View::partial('partials/tabs', get_defined_vars()) ?><?php endif; ?>
-</div>
-<div class="scrim" data-scrim></div>
-<script src="<?= e(App::asset('assets/js/app.js')) ?>" defer></script>
-<?php foreach (($js ?? []) as $s): ?><script src="<?= e(App::asset('assets/js/' . $s . '.js')) ?>" defer></script><?php endforeach; ?>
+<body class="<?= e(trim(($bodyClass ?? '') . ($wed ? ' is-wed' : ''))) ?>">
+<?= View::partial('partials/sprite') ?>
+<?php if (!$bare && !$wed): ?>
+	<?= View::partial('partials/site-head', ['tab' => $tab]) ?>
+	<header class="appbar">
+		<?php if ($back): ?>
+			<a class="cbtn" href="<?= e($back) ?>" aria-label="Back" data-back><?= icon('back') ?></a>
+		<?php else: ?>
+			<a class="cbtn" href="<?= e($home) ?>" aria-label="Wedding Websites &amp; More, home"><span class="logo">&amp;</span></a>
+		<?php endif; ?>
+		<p class="appbar__title"><?= e($appTitle) ?></p>
+		<?= $action ?? '<button class="cbtn" type="button" data-theme-toggle aria-label="Switch between day and night">' . icon('auto') . '</button>' ?>
+	</header>
+<?php endif; ?>
+<main id="main"<?= !empty($mainClass) ? ' class="' . e($mainClass) . '"' : '' ?>><?= $content ?></main>
+<?php if (!$bare && !$wed): ?>
+	<?= View::partial('partials/footer') ?>
+	<?= View::partial('partials/tabs', ['tab' => $tab]) ?>
+<?php endif; ?>
+<script src="<?= e(App::asset('assets/js/wwm.js')) ?>" defer></script>
 </body>
 </html>

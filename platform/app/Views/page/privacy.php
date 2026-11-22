@@ -1,4 +1,4 @@
-<section class="sec wrap prose">
+<article class="page wrap prose">
 	<h1 class="prose__h">Privacy</h1>
 	<p class="note note--bad"><b>A starting point, not finished legal advice.</b> This describes how the service handles information today. Have a lawyer in your jurisdiction review and complete it before you rely on it.</p>
 	<h2>What we hold</h2>
@@ -13,4 +13,4 @@
 	<p>Card details are handled by the payment provider and never stored here.</p>
 	<h2>Your choices</h2>
 	<p>You can edit or delete your page and your account at any time. Ask us and we will tell you what we hold about you.</p>
-</section>
+</article>

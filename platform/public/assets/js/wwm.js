@@ -1,0 +1,394 @@
+/* Wedding Websites & More: every interaction on the site, in one small file.
+   The pages work without it. With it they behave like an app: instant navigation, sheets,
+   counters, a swipe deck, offline pages and an install button. */
+(function () {
+	'use strict';
+	var d = document, root = d.documentElement, W = window;
+	var BASE = (function () { var s = d.currentScript && d.currentScript.src; return s ? s.replace(/assets\/js\/wwm\.js.*$/, '') : '/'; })();
+
+	function buzz() { if (navigator.vibrate) { try { navigator.vibrate(6); } catch (e) {} } }
+	function fmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+	function csrf() { var i = d.querySelector('input[name="_t"]'); return i ? i.value : ''; }
+
+	/* ---------- dot numerals: one clean row of dots along each digit's centre line ---------- */
+	var G = {
+		'0': [50, 'M25 3A20 37 0 0 1 25 77A20 37 0 0 1 25 3'],
+		'1': [36, 'M9 15L22 4L22 77'],
+		'2': [50, 'M6 20C6 9 15 3 25 3C36 3 44 10 44 21C44 31 37 37 30 44L6 77L46 77'],
+		'3': [50, 'M7 12C11 6 17 3 25 3C35 3 42 9 42 19C42 30 34 37 22 37C36 37 45 45 45 56C45 69 36 77 24 77C15 77 8 73 5 66'],
+		'4': [50, 'M34 77L34 3L4 56L47 56'],
+		'5': [50, 'M42 3L11 3L8 36C13 32 19 30 25 30C37 30 45 39 45 52C45 66 36 77 24 77C15 77 8 73 5 66'],
+		'6': [50, 'M38 8C34 4 29 3 25 3C12 3 6 18 6 42C6 63 13 77 25 77C37 77 44 68 44 55C44 42 36 34 25 34C16 34 9 39 6 46'],
+		'7': [50, 'M5 3L45 3L18 77'],
+		'8': [50, 'M25 3A16 17 0 0 1 25 37A16 17 0 0 1 25 3|M25 37A19 20 0 0 1 25 77A19 20 0 0 1 25 37'],
+		'9': [50, 'M44 34C41 41 34 46 25 46C14 46 6 38 6 25C6 12 14 3 25 3C37 3 44 13 44 30C44 56 37 77 23 77C17 77 13 75 10 72'],
+		':': [24, 'M12 28l0 .01M12 62l0 .01'], '.': [22, 'M11 76l0 .01'], ',': [22, 'M11 76l0 .01'], ' ': [24, '']
+	};
+	var STEP = 11, DOT = 6.2, GAP = 9;
+	function dotSvg(text) {
+		var x = 0, parts = [];
+		String(text).split('').forEach(function (ch) {
+			var g = G[ch]; if (!g) { return; }
+			var still = ch === ':' || ch === '.' || ch === ',';
+			if (g[1]) { g[1].split('|').forEach(function (p) { parts.push('<path transform="translate(' + x + ' 0)" d="' + p + '"' + (still ? '' : ' data-dash') + '/>'); }); }
+			x += g[0] + GAP;
+		});
+		var w = Math.max(1, x - GAP);
+		return '<svg viewBox="-4 -4 ' + (w + 8) + ' 88" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="' + DOT + '" stroke-linecap="round" stroke-linejoin="round">' + parts.join('') + '</svg>';
+	}
+	function setDots(el, value) {
+		value = String(value);
+		if (el.getAttribute('data-value') === value && el.firstChild) { return; }
+		el.setAttribute('data-value', value);
+		if (!el.hasAttribute('aria-hidden')) { el.setAttribute('aria-label', value); el.setAttribute('role', 'img'); }
+		el.innerHTML = dotSvg(value);
+		el.querySelectorAll('path[data-dash]').forEach(function (p) {
+			var len = p.getTotalLength ? p.getTotalLength() : 0, n = Math.max(1, Math.round(len / STEP));
+			p.setAttribute('stroke-dasharray', '0 ' + (len / n).toFixed(3));
+		});
+		el.classList.remove('is-new'); void el.offsetWidth; el.classList.add('is-new');
+	}
+	d.querySelectorAll('[data-dots]').forEach(function (el) { setDots(el, el.getAttribute('data-value') || el.textContent.trim()); });
+
+	/* ---------- naira: Urbanist has no ₦, so text written by script gets the drawn one ---------- */
+	function naira(scope) {
+		var tw = d.createTreeWalker(scope || d.body, NodeFilter.SHOW_TEXT, null), hits = [];
+		while (tw.nextNode()) { var t = tw.currentNode; if (t.nodeValue.indexOf('₦') > -1 && !t.parentNode.closest('script,style,textarea,title,option')) { hits.push(t); } }
+		hits.forEach(function (t) {
+			var f = d.createElement('span');
+			t.nodeValue.split('₦').forEach(function (part, n) {
+				if (n) { var s = d.createElement('span'); s.className = 'ngn'; s.textContent = 'N'; s.setAttribute('aria-hidden', 'true'); f.appendChild(s); var r = d.createElement('span'); r.className = 'sr'; r.textContent = 'naira '; f.appendChild(r); }
+				if (part) { f.appendChild(d.createTextNode(part)); }
+			});
+			t.parentNode.replaceChild(f, t);
+		});
+	}
+	function setText(el, text) { el.textContent = text; naira(el); }
+
+	/* ---------- toast ---------- */
+	var toastEl, toastT;
+	function toast(msg) {
+		if (!toastEl) { toastEl = d.createElement('div'); toastEl.className = 'toast'; toastEl.setAttribute('role', 'status'); d.body.appendChild(toastEl); }
+		setText(toastEl, msg); toastEl.classList.add('is-on');
+		clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove('is-on'); }, 2600);
+	}
+	W.WWM = { fmt: fmt, toast: toast, dots: setDots, naira: naira, text: setText };
+
+	/* ---------- theme: follows the device until the visitor picks ---------- */
+	var THEMES = ['auto', 'day', 'night'], NAMES = { auto: 'Auto, following your device', day: 'Day', night: 'Night' };
+	function stored() { try { return localStorage.getItem('wwm-theme') || 'auto'; } catch (e) { return 'auto'; } }
+	function applyTheme(choice) {
+		if (root.hasAttribute('data-fixed')) { return; }
+		var q = new URLSearchParams(location.search).get('theme');
+		var t = (q === 'day' || q === 'night') ? q : (choice === 'day' || choice === 'night' ? choice : (matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day'));
+		root.setAttribute('data-theme', t);
+		d.querySelectorAll('[data-theme-toggle] use').forEach(function (u) { u.setAttribute('href', '#i-' + (choice === 'day' ? 'sun' : choice === 'night' ? 'moon' : 'auto')); });
+		var m = d.querySelector('meta[name="theme-color"]'); if (m) { m.content = m.getAttribute(t === 'night' ? 'data-night' : 'data-day') || m.content; }
+	}
+	applyTheme(stored());
+	try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { applyTheme(stored()); }); } catch (e) {}
+	d.addEventListener('click', function (e) {
+		var b = e.target.closest('[data-theme-toggle]'); if (!b) { return; }
+		var next = THEMES[(THEMES.indexOf(stored()) + 1) % 3];
+		try { localStorage.setItem('wwm-theme', next); } catch (er) {}
+		var go = function () { applyTheme(next); };
+		if (d.startViewTransition) { d.startViewTransition(go); } else { go(); }
+		toast('Theme: ' + NAMES[next]); buzz();
+	});
+
+	/* ---------- headers go glassy once the page moves ---------- */
+	var bars = d.querySelectorAll('.appbar, .site-head, .wed-head');
+	function onScroll() { var s = W.scrollY > 6; bars.forEach(function (b) { b.classList.toggle('is-stuck', s); }); }
+	addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+	/* ---------- back: return to where you came from, at the same scroll ---------- */
+	d.addEventListener('click', function (e) {
+		var a = e.target.closest('[data-back]'); if (!a) { return; }
+		if (d.referrer && d.referrer.indexOf(location.origin) === 0 && history.length > 1) { e.preventDefault(); history.back(); }
+	});
+
+	/* ---------- counters: − [dots] +, hold to run ---------- */
+	d.querySelectorAll('[data-counter]').forEach(function (c) {
+		var min = +c.dataset.min || 0, max = +c.dataset.max || 99, step = +c.dataset.step || 1;
+		var val = +c.dataset.value || min, num = c.querySelector('[data-dots]'), unit = c.querySelector('[data-unit]');
+		var inputs = c.dataset.input ? d.querySelectorAll(c.dataset.input) : [];
+		var dec = c.querySelector('[data-dec]'), inc = c.querySelector('[data-inc]');
+		function put(v, quiet) {
+			val = Math.max(min, Math.min(max, v)); c.dataset.value = val;
+			if (num) { setDots(num, c.hasAttribute('data-comma') ? fmt(val) : String(val)); }
+			if (unit) { var u = unit.dataset.unit.split('|'); unit.textContent = val === 1 ? u[0] : (u[1] || u[0]); }
+			inputs.forEach(function (i) { i.value = val; });
+			dec.disabled = val <= min; inc.disabled = val >= max;
+			c.dispatchEvent(new CustomEvent('change', { detail: val, bubbles: true }));
+			if (!quiet) { buzz(); }
+		}
+		[[dec, -1], [inc, 1]].forEach(function (pair) {
+			var b = pair[0], dir = pair[1] * step, t1, t2;
+			function stop() { clearTimeout(t1); clearInterval(t2); }
+			b.addEventListener('pointerdown', function (e) {
+				if (e.button > 0) { return; }
+				e.preventDefault(); put(val + dir);
+				t1 = setTimeout(function () { t2 = setInterval(function () { put(val + dir, true); }, 90); }, 420);
+			});
+			['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) { b.addEventListener(ev, stop); });
+			b.addEventListener('click', function (e) { if (e.detail === 0) { put(val + dir); } });   // keyboard
+		});
+		c.put = put; put(val, true);
+	});
+
+	/* ---------- sliders: drag the pill ---------- */
+	d.querySelectorAll('[data-slider]').forEach(function (s) {
+		var fill = s.querySelector('.slider__fill'), out = s.querySelector('.slider__val');
+		var max = +s.dataset.max || 100, unit = s.dataset.unit == null ? ' %' : s.dataset.unit, lock = s.hasAttribute('data-readonly');
+		s.setAttribute('role', 'meter'); s.setAttribute('aria-valuemin', 0); s.setAttribute('aria-valuemax', max);
+		function put(v) {
+			v = Math.max(0, Math.min(max, Math.round(v))); s.dataset.value = v;
+			fill.style.setProperty('--v', (v / max * 100) + '%');
+			if (out && !s.dataset.text) { out.textContent = (s.hasAttribute('data-comma') ? fmt(v) : v) + unit; }
+			s.setAttribute('aria-valuenow', v);
+		}
+		put(+s.dataset.value || 0);
+		if (lock) { return; }
+		s.setAttribute('role', 'slider'); s.tabIndex = 0;
+		function at(e) { var r = s.getBoundingClientRect(); put((e.clientX - r.left) / r.width * max); }
+		s.addEventListener('pointerdown', function (e) { s.setPointerCapture(e.pointerId); s.classList.add('is-dragging'); at(e); buzz(); });
+		s.addEventListener('pointermove', function (e) { if (s.classList.contains('is-dragging')) { at(e); } });
+		['pointerup', 'pointercancel'].forEach(function (ev) { s.addEventListener(ev, function () { s.classList.remove('is-dragging'); }); });
+		s.addEventListener('keydown', function (e) {
+			var k = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key];
+			if (k) { e.preventDefault(); put(+s.dataset.value + k * Math.max(1, Math.round(max / 50))); }
+		});
+	});
+
+	/* ---------- on/off tiles (the dashboard preview) ---------- */
+	d.addEventListener('click', function (e) {
+		var t = e.target.closest('[data-toggle]'); if (!t) { return; }
+		var on = t.classList.toggle('is-on'); t.setAttribute('aria-pressed', on);
+		var lab = t.querySelector('[data-on]'); if (lab) { lab.textContent = on ? lab.dataset.on : lab.dataset.off; }
+		var msg = t.getAttribute(on ? 'data-toast-on' : 'data-toast-off'); if (msg) { toast(msg); }
+		buzz();
+	});
+
+	/* ---------- chips that filter a list in place ---------- */
+	d.querySelectorAll('[data-choose]').forEach(function (g) {
+		g.addEventListener('click', function (e) {
+			var b = e.target.closest('button'); if (!b || !g.contains(b)) { return; }
+			g.querySelectorAll('button').forEach(function (x) { x.classList.toggle('is-on', x === b); x.setAttribute('aria-pressed', x === b); });
+			var list = g.dataset.choose && d.querySelector(g.dataset.choose);
+			if (list) { var f = b.dataset.f || ''; list.querySelectorAll('[data-tags]').forEach(function (it) { it.hidden = !!f && it.dataset.tags.split(' ').indexOf(f) < 0; }); }
+			buzz();
+		});
+	});
+
+	/* ---------- countdown in dots ---------- */
+	d.querySelectorAll('[data-countdown]').forEach(function (cd) {
+		var end = Date.parse(cd.dataset.countdown); if (isNaN(end)) { return; }
+		function tick() {
+			var s = Math.max(0, Math.floor((end - Date.now()) / 1000));
+			var parts = { d: Math.floor(s / 86400), h: Math.floor(s % 86400 / 3600), m: Math.floor(s % 3600 / 60), s: s % 60 };
+			Object.keys(parts).forEach(function (k) {
+				var el = cd.querySelector('[data-cd="' + k + '"]'); if (!el) { return; }
+				setDots(el, k === 'd' ? String(parts[k]) : ('0' + parts[k]).slice(-2));
+			});
+		}
+		tick(); setInterval(tick, 1000);
+	});
+
+	/* ---------- bottom sheets (a #hash opens them even without this file) ---------- */
+	var scrim = d.createElement('div'); scrim.className = 'scrim'; d.body.appendChild(scrim);
+	var openSheet = null, lastFocus = null;
+	function openS(s) {
+		if (!s) { return; }
+		if (openSheet) { closeS(true); }
+		openSheet = s; lastFocus = d.activeElement;
+		s.classList.add('is-open'); scrim.classList.add('is-open'); s.setAttribute('aria-hidden', 'false');
+		root.classList.add('is-locked');
+		var f = s.querySelector('[autofocus], textarea, input:not([type=hidden])');
+		setTimeout(function () { if (f && matchMedia('(hover: hover)').matches) { f.focus({ preventScroll: true }); } else { s.focus({ preventScroll: true }); } }, 380);
+		buzz();
+	}
+	function closeS(quiet) {
+		if (!openSheet) { return; }
+		openSheet.classList.remove('is-open'); openSheet.style.transform = ''; openSheet.setAttribute('aria-hidden', 'true');
+		scrim.classList.remove('is-open'); root.classList.remove('is-locked');
+		if (location.hash === '#' + openSheet.id) { history.replaceState(null, '', location.pathname + location.search); }
+		openSheet = null; if (!quiet && lastFocus && lastFocus.focus) { lastFocus.focus({ preventScroll: true }); }
+	}
+	W.WWM.open = function (id) { openS(d.getElementById(id)); };
+	W.WWM.close = closeS;
+	d.addEventListener('click', function (e) {
+		var o = e.target.closest('[data-open]');
+		if (o) { var s = d.getElementById(o.dataset.open); if (s) { e.preventDefault(); openS(s); } return; }
+		if (e.target.closest('[data-close]') || e.target === scrim) { e.preventDefault(); closeS(); }
+	});
+	d.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeS(); } });
+	if (location.hash) {
+		var hs = d.getElementById(location.hash.slice(1)), flash = d.querySelector('.note[role]');
+		if (hs && hs.classList.contains('sheet') && !flash) { openS(hs); }
+		// Landing part-way down a page after a form: the confirmation is at the top, so say it here too.
+		else if (flash) { setTimeout(function () { toast(flash.textContent.trim()); }, 300); }
+	}
+	d.querySelectorAll('.sheet').forEach(function (s) {
+		s.setAttribute('aria-hidden', s.classList.contains('is-open') ? 'false' : 'true'); s.tabIndex = -1;
+		var g = s.querySelector('.sheet__grab'), y0 = 0, dy = 0, on = false;
+		if (!g) { return; }
+		g.addEventListener('pointerdown', function (e) { on = true; y0 = e.clientY; dy = 0; s.classList.add('is-dragging'); g.setPointerCapture(e.pointerId); });
+		g.addEventListener('pointermove', function (e) { if (!on) { return; } dy = Math.max(0, e.clientY - y0); s.style.transform = 'translateY(' + dy + 'px)'; });
+		function up() { if (!on) { return; } on = false; s.classList.remove('is-dragging'); if (dy > 90) { closeS(); } else { s.style.transform = ''; } }
+		g.addEventListener('pointerup', up); g.addEventListener('pointercancel', up);
+	});
+
+	/* ---------- the community deck: swipe to move, buttons to like and save ---------- */
+	d.querySelectorAll('[data-deck]').forEach(function (deck) {
+		var cards = Array.prototype.slice.call(deck.querySelectorAll('.post'));
+		if (!cards.length) { return; }
+		var i = 0, x0 = 0, y0 = 0, dx = 0, t0 = 0, drag = false, front;
+		var pos = d.querySelector('[data-deck-pos]');
+		var saved = {}; try { saved = JSON.parse(localStorage.getItem('wwm-saved') || '{}') || {}; } catch (e) {}
+		deck.classList.add('is-live');
+		function lay() {
+			cards.forEach(function (c, n) {
+				c.style.transform = ''; c.classList.remove('is-back', 'is-hidden', 'is-gone-l', 'is-gone-r');
+				if (n < i) { c.classList.add('is-gone-l'); } else if (n === i + 1) { c.classList.add('is-back'); } else if (n > i + 1) { c.classList.add('is-hidden'); }
+				c.style.zIndex = cards.length - n; c.setAttribute('aria-hidden', n !== i ? 'true' : 'false');
+				c.querySelectorAll('a').forEach(function (a) { a.tabIndex = n === i ? 0 : -1; });
+			});
+			front = cards[i];
+			if (pos) { pos.textContent = (i + 1) + ' of ' + cards.length; }
+			var like = d.querySelector('[data-post-like]'), save = d.querySelector('[data-post-save]'), open = d.querySelector('[data-post-open]');
+			if (like) { var on = front.dataset.liked === '1'; like.classList.toggle('is-on', on); like.setAttribute('aria-pressed', on); }
+			if (save) { var sv = !!saved[front.dataset.id]; save.classList.toggle('is-on', sv); save.setAttribute('aria-pressed', sv); }
+			if (open) { open.href = front.dataset.href; }
+			d.querySelectorAll('[data-count]').forEach(function (n) { n.textContent = fmt(+(front.dataset[n.dataset.count] || 0)); });
+		}
+		function go(dir) {
+			var n = i + dir;
+			if (n < 0 || n >= cards.length) { if (front) { front.style.transform = ''; } toast(n < 0 ? 'This is the newest post' : 'You have seen them all'); return; }
+			i = n; lay(); buzz();
+		}
+		deck.addEventListener('pointerdown', function (e) {
+			if (!front || !front.contains(e.target) || e.button > 0) { return; }
+			drag = true; x0 = e.clientX; y0 = e.clientY; dx = 0; t0 = Date.now(); front.style.transition = 'none';
+		});
+		addEventListener('pointermove', function (e) {
+			if (!drag) { return; }
+			dx = e.clientX - x0; var dy = e.clientY - y0;
+			if (Math.abs(dx) > 6) { e.preventDefault(); }
+			front.style.transform = 'translate(' + dx + 'px,' + dy * .12 + 'px) rotate(' + dx / 24 + 'deg)';
+		}, { passive: false });
+		function end(e) {
+			if (!drag) { return; } drag = false; front.style.transition = '';
+			var v = Math.abs(dx) / Math.max(1, Date.now() - t0), far = Math.abs(dx) > deck.offsetWidth * .3;
+			if ((far || (v > .45 && Math.abs(dx) > 24)) && dx < 0) { go(1); }
+			else if ((far || (v > .45 && Math.abs(dx) > 24)) && dx > 0) { go(-1); }
+			else { front.style.transform = ''; if (Math.abs(dx) < 6 && e && e.type === 'pointerup' && front.dataset.href && !e.target.closest('a,button')) { location.href = front.dataset.href; } }
+		}
+		addEventListener('pointerup', end); addEventListener('pointercancel', end);
+		deck.addEventListener('keydown', function (e) { if (e.key === 'ArrowRight') { go(1); } if (e.key === 'ArrowLeft') { go(-1); } });
+		d.querySelectorAll('[data-deck-go]').forEach(function (b) { b.addEventListener('click', function () { go(+b.dataset.deckGo); }); });
+		var likeBtn = d.querySelector('[data-post-like]');
+		if (likeBtn) {
+			likeBtn.addEventListener('click', function (e) {
+				e.preventDefault(); if (!front) { return; }
+				var card = front, on = card.dataset.liked !== '1';
+				card.dataset.liked = on ? '1' : '0'; card.dataset.likes = Math.max(0, +(card.dataset.likes || 0) + (on ? 1 : -1)); lay(); buzz();
+				var body = new FormData(); body.append('_t', csrf());
+				fetch(card.dataset.like, { method: 'POST', body: body, headers: { Accept: 'application/json' }, credentials: 'same-origin' })
+					.then(function (r) { return r.ok ? r.json() : null; })
+					.then(function (j) { if (j && typeof j.likes === 'number') { card.dataset.likes = j.likes; card.dataset.liked = j.liked ? '1' : '0'; if (card === front) { lay(); } } })
+					.catch(function () {});
+			});
+		}
+		var saveBtn = d.querySelector('[data-post-save]');
+		if (saveBtn) {
+			saveBtn.addEventListener('click', function (e) {
+				e.preventDefault(); if (!front) { return; }
+				var id = front.dataset.id; if (saved[id]) { delete saved[id]; } else { saved[id] = 1; }
+				try { localStorage.setItem('wwm-saved', JSON.stringify(saved)); } catch (er) {}
+				lay(); buzz(); toast(saved[id] ? 'Saved on this phone' : 'Removed from saved');
+			});
+		}
+		lay();
+	});
+
+	/* ---------- forms: one tap, one submission, a visible "working" state ---------- */
+	d.addEventListener('submit', function (e) {
+		var f = e.target; if (f.dataset.busy === '1') { e.preventDefault(); return; }
+		if (f.hasAttribute('data-confirm') && !confirm(f.getAttribute('data-confirm'))) { e.preventDefault(); return; }
+		f.dataset.busy = '1';
+		var b = e.submitter || f.querySelector('[type=submit]'); if (b && b.classList.contains('pill')) { b.classList.add('is-busy'); }
+		setTimeout(function () { f.dataset.busy = '0'; if (b) { b.classList.remove('is-busy'); } }, 8000);
+	});
+	addEventListener('pageshow', function () { d.querySelectorAll('form[data-busy="1"]').forEach(function (f) { f.dataset.busy = '0'; }); d.querySelectorAll('.is-busy').forEach(function (b) { b.classList.remove('is-busy'); }); });
+
+	/* ---------- copy and share ---------- */
+	d.addEventListener('click', function (e) {
+		var sh = e.target.closest('[data-share]');
+		if (sh) {
+			e.preventDefault(); var url = sh.dataset.share && sh.dataset.share !== '' ? sh.dataset.share : location.href;
+			if (navigator.share) { navigator.share({ title: d.title, url: url }).catch(function () {}); }
+			else { try { navigator.clipboard.writeText(url); toast('Link copied'); } catch (er) { toast(url); } }
+			return;
+		}
+		var cp = e.target.closest('[data-copy]');
+		if (cp) { e.preventDefault(); try { navigator.clipboard.writeText(cp.dataset.copy); toast('Copied'); } catch (er) {} }
+		var tt = e.target.closest('[data-toast]'); if (tt) { toast(tt.dataset.toast); }
+	});
+
+	/* ---------- reveal on scroll ---------- */
+	if ('IntersectionObserver' in W) {
+		var io = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('is-in'); io.unobserve(en.target); } }); }, { rootMargin: '0px 0px -6% 0px' });
+		d.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+	} else { d.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('is-in'); }); }
+
+	/* ---------- offline + instant pages: the service worker ---------- */
+	var swReady = null;
+	if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+		swReady = navigator.serviceWorker.register(BASE + 'sw.js', { scope: BASE }).catch(function () { return null; });
+	}
+	/* Chrome reads the prefetch rules in the page head. Everywhere else, a finger landing on a link
+	   asks the service worker to fetch that page, so it is already here when the finger lifts. */
+	var specOK = W.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules');
+	if (!specOK && 'serviceWorker' in navigator) {
+		var asked = {};
+		var warm = function (e) {
+			var a = e.target.closest && e.target.closest('a[href]'); if (!a || a.target || a.hasAttribute('download') || a.hasAttribute('data-no-prefetch')) { return; }
+			var u; try { u = new URL(a.href, location.href); } catch (er) { return; }
+			if (u.origin !== location.origin || u.href === location.href.split('#')[0] || u.hash && u.pathname === location.pathname || asked[u.href]) { return; }
+			if (/\/(sign-out|hq\/demo)/.test(u.pathname)) { return; }
+			asked[u.href] = 1;
+			if (navigator.serviceWorker.controller) { navigator.serviceWorker.controller.postMessage({ prefetch: u.href }); }
+		};
+		d.addEventListener('touchstart', warm, { passive: true });
+		d.addEventListener('mouseover', function (e) { var t = setTimeout(function () { warm(e); }, 80); e.target.addEventListener('mouseout', function () { clearTimeout(t); }, { once: true }); });
+	}
+
+	/* ---------- install the app ---------- */
+	var bip = null, inst = d.querySelectorAll('[data-install]');
+	var standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+	addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); bip = e; if (!standalone) { inst.forEach(function (x) { x.classList.add('is-on'); }); } });
+	if (!standalone && /iphone|ipad|ipod/i.test(navigator.userAgent) && !W.MSStream) {
+		inst.forEach(function (x) { x.classList.add('is-on'); var h = x.querySelector('[data-install-hint]'); if (h) { h.textContent = 'Tap Share, then Add to Home Screen'; } var b = x.querySelector('[data-install-go]'); if (b) { b.hidden = true; } });
+	}
+	d.addEventListener('click', function (e) {
+		if (!e.target.closest('[data-install-go]') || !bip) { return; }
+		bip.prompt(); bip.userChoice.then(function () { bip = null; inst.forEach(function (x) { x.classList.remove('is-on'); }); });
+	});
+	addEventListener('appinstalled', function () { inst.forEach(function (x) { x.classList.remove('is-on'); }); toast('Installed. Find it on your home screen.'); });
+
+	/* ---------- the wedding page's quiz ---------- */
+	d.querySelectorAll('[data-quiz]').forEach(function (q) {
+		var items = q.querySelectorAll('[data-q]'), score = 0, done = 0, out = q.querySelector('[data-quiz-score]');
+		items.forEach(function (it) {
+			it.addEventListener('click', function (e) {
+				var b = e.target.closest('button'); if (!b || it.dataset.done) { return; }
+				it.dataset.done = '1'; done++;
+				var right = b.hasAttribute('data-right'); if (right) { score++; }
+				b.classList.add(right ? 'is-right' : 'is-wrong');
+				var r = it.querySelector('[data-right]'); if (r) { r.classList.add('is-right'); }
+				buzz();
+				if (out) { setText(out, score + ' of ' + items.length + (done === items.length ? (score === items.length ? ' · You know them well' : ' · Not bad at all') : '')); }
+			});
+		});
+	});
+})();

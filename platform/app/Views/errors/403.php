@@ -1,5 +1,8 @@
-<div class="wrap" style="padding:60px 0;max-width:46ch">
-	<h1>Not for you</h1>
-	<p class="lede" style="margin-top:8px">You are signed in, but this area is for staff. If that looks wrong, ask whoever runs the site to change your role.</p>
-	<a class="btn" style="margin-top:20px" href="<?= e(App::url('/account')) ?>">Back to your page</a>
+<div class="page wrap">
+	<div class="glass empty error-card">
+		<div class="error-code"><?= dots('403') ?></div>
+		<h1 class="h2">This part is for staff</h1>
+		<p>You are signed in, but this area is for the people who run the site. If that looks wrong, ask them to change your role.</p>
+		<a class="pill" href="<?= e(App::url('/account')) ?>">Back to your page</a>
+	</div>
 </div>

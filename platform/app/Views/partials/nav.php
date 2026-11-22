@@ -1,12 +1,10 @@
 <?php
-/** The one list of places a visitor can go. The top bar, the phone tab bar and the account rail
- *  all read it, so a section is never added in one place and forgotten in another. */
+/** The one list of places a visitor can go. The desktop header and the footer both read it. */
 return [
-	['home',  'Home',       '/',          'home'],
-	['rings', 'Weddings',   '/weddings',  'weddings'],
-	['chart', 'Buzz Chart', '/rankings',  'rankings'],
-	['store', 'Vendors',    '/vendors',   'vendors'],
-	['cash',  'Market',     '/market',    'market'],
-	['talk',  'Community',  '/community', 'community'],
-	['book',  'Stories',    '/blog',      'blog'],
+	['ring',   'Weddings',   '/weddings',  'weddings'],
+	['chart',  'Buzz Chart', '/rankings',  'rankings'],
+	['store',  'Vendors',    '/vendors',   'vendors'],
+	['bag',    'Market',     '/market',    'market'],
+	['chat',   'Community',  '/community', 'community'],
+	['wallet', 'Pricing',    '/pricing',   'pricing'],
 ];

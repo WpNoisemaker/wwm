@@ -1,51 +1,47 @@
-<section class="sec wrap">
-	<div class="sec__head">
-		<div>
-			<h2>Stays, rides, honeymoons &amp; aso-ebi</h2>
-			<p class="sub"><?= e(number_format($total)) ?> listing<?= $total === 1 ? '' : 's' ?>. Your money is held until you confirm the booking.</p>
-		</div>
-	</div>
-
-	<form class="hero__search wfind" method="get" role="search">
-		<span class="hero__search-ico"><?= icon('search', 19) ?></span>
-		<input type="search" name="q" value="<?= e($f['q']) ?>" placeholder="An apartment, a convoy, a honeymoon" aria-label="Search the marketplace">
-		<button class="btn btn--sm" type="submit">Search</button>
+<?php
+/** The marketplace: aso-ebi, stays, rides and honeymoons. */
+$q = static function (array $o) use ($f): string {
+	$all = array_filter(array_merge($f, $o), static fn ($v) => $v !== '' && $v !== null);
+	return App::url('/market') . ($all ? '?' . http_build_query($all) : '');
+};
+$price = static fn (array $l): string => (int) $l['on_ask'] ? 'Price on request' : money(short_money((int) $l['price'])) . ((string) $l['price_unit'] !== '' ? ' ' . e($l['price_unit']) : '');
+?>
+<div class="page wrap">
+	<header class="page-head">
+		<span class="eyebrow">Your money is held until the booking happens</span>
+		<h1>Aso-ebi, stays, rides &amp; honeymoons</h1>
+		<p class="lede"><?= e(number_format($total)) ?> listing<?= $total === 1 ? '' : 's' ?><?= $f['city'] !== '' ? ' in ' . e($f['city']) : '' ?></p>
+	</header>
+	<form class="searchbox narrow" method="get" action="<?= e(App::url('/market')) ?>" role="search">
+		<?= icon('search') ?>
+		<input class="input" type="search" name="q" value="<?= e($f['q']) ?>" placeholder="An apartment, a convoy, a honeymoon" aria-label="Search the marketplace">
+		<?php foreach (['kind', 'city'] as $k): if (($f[$k] ?? '') !== ''): ?><input type="hidden" name="<?= $k ?>" value="<?= e($f[$k]) ?>"><?php endif; endforeach; ?>
 	</form>
-
-	<?php $q = static function (array $o) use ($f): string {
-		$all = array_filter(array_merge($f, $o), static fn($v) => $v !== '' && $v !== null);
-		return App::url('/market') . ($all ? '?' . http_build_query($all) : '');
-	}; ?>
-	<div class="rail chips">
+	<nav class="chips chips--center gap-t-sm" aria-label="Kinds">
+		<a class="chip<?= $f['kind'] === '' ? ' is-on' : '' ?>" href="<?= e($q(['kind' => null, 'page' => null])) ?>">Everything</a>
 		<?php foreach ($kinds as $k): ?>
-			<a class="chip<?= $f['kind'] === $k['kind'] ? ' is-on' : '' ?>" href="<?= e($q(['kind' => $f['kind'] === $k['kind'] ? null : $k['kind'], 'page' => null])) ?>">
-				<?= e(Listing::kindName((string) $k['kind'])) ?><em><?= e($k['n']) ?></em></a>
+			<a class="chip<?= $f['kind'] === $k['kind'] ? ' is-on' : '' ?>" href="<?= e($q(['kind' => $f['kind'] === $k['kind'] ? null : $k['kind'], 'page' => null])) ?>"><?= e(Listing::kindName((string) $k['kind'])) ?></a>
 		<?php endforeach; ?>
-	</div>
-	<div class="rail chips">
-		<?php foreach ($cities as $c): ?>
-			<a class="chip<?= $f['city'] === $c['city'] ? ' is-on' : '' ?>" href="<?= e($q(['city' => $f['city'] === $c['city'] ? null : $c['city'], 'page' => null])) ?>">
-				<?= e($c['city']) ?><em><?= e($c['n']) ?></em></a>
-		<?php endforeach; ?>
-	</div>
+	</nav>
+	<?php if ($cities): ?>
+		<nav class="chips chips--center chips--quiet" aria-label="Cities">
+			<?php foreach ($cities as $c): ?>
+				<a class="chip<?= $f['city'] === $c['city'] ? ' is-on' : '' ?>" href="<?= e($q(['city' => $f['city'] === $c['city'] ? null : $c['city'], 'page' => null])) ?>"><?= e($c['city']) ?> <span class="chip__n"><?= (int) $c['n'] ?></span></a>
+			<?php endforeach; ?>
+		</nav>
+	<?php endif; ?>
 
 	<?php if (!$rows): ?>
-		<div class="blank"><p class="blank__h">Nothing listed for that yet.</p><a class="btn btn--ghost" href="<?= e(App::url('/market')) ?>">Show all</a></div>
+		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('bag') ?></span><p>Nothing listed for that yet.</p><a class="pill pill--glass" href="<?= e(App::url('/market')) ?>">Show everything</a></div>
 	<?php else: ?>
-		<div class="vgrid">
-			<?php foreach ($rows as $i => $l): ?>
-				<a class="mcard mcard--page" href="<?= e(App::url('/market/' . $l['slug'])) ?>">
-					<span class="mcard__art blob blob--<?= e(['orange','green','blue','pink'][$i % 4]) ?>"><?= photo(first_photo((string) $l['photos']), '') ?></span>
-					<span class="mcard__k"><?= e(Listing::kindName((string) $l['kind'])) ?> &middot; <?= e($l['city']) ?></span>
-					<b class="mcard__t"><?= e($l['title']) ?></b>
-					<span class="mcard__p"><?= $l['on_ask'] ? 'On request' : money(short_money((int) $l['price'])) ?> <small><?= e($l['price_unit']) ?></small></span>
+		<div class="cards gap-t">
+			<?php foreach ($rows as $l): ?>
+				<a class="card" href="<?= e(App::url('/market/' . $l['slug'])) ?>">
+					<span class="sq"><?= photo(first_photo((string) $l['photos']), (string) $l['title']) ?><span class="sq__tag"><?= e(Listing::kindName((string) $l['kind'])) ?></span></span>
+					<span class="card__cap"><span class="card__t"><?= e($l['title']) ?></span><span class="card__s"><?= $price($l) ?> · <?= e($l['city']) ?></span></span>
 				</a>
 			<?php endforeach; ?>
 		</div>
-		<?php if ($pages > 1): ?>
-			<nav class="pager" aria-label="Pages">
-				<?php for ($i = 1; $i <= $pages; $i++): ?><a class="pager__n<?= $i === $page ? ' is-on' : '' ?>" href="<?= e($q(['page' => $i === 1 ? null : $i])) ?>"><?= e($i) ?></a><?php endfor; ?>
-			</nav>
-		<?php endif; ?>
+		<?= pager($page, $pages, $f) ?>
 	<?php endif; ?>
-</section>
+</div>

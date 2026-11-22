@@ -153,10 +153,14 @@ if (!$installed && $ready && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 // Demo content, if they asked for it. It runs through the app itself, which is why it
                 // waits until the config exists. A failure here never fails the install: the site is
                 // already usable, and the same thing can be done later from HQ.
+                require_once ROOT . '/app/Core/App.php';
+                App::boot(ROOT);
+                // Real couples' pages carried over from the old site. Never fails the install.
+                foreach (array_keys(Pack::ALL) as $packKey) {
+                    try { Pack::install($packKey); } catch (Throwable $e) { error_log('[wwm] pack ' . $packKey . ': ' . $e->getMessage()); }
+                }
                 if (!empty($_POST['demo'])) {
                     try {
-                        require_once ROOT . '/app/Core/App.php';
-                        App::boot(ROOT);
                         $demo = Demo::install();
                     } catch (Throwable $e) {
                         $demoError = $e->getMessage();
@@ -303,7 +307,7 @@ if (!$installed && $ready && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 
 			<h2 style="margin-top:22px">Demo content</h2>
 			<label class="check"><input type="checkbox" name="demo" value="1" <?= (!isset($_POST['email']) || !empty($_POST['demo'])) ? 'checked' : '' ?>>
-				<span><b>Add demo content</b> &mdash; ten wedding pages across all four plans, vendors, marketplace listings and the anonymous community, plus accounts to sign in and look around.</span></label>
+				<span><b>Add demo content</b> &mdash; a wedding page for every design and plan, vendors, marketplace listings and the anonymous community, plus accounts to sign in and look around.</span></label>
 			<small>The demo accounts share a published password, so take the demo content out before you launch for real. It is one button in HQ &rarr; Settings, and it removes only the demo.</small>
 
 			<button type="submit"<?= $ready ? '' : ' disabled' ?>>Install</button>

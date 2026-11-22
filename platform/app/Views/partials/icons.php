@@ -1,34 +1,19 @@
 <?php
-/** One inline sprite. No icon font, no extra request. */
-function icon(string $n, int $s = 22): string {
-    $p = [
-        'home'    => '<path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>',
-        'search'  => '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
-        'talk'    => '<path d="M4 5.5h16v12H8l-4 3z"/>',
-        'heart'   => '<path d="M12 20s-7.5-4.6-9.3-9.2C1.5 7.6 3.6 4.5 6.9 4.5c2 0 3.4 1.1 5.1 3 1.7-1.9 3.1-3 5.1-3 3.3 0 5.4 3.1 4.2 6.3C19.5 15.4 12 20 12 20z"/>',
-        'user'    => '<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/>',
-        'plus'    => '<path d="M12 5v14M5 12h14"/>',
-        'arrow'   => '<path d="M5 12h13M13 6l6 6-6 6"/>',
-        'up'      => '<path d="M7 17 17 7M9 7h8v8"/>',
-        'rings'   => '<circle cx="9" cy="14" r="5.5"/><circle cx="15" cy="14" r="5.5"/><path d="M12 4.5 14 7h-4z"/>',
-        'cash'    => '<rect x="3" y="6" width="18" height="12" rx="3"/><circle cx="12" cy="12" r="2.6"/>',
-        'cal'     => '<rect x="3.5" y="5" width="17" height="15.5" rx="4"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
-        'gift'    => '<rect x="3.5" y="8.5" width="17" height="11.5" rx="2.5"/><path d="M3.5 13h17M12 8.5V20M12 8.5S10 3.5 7.5 4.8 9.5 8.5 12 8.5zM12 8.5s2-5 4.5-3.7S14.5 8.5 12 8.5z"/>',
-        'cam'     => '<rect x="3" y="7" width="18" height="13" rx="4"/><circle cx="12" cy="13.5" r="3.6"/><path d="M8.5 7 10 4.5h4L15.5 7"/>',
-        'store'   => '<path d="M4.5 11v9h15v-9"/><path d="M3 9.5 4.8 4h14.4L21 9.5a2.6 2.6 0 0 1-4.5 1.8 2.6 2.6 0 0 1-4.5 0 2.6 2.6 0 0 1-4.5 0A2.6 2.6 0 0 1 3 9.5z"/>',
-        'chart'   => '<path d="M4 20V9M10 20V4M16 20v-7M22 20H2"/>',
-        'spark'   => '<path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/>',
-        'lock'    => '<rect x="5" y="10.5" width="14" height="10" rx="3"/><path d="M8.5 10.5v-3a3.5 3.5 0 0 1 7 0v3"/>',
-        'back'    => '<path d="M19 12H6M11 6l-6 6 6 6"/>',
-        'bell'    => '<path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 19a2 2 0 0 0 4 0"/>',
-        'ticket'  => '<path d="M3 9.5V7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2.5a2.5 2.5 0 0 0 0 5V17a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2.5a2.5 2.5 0 0 0 0-5z"/><path d="M14 6v12"/>',
-        'play'    => '<circle cx="12" cy="12" r="8.5"/><path d="m10.3 9.2 4.6 2.8-4.6 2.8z"/>',
-        'qr'      => '<rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1.4"/><rect x="14" y="3.5" width="6.5" height="6.5" rx="1.4"/><rect x="3.5" y="14" width="6.5" height="6.5" rx="1.4"/><path d="M14 14h3v3h-3zM20.5 14v3M17.5 20.5h3M14 20.5h.01"/>',
-        'pin'     => '<path d="M12 21s6.5-6 6.5-10.5a6.5 6.5 0 1 0-13 0C5.5 15 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.4"/>',
-        'check'   => '<path d="m5 12.5 4.5 4.5L19 7"/>',
-    ];
-    $d = $p[$n] ?? $p['spark'];
-    return '<svg viewBox="0 0 24 24" width="' . $s . '" height="' . $s . '" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . $d . '</svg>';
+/**
+ * An icon from the sprite in partials/sprite.php. Line icons are thin, like the chevrons and the
+ * − / + in the day reference; "s-" icons are the small solid glyphs from the night reference.
+ */
+function icon(string $n, int $s = 0, string $cls = ''): string {
+    static $line = ['arrow', 'auto', 'back', 'bag', 'bell', 'book', 'bookmark', 'calendar', 'camera', 'chart', 'chat', 'check', 'clock', 'close', 'copy', 'download', 'eye', 'filter', 'flag', 'gear', 'gift', 'globe', 'grid', 'heart', 'home', 'image', 'info', 'link', 'live', 'lock', 'mail', 'map', 'menu', 'minus', 'moon', 'more', 'music', 'next', 'out', 'pen', 'people', 'phone', 'pin', 'play', 'plus', 'qr', 'reply', 'ring', 'search', 'share', 'shield', 'sliders', 'spark', 'star', 'store', 'sun', 'ticket', 'trash', 'trophy', 'up', 'user', 'wallet'];
+    static $solid = ['bag', 'book', 'bulb', 'calendar', 'camera', 'chat', 'crown', 'eye', 'gift', 'globe', 'heart', 'live', 'lock', 'music', 'pin', 'power', 'qr', 'ring', 'shield', 'spark', 'square', 'store', 'users', 'wallet', 'warning'];
+    static $alias = ['rings' => 'ring', 'cash' => 'wallet', 'talk' => 'chat', 'cal' => 'calendar', 'cam' => 'camera', 'x' => 'close'];
+    $isSolid = str_starts_with($n, 's-');
+    $k = $isSolid ? substr($n, 2) : ($alias[$n] ?? $n);
+    if ($isSolid ? !in_array($k, $solid, true) : !in_array($k, $line, true)) {
+        $isSolid = false; $k = 'spark';
+    }
+    $size = $s > 0 ? ' style="width:' . $s . 'px;height:' . $s . 'px"' : '';
+    return '<svg class="ico' . ($isSolid ? ' ico--solid' : '') . ($cls !== '' ? ' ' . $cls : '') . '"' . $size . ' aria-hidden="true" focusable="false"><use href="#' . ($isSolid ? 's-' : 'i-') . $k . '"/></svg>';
 }
 
 /**
@@ -36,11 +21,11 @@ function icon(string $n, int $s = 22): string {
  * reader; the drawn sign is hidden from it so the amount is not read as "N 2.7m".
  */
 function money(string $amount, string $cur = 'NGN'): string {
-    $sign = ['NGN' => '<i class="ngn" aria-hidden="true"></i>', 'USD' => '$', 'GHS' => 'GH₵', 'KES' => 'KSh', 'ZAR' => 'R'];
+    $sign = ['NGN' => '<span class="ngn">N</span>', 'USD' => '$', 'GHS' => 'GH₵', 'KES' => 'KSh', 'ZAR' => 'R'];
     $sym  = ['NGN' => '₦', 'USD' => '$', 'GHS' => '₵', 'KES' => 'KSh', 'ZAR' => 'R'];
     $draw = $sign[$cur] ?? e($cur) . ' ';
     $read = $sym[$cur] ?? $cur;
-    return '<span class="money"><span class="sr-only">' . e($read . $amount) . '</span><span aria-hidden="true">' . $draw . e($amount) . '</span></span>';
+    return '<span class="money"><span class="sr">' . e($read . $amount) . '</span><span aria-hidden="true">' . $draw . e($amount) . '</span></span>';
 }
 
 /** 2756500 -> "2.7m". Kept short because these sit inside small tiles. */
@@ -64,7 +49,7 @@ function ago(string $when): string {
  * stands in. Three kinds of path arrive here: an absolute URL, a WordPress upload carried over by
  * the importer (wp-content/...), and our own library under assets/img.
  */
-function photo(?string $path, string $alt = '', bool $eager = false): string
+function photo(?string $path, string $alt = '', bool $eager = false, string $sizes = ''): string
 {
     $path = trim((string) $path);
     if ($path === '') {
@@ -85,8 +70,17 @@ function photo(?string $path, string $alt = '', bool $eager = false): string
     } else {
         $src = App::asset('assets/img/' . $path);
     }
-    return '<img src="' . e($src) . '" alt="' . e($alt) . '"'
-         . ' loading="' . ($eager ? 'eager' : 'lazy') . '" decoding="async">';
+    // Our own photos come with a 640px copy beside them, so a phone never downloads the big one.
+    $set = '';
+    if (!str_starts_with($path, 'http') && !str_starts_with($path, '/') && !str_starts_with($path, 'wp-content/') && str_ends_with($path, '.jpg')) {
+        $small = substr($path, 0, -4) . '.640.jpg';
+        if (is_file(App::root() . '/public/assets/img/' . $small)) {
+            $set = ' srcset="' . e(App::url('assets/img/' . $small)) . ' 640w, ' . e(App::url('assets/img/' . $path)) . ' 1600w"'
+                 . ' sizes="' . e($sizes !== '' ? $sizes : '(min-width: 960px) 30vw, 60vw') . '"';
+        }
+    }
+    return '<img src="' . e($src) . '"' . $set . ' alt="' . e($alt) . '"'
+         . ' loading="' . ($eager ? 'eager' : 'lazy') . '" decoding="async"' . ($eager ? ' fetchpriority="high"' : '') . '>';
 }
 
 /** Listings keep a JSON array of photos; the homepage only ever wants the first. */

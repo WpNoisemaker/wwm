@@ -1,21 +1,23 @@
-<article class="sec wrap post">
-	<p class="cap"><?= e((string) $p['category']) ?> &middot; <?= e(max(1, (int) round(str_word_count(strip_tags((string) $p['body'])) / 200))) ?> min read</p>
-	<h1 class="post__h"><?= e((string) $p['title']) ?></h1>
-	<p class="lede post__x"><?= e((string) $p['excerpt']) ?></p>
-	<?php if ($p['cover']): ?><span class="post__art"><?= photo((string) $p['cover'], '', true) ?></span><?php endif; ?>
-	<div class="post__body"><?= $p['body'] /* trusted: written by the site owner in HQ */ ?></div>
-	<p class="post__when">Published <?= e($p['published_at'] ? date('j F Y', (int) strtotime((string) $p['published_at'])) : 'recently') ?></p>
+<?php /** One story. */ ?>
+<article class="page wrap">
+	<header class="page-head page-head--show">
+		<span class="eyebrow"><?= e((string) $p['category']) ?> · <?= max(1, (int) round(str_word_count(strip_tags((string) $p['body'])) / 200)) ?> min read</span>
+		<h1><?= e((string) $p['title']) ?></h1>
+		<?php if ((string) $p['excerpt'] !== ''): ?><p class="lede"><?= e((string) $p['excerpt']) ?></p><?php endif; ?>
+	</header>
+	<?php if ($p['cover']): ?><div class="narrow" style="width:min(100%,880px)"><?= sq((string) $p['cover'], '', 'sq--wide', true) ?></div><?php endif; ?>
+	<div class="prose gap-t"><?= $p['body'] /* trusted: written by the site owner in HQ */ ?></div>
+	<p class="prose sub gap-t">Published <?= e($p['published_at'] ? date('j F Y', (int) strtotime((string) $p['published_at'])) : 'recently') ?></p>
 </article>
-
 <?php if ($more): ?>
 <section class="sec wrap">
-	<div class="sec__head"><div><h2>Read next</h2></div></div>
-	<div class="pgrid">
+	<div class="sec-head"><span class="eyebrow">Keep reading</span><h2>Read next</h2></div>
+	<div class="stories">
 		<?php foreach ($more as $m): ?>
-			<a class="pcard" href="<?= e(App::url('/blog/' . $m['slug'])) ?>">
-				<span class="pcard__art blob blob--green"><?= photo((string) $m['cover'], '') ?></span>
-				<span class="pcard__k"><?= e((string) $m['category']) ?></span>
-				<b class="pcard__t"><?= e((string) $m['title']) ?></b>
+			<a class="story-card" href="<?= e(App::url('/blog/' . $m['slug'])) ?>">
+				<?= sq((string) $m['cover'], '', 'sq--wide') ?>
+				<span class="eyebrow"><?= e((string) $m['category']) ?></span>
+				<span class="story-card__t"><?= e((string) $m['title']) ?></span>
 			</a>
 		<?php endforeach; ?>
 	</div>

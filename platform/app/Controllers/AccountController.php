@@ -28,7 +28,7 @@ final class AccountController
 
     private function show(string $tpl, array $data): void
     {
-        View::render('account/' . $tpl, $data + ['rail' => true, 'css' => ['account'], 'tab' => 'account']);
+        View::render('account/' . $tpl, $data + ['tab' => 'account', 'appTitle' => $tpl === 'index' ? 'Your Page' : mb_strimwidth((string) $data['title'], 0, 18, '…'), 'back' => $tpl === 'index' ? null : App::url('/account')]);
     }
 
     private static function go(string $p): never
@@ -50,6 +50,7 @@ final class AccountController
             'title' => Wedding::names($w),
             'w'     => $w,
             'tally' => Wedding::tally($id),
+            'dash'  => Wedding::dash($id),
             'next'  => Wedding::nextMoment($w, Wedding::programs($id)),
             'todo'  => [
                 ['Your story',   '/account/page',     trim((string) $w['story']) !== ''],
@@ -125,7 +126,7 @@ final class AccountController
                 'city'       => trim((string) ($_POST['city'] ?? '')),
                 'state'      => trim((string) ($_POST['state'] ?? '')),
                 'venue'      => trim((string) ($_POST['venue'] ?? '')),
-                'template'   => trim((string) ($_POST['template'] ?? 'classic')),
+                'template'   => array_key_exists((string) ($_POST['template'] ?? ''), Design::choices($w)) ? (string) $_POST['template'] : (string) $w['template'],
                 'design'     => $design,
                 'visibility' => $visibility,
             ], 'id = ? AND owner_id = ?', [$w['id'], Auth::id()]);

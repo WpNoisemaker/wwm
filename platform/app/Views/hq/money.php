@@ -1,23 +1,29 @@
-<?= View::partial('account/_head', ['h' => 'Money']) ?>
-<section class="sec wrap">
-	<div class="tally">
-		<span class="tally__i"><b class="fig"><?= money(short_money($in)) ?></b><em>through the site</em></span>
-		<span class="tally__i"><b class="fig"><?= money(short_money($fees)) ?></b><em>service fees</em></span>
+<?= View::partial('hq/_head', ['h' => 'Money', 'now' => 'money']) ?>
+	<div class="kpis kpis--3">
+		<?= kv('Through the site', money(short_money((int) $in)), '', true) ?>
+		<?= kv('Service fees', money(short_money((int) $fees)), '', true) ?>
+		<?= kv('Payouts', (string) count($payouts)) ?>
 	</div>
-	<h3 class="form__g">Payments</h3>
-	<div class="rows">
-		<?php foreach ($payments as $p): ?>
-			<div class="row"><span class="row__ico"><?= icon('gift', 18) ?></span>
-				<span class="row__t"><?= e($p['payer_name'] ?: 'A guest') ?> <span class="sub">&middot; <?= e($p['purpose']) ?> &middot; <?= e(ago((string) $p['created_at'])) ?></span></span>
-				<span class="row__v"><em class="pill"><?= e($p['status']) ?></em> <?= money(number_format((int) $p['amount']), (string) $p['currency']) ?></span></div>
-		<?php endforeach; ?>
+	<div class="split-2 gap-t">
+		<div>
+			<div class="block-head"><h2 class="h2">Payments</h2></div>
+			<div class="rows">
+				<?php foreach ($payments as $p): ?>
+					<div class="row-item"><span class="row-item__ico"><?= icon($p['purpose'] === 'spray' ? 's-wallet' : 's-gift') ?></span>
+						<span><span class="row-item__t"><?= e($p['payer_name'] ?: 'A guest') ?></span><span class="row-item__s"><?= e($p['purpose']) ?> · <?= e(ago((string) $p['created_at'])) ?></span></span>
+						<span class="row-item__end"><?= money(number_format((int) $p['amount']), (string) $p['currency']) ?><span class="sub"><?= e($p['status']) ?></span></span></div>
+				<?php endforeach; ?>
+			</div>
+		</div>
+		<aside>
+			<div class="block-head"><h2 class="h2">Payouts</h2></div>
+			<div class="rows">
+				<?php foreach ($payouts as $p): ?>
+					<div class="row-item"><span class="row-item__ico"><?= icon('wallet') ?></span>
+						<span><span class="row-item__t"><?= e($p['name']) ?></span><span class="row-item__s"><?= e($p['bank']) ?> · <?= e(ago((string) $p['created_at'])) ?></span></span>
+						<span class="row-item__end"><?= money(number_format((int) $p['amount']), (string) $p['currency']) ?><span class="sub"><?= e($p['status']) ?></span></span></div>
+				<?php endforeach; ?>
+			</div>
+		</aside>
 	</div>
-	<h3 class="form__g">Payouts</h3>
-	<div class="rows">
-		<?php foreach ($payouts as $p): ?>
-			<div class="row"><span class="row__ico"><?= icon('cash', 18) ?></span>
-				<span class="row__t"><?= e($p['name']) ?> <span class="sub">&middot; <?= e($p['bank']) ?> &middot; <?= e(ago((string) $p['created_at'])) ?></span></span>
-				<span class="row__v"><em class="pill"><?= e($p['status']) ?></em> <?= money(number_format((int) $p['amount']), (string) $p['currency']) ?></span></div>
-		<?php endforeach; ?>
-	</div>
-</section>
+</div>

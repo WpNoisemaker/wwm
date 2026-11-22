@@ -21,6 +21,9 @@ final class Db
             PDO::ATTR_EMULATE_PREPARES   => false,
             PDO::ATTR_STRINGIFY_FETCHES  => false,
         ]);
+        // The database keeps its own clock (often a US one on shared hosting). Telling it the site's
+        // time zone keeps every "2 minutes ago" honest: rows are stamped in the same zone PHP reads them in.
+        self::$pdo->exec("SET time_zone = '" . date('P') . "'");
         return self::$pdo;
     }
 

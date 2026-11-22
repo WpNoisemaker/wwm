@@ -1,14 +1,26 @@
-<?php /** Shared top of every account screen: flashes and a title. */ ?>
-<section class="sec wrap acct__top">
-	<?php foreach (Guard::takeFlash() as $f): ?><p class="note note--<?= e($f['kind']) ?>"><?= e($f['msg']) ?></p><?php endforeach; ?>
+<?php
+/** The top of every account screen: flashes, the email note, a title on desktop, and the sections. */
+$now  = $now ?? '';
+$tabs = [['overview', 'Overview', '/account', 'grid'], ['page', 'Page', '/account/page', 'pen'], ['programs', 'Programs', '/account/programs', 'calendar'],
+         ['squad', 'Squad', '/account/squad', 'people'], ['registry', 'Registry', '/account/registry', 'gift'], ['guests', 'Guests', '/account/guests', 'user'],
+         ['money', 'Money', '/account/money', 'wallet'], ['settings', 'Settings', '/account/settings', 'gear']];
+?>
+<div class="page wrap">
+	<header class="page-head">
+		<span class="eyebrow"><?= e($sub ?? '') ?></span>
+		<h1><?= e($h) ?></h1>
+	</header>
+	<?php if (!empty($w)): ?>
+		<nav class="subnav" aria-label="Your page">
+			<?php foreach ($tabs as [$k, $label, $href, $ic]): ?>
+				<a href="<?= e(App::url($href)) ?>"<?= $now === $k ? ' class="is-on" aria-current="page"' : '' ?>><?= icon($ic) ?><?= e($label) ?></a>
+			<?php endforeach; ?>
+		</nav>
+	<?php endif; ?>
+	<?= flashes() ?>
 	<?php if (Verify::needed(Auth::user())): ?>
-		<div class="note note--bad verify">
-			<span><b>Confirm your email.</b> We sent a link to <?= e((string) Auth::user()['email']) ?>. Until you follow it you can build your page, but not make it public or ask for a payout.</span>
-			<form method="post" action="<?= e(App::url('/account/verify/resend')) ?>" class="verify__f"><?= Guard::field() ?><button class="btn btn--sm btn--ghost" type="submit">Send it again</button></form>
+		<div class="note note--bad">
+			<?= icon('mail') ?><span><b>Confirm your email.</b> We sent a link to <?= e((string) Auth::user()['email']) ?>. Until you follow it you can build your page, but not make it public or ask for a payout.
+			<form method="post" action="<?= e(App::url('/account/verify/resend')) ?>" style="display:inline"><?= Guard::field() ?><button class="linkish" type="submit">Send it again</button></form></span>
 		</div>
 	<?php endif; ?>
-	<div class="sec__head acct__head">
-		<div><h2><?= e($h) ?></h2><?php if (!empty($sub)): ?><p class="sub"><?= e($sub) ?></p><?php endif; ?></div>
-		<?php if (!empty($w)): ?><a class="pill pill--quiet" href="<?= e(App::url('/w/' . $w['slug'])) ?>">View the page <?= icon('arrow', 13) ?></a><?php endif; ?>
-	</div>
-</section>

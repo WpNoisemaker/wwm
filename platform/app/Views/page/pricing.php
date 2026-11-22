@@ -1,45 +1,37 @@
-<section class="sec wrap">
-	<div class="sec__head">
-		<div>
-			<h2>Start free. Go Premium when you want the full owambe</h2>
-			<p class="sub">Paid once per wedding, never monthly. Moving up later only costs the difference.</p>
-		</div>
-	</div>
-
-	<div class="plans">
-		<?php foreach ([
-			['free', 'Free', '0', 'Everything you need to get your page live today.', '',
-				['Invitation &amp; event details', 'Your love story', 'RSVP', 'Wall of love', 'Cash &amp; gift registry', 'Vendor list &amp; guest reviews'],
-				'In our colours. Free forever.', 'Start free'],
-			['pro', 'Pro', $pro, 'Your squad, guest photos, quiz, entry passes and your own colours. No ads.', 'Everything in Free, plus',
-				['Bridesmaids &amp; groomsmen', 'Guest photo gallery', 'Guest quiz &amp; leaderboard', 'Entry passes &amp; check-in', 'Your own colours &amp; fonts', 'Verified badge, no ads'],
-				'Once per wedding, or in 3 instalments.', 'Go Pro'],
-			['premium', 'Premium', $premium, 'Every feature: a Premium design, livestream, spraying, printed table QR cards and no fees.', 'Everything in Pro, plus',
-				['Livestream on your page', 'Spraying from the seat', '10 Premium designs', '200 printed table QR cards', 'No charge on gifts or spraying', 'Your logo on guest receipts'],
-				'Once per wedding, or in 3 instalments.', 'Go Premium'],
-			['society', 'High Society', '', 'Full event branding beyond your website, with prints and livestream coverage.', 'Everything in Premium, plus',
-				['A page design made only for you', 'Monogram, invitations, programmes, signage', 'Livestream coverage by our crew', 'Your own event manager on WhatsApp'],
-				'Priced for your wedding, on WhatsApp.', 'Get a quote'],
-		] as [$k, $n, $p, $pitch, $from, $items, $note, $cta]): ?>
-			<div class="plan plan--<?= e($k) ?><?= $k === 'premium' ? ' plan--best' : '' ?>">
-				<?php if ($k === 'premium'): ?><em class="plan__ribbon">Full owambe</em><?php endif; ?>
-				<?php if ($k === 'society'): ?><em class="plan__ribbon">Beyond the website</em><?php endif; ?>
-				<b class="plan__n"><?= e($n) ?></b>
-				<span class="plan__p"><?php if ($p === ''): ?><span class="plan__quote">By quote</span><?php else: ?><?= money($p) ?><small>once</small><?php endif; ?></span>
-				<span class="plan__pitch"><?= $pitch ?></span>
-				<?php if ($from): ?><span class="plan__from"><?= e($from) ?>:</span><?php endif; ?>
-				<ul class="plan__list"><?php foreach ($items as $i): ?><li><?= icon('check', 14) ?><span><?= $i ?></span></li><?php endforeach; ?></ul>
-				<span class="plan__note"><?= e($note) ?></span>
-				<a class="btn <?= $k === 'premium' ? 'btn--acid' : 'btn--ghost' ?>" href="<?= e(App::url('/join?plan=' . $k)) ?>"><?= e($cta) ?></a>
+<?php
+/** Pricing: the four plans on glass, Free in black & white, then the questions people ask. */
+$plans = [
+	['free', 'Free', '0', 'Everything you need to get your page live today.', ['Invitation &amp; event details', 'Your love story', 'RSVP &amp; wall of love', 'Cash &amp; gift registry', 'Vendor list &amp; reviews'], 'Black &amp; white. Free forever.', 'Start free'],
+	['pro', 'Pro', $pro, 'Your colours, your squad, guest photos and entry passes. No ads.', ['Everything in Free, in colour', 'Bridesmaids &amp; groomsmen', 'Guest photo gallery', 'Entry passes &amp; check-in', 'Verified badge, no ads'], 'Once per wedding, or in 3 instalments.', 'Go Pro'],
+	['premium', 'Premium', $premium, 'Every feature and any of the ten Premium designs.', ['Ten Premium designs', 'Livestream on your page', 'Spraying from the seat', '200 printed table QR cards', 'No charge on gifts or spraying'], 'Once per wedding, or in 3 instalments.', 'Go Premium'],
+	['society', 'High Society', '', 'Full event branding beyond your website.', ['A page design made only for you', 'Monogram, invitations &amp; signage', 'Livestream coverage by our crew', 'Your own event manager'], 'Priced for your wedding.', 'Get a quote'],
+];
+?>
+<div class="page wrap">
+	<header class="page-head">
+		<span class="eyebrow">Paid once per wedding, never monthly</span>
+		<h1>Start free. Go Premium for the full owambe</h1>
+		<p class="lede">Moving up later only costs the difference. Your page stays exactly as it is.</p>
+	</header>
+	<div class="plans plans--4">
+		<?php foreach ($plans as [$k, $n, $p, $pitch, $items, $note, $cta]): ?>
+			<div class="glass plan<?= $k === 'free' ? ' glass--plain plan--mono' : '' ?><?= $k === 'premium' ? ' plan--best' : '' ?>"<?= $k === 'free' ? ' data-tone="mono"' : '' ?>>
+				<p class="plan__name"><?= e($n) ?><?php if ($k === 'premium'): ?> <span class="badge badge--solid">Full owambe</span><?php endif; ?></p>
+				<p class="plan__price"><?= $p === '' ? 'By quote' : money(number_format((int) $p)) ?></p>
+				<p class="plan__pitch"><?= $pitch ?></p>
+				<ul><?php foreach ($items as $i): ?><li><?= icon('check') ?><?= $i ?></li><?php endforeach; ?></ul>
+				<p class="plan__note"><?= $note ?></p>
+				<a class="pill pill--block<?= $k === 'premium' ? '' : ' pill--glass' ?>" href="<?= e(App::url('/join?plan=' . $k)) ?>"><?= e($cta) ?></a>
 			</div>
 		<?php endforeach; ?>
 	</div>
-	<p class="plans__fee">A Free or Pro page adds a <?= e($fee) ?>% service fee to cash gifts, which guests can choose to cover. Premium adds none.</p>
-</section>
+	<p class="center sub gap-t">A Free or Pro page adds a <?= e($fee) ?>% service fee to cash gifts, which guests can choose to cover. Premium adds none.</p>
+	<p class="center gap-t-sm"><a class="linkish" href="<?= e(App::url('/templates')) ?>">See every Premium design on a real page</a></p>
+</div>
 
 <section class="sec wrap">
-	<div class="sec__head"><div><h2>Questions people ask</h2></div></div>
-	<div class="faq">
+	<div class="sec-head"><span class="eyebrow">Before you pay</span><h2>Questions people ask</h2></div>
+	<div class="faq narrow" style="width:min(100%,760px)">
 		<?php foreach ([
 			['Is the free wedding page really free?', 'Yes. Your page, invitation and programs, RSVP, love story, wall of love, vendor list and cash and gift registry are free for as long as you want them. When guests send cash gifts through a free page a small service fee is added, which guests can choose to cover. Free pages also carry two small sponsored slots.'],
 			['Can I start on Pro and move up later?', 'Yes. Pro and Premium are paid once per wedding, in one go or in instalments, and moving up only costs the difference. Your content stays exactly as it is.'],

@@ -1,381 +1,337 @@
 <?php
-/** The page a visitor lands on. A wedding listing and ranking directory first, then everything else. */
-/** @var array $chart @var array $fresh @var array $cities @var array $vendors @var array $listings @var array $talks @var array $stats */
-$cur = fn(array $w) => (string) ($w['currency'] ?: 'NGN');
+/**
+ * The homepage. On a phone it opens like the reference screen: two squircle photos and the glass
+ * card. On desktop the same pieces become a landing page, section after section, each one showing
+ * a part of the platform rather than describing it.
+ *
+ * @var array $chart @var array $fresh @var array $vendors @var array $listings @var array $talks
+ * @var array $wall @var array $posts @var array $stats @var array $samples
+ */
+$pro   = (int) Site::setting('pro_price', '198000');
+$prem  = (int) Site::setting('premium_price', '448000');
+$lead  = $samples['ivory'] ?? ($chart[0] ?? null);
+$other = null;
+foreach ($chart as $c) { if (!$lead || $c['id'] !== $lead['id']) { $other = $c; break; } }
+$free  = $samples['free'] ?? null;
+$premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 ?>
-
-<!-- 1. Hero ----------------------------------------------------------------- -->
-<section class="hero wrap">
-<div class="hero__copy">
-	<p class="hero__greet" aria-label="Congratulations on your marriage">
-		<?php foreach ([
-			['Barka da aure!',      'Hausa'],
-			['Ẹ kú ayẹyẹ!',       'Yoruba'],
-			['Nnọọ!',             'Igbo'],
-			['Hongera kwa harusi!', 'Swahili'],
-			['Ayekoo!',             'Twi'],
-			['Halala!',             'Zulu'],
-			['Una go last o!',      'Pidgin'],
-		] as $gi => [$gw, $gl]): ?>
-			<span class="hero__greet-w" style="--i:<?= e($gi) ?>" aria-hidden="true"><b><?= $gw ?></b><em><?= e($gl) ?></em></span>
+<section class="hero wrap" id="start">
+	<div class="hero__head">
+		<span class="eyebrow">Wedding pages for African couples</span>
+		<h1 class="hero__title">One beautiful page for your whole wedding</h1>
+		<p class="lede">Invite, RSVP, gifts, spraying and livestream in one link. Then watch your wedding climb the Buzz Chart.</p>
+		<div class="hero__ctas">
+			<a class="pill" href="<?= e(App::url('/join')) ?>">Create your page, free</a>
+			<a class="pill pill--glass" href="<?= e(App::url('/templates')) ?>">See every design</a>
+		</div>
+	</div>
+	<div class="trio">
+		<?php foreach ([['trio__a', $lead], ['trio__b', $other]] as [$slot, $w]): if (!$w) { continue; } ?>
+			<a class="<?= $slot ?>" href="<?= e(App::url('/w/' . $w['slug'])) ?>">
+				<span class="sq-label"><?= e(Wedding::names($w)) ?></span>
+				<?= sq((string) $w['cover'], Wedding::names($w), '', $slot === 'trio__a', initials($w)) ?>
+			</a>
 		<?php endforeach; ?>
-	</p>
-	<h1 class="hero__h">The weddings<br>everyone is<br>talking about.</h1>
-	<p class="lede hero__p">Browse real wedding pages, see who is climbing the chart, book the people who make the day, and make your own page free.</p>
+		<div class="trio__c">
+			<div class="glass">
+				<p class="glass__q">How many guests are you inviting?</p>
+				<div class="counter" data-counter data-min="10" data-max="2000" data-step="10" data-value="150" id="guests">
+					<button class="cbtn cbtn--lg" type="button" data-dec aria-label="Fewer guests"><?= icon('minus') ?></button>
+					<div class="counter__mid" aria-live="polite">
+						<?= dots('150', '', true) ?>
+						<span class="counter__unit" data-unit="Guest|Guests">Guests</span>
+					</div>
+					<button class="cbtn cbtn--lg" type="button" data-inc aria-label="More guests"><?= icon('plus') ?></button>
+				</div>
+				<div class="total" data-plans='<?= e(json_encode(['pro' => $pro, 'premium' => $prem])) ?>'>
+					<p class="total__k" id="plan-k">Pro page</p>
+					<p class="total__v" id="plan-v"><?= money(number_format($pro)) ?></p>
+				</div>
+			</div>
+			<a class="pill pill--block" href="<?= e(App::url('/join')) ?>">Create your wedding page</a>
+			<p class="after-pill">Or start <a href="<?= e(App::url($free ? '/w/' . $free['slug'] : '/join')) ?>">free, in black &amp; white</a></p>
+		</div>
+	</div>
+</section>
 
-	<form class="hero__search" action="<?= e(App::url('/weddings')) ?>" method="get" role="search">
-		<span class="hero__search-ico"><?= icon('search', 19) ?></span>
-		<input type="search" name="q" placeholder="Search a couple, a city or a hashtag" aria-label="Search weddings">
-		<button class="btn btn--sm" type="submit">Search</button>
-	</form>
+<section class="wrap stats reveal" aria-label="The platform today">
+	<div class="tile"><?= dots((string) $stats['weddings'], 'dotnum--md') ?><span class="k">Wedding pages</span></div>
+	<div class="tile"><?= dots((string) $stats['guests'], 'dotnum--md') ?><span class="k">Guests replied</span></div>
+	<div class="tile"><?= dots((string) $stats['cities'], 'dotnum--md') ?><span class="k">Cities</span></div>
+	<div class="tile"><?= dots((string) $stats['vendors'], 'dotnum--md') ?><span class="k">Vendors</span></div>
+</section>
 
-	<div class="hero__stats">
-		<?php foreach ([
-			['n' => number_format($stats['weddings']), 'l' => 'Wedding pages', 'p' => 'Live'],
-			['n' => number_format($stats['guests']),   'l' => 'Guests replied', 'p' => null],
-			['n' => number_format($stats['cities']),   'l' => 'Cities',        'p' => null],
-			['n' => short_money($stats['raised']),     'l' => 'Gifted',        'p' => null, 'money' => true],
-		] as $s): ?>
-			<span class="hero__stat">
-				<span class="hero__stat-t">
-					<b class="<?= $s['money'] ?? false ? 'fig' : 'dot' ?>"><?= $s['money'] ?? false ? money($s['n']) : e($s['n']) ?></b>
-					<?php if ($s['p']): ?><em class="pill" style="font-style:normal"><?= e($s['p']) ?></em><?php endif; ?>
-				</span>
-				<span class="sub"><?= e($s['l']) ?></span>
-			</span>
+<?php if ($chart): ?>
+<section class="sec wrap" id="ranked">
+	<div class="sec-head reveal">
+		<span class="eyebrow">Updated as guests reply</span>
+		<h2>The Buzz Chart</h2>
+		<p>Pages climb with RSVPs, wishes and shares. Tap one to see why it is up there.</p>
+	</div>
+	<div class="rail reveal">
+		<?php foreach (array_slice($chart, 0, 4) as $n => $w): ?>
+			<?= wedding_card($w, '#' . ($n + 1) . ' · ' . trim((string) $w['city'] . ' · ' . Wedding::short($w), ' ·'), Site::tier((string) $w['plan'])) ?>
 		<?php endforeach; ?>
 	</div>
-</div>
-
-<?php if ($chart): $top = $chart[0]; $td = json_decode((string) $top['design'], true) ?: []; ?>
-	<!-- Desktop only: the page at number one, shown the way a magazine would lead with it. -->
-	<a class="hero__feat" href="<?= e(App::url('/w/' . $top['slug'])) ?>" style="--p:<?= e($td['primary'] ?? '#7A5C3A') ?>;--a:<?= e($td['accent'] ?? '#C3A46A') ?>">
-		<span class="hero__feat-art"><?= photo((string) $top['cover'], '', true) ?></span>
-		<span class="hero__feat-tag"><em>1</em> on the Buzz Chart</span>
-		<span class="hero__feat-body">
-			<b><?= e(Wedding::names($top)) ?></b>
-			<small><?= e($top['city']) ?> · <?= e(Site::tier((string) $top['plan'])) ?> · <?= e(number_format((int) $top['buzz'])) ?> buzz</small>
-		</span>
-	</a>
+	<p class="sec-more reveal"><a class="pill pill--glass pill--sm" href="<?= e(App::url('/rankings')) ?>">See the whole chart <?= icon('arrow') ?></a></p>
+</section>
 <?php endif; ?>
-</section>
 
-<!-- 2. The Buzz Chart ------------------------------------------------------- -->
 <section class="sec wrap">
-	<div class="sec__head">
-		<div><h2>The Buzz Chart</h2><p class="sub">Ranked by views, gifts, photos and love notes this month.</p></div>
-		<a class="pill pill--quiet" href="<?= e(App::url('/rankings')) ?>">Full chart <?= icon('arrow', 13) ?></a>
+	<div class="sec-head reveal">
+		<span class="eyebrow">Your dashboard</span>
+		<h2>Your wedding, at a glance</h2>
+		<p>This is what couples see. Try the switches and drag the sliders.</p>
 	</div>
-	<ol class="chart">
-		<?php foreach ($chart as $i => $w): ?>
-			<li class="chart__row<?= $i === 0 ? ' chart__row--one' : '' ?>">
-				<span class="chart__no dot"><?= e($i + 1) ?></span>
-				<span class="chart__pic" style="--p:<?= e(json_decode((string) $w['design'], true)['primary'] ?? '#888') ?>;--a:<?= e(json_decode((string) $w['design'], true)['accent'] ?? '#ccc') ?>"><?= photo((string) $w['cover'], '') ?></span>
-				<span class="chart__who">
-					<b><?= e(Wedding::names($w)) ?></b>
-					<small><?= e($w['city']) ?> · <?= e(Site::tier((string) $w['plan'])) ?><?= $w['hashtag'] ? ' · ' . e($w['hashtag']) : '' ?></small>
-				</span>
-				<span class="chart__buzz"><b><?= e(number_format((int) $w['buzz'])) ?></b><small>buzz</small></span>
-				<a class="chart__go ico" href="<?= e(App::url('/w/' . $w['slug'])) ?>" aria-label="Open <?= e(Wedding::names($w)) ?>"><?= icon('up', 16) ?></a>
-			</li>
-		<?php endforeach; ?>
-	</ol>
+	<div class="mosaic mosaic--wide reveal">
+		<button class="tile tile--glyph tile--sq is-on" type="button" data-toggle aria-pressed="true" data-toast-on="Your page is live" data-toast-off="Your page is hidden"><?= icon('s-power') ?><span data-on="Live" data-off="Off">Live</span></button>
+		<a class="tile tile--glyph tile--sq" href="<?= e(App::url($lead ? '/w/' . $lead['slug'] . '#story' : '/weddings')) ?>"><?= icon('s-book') ?><span>Story</span></a>
+		<div class="tile tile--w2"><span class="k">Page design</span><span class="v">Ivory &amp; Gold</span></div>
+		<button class="tile tile--glyph tile--sq" type="button" data-toggle aria-pressed="false" data-toast-on="Guests can spray from their seats" data-toast-off="Spraying is off"><?= icon('s-wallet') ?><span data-on="Spray on" data-off="Spray">Spray</span></button>
+		<button class="tile tile--glyph tile--sq" type="button" data-toggle aria-pressed="false" data-toast-on="Only guests with your code can open it" data-toast-off="Anyone with the link can open it"><?= icon('s-shield') ?><span data-on="Private" data-off="Public">Public</span></button>
+		<div class="slider" data-slider data-value="68" aria-label="RSVPs in"><div class="slider__fill"><span class="slider__txt"><span class="slider__val">68 %</span><span class="slider__lab">RSVPs in</span></span><i class="slider__grip"></i></div></div>
+		<div class="tile tile--w2"><span class="k">Dress code</span><span class="v">Ivory, beige &amp; gold</span></div>
+		<div class="tile tile--w2 tile--h2 tile--ticks">
+			<div><span class="k">Guests coming</span><span class="v">312</span><span class="k gap-k">Gifts</span><span class="v"><?= money('1.84m') ?></span><span class="k gap-k">Sprayed so far</span><span class="v"><?= money('420k') ?></span></div>
+			<div class="ticks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i class="is-on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+		</div>
+		<div class="slider" data-slider data-value="39" aria-label="Gifts funded"><div class="slider__fill"><span class="slider__txt"><span class="slider__val">39 %</span><span class="slider__lab">Gifts funded</span></span><i class="slider__grip"></i></div></div>
+		<button class="tile tile--glyph tile--sq" type="button" data-toast="Reminders go to guests who have not replied"><?= icon('s-warning') ?><span>Remind</span></button>
+		<button class="tile tile--glyph tile--sq" type="button" data-toggle aria-pressed="false" data-toast-on="Livestream is on your page" data-toast-off="Livestream is off"><?= icon('s-bulb') ?><span data-on="Live on" data-off="Stream">Stream</span></button>
+		<div class="tile tile--w2 tile--num"><div><span class="k">Days to go</span><span class="v">Sat, 24 Dec</span></div><?= dots('20', 'dotnum--sm') ?></div>
+		<div class="tile tile--w2"><span class="k">Reception</span><span class="v">Are Osan, Ilorin</span></div>
+		<div class="tile tile--w2"><span class="k">Guests arrive</span><span class="v">11:00 am</span></div>
+	</div>
 </section>
 
-<!-- 3. Coming up ------------------------------------------------------------ -->
+<section class="sec wrap">
+	<div class="sec-head reveal">
+		<span class="eyebrow">One link on every invitation</span>
+		<h2>Everything your guests need</h2>
+	</div>
+	<div class="mosaic feat reveal">
+		<?php foreach ([
+			['s-ring', 'Your page', 'Story, schedule, venue map and dress code in one beautiful link.'],
+			['s-users', 'RSVP &amp; guest list', 'Guests answer in seconds, no account. You see who is coming, live.'],
+			['s-gift', 'Gifts &amp; cash', 'A registry that pays the couple, with a note from every guest.'],
+			['s-wallet', 'Spraying', 'Guests spray from their seats, or from London. The total climbs on screen.'],
+			['s-live', 'Livestream', 'Family abroad watch the ceremony right on your page.'],
+			['s-crown', 'Buzz Chart', 'The week&rsquo;s most-loved weddings, city by city.'],
+			['s-store', 'Marketplace', 'Aso-ebi, gele, stays, rides and honeymoons.'],
+			['s-chat', 'Community', 'Say what you can&rsquo;t say at home, under any pen name.'],
+		] as [$i, $t, $s]): ?>
+			<div class="tile tile--w2"><?= icon($i) ?><span class="v"><?= $t ?></span><span class="k"><?= $s ?></span></div>
+		<?php endforeach; ?>
+	</div>
+</section>
+
+<section class="sec wrap" id="designs">
+	<div class="sec-head reveal">
+		<span class="eyebrow">Ten Premium designs and counting</span>
+		<h2>A design for every kind of wedding</h2>
+		<p>Every page is built from the same glass and light. Each design composes it differently.</p>
+	</div>
+	<div class="rail rail--designs reveal">
+		<?php foreach ($samples as $k => $w): if (in_array($k, ['free', 'pro'], true)) { continue; } $d = Design::get($k); ?>
+			<a class="card design-card" href="<?= e(App::url('/w/' . $w['slug'])) ?>" style="--s1:<?= e($d['swatch'][0]) ?>;--s2:<?= e($d['swatch'][1]) ?>">
+				<span class="sq"><?= photo((string) $w['cover'], '') ?><span class="sq__tag"><?= e($d['name']) ?></span></span>
+				<span class="card__cap"><span class="card__t"><?= e(Wedding::names($w)) ?></span><span class="card__s"><?= e($d['plan'] === 'custom' ? 'Custom design' : 'Premium') ?></span></span>
+			</a>
+		<?php endforeach; ?>
+	</div>
+	<p class="sec-more reveal"><a class="pill pill--glass pill--sm" href="<?= e(App::url('/templates')) ?>">Compare every design <?= icon('arrow') ?></a></p>
+</section>
+
+<section class="sec wrap" id="plans">
+	<div class="sec-head reveal">
+		<span class="eyebrow">Pay once per wedding</span>
+		<h2>Pick your page</h2>
+		<p>Free pages are black &amp; white. Pro pages wear your colours. Premium pages pick a design.</p>
+	</div>
+	<div class="plans reveal">
+		<div class="glass glass--plain plan plan--mono" data-tone="mono">
+			<p class="plan__name">Free</p>
+			<p class="plan__price"><?= money('0') ?></p>
+			<p class="plan__pitch">Everything you need to get your page live today.</p>
+			<div class="plan__swatch" aria-hidden="true"><i style="background:#111"></i><i style="background:#fff"></i></div>
+			<ul>
+				<li><?= icon('check') ?>Invitation &amp; event details</li>
+				<li><?= icon('check') ?>Your love story</li>
+				<li><?= icon('check') ?>RSVP &amp; wall of wishes</li>
+				<li><?= icon('check') ?>Cash &amp; gift registry</li>
+			</ul>
+			<a class="pill pill--glass pill--block" href="<?= e(App::url($free ? '/w/' . $free['slug'] : '/join')) ?>">See a free page</a>
+		</div>
+		<div class="glass plan">
+			<p class="plan__name">Pro</p>
+			<p class="plan__price"><?= money(number_format($pro)) ?></p>
+			<p class="plan__pitch">Your colours, your squad, guest photos and entry passes. No ads.</p>
+			<div class="plan__swatch" aria-hidden="true"><i style="background:#6EAAE6"></i><i style="background:#E3DABF"></i><i style="background:#7B2D43"></i><i style="background:#C9A24B"></i></div>
+			<ul>
+				<li><?= icon('check') ?>Everything in Free, in colour</li>
+				<li><?= icon('check') ?>Bridesmaids &amp; groomsmen</li>
+				<li><?= icon('check') ?>Guest photo gallery</li>
+				<li><?= icon('check') ?>Entry passes &amp; check-in</li>
+			</ul>
+			<a class="pill pill--glass pill--block" href="<?= e(App::url(isset($samples['pro']) ? '/w/' . $samples['pro']['slug'] : '/pricing')) ?>">See a Pro page</a>
+		</div>
+		<div class="glass plan plan--best">
+			<p class="plan__name">Premium <span class="badge badge--solid">Full owambe</span></p>
+			<p class="plan__price"><?= money(number_format($prem)) ?></p>
+			<p class="plan__pitch">Every feature and any of the Premium designs. No fees on gifts.</p>
+			<div class="plan__swatch" aria-hidden="true"><?php foreach (array_slice($premiumDesigns, 1, 6) as $d): ?><i style="background:linear-gradient(135deg,<?= e($d[6][0]) ?>,<?= e($d[6][1]) ?>)"></i><?php endforeach; ?></div>
+			<ul>
+				<li><?= icon('check') ?>Ten Premium designs</li>
+				<li><?= icon('check') ?>Livestream on your page</li>
+				<li><?= icon('check') ?>Spraying from the seat</li>
+				<li><?= icon('check') ?>No charge on gifts or spraying</li>
+			</ul>
+			<a class="pill pill--block" href="<?= e(App::url($lead ? '/w/' . $lead['slug'] : '/pricing')) ?>">See a Premium page</a>
+		</div>
+	</div>
+	<p class="sec-more reveal"><a class="linkish" href="<?= e(App::url('/pricing')) ?>">Compare every plan, including High Society</a></p>
+</section>
+
 <?php if ($fresh): ?>
 <section class="sec wrap">
-	<div class="sec__head">
-		<div><h2>Coming up</h2><p class="sub">Pages you can RSVP to right now.</p></div>
-		<a class="pill pill--quiet" href="<?= e(App::url('/weddings')) ?>">All weddings <?= icon('arrow', 13) ?></a>
-	</div>
-	<div class="wgrid">
-		<?php foreach ($fresh as $w): $d = json_decode((string) $w['design'], true) ?: []; ?>
-			<a class="wcard" href="<?= e(App::url('/w/' . $w['slug'])) ?>" style="--p:<?= e($d['primary'] ?? '#7A5C3A') ?>;--a:<?= e($d['accent'] ?? '#C3A46A') ?>">
-				<span class="wcard__art"><?= photo((string) $w['cover'], '') ?></span>
-				<span class="wcard__tier"><?= e(Site::tier((string) $w['plan'])) ?></span>
-				<span class="wcard__body">
-					<b><?= e(Wedding::names($w)) ?></b>
-					<small><?= e(date('j M Y', strtotime((string) $w['wed_date']))) ?> · <?= e($w['city']) ?></small>
-				</span>
-			</a>
-		<?php endforeach; ?>
-	</div>
-</section>
-<?php endif; ?>
-
-<!-- 4. Styles --------------------------------------------------------------- -->
-<section class="sec wrap">
-	<div class="sec__head">
-		<div>
-			<h2>Owambe, igba nkwu, kamu, white wedding or nikkah</h2>
-			<p class="sub">Whatever you are holding, and however many of them, they all live on one page &mdash; each with its own venue, dress code and colours.</p>
+	<div class="split split--list">
+		<div class="sec-head sec-head--side reveal">
+			<span class="eyebrow">Coming up</span>
+			<h2>Weddings this season</h2>
+			<p>Every public page, soonest first. Open one, RSVP if you are invited, or just enjoy the story.</p>
+			<a class="pill pill--glass pill--sm" href="<?= e(App::url('/weddings')) ?>">Browse every page <?= icon('arrow') ?></a>
 		</div>
-	</div>
-	<div class="rail styles">
-		<?php foreach ([
-			['Traditional',     'Engagements, introductions and the ceremonies before the white wedding: gele, agbada, kola, palm wine and the loudest talking drums.', ['Yoruba engagement', 'Igba nkwu', 'Kamu', 'Knocking', 'Ruracio', 'Lobola'], '#F0B24A', '#B4571B'],
-			['White wedding',   'Church or garden vows, the reception, first dance and the cake. Often the same weekend as the traditional.',                           ['Church', 'Reception', 'First dance', 'Cake cutting'],                        '#A9B6E8', '#44508F'],
-			['Nikkah',          'Nikkah, kamu, walima and dinner. Elegant Northern and Muslim weddings with family at the centre.',                                      ['Fatiha', 'Kamu', 'Sadaki', 'Walima', 'Dinner'],                              '#8FD3AE', '#2A6D4C'],
-			['Court &amp; registry', 'Registry and city hall weddings, then lunch with the people who matter. Small guest list, big love.',                                   ['Ikoyi registry', 'City hall', 'Intimate lunch'],                             '#9FD0E4', '#2F6C85'],
-			['Destination',     'Couples who flew everyone out: beaches, mountains and cities across Africa and beyond.',                                                ['Zanzibar', 'Diani', 'Cape Town', 'Marrakech', 'Dubai'],                      '#F3A58E', '#A8412A'],
-			['Diaspora',        'London, Houston, Toronto and Dublin. African weddings abroad, with family at home watching live.',                                      ['London', 'Houston', 'Toronto', 'Dublin', 'Atlanta'],                         '#C8B7F0', '#5B3FA0'],
-		] as [$st, $sd, $chips, $sa, $sp]): ?>
-			<a class="style" href="<?= e(App::url('/weddings?style=' . urlencode(strip_tags($st)))) ?>" style="--a:<?= e($sa) ?>;--p:<?= e($sp) ?>">
-				<span class="style__art"></span>
-				<b class="style__t"><?= $st ?></b>
-				<span class="style__d"><?= $sd ?></span>
-				<span class="style__chips"><?php foreach ($chips as $c): ?><em><?= e($c) ?></em><?php endforeach; ?></span>
-			</a>
-		<?php endforeach; ?>
-	</div>
-</section>
-
-<!-- 5. Cities --------------------------------------------------------------- -->
-<section class="sec wrap">
-	<div class="sec__head"><div><h2>Weddings in</h2></div></div>
-	<div class="rail chips">
-		<?php foreach ($cities as $c): ?>
-			<a class="chip" href="<?= e(App::url('/weddings?city=' . urlencode((string) $c['city']))) ?>">
-				<?= e($c['city']) ?><em><?= e($c['n']) ?></em>
-			</a>
-		<?php endforeach; ?>
-	</div>
-</section>
-
-<!-- 6. One link: what the page does ----------------------------------------- -->
-<section class="sec wrap">
-	<div class="feat">
-		<div class="feat__head">
-			<p class="cap feat__cap">For couples</p>
-			<h2 class="feat__h">One link for everything your guests need.</h2>
-			<p class="feat__p">Put it in your Instagram bio, your IV and your family WhatsApp group. Guests RSVP, play, give and celebrate on one page.</p>
-		</div>
-		<div class="feat__grid">
-			<?php foreach ([
-				['ticket', 'butter',   'RSVP &amp; entry passes',      'Guests RSVP in seconds. Premium guests get an entry pass with a QR code, and your ushers check them in at the gate.'],
-				['cash',   'mint',     'Spray money from anywhere',    'Family abroad tap to spray notes on the couple, live, with the naira raining across the screen.'],
-				['talk',   'coral',    'Wall of love',                 'Goodwill messages, prayers and jokes from everyone who loves you, with likes.'],
-				['cam',    'sky',      'Guest photo gallery',          'Guests upload what they shot on the day. The best ones rise to the top.'],
-				['spark',  'lavender', 'Couple quiz &amp; leaderboard', '&ldquo;Who said I love you first?&rdquo; Your guests compete to prove who knows you best.'],
-				['gift',   'butter',   'Cash &amp; gift registry',      'Cash funds for the honeymoon or your first home, plus gifts from any store.'],
-				['user',   'mint',     'Bridesmaids &amp; groomsmen',   'Introduce your squad with a line about each of them.'],
-				['play',   'coral',    'Livestream',                   'Your stream, right on your page, for everyone who could not make it.'],
-				['store',  'sky',      'Vendor reviews',               'Guests rate your photographer, caterer and DJ. Great vendors get found.'],
-			] as [$fi, $ft, $fn, $fd]): ?>
-				<div class="ftile ftile--<?= e($ft) ?>">
-					<span class="ftile__i"><?= icon($fi, 19) ?></span>
-					<b class="ftile__t"><?= $fn ?></b>
-					<span class="ftile__d"><?= $fd ?></span>
-				</div>
+		<div class="rows reveal">
+			<?php foreach (array_slice($fresh, 0, 5) as $w): ?>
+				<a class="row-item" href="<?= e(App::url('/w/' . $w['slug'])) ?>">
+					<?= sq((string) $w['cover'], '', 'row-item__pic', false, initials($w)) ?>
+					<span><span class="row-item__t"><?= e(Wedding::names($w)) ?></span><span class="row-item__s"><?= e(trim((string) $w['city'] . ' · ' . Site::tier((string) $w['plan']), ' ·')) ?></span></span>
+					<span class="row-item__end"><?= e(Wedding::short($w)) ?><span class="sub"><?php $dl = Wedding::daysTo($w); echo $dl !== null && $dl >= 0 ? e($dl . ($dl === 1 ? ' day' : ' days')) : ''; ?></span></span>
+				</a>
 			<?php endforeach; ?>
 		</div>
-		<div class="feat__foot">
-			<a class="btn btn--acid" href="<?= e(App::url('/join')) ?>">Create your free wedding page</a>
-			<span class="feat__note">Free forever on the essentials. Nothing to install, for you or your guests.</span>
+	</div>
+</section>
+<?php endif; ?>
+
+<?php if ($listings): ?>
+<section class="sec wrap" id="market">
+	<div class="sec-head reveal">
+		<span class="eyebrow">Marketplace</span>
+		<h2>Aso-ebi, stays &amp; rides</h2>
+	</div>
+	<div class="rail reveal">
+		<?php foreach (array_slice($listings, 0, 4) as $l): ?>
+			<a class="card" href="<?= e(App::url('/market/' . $l['slug'])) ?>">
+				<?= sq(first_photo((string) $l['photos']), (string) $l['title']) ?>
+				<span class="card__cap"><span class="card__t"><?= e($l['title']) ?></span><span class="card__s"><?= (int) $l['on_ask'] ? 'Price on request' : money(short_money((int) $l['price'])) . ' ' . e((string) $l['price_unit']) ?> · <?= e($l['city']) ?></span></span>
+			</a>
+		<?php endforeach; ?>
+	</div>
+	<p class="sec-more reveal"><a class="pill pill--glass pill--sm" href="<?= e(App::url('/market')) ?>">Open the marketplace <?= icon('arrow') ?></a></p>
+</section>
+<?php endif; ?>
+
+<?php if ($vendors): ?>
+<section class="sec wrap">
+	<div class="split split--list">
+		<div class="sec-head sec-head--side reveal">
+			<span class="eyebrow">Rated by couples</span>
+			<h2>The people behind the day</h2>
+			<p>Photographers, planners, caterers, gele and makeup, every one reviewed by a couple who booked them.</p>
+			<a class="pill pill--glass pill--sm" href="<?= e(App::url('/vendors')) ?>">Find a vendor <?= icon('arrow') ?></a>
+		</div>
+		<div class="rows reveal">
+			<?php foreach (array_slice($vendors, 0, 4) as $v): ?>
+				<a class="row-item" href="<?= e(App::url('/vendors/' . $v['slug'])) ?>">
+					<?= sq((string) $v['logo'], '', 'row-item__pic') ?>
+					<span><span class="row-item__t"><?= e($v['name']) ?><?php if ((int) $v['verified']): ?> <span class="badge"><?= icon('check') ?>Verified</span><?php endif; ?></span><span class="row-item__s"><?= e($v['category'] . ' · ' . $v['city']) ?></span></span>
+					<span class="row-item__end"><?= (float) $v['rating'] > 0 ? e(number_format((float) $v['rating'], 1)) : '' ?><span class="sub"><?= (int) $v['reviews'] ?> reviews</span></span>
+				</a>
+			<?php endforeach; ?>
 		</div>
 	</div>
 </section>
+<?php endif; ?>
 
-<!-- 7. Love notes & photos -------------------------------------------------- -->
+<section class="sec wrap">
+	<div class="split">
+		<div class="quote-cta reveal">
+			<div class="sec-head">
+				<span class="eyebrow">Community · no account needed</span>
+				<h2>Say it here instead</h2>
+				<p>Text-only posts on colour, under any pen name you like. Swipe through what other people are carrying.</p>
+			</div>
+			<a class="pill" href="<?= e(App::url('/community')) ?>">Open the community</a>
+		</div>
+		<?php if ($talks): $t = $talks[0]; ?>
+			<a class="post-solo reveal" href="<?= e(App::url('/community/' . $t['id'])) ?>">
+				<article class="post <?= e(talk_colour((string) $t['bg'])) ?>">
+					<span class="post__topic"><?= e(Talk::topic((string) $t['topic'])) ?></span>
+					<p class="post__text<?= mb_strlen((string) $t['body']) > 140 ? ' post__text--long' : '' ?>"><?= e(mb_strimwidth((string) $t['body'], 0, 220, '…')) ?></p>
+					<span class="post__meta"><?= e($t['pen_name'] ?: 'Someone') ?> · <?= (int) $t['likes'] ?> likes</span>
+				</article>
+			</a>
+		<?php endif; ?>
+	</div>
+</section>
+
 <?php if ($wall): ?>
 <section class="sec wrap">
-	<div class="sec__head">
-		<div>
-			<h2>Love notes &amp; photos, from the guests themselves</h2>
-			<p class="sub">Every page collects them. This is what came in this week.</p>
-		</div>
-		<a class="pill pill--quiet" href="<?= e(App::url('/weddings')) ?>">See the pages <?= icon('arrow', 13) ?></a>
+	<div class="sec-head reveal">
+		<span class="eyebrow">Left on real pages this week</span>
+		<h2>Wall of love</h2>
 	</div>
-	<div class="wall">
-		<?php foreach ($wall as $x): $isPhoto = $x['kind'] === 'photo' && $x['image'] !== '' && !str_starts_with((string) $x['image'], 'wp:'); ?>
-			<a class="wnote<?= $isPhoto ? ' wnote--photo' : '' ?>" href="<?= e(App::url('/w/' . $x['slug'])) ?>">
-				<?php if ($isPhoto): ?>
-					<span class="wnote__art"><?= photo((string) $x['image'], '') ?></span>
-				<?php endif; ?>
-				<span class="wnote__body"><?= e((string) $x['body']) ?></span>
-				<span class="wnote__foot">
-					<span class="wnote__who"><?= e((string) $x['name']) ?> <span class="sub">&middot; on <?= e(Wedding::names($x)) ?></span></span>
-					<span class="wnote__likes"><?= icon('heart', 13) ?> <?= e((int) $x['likes']) ?></span>
-				</span>
+	<div class="rail rail--wishes reveal">
+		<?php foreach ($wall as $n): if ((string) $n['kind'] !== 'note' || trim((string) $n['body']) === '') { continue; } ?>
+			<a class="wish wish--card" href="<?= e(App::url('/w/' . $n['slug'] . '#wall')) ?>">
+				<p><?= e(mb_strimwidth((string) $n['body'], 0, 140, '…')) ?></p>
+				<span><?= e($n['name'] ?: 'A guest') ?> · for <?= e($n['partner_a'] . ' & ' . $n['partner_b']) ?></span>
 			</a>
 		<?php endforeach; ?>
 	</div>
 </section>
 <?php endif; ?>
 
-<!-- 8. Marketplace ---------------------------------------------------------- -->
-<section class="sec wrap">
-	<div class="sec__head">
-		<div><h2>Stays, rides &amp; honeymoons</h2><p class="sub">Booked here, and your money is held until you confirm.</p></div>
-		<a class="pill pill--quiet" href="<?= e(App::url('/market')) ?>">Marketplace <?= icon('arrow', 13) ?></a>
-	</div>
-	<div class="rail">
-		<?php foreach ($listings as $i => $l): ?>
-			<a class="mcard" href="<?= e(App::url('/market/' . $l['slug'])) ?>">
-				<span class="mcard__art blob blob--<?= e(['orange','green','blue','pink'][$i % 4]) ?>"><?= photo(first_photo((string) $l['photos']), '') ?></span>
-				<span class="mcard__k"><?= e(ucfirst((string) $l['kind'])) ?> · <?= e($l['city']) ?></span>
-				<b class="mcard__t"><?= e($l['title']) ?></b>
-				<span class="mcard__p"><?= money(short_money((int) $l['price'])) ?> <small><?= e($l['price_unit']) ?></small></span>
-			</a>
-		<?php endforeach; ?>
-	</div>
-</section>
-
-<!-- 9. Vendors -------------------------------------------------------------- -->
-<section class="sec wrap">
-	<div class="sec__head">
-		<div><h2>The people who make the day</h2><p class="sub">Verified vendors, reviewed by couples who used them.</p></div>
-		<a class="pill pill--quiet" href="<?= e(App::url('/vendors')) ?>">All vendors <?= icon('arrow', 13) ?></a>
-	</div>
-	<div class="rows">
-		<?php foreach ($vendors as $v): ?>
-			<a class="row" href="<?= e(App::url('/vendors/' . $v['slug'])) ?>">
-				<span class="row__ico"><?= photo((string) $v['logo'], '') ?: icon('store', 21) ?></span>
-				<span class="row__t"><?= e($v['name']) ?> <span class="sub">· <?= e(trim(($v['category'] ? $v['category'] . ', ' : '') . $v['city'], ', ')) ?></span></span>
-				<span class="row__v"><?= $v['verified'] ? '<em class="pill" style="font-style:normal">Verified</em> ' : '' ?><?= e(number_format((float) $v['rating'], 1)) ?> ★</span>
-			</a>
-		<?php endforeach; ?>
-	</div>
-</section>
-
-<!-- 10. Plans --------------------------------------------------------------- -->
-<?php
-/* Prices come from settings where the import carried them over, so the page never contradicts
-   what the old site is charging today. */
-$proPrice = number_format((int) Site::setting('pro_price', '198000'));
-$premPrice = number_format((int) Site::setting('premium_price', '448000'));
-$fee = Site::setting('fee_gift', '4');
-?>
-<section class="sec wrap">
-	<div class="sec__head">
-		<div>
-			<h2>Start free. Go Premium when you want the full owambe</h2>
-			<p class="sub">Paid once per wedding, never monthly. Moving up later only costs the difference.</p>
-		</div>
-		<a class="pill pill--quiet" href="<?= e(App::url('/pricing')) ?>">Compare everything <?= icon('arrow', 13) ?></a>
-	</div>
-	<div class="plans">
-		<?php foreach ([
-			['free', 'Free', '0', 'Everything you need to get your page live today.', '',
-				['Invitation &amp; event details', 'Your love story', 'RSVP', 'Wall of love', 'Cash &amp; gift registry', 'Vendor list &amp; guest reviews'],
-				'In our colours. Free forever.', 'Start free'],
-			['pro', 'Pro', $proPrice, 'Your squad, guest photos, quiz, entry passes and your own colours. No ads.', 'Everything in Free, plus',
-				['Bridesmaids &amp; groomsmen', 'Guest photo gallery', 'Guest quiz &amp; leaderboard', 'Entry passes &amp; check-in', 'Your own colours &amp; fonts', 'Verified badge, no ads'],
-				'Once per wedding, or in 3 instalments.', 'Go Pro'],
-			['premium', 'Premium', $premPrice, 'Every feature: a Premium design, livestream, spraying, printed table QR cards and no fees.', 'Everything in Pro, plus',
-				['Livestream on your page', 'Spraying from the seat', '10 Premium designs', '200 printed table QR cards', 'No charge on gifts or spraying', 'Your logo on guest receipts'],
-				'Once per wedding, or in 3 instalments.', 'Go Premium'],
-			['society', 'High Society', '', 'Full event branding beyond your website, with prints and livestream coverage.', 'Everything in Premium, plus',
-				['A page design made only for you', 'Monogram, invitations, programmes, signage', 'Livestream coverage by our crew', 'Your own event manager on WhatsApp'],
-				'Priced for your wedding, on WhatsApp.', 'Get a quote'],
-		] as [$pk, $pn, $pp, $ppitch, $pfrom, $pitems, $pnote, $pcta]): ?>
-			<div class="plan plan--<?= e($pk) ?><?= $pk === 'premium' ? ' plan--best' : '' ?>">
-				<?php if ($pk === 'premium'): ?><em class="plan__ribbon">Full owambe</em><?php endif; ?>
-				<?php if ($pk === 'society'): ?><em class="plan__ribbon">Beyond the website</em><?php endif; ?>
-				<b class="plan__n"><?= e($pn) ?></b>
-				<span class="plan__p">
-					<?php if ($pp === ''): ?>
-						<span class="plan__quote">By quote</span>
-					<?php else: ?>
-						<?= money($pp) ?><small>once</small>
-					<?php endif; ?>
-				</span>
-				<span class="plan__pitch"><?= $ppitch ?></span>
-				<?php if ($pfrom): ?><span class="plan__from"><?= e($pfrom) ?>:</span><?php endif; ?>
-				<ul class="plan__list">
-					<?php foreach ($pitems as $pi): ?><li><?= icon('check', 14) ?><span><?= $pi ?></span></li><?php endforeach; ?>
-				</ul>
-				<span class="plan__note"><?= e($pnote) ?></span>
-				<a class="btn <?= $pk === 'premium' ? 'btn--acid' : 'btn--ghost' ?>" href="<?= e(App::url('/join?plan=' . $pk)) ?>"><?= e($pcta) ?></a>
-			</div>
-		<?php endforeach; ?>
-	</div>
-	<p class="plans__fee">A free or Pro page adds a <?= e($fee) ?>% service fee to cash gifts, which guests can choose to cover. Premium adds none.</p>
-</section>
-
-<!-- 11. Community ----------------------------------------------------------- -->
-<?php if ($talks): ?>
-<section class="sec wrap">
-	<div class="sec__head">
-		<div><h2>The anonymous community</h2><p class="sub">Love, family, money, faith and starting over. No account, no real names.</p></div>
-		<a class="pill pill--quiet" href="<?= e(App::url('/community')) ?>">Open <?= icon('arrow', 13) ?></a>
-	</div>
-	<div class="rail">
-		<?php foreach ($talks as $t): ?>
-			<a class="tcard tcard--<?= e($t['bg']) ?>" href="<?= e(App::url('/community')) ?>">
-				<span class="tcard__top">
-					<em class="pill" style="font-style:normal"><?= e(Talk::topic((string) $t['topic'])) ?></em>
-					<span><?= e(ago((string) $t['created_at'])) ?></span>
-				</span>
-				<span class="tcard__body"><?= e(mb_strimwidth((string) $t['body'], 0, 132, '…')) ?></span>
-				<span class="tcard__foot"><span><?= e((string) ($t['pen_name'] ?: 'Someone')) ?> · <?= e((int) $t['replies']) ?> replies</span><span>♥ <?= e((int) $t['likes']) ?></span></span>
-			</a>
-		<?php endforeach; ?>
-	</div>
-</section>
-<?php endif; ?>
-
-<!-- 12. Tips & how-tos ------------------------------------------------------ -->
 <?php if ($posts): ?>
 <section class="sec wrap">
-	<div class="sec__head">
-		<div><h2>Wedding tips &amp; how-tos</h2><p class="sub">Written for Nigerian and African weddings, not borrowed from somewhere else.</p></div>
-		<a class="pill pill--quiet" href="<?= e(App::url('/blog')) ?>">All stories <?= icon('arrow', 13) ?></a>
+	<div class="sec-head reveal">
+		<span class="eyebrow">Stories</span>
+		<h2>Planning, honestly</h2>
 	</div>
-	<div class="pgrid">
-		<?php foreach ($posts as $po): ?>
-			<a class="pcard" href="<?= e(App::url('/blog/' . $po['slug'])) ?>">
-				<span class="pcard__art blob blob--orange"><?= photo((string) $po['cover'], '') ?></span>
-				<span class="pcard__k"><?= e((string) $po['category']) ?> &middot; <?= e(max(1, (int) round(str_word_count(strip_tags((string) $po['body'])) / 200))) ?> min read</span>
-				<b class="pcard__t"><?= e((string) $po['title']) ?></b>
-				<span class="pcard__x"><?= e(mb_strimwidth((string) $po['excerpt'], 0, 118, '…')) ?></span>
+	<div class="rail reveal">
+		<?php foreach ($posts as $p): ?>
+			<a class="card" href="<?= e(App::url('/blog/' . $p['slug'])) ?>">
+				<?= sq((string) $p['cover'], '', 'sq--wide') ?>
+				<span class="card__cap"><span class="card__t"><?= e($p['title']) ?></span><span class="card__s"><?= e($p['category'] ?: 'Story') ?></span></span>
 			</a>
 		<?php endforeach; ?>
 	</div>
 </section>
 <?php endif; ?>
 
-<!-- 13. Questions ----------------------------------------------------------- -->
 <section class="sec wrap">
-	<div class="sec__head">
-		<div><h2>Questions people ask</h2><p class="sub">The ones that come up before anybody makes a page.</p></div>
-	</div>
-	<div class="faq">
-		<?php foreach ([
-			['Is the free wedding page really free?',
-			 'Yes. Your page, invitation and programs, RSVP, love story, wall of love, vendor list and cash and gift registry are free for as long as you want them. When guests send cash gifts through a free page a small service fee is added, which guests can choose to cover. Free pages also carry two small sponsored slots.'],
-			['What are the four plans?',
-			 'Free has the essentials. Pro adds your bridesmaids and groomsmen line-up, guest photos, the quiz, Instagram, entry passes, your own colours and fonts, a verified badge and no ads. Premium adds a Premium design, livestream, spraying, printed table QR cards and no transaction charges. High Society is everything in Premium plus branding, prints and livestream coverage by our crew.'],
-			['Can I start on Pro and move up later?',
-			 'Yes. Pro and Premium are paid once per wedding, in one go or in instalments, and moving up only costs the difference. Your content stays exactly as it is.'],
-			['How does spraying work?',
-			 'Guests choose a note, tap to spray as many as they like and pay by card, bank transfer or USSD. Family abroad pay with their card. You see every spray on your dashboard and withdraw to your bank or mobile money account.'],
-			['How are weddings ranked?',
-			 'By Buzz coins. Every visit, RSVP, love note, like, review, gift, guest photo, quiz play, check-in, livestream viewer and spray earns the couple coins. A page only earns coins from the features on its plan, so Free and Pro pages have fewer ways to earn. Coins come only from real guest activity.'],
-			['Can people outside Nigeria use it?',
-			 'Yes. Couples in Ghana, Kenya, South Africa and the diaspora make pages too, and guests anywhere can RSVP, give and watch. Pages take gifts in naira, cedis, shillings, rand or US dollars.'],
-			['Can I hide my wedding page?',
-			 'Yes. You can make your page private at any time from your dashboard. Private pages are not listed, ranked or searchable, and only you can see them.'],
-		] as $qi => [$q, $a]): ?>
-			<details class="faq__q"<?= $qi === 0 ? ' open' : '' ?>>
-				<summary><span><?= e($q) ?></span><i class="faq__i" aria-hidden="true"></i></summary>
-				<p><?= e($a) ?></p>
-			</details>
-		<?php endforeach; ?>
+	<div class="glass finale reveal">
+		<span class="eyebrow">It takes about ten minutes</span>
+		<h2>Make your page tonight</h2>
+		<p>Start free in black &amp; white. Add your colours, your squad and a Premium design whenever you are ready.</p>
+		<div class="hero__ctas">
+			<a class="pill" href="<?= e(App::url('/join')) ?>">Create your page, free</a>
+			<a class="pill pill--glass" href="<?= e(App::url('/pricing')) ?>">See pricing</a>
+		</div>
 	</div>
 </section>
 
-<!-- 14. Make your own ------------------------------------------------------- -->
-<section class="sec wrap">
-	<div class="cta">
-		<div>
-			<h2>Your wedding deserves its own page.</h2>
-			<p class="lede">Make it free in five minutes. Share the link, and let the love (and the spraying) begin.</p>
-		</div>
-		<div class="cta__btns">
-			<a class="btn btn--acid" href="<?= e(App::url('/join')) ?>">Create a free page</a>
-			<a class="btn btn--ghost" href="<?= e(App::url('/pricing')) ?>">See Premium</a>
-		</div>
-	</div>
-</section>
+<script>
+	(function () {
+		var g = document.getElementById('guests'); if (!g) { return; }
+		var box = document.querySelector('[data-plans]'), p = JSON.parse(box.getAttribute('data-plans'));
+		var k = document.getElementById('plan-k'), v = document.getElementById('plan-v');
+		g.addEventListener('change', function (e) {
+			var n = e.detail;
+			if (n <= 100) { k.textContent = 'Free page'; WWM.text(v, '₦0'); }
+			else if (n < 400) { k.textContent = 'Pro page'; WWM.text(v, '₦' + WWM.fmt(p.pro)); }
+			else { k.textContent = 'Premium page'; WWM.text(v, '₦' + WWM.fmt(p.premium)); }
+		});
+	})();
+</script>

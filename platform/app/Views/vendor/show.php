@@ -1,40 +1,42 @@
-<section class="sec wrap">
-	<div class="vhead">
-		<span class="vhead__art blob blob--pink"><?= photo((string) $v['logo'], '', true) ?></span>
-		<div class="vhead__body">
-			<p class="cap"><?= e($v['category'] ?: 'Vendor') ?><?= $v['city'] ? ' &middot; ' . e($v['city']) : '' ?></p>
-			<h1 class="vhead__h"><?= e($v['name']) ?></h1>
-			<p class="vhead__rate">
-				<b><?= e(number_format((float) $v['rating'], 1)) ?></b> &#9733;
-				<span class="sub">from <?= e((int) $v['reviews']) ?> review<?= (int) $v['reviews'] === 1 ? '' : 's' ?></span>
-				<?php if ($v['verified']): ?><em class="pill">Verified</em><?php endif; ?>
-			</p>
-			<?php if (trim((string) $v['about']) !== ''): ?><p class="vhead__about"><?= nl2br(e((string) $v['about'])) ?></p><?php endif; ?>
-			<div class="vhead__btns">
-				<a class="btn btn--acid" href="<?= e(App::url(Auth::check() ? '/account/vendors' : '/sign-in?to=' . urlencode('/vendors/' . $v['slug']))) ?>"><?= icon('talk', 16) ?> Message them</a>
-				<?php if ($v['website']): ?><a class="btn btn--ghost" href="<?= e($v['website']) ?>" rel="noopener nofollow" target="_blank">Website</a><?php endif; ?>
-				<?php if ($v['instagram']): ?><a class="btn btn--ghost" href="https://instagram.com/<?= e(ltrim((string) $v['instagram'], '@')) ?>" rel="noopener nofollow" target="_blank">Instagram</a><?php endif; ?>
+<?php
+/** A vendor: squircle photo, the facts as tiles, how to reach them, then what couples said. */
+$stars = static fn (int $n): string => str_repeat('★', max(0, min(5, $n))) . '<span class="stars__off">' . str_repeat('★', 5 - max(0, min(5, $n))) . '</span>';
+?>
+<div class="page wrap">
+	<div class="profile">
+		<?= sq((string) $v['logo'], (string) $v['name'], 'profile__pic', true) ?>
+		<div class="profile__body">
+			<span class="eyebrow"><?= e($v['category'] ?: 'Vendor') ?><?= $v['city'] ? ' · ' . e($v['city']) : '' ?></span>
+			<h1 class="profile__h"><?= e($v['name']) ?> <?php if ((int) $v['verified']): ?><span class="badge badge--solid"><?= icon('check') ?>Verified</span><?php endif; ?></h1>
+			<div class="mosaic profile__facts">
+				<div class="tile tile--w2"><span class="k">Rating</span><span class="v"><?= (float) $v['rating'] > 0 ? e(number_format((float) $v['rating'], 1)) . ' <small>of 5</small>' : 'New' ?></span></div>
+				<div class="tile tile--w2"><span class="k">Reviews</span><span class="v"><?= (int) $v['reviews'] ?></span></div>
+			</div>
+			<?php if (trim((string) $v['about']) !== ''): ?><p class="profile__about"><?= nl2br(e((string) $v['about'])) ?></p><?php endif; ?>
+			<div class="form-actions">
+				<?php if ((string) $v['phone'] !== ''): ?><a class="pill" href="tel:<?= e(preg_replace('/[^0-9+]/', '', (string) $v['phone'])) ?>"><?= icon('phone') ?>Call <?= e($v['phone']) ?></a><?php endif; ?>
+				<?php if ($v['instagram']): ?><a class="pill pill--glass" href="https://instagram.com/<?= e(ltrim((string) $v['instagram'], '@')) ?>" rel="noopener nofollow" target="_blank">Instagram</a><?php endif; ?>
+				<?php if ($v['website']): ?><a class="pill pill--glass" href="<?= e($v['website']) ?>" rel="noopener nofollow" target="_blank">Website</a><?php endif; ?>
+				<button class="cbtn" type="button" data-share aria-label="Share"><?= icon('share') ?></button>
 			</div>
 		</div>
 	</div>
-</section>
 
-<section class="sec wrap">
-	<h2 class="wed__h">What couples said</h2>
-	<?php if (!$reviews): ?>
-		<p class="sub">No reviews yet. Couples who book through a wedding page can leave one afterwards.</p>
-	<?php else: ?>
-		<div class="revs">
-			<?php foreach ($reviews as $r): ?>
-				<figure class="rev">
-					<p class="rev__stars" aria-label="<?= e((int) $r['stars']) ?> out of 5"><?= str_repeat('&#9733;', max(0, min(5, (int) $r['stars']))) ?><span class="rev__dim"><?= str_repeat('&#9733;', 5 - max(0, min(5, (int) $r['stars']))) ?></span></p>
-					<blockquote><?= e((string) $r['body']) ?></blockquote>
-					<figcaption><?= e((string) ($r['name'] ?: 'A couple')) ?> &middot; <?= e(ago((string) $r['created_at'])) ?></figcaption>
-					<?php if (trim((string) $r['reply']) !== ''): ?>
-						<p class="rev__reply"><b><?= e($v['name']) ?> replied:</b> <?= e((string) $r['reply']) ?></p>
-					<?php endif; ?>
-				</figure>
-			<?php endforeach; ?>
-		</div>
-	<?php endif; ?>
-</section>
+	<section class="sec">
+		<div class="sec-head"><span class="eyebrow"><?= count($reviews) ?> review<?= count($reviews) === 1 ? '' : 's' ?></span><h2>What couples said</h2></div>
+		<?php if (!$reviews): ?>
+			<div class="glass glass--plain empty"><span class="cbtn"><?= icon('star') ?></span><p>No reviews yet. Couples who book them can leave one after the wedding.</p></div>
+		<?php else: ?>
+			<div class="reviews">
+				<?php foreach ($reviews as $r): ?>
+					<figure class="review">
+						<p class="stars" aria-label="<?= (int) $r['stars'] ?> out of 5"><?= $stars((int) $r['stars']) ?></p>
+						<blockquote><?= e((string) $r['body']) ?></blockquote>
+						<figcaption><?= e((string) ($r['name'] ?: 'A couple')) ?> · <?= e(ago((string) $r['created_at'])) ?></figcaption>
+						<?php if (trim((string) $r['reply']) !== ''): ?><p class="review__reply"><b><?= e($v['name']) ?> replied</b><?= e((string) $r['reply']) ?></p><?php endif; ?>
+					</figure>
+				<?php endforeach; ?>
+			</div>
+		<?php endif; ?>
+	</section>
+</div>

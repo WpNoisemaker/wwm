@@ -64,7 +64,10 @@ $r->any('/hq/settings',         [HqController::class, 'settings']);
 $r->post('/hq/test-mail',       [HqController::class, 'testMail']);
 $r->post('/hq/demo/add',        [HqController::class, 'demoAdd']);
 $r->post('/hq/demo/remove',     [HqController::class, 'demoRemove']);
+$r->post('/hq/packs/{key}',     [HqController::class, 'packAdd']);
 
-// --- Kept from the build, handy for comparing the four dressings ------------------------------
-$r->get('/looks',               [LooksController::class, 'index']);
-$r->get('/looks/{look}',        [LooksController::class, 'show']);
+// --- The app: install, offline, and the design gallery -------------------------------------
+$r->get('/templates',           [SiteController::class, 'templates']);
+$r->get('/manifest.webmanifest', [SiteController::class, 'manifest']);
+$r->get('/sw.js',               [SiteController::class, 'sw']);
+$r->get('/offline',             [SiteController::class, 'offline']);

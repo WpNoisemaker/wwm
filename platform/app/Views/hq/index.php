@@ -1,43 +1,43 @@
-<?= View::partial('account/_head', ['h' => 'HQ', 'sub' => 'Everything on this screen is read straight from the database.']) ?>
-<section class="sec wrap">
-	<div class="tally">
-		<?php foreach ([
-			[number_format($nums['people']), 'people'], [number_format($nums['weddings']), 'wedding pages'],
-			[number_format($nums['public']), 'public'], [number_format($nums['guests']), 'guests'],
-			[number_format($nums['vendors']), 'vendors'],
-		] as [$n, $l]): ?>
-			<span class="tally__i"><b class="dot"><?= e($n) ?></b><em><?= e($l) ?></em></span>
+<?= View::partial('hq/_head', ['h' => 'HQ', 'now' => 'hq']) ?>
+	<div class="kpis">
+		<?php foreach ([[$nums['people'], 'People'], [$nums['weddings'], 'Wedding pages'], [$nums['public'], 'Public'], [$nums['guests'], 'Guests'], [$nums['vendors'], 'Vendors']] as [$n, $l]): ?>
+			<div class="tile"><span class="k"><?= e($l) ?></span><?= dots((string) (int) $n, 'dotnum--sm kpi-dots') ?></div>
 		<?php endforeach; ?>
-		<span class="tally__i"><b class="fig"><?= money(short_money($nums['raised'])) ?></b><em>gifts received</em></span>
-		<span class="tally__i"><b class="fig"><?= money(short_money($nums['owed'])) ?></b><em>payouts waiting</em></span>
+		<?= kv('Gifts received', money(short_money((int) $nums['raised'])), '', true) ?>
+		<?= kv('Payouts waiting', money(short_money((int) $nums['owed'])), (int) $nums['owed'] > 0 ? 'is-on' : '', true) ?>
+		<a class="tile tile--glyph" href="<?= e(App::url('/hq/settings')) ?>"><?= icon('s-spark') ?><span>Settings</span></a>
 	</div>
-
-	<h3 class="form__g">Pages by plan</h3>
-	<div class="rows">
-		<?php foreach ($plans as $p): ?>
-			<div class="row"><span class="row__ico"><?= icon('rings', 18) ?></span>
-				<span class="row__t"><?= e(Site::tier((string) $p['plan'])) ?></span>
-				<span class="row__v"><?= e(number_format((int) $p['n'])) ?></span></div>
-		<?php endforeach; ?>
-	</div>
-
-	<?php if ($asks): ?>
-		<h3 class="form__g">Payouts waiting</h3>
-		<div class="rows">
-			<?php foreach ($asks as $a): ?>
-				<div class="row"><span class="row__ico"><?= icon('cash', 18) ?></span>
-					<span class="row__t"><?= e($a['name'] ?: $a['email']) ?> <span class="sub">&middot; <?= e($a['bank']) ?> <?= e($a['account']) ?> &middot; <?= e(ago((string) $a['created_at'])) ?></span></span>
-					<span class="row__v"><?= money(number_format((int) $a['amount']), (string) $a['currency']) ?></span></div>
-			<?php endforeach; ?>
+	<?php foreach (Pack::ALL as $pk => $pn): if (!Pack::present($pk)): ?>
+		<div class="note gap-t"><?= icon('info') ?><span><?= e($pn) ?>&rsquo;s page from the old site is not here yet. <a href="<?= e(App::url('/hq/settings#packs')) ?>">Restore it in Settings</a>.</span></div>
+	<?php endif; endforeach; ?>
+	<div class="split-2 gap-t">
+		<div>
+			<?php if ($asks): ?>
+				<div class="block-head"><h2 class="h2">Payouts waiting</h2></div>
+				<div class="rows">
+					<?php foreach ($asks as $a): ?>
+						<div class="row-item"><span class="row-item__ico"><?= icon('wallet') ?></span>
+							<span><span class="row-item__t"><?= e($a['name'] ?: $a['email']) ?></span><span class="row-item__s"><?= e($a['bank']) ?> <?= e($a['account']) ?> · <?= e(ago((string) $a['created_at'])) ?></span></span>
+							<span class="row-item__end"><?= money(number_format((int) $a['amount']), (string) $a['currency']) ?></span></div>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
+			<div class="block-head<?= $asks ? ' gap-t' : '' ?>"><h2 class="h2">Newest accounts</h2></div>
+			<div class="rows">
+				<?php foreach ($recent as $u): ?>
+					<div class="row-item"><span class="row-item__ico"><?= icon('user') ?></span>
+						<span><span class="row-item__t"><?= e($u['name'] ?: $u['email']) ?></span><span class="row-item__s"><?= e($u['email']) ?> · <?= e(ago((string) $u['created_at'])) ?></span></span>
+						<span class="row-item__end"><span class="badge"><?= e($u['role']) ?></span></span></div>
+				<?php endforeach; ?>
+			</div>
 		</div>
-	<?php endif; ?>
-
-	<h3 class="form__g">Newest accounts</h3>
-	<div class="rows">
-		<?php foreach ($recent as $u): ?>
-			<div class="row"><span class="row__ico"><?= icon('user', 18) ?></span>
-				<span class="row__t"><?= e($u['name'] ?: $u['email']) ?> <span class="sub">&middot; <?= e($u['email']) ?> &middot; <?= e(ago((string) $u['created_at'])) ?></span></span>
-				<span class="row__v"><em class="pill"><?= e($u['role']) ?></em></span></div>
-		<?php endforeach; ?>
+		<aside>
+			<div class="block-head"><h2 class="h2">Pages by plan</h2></div>
+			<div class="rows">
+				<?php foreach ($plans as $p): ?>
+					<div class="row-item row-item--plain"><span class="row-item__t"><?= e(Site::tier((string) $p['plan'])) ?></span><span class="row-item__end"><?= e(number_format((int) $p['n'])) ?></span></div>
+				<?php endforeach; ?>
+			</div>
+		</aside>
 	</div>
-</section>
+</div>

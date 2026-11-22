@@ -1,1 +1,8 @@
-<div class="wrap" style="padding:60px 0"><h1>Not found</h1><p class="lede" style="margin-top:8px">That page does not exist.</p><a class="btn" style="margin-top:20px" href="<?= e(App::url('/')) ?>">Go home</a></div>
+<div class="page wrap">
+	<div class="glass empty error-card">
+		<div class="error-code"><?= dots('404') ?></div>
+		<h1 class="h2">That page is not here</h1>
+		<p>It may have moved, or the link was mistyped. Try the search, or start from home.</p>
+		<a class="pill" href="<?= e(App::url('/')) ?>">Go home</a>
+	</div>
+</div>

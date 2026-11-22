@@ -14,6 +14,34 @@ Plain PHP. No Composer, no Node, no build step, nothing to compile. Upload, open
 
 ---
 
+## Already installed? Updating to the new design
+
+Your database, settings and accounts stay exactly as they are. Nothing in the database changes shape,
+so there is no upgrade step to run.
+
+1. cPanel → **File Manager** → open the folder the site lives in (the one with `install.php` deleted and
+   `config/` inside it).
+2. **Upload** `wwm-platform.zip` → right-click → **Extract** → when it asks, let it **overwrite** the
+   existing files. `config/config.php` is not in the zip, so your settings are not touched.
+3. Delete the zip. If `install.php` reappeared, delete it too: the site is already installed and it
+   refuses to run again, but there is no reason to leave it there.
+4. Sign in as the owner → **HQ → Settings**:
+   - **Couples from the old site → Ibrahim & Ummi → Restore.** Their Premium page comes back in the
+     Ivory & Gold design with their account. Their old password still works. If the old demo page was
+     sitting at `/w/ibrahim-ummi`, it is replaced; a real page there is never touched.
+   - **Demo content → Remove all demo content**, then **Add demo content**, to get the new demo: one
+     wedding page for every design and plan.
+5. Open the site on your phone → browser menu → **Install app** (Android) or **Share → Add to Home
+   Screen** (iPhone). It opens full screen like an app and keeps working when the signal drops.
+
+Optional tidy-up: these files from the previous version are no longer used and can be deleted —
+`public/assets/css/` (everything except `wwm.css`), `public/assets/js/app.js`, `public/assets/js/deck.js`,
+`app/Views/looks/`, `app/Views/home.php`, `app/Views/empty.php`, `app/Views/community.php`,
+`app/Views/wedding/parts/`, `app/Controllers/HomeController.php`, `app/Controllers/LooksController.php`.
+Leaving them does no harm.
+
+---
+
 ## 1. Create the database
 
 cPanel → **MySQL® Databases**

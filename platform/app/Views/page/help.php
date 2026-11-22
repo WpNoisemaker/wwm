@@ -1,4 +1,4 @@
-<section class="sec wrap prose">
+<article class="page wrap prose">
 	<h1 class="prose__h">Help</h1>
 	<p class="lede">The questions that come up most. If yours is not here, use the contact link in the footer.</p>
 	<div class="faq">
@@ -25,4 +25,4 @@
 			<?php endforeach; ?>
 		<?php endforeach; ?>
 	</div>
-</section>
+</article>
