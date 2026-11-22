@@ -41,6 +41,7 @@ button { cursor: pointer; }
 
 .shell { display: flex; flex-direction: column; min-height: 100dvh; }
 .wrap { width: min(100% - 32px, 1240px); margin-inline: auto; }
+@media (min-width: 900px) { .wrap { width: min(100% - 80px, 1240px); } }
 .main { flex: 1; padding-bottom: calc(var(--tab-h) + var(--safe-b) + 26px); }
 @media (min-width: 900px) { .main { padding-bottom: 60px; } }
 
@@ -242,31 +243,53 @@ body.locked { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
 
 /* ================================================================ Desktop
- * The phone layout is the design; a wide screen is not a stretched phone. From 900px the shell
- * becomes the three-column app the tablet reference uses: a nav rail, the content, and a side
- * column for the things that were stacked underneath on a phone.
+ * A phone gets the app: a tab bar at the bottom, rails you swipe, thumb-sized targets. A wide
+ * screen gets the website: one header across the top carrying the sections, and a centred column
+ * underneath. The side rail belongs to the signed-in account screens, not to the public site.
  */
+.bar__nav { display: none; }
+.bar__in { display: none; }
+.bar__cta { display: none; }
+
 @media (min-width: 900px) {
-	.shell { display: grid; grid-template-columns: 252px minmax(0, 1fr); align-items: start; }
-	.bar { grid-column: 1 / -1; padding-inline: 26px; }
-	.main { grid-column: 2; padding: 6px 26px 60px 0; }
+	.bar { padding: 12px clamp(20px, 3vw, 40px); gap: 10px; }
+	.bar__sp { flex: 1; }
+	.bar__nav { display: flex; align-items: center; gap: 2px; margin-left: clamp(10px, 2.4vw, 34px); }
+	.bar__nav a { padding: 9px 14px; border-radius: var(--r-pill); color: var(--ink-2); font-size: .94rem; font-weight: 450; letter-spacing: -.01em; white-space: nowrap; transition: background-color .2s, color .2s; }
+	.bar__nav a:hover { background: var(--card-2); color: var(--ink); }
+	.bar__nav a.is-on { background: var(--ink); color: #fff; }
+	.bar__in { display: inline-flex; align-items: center; padding: 0 12px; min-height: 40px; color: var(--ink-2); font-size: .94rem; font-weight: 450; }
+	.bar__in:hover { color: var(--ink); }
+	.bar__cta { display: inline-flex; }
 
-	.rail-nav { position: sticky; top: 76px; display: grid; gap: 7px; padding: 6px 0 0 26px; }
-	.rail-nav a { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 16px; border-radius: var(--r-pill); color: var(--ink-2); font-size: .97rem; font-weight: 450; transition: background-color .2s, color .2s; }
-	.rail-nav a:hover { background: var(--card-2); color: var(--ink); }
-	.rail-nav a.is-on { background: var(--ink); color: #fff; }
-	.rail-nav a.is-on svg { color: var(--acid); }
-	.rail-nav hr { width: 100%; margin: 10px 0; border: 0; border-top: 1px solid var(--hair); }
-	.rail-nav__cta { margin-top: 6px; }
-
-	/* Content sits in a readable column with a side column beside it. */
-	.wrap { width: 100%; margin-inline: 0; }
+	.main { padding: 6px 0 60px; }
 	.cols { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 26px; align-items: start; }
-	.cols__side { position: sticky; top: 76px; display: grid; gap: 14px; }
-	.main > section > .wrap { max-width: none; }
+	.cols__side { position: sticky; top: 86px; display: grid; gap: 14px; }
 }
-@media (max-width: 899px) { .rail-nav { display: none; } .cols { display: block; } .cols__side { display: grid; gap: 14px; margin-top: 22px; } }
-@media (min-width: 1280px) { .shell { grid-template-columns: 276px minmax(0, 1fr); } }
+
+/* Below 1140px the seven section links stop fitting beside the brand and the buttons. The bar
+ * keeps brand and actions; the tab bar comes back to carry navigation. */
+@media (max-width: 1139px) {
+	.bar__nav { display: none; }
+	.tabs { display: flex; }
+	.main { padding-bottom: calc(var(--tab-h) + var(--safe-b) + 26px); }
+}
+
+/* The account screens keep their rail; the public pages never show one. */
+.rail-nav { display: none; }
+@media (min-width: 900px) {
+	.has-rail .shell { display: grid; grid-template-columns: 252px minmax(0, 1fr); align-items: start; }
+	.has-rail .bar { grid-column: 1 / -1; }
+	.has-rail .main { grid-column: 2; padding: 6px 30px 60px 10px; }
+	.has-rail .rail-nav { position: sticky; top: 86px; display: grid; gap: 7px; padding: 6px 0 0 26px; }
+	.has-rail .rail-nav a { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 16px; border-radius: var(--r-pill); color: var(--ink-2); font-size: .97rem; font-weight: 450; transition: background-color .2s, color .2s; }
+	.has-rail .rail-nav a:hover { background: var(--card-2); color: var(--ink); }
+	.has-rail .rail-nav a.is-on { background: var(--ink); color: #fff; }
+	.has-rail .rail-nav a.is-on svg { color: var(--acid); }
+	.has-rail .rail-nav hr { width: 100%; margin: 10px 0; border: 0; border-top: 1px solid var(--hair); }
+	.has-rail .rail-nav a.rail-nav__cta { margin-top: 6px; color: var(--acid-ink); }
+}
+@media (max-width: 899px) { .cols { display: block; } .cols__side { display: grid; gap: 14px; margin-top: 22px; } }
 
 /* ---------------------------------------------------------------- The naira
  * Outfit has no ₦ (U+20A6), so the browser falls back to a system face whose bar overhangs the
@@ -306,3 +329,25 @@ body.locked { overflow: hidden; }
 /* Last line of defence: nothing may push the document sideways on a phone. */
 html, body { max-width: 100%; overflow-x: clip; }
 @supports not (overflow-x: clip) { html, body { overflow-x: hidden; } }
+
+
+/* A money figure must stay solid: run through the dot grid, the naira's two bars survive while the
+ * N breaks into dots, and the pair reads as a strike-through. */
+.fig { font-size: inherit; font-weight: 450; letter-spacing: -.02em; }
+.dot .ngn, .dot .money { -webkit-text-fill-color: currentColor; background: none; }
+
+/* The top bar carries the sections now, so each look dresses it the way it dressed the old rail. */
+.look-midnight .bar__nav a { color: var(--ink-2); }
+.look-midnight .bar__nav a:hover { background: rgba(255,255,255,.07); color: #fff; }
+.look-midnight .bar__nav a.is-on { background: rgba(255,255,255,.14); color: #fff; }
+.look-midnight .bar__in { color: var(--ink-2); }
+.look-sky .bar__nav a { color: var(--ink-2); }
+.look-sky .bar__nav a:hover { background: rgba(255,255,255,.5); color: var(--ink); }
+.look-sky .bar__nav a.is-on { background: #1C1A18; color: #FBF9F5; }
+.look-paper .bar__nav a.is-on { background: #17171A; color: #fff; }
+.look-data .bar__nav a.is-on { background: #121214; color: #fff; }
+
+
+/* Each look paints its wash on body::after. The pseudo-element is absolute, so body has to be the
+ * containing block or the wash would size itself to the viewport and stop partway down the page. */
+body { position: relative; }

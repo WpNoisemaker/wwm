@@ -54,3 +54,32 @@ function ago(string $when): string {
     }
     return 'just now';
 }
+
+/**
+ * A stored image path rendered as an <img>, or '' when the row has none so the caller's gradient
+ * stands in. Three kinds of path arrive here: an absolute URL, a WordPress upload carried over by
+ * the importer (wp-content/...), and our own library under assets/img.
+ */
+function photo(?string $path, string $alt = '', bool $eager = false): string
+{
+    $path = trim((string) $path);
+    if ($path === '') {
+        return '';
+    }
+    if (str_starts_with($path, 'http') || str_starts_with($path, '/')) {
+        $src = $path;
+    } elseif (str_starts_with($path, 'wp-content/')) {
+        $src = App::url('/' . $path);
+    } else {
+        $src = App::asset('assets/img/' . $path);
+    }
+    return '<img src="' . e($src) . '" alt="' . e($alt) . '"'
+         . ' loading="' . ($eager ? 'eager' : 'lazy') . '" decoding="async">';
+}
+
+/** Listings keep a JSON array of photos; the homepage only ever wants the first. */
+function first_photo(?string $json): string
+{
+    $a = json_decode((string) $json, true);
+    return is_array($a) && $a ? (string) reset($a) : '';
+}

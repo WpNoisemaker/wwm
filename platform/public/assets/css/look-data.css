@@ -20,7 +20,21 @@
 	--r: 22px;
 	background: #EFEFED;
 }
-.look-data::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: #EFEFED; }
+.look-data::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background-color: #EFEFED;
+	background-repeat: no-repeat;
+	background-size: 100% 1700px, 100% 1700px, 100% 1700px, 100% 1700px;
+	background-image:
+		radial-gradient(52% 42% at 24% 6%, #FFD7A8 0%, rgba(255,215,168,0) 62%),
+		radial-gradient(46% 40% at 58% 2%, #FFBE7A 0%, rgba(255,190,122,0) 58%),
+		radial-gradient(54% 46% at 90% 26%, #CFE4B4 0%, rgba(207,228,180,0) 62%),
+		radial-gradient(60% 40% at 74% 88%, #DCE7D2 0%, rgba(220,231,210,0) 64%);
+}
 .look-data::before { opacity: .4; }
 
 .dt-word { font-size: 1.02rem; font-weight: 500; letter-spacing: -.03em; }
@@ -91,3 +105,37 @@
 .look-data .rail-nav a.is-on { background: #121214; }
 .look-data .btn:not(.btn--acid) { background: #121214; color: #fff; }
 .look-data .btn--acid { background: var(--acid); color: var(--acid-ink); }
+
+
+/*
+ * Homepage — the bento. Every row and card is a solid white squircle floating on the warm wash,
+ * with a round dark arrow riding its corner, exactly the way the reference draws its tiles.
+ */
+.look-data { --band: #0E0E10; --band-ink: #F6F6F4; }
+
+.look-data .hero__search,
+.look-data .chart__row,
+.look-data .wcard,
+.look-data .mcard,
+.look-data .rows .row {
+	background: #FFFFFF;
+	border: 0;
+	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
+	box-shadow: 0 1px 2px rgba(18,18,20,.05), 0 14px 34px -22px rgba(18,18,20,.3);
+}
+.look-data .chart__row { border-radius: var(--r-lg); }
+.look-data .chart__row--one { box-shadow: 0 2px 4px rgba(18,18,20,.06), 0 22px 48px -24px rgba(18,18,20,.4); }
+.look-data .chart__pic { border-radius: 16px; }
+/* The dark round arrow is this look's signature — it sits on every tile in the reference. */
+.look-data .chart__go { background: #121214; border-color: transparent; color: #fff; }
+.look-data .chart__go:hover { background: #2A2A2E; }
+.look-data .wcard { padding-bottom: 2px; }
+.look-data .wcard__tier { background: #121214; color: #fff; }
+.look-data .mcard { padding: 14px; }
+.look-data .rows .row { border-radius: var(--r-pill); }
+.look-data .pill--quiet { background: #fff; border: 0; box-shadow: 0 1px 2px rgba(18,18,20,.05); color: var(--ink-2); }
+.look-data .chips .chip { background: #fff; border: 0; box-shadow: 0 1px 2px rgba(18,18,20,.05); }
+/* Figures carry the reference's tight optical sizing. */
+.look-data .hero__stat-t b { font-size: 2.1rem; letter-spacing: -.045em; }
+.look-data .chart__no { font-weight: 600; }

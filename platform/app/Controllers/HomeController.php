@@ -9,7 +9,7 @@ final class HomeController
         // driven entirely by imported rows rather than by anything hand-written.
         $w = Wedding::forUser(Auth::id());
         if (!$w) {
-            View::render('empty', ['title' => 'Wedding Websites & More', 'tab' => 'home']);
+            View::render('empty', ['title' => 'Wedding Websites & More', 'tab' => 'home', 'rail' => true]);
             return;
         }
         $d    = Wedding::dash((int) $w['id']);
@@ -19,6 +19,7 @@ final class HomeController
         View::render('home', [
             'title'  => Wedding::names($w) . ' — Wedding Websites & More',
             'tab'    => 'home',
+            'rail'   => true,
             'w'      => $w,
             'd'      => $d,
             'days'   => $days,

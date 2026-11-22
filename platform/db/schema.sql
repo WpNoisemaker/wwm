@@ -127,7 +127,9 @@ CREATE TABLE guests (
   coming      ENUM('yes','no','maybe') NOT NULL DEFAULT 'yes',
   programs    JSON         NULL,
   note        TEXT         NULL,
-  pass_code   VARCHAR(40)  NOT NULL DEFAULT '',
+  -- NULL rather than '' so a unique index can hold many guests who have no pass yet;
+  -- MySQL allows repeated NULLs in a unique key but not repeated empty strings.
+  pass_code   VARCHAR(40)  NULL DEFAULT NULL,
   checked_in  DATETIME     NULL,
   table_no    VARCHAR(20)  NOT NULL DEFAULT '',
   created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,

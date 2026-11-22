@@ -1,90 +1,98 @@
 /*
- * LOOK 2 — SKY. Built to the Air Purifier reference: one smooth vertical gradient from sky blue
- * down to pale cream, frosted white-blue glass over it, a centred light title with a round back
- * button, product squircles with their own sky-to-cream fill, and a dot-matrix figure.
+ * LOOK — SKY. Built to the CreditTB reference: a pale field with one wide iridescent wash lying
+ * across it (peach into cream into mint into lilac), tiles that are almost entirely transparent so
+ * the wash reads straight through them, dark ink, and small quiet pill chips. The wash is fixed to
+ * the viewport, so a long page never develops a seam where the gradient runs out.
  */
 .look-sky {
-	--bg: #A8C8E8;
-	--ink: #FFFFFF;
-	--ink-2: rgba(255,255,255,.88);
-	--muted: rgba(255,255,255,.72);
-	--faint: rgba(255,255,255,.55);
-	--card: rgba(255,255,255,.22);
-	--card-2: rgba(255,255,255,.3);
-	--card-solid: rgba(255,255,255,.34);
-	--edge: rgba(255,255,255,.34);
-	--hair: rgba(255,255,255,.22);
+	--bg: #ECEAE6;
+	--ink: #1C1A18;
+	--ink-2: #4E4A45;
+	--muted: #8B857D;
+	--faint: #B5AFA6;
+	--card: rgba(255,255,255,.42);
+	--card-2: rgba(255,255,255,.56);
+	--card-solid: rgba(255,255,255,.74);
+	--edge: rgba(255,255,255,.7);
+	--hair: rgba(28,26,24,.07);
+	--band: #1C1A18;
+	--band-ink: #FBF9F5;
 	--r-xl: 40px;
-	--r-lg: 34px;
-	--r: 28px;
+	--r-lg: 32px;
+	--r: 26px;
 	color-scheme: light;
-	background: #A8C8E8;
+	background: #ECEAE6;
 }
-/* The sky. One gradient, nothing else — the reference has no texture at all. */
+/* The wash. Fixed, so it stays put however far the page runs. */
 .look-sky::after {
 	content: "";
-	position: fixed;
+	position: absolute;
 	inset: 0;
 	z-index: -1;
 	pointer-events: none;
-	background: linear-gradient(177deg, #8FBAE4 0%, #A9CCE9 26%, #CBDFEC 52%, #E7E3D6 78%, #F3E6C8 100%);
+	background-color: #ECEAE6;
+	background-repeat: no-repeat;
+	background-size: 100% 2200px, 100% 2200px, 100% 2200px, 100% 2200px, 100% 2200px;
+	background-image:
+		radial-gradient(64% 46% at 8% 16%, #F7C9A0 0%, rgba(247,201,160,0) 64%),
+		radial-gradient(58% 44% at 42% 30%, #F6E3C2 0%, rgba(246,227,194,0) 62%),
+		radial-gradient(60% 50% at 76% 24%, #BFE3CE 0%, rgba(191,227,206,0) 64%),
+		radial-gradient(56% 48% at 98% 54%, #CFC6EC 0%, rgba(207,198,236,0) 62%),
+		radial-gradient(70% 54% at 30% 92%, #E9DCCB 0%, rgba(233,220,203,0) 66%);
 }
-.look-sky::before { display: none; }
+.look-sky::before { opacity: .5; }
 
+/* Homepage. Everything is glass over the wash — the tiles tint it rather than cover it. */
+.look-sky .hero__search,
+.look-sky .chart__row,
+.look-sky .wcard,
+.look-sky .mcard,
+.look-sky .rows .row {
+	background: rgba(255,255,255,.44);
+	-webkit-backdrop-filter: blur(22px) saturate(1.5);
+	backdrop-filter: blur(22px) saturate(1.5);
+	border: 1px solid rgba(255,255,255,.66);
+	box-shadow: 0 1px 1px rgba(60,48,36,.03), 0 18px 40px -28px rgba(60,48,36,.42);
+}
+.look-sky .chart__row--one { background: rgba(255,255,255,.62); }
+.look-sky .chart__pic { box-shadow: 0 6px 16px -8px rgba(60,48,36,.5); }
+.look-sky .chart__go { background: rgba(255,255,255,.6); border-color: rgba(255,255,255,.8); color: var(--ink); }
+.look-sky .wcard__tier { background: rgba(28,26,24,.82); color: #FBF9F5; }
+.look-sky .pill--quiet { background: rgba(255,255,255,.52); border: 1px solid rgba(255,255,255,.7); color: var(--ink-2); }
+.look-sky .chips .chip { background: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.68); }
+.look-sky .chips .chip em { background: rgba(28,26,24,.07); }
+
+.look-sky .bar { background: rgba(236,234,230,.58); -webkit-backdrop-filter: blur(22px) saturate(1.5); backdrop-filter: blur(22px) saturate(1.5); }
+.look-sky .bar__mark { background: #1C1A18; color: #F6E3C2; }
+.look-sky .ico { background: rgba(255,255,255,.6); border-color: rgba(255,255,255,.76); color: var(--ink); }
+.look-sky .tabs { background: rgba(255,255,255,.62); border: 1px solid rgba(255,255,255,.78); -webkit-backdrop-filter: blur(26px) saturate(1.6); backdrop-filter: blur(26px) saturate(1.6); box-shadow: 0 16px 38px -20px rgba(60,48,36,.5); }
+.look-sky .tabs a { color: var(--ink-2); }
+.look-sky .tabs a.is-on { background: #1C1A18; color: #FBF9F5; }
+.look-sky .tabs .tabs__fab { background: #1C1A18; color: #F6E3C2; }
+.look-sky .rail-nav a { color: var(--ink-2); }
+.look-sky .rail-nav a:hover { background: rgba(255,255,255,.5); color: var(--ink); }
+.look-sky .rail-nav a.is-on { background: #1C1A18; color: #FBF9F5; }
+.look-sky .rail-nav a.is-on svg { color: #F6E3C2; }
+.look-sky .rail-nav hr { border-top-color: rgba(28,26,24,.1); }
+.look-sky .btn:not(.btn--ghost):not(.btn--acid) { background: #1C1A18; color: #FBF9F5; }
+.look-sky .btn--ghost { background: rgba(255,255,255,.5); color: var(--ink); border-color: rgba(255,255,255,.72); }
+
+/* The /looks demo screen keeps its own furniture; it now sits on the light field too. */
 .sky-head { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; padding: 6px 0 18px; }
-.sky-head h1 { grid-column: 2; text-align: center; font-size: 1.5rem; font-weight: 400; letter-spacing: -.02em; color: #fff; text-shadow: 0 1px 8px rgba(40,70,100,.22); }
-.sky-back { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.26); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); color: #fff; border: 0; }
-
-/* The two product squircles. Each carries the same sky-to-cream fill as the page. */
+.sky-head h1 { grid-column: 2; text-align: center; font-size: 1.5rem; font-weight: 400; letter-spacing: -.02em; }
+.sky-back { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.56); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); color: var(--ink); border: 1px solid rgba(255,255,255,.7); }
 .sky-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: end; }
 .sky-prod { display: grid; gap: 9px; justify-items: center; }
-.sky-prod__k { font-size: .84rem; font-weight: 400; color: #fff; text-shadow: 0 1px 6px rgba(40,70,100,.28); }
-.sky-prod__box {
-	width: 100%;
-	aspect-ratio: 1;
-	display: grid; place-items: center;
-	border-radius: 38px;
-	background: linear-gradient(178deg, #86B7E6 0%, #AFD0EC 40%, #E3E0D0 76%, #F4E7C6 100%);
-	box-shadow: 0 16px 36px -22px rgba(30,52,80,.6);
-	overflow: hidden;
-}
+.sky-prod__k { font-size: .84rem; font-weight: 450; }
+.sky-prod__box { width: 100%; aspect-ratio: 1; display: grid; place-items: center; border-radius: 38px; background: radial-gradient(80% 70% at 24% 14%, #F8CFA6, transparent 64%), radial-gradient(78% 72% at 84% 88%, #C6E5D4, transparent 62%), linear-gradient(170deg, #F4E2C6, #DCD4EA); box-shadow: 0 16px 36px -22px rgba(60,48,36,.6); overflow: hidden; }
 .sky-prod--sm .sky-prod__box { width: 86%; justify-self: center; }
-.sky-prod__art { width: 46%; filter: drop-shadow(0 10px 14px rgba(20,38,60,.3)); }
-
-/* The big frosted counter card. */
-.sky-card {
-	margin-top: 16px;
-	padding: 24px 20px 26px;
-	border-radius: var(--r-xl);
-	background: rgba(120,160,200,.22);
-	-webkit-backdrop-filter: blur(26px) saturate(1.25); backdrop-filter: blur(26px) saturate(1.25);
-	border: 1px solid rgba(255,255,255,.34);
-	box-shadow: 0 20px 48px -30px rgba(30,52,80,.6);
-	text-align: center;
-	color: #fff;
-}
-.sky-card__k { font-size: .86rem; font-weight: 400; color: #fff; }
+.sky-prod__art { width: 46%; filter: drop-shadow(0 10px 14px rgba(60,48,36,.3)); }
+.sky-card { margin-top: 16px; padding: 24px 20px 26px; border-radius: var(--r-xl); background: rgba(255,255,255,.46); -webkit-backdrop-filter: blur(26px) saturate(1.5); backdrop-filter: blur(26px) saturate(1.5); border: 1px solid rgba(255,255,255,.7); box-shadow: 0 20px 48px -30px rgba(60,48,36,.6); text-align: center; }
+.sky-card__k { font-size: .86rem; font-weight: 450; color: var(--ink-2); }
 .sky-count { display: grid; grid-template-columns: 52px 1fr 52px; align-items: center; gap: 10px; margin: 18px 0 2px; }
-.sky-count__btn { display: grid; place-items: center; width: 52px; height: 52px; border: 0; border-radius: 50%; background: rgba(255,255,255,.24); color: #fff; font-size: 1.4rem; font-weight: 300; }
+.sky-count__btn { display: grid; place-items: center; width: 52px; height: 52px; border: 1px solid rgba(255,255,255,.7); border-radius: 50%; background: rgba(255,255,255,.52); color: var(--ink); font-size: 1.4rem; font-weight: 300; }
 .sky-count__n { font-size: clamp(3.4rem, 17vw, 5rem); line-height: .96; }
-.sky-card__u { font-size: .94rem; font-weight: 400; color: #fff; }
+.sky-card__u { font-size: .94rem; font-weight: 450; color: var(--ink-2); }
 .sky-foot { margin-top: 22px; display: grid; gap: 2px; }
-.sky-foot__k { font-size: .82rem; font-weight: 400; color: rgba(255,255,255,.9); }
+.sky-foot__k { font-size: .82rem; color: var(--ink-2); }
 .sky-foot__v { font-size: 1.6rem; font-weight: 300; letter-spacing: -.02em; }
-
-.look-sky .bar { background: rgba(160,196,228,.26); }
-.look-sky .bar__mark { background: rgba(255,255,255,.28); color: #fff; }
-.look-sky .bar__name, .look-sky .bar__name .muted { color: #fff; }
-.look-sky .bar__name .muted { opacity: .72; }
-.look-sky .ico { background: rgba(255,255,255,.24); border-color: rgba(255,255,255,.3); color: #fff; }
-.look-sky .tabs { background: rgba(70,110,150,.3); border: 1px solid rgba(255,255,255,.34); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); box-shadow: 0 14px 34px -18px rgba(30,52,80,.5); }
-.look-sky .tabs a { color: rgba(255,255,255,.86); }
-.look-sky .tabs a.is-on { background: #fff; color: #2B4A6B; }
-.look-sky .tabs .tabs__fab { background: #fff; color: #2B4A6B; }
-.look-sky .rail-nav a { color: rgba(255,255,255,.82); }
-.look-sky .rail-nav a:hover { background: rgba(255,255,255,.16); color: #fff; }
-.look-sky .rail-nav a.is-on { background: rgba(255,255,255,.3); color: #fff; }
-.look-sky .rail-nav a.is-on svg { color: #fff; }
-.look-sky .rail-nav hr { border-top-color: rgba(255,255,255,.26); }
-.look-sky .btn:not(.btn--ghost) { background: #fff; color: #2B4A6B; }
-.look-sky .btn--ghost { background: rgba(70,110,150,.18); color: #fff; border-color: rgba(255,255,255,.44); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }

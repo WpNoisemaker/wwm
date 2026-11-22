@@ -25,14 +25,16 @@
 /* The rose blob bleeding in from the right, and the sheet's grain. */
 .look-paper::after {
 	content: "";
-	position: fixed;
+	position: absolute;
 	inset: 0;
 	z-index: -1;
 	pointer-events: none;
-	background:
+	background-color: #F2F1EE;
+	background-repeat: no-repeat;
+	background-size: 100% 2400px, 100% 2400px;
+	background-image:
 		radial-gradient(44% 38% at 108% 30%, #F6C3D2 0%, rgba(246,195,210,0) 62%),
-		radial-gradient(40% 34% at 104% 72%, #F7CEDA 0%, rgba(247,206,218,0) 60%),
-		#F2F1EE;
+		radial-gradient(40% 34% at 104% 72%, #F7CEDA 0%, rgba(247,206,218,0) 60%);
 }
 .look-paper::before { opacity: .85; }
 
@@ -89,3 +91,40 @@
 .look-paper .btn:not(.btn--acid) { background: #17171A; color: #fff; }
 .look-paper .btn--acid { background: var(--acid); color: var(--acid-ink); }
 .look-paper .btn--acid { background: var(--acid); color: var(--acid-ink); }
+
+/*
+ * Homepage — the Superpower signature: a warm sheet, very round soft cards with almost no border,
+ * acid-yellow pills carrying the status words, and the big saturated mesh doing the heavy lifting.
+ */
+.look-paper { --band: #17171A; --band-ink: #FBFBF9; }
+
+.look-paper .hero__search,
+.look-paper .chart__row,
+.look-paper .mcard,
+.look-paper .rows .row {
+	background: #FBFBF9;
+	border: 0;
+	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
+	box-shadow: 0 1px 1px rgba(20,20,24,.03), 0 10px 26px -18px rgba(20,20,24,.22);
+}
+.look-paper .chart__row { border-radius: var(--r-pill); min-height: 66px; }
+/* The chart leader wears the acid pill, the way the reference flags its top reading. */
+.look-paper .chart__row--one { background: #fff; box-shadow: 0 2px 3px rgba(20,20,24,.04), 0 18px 40px -20px rgba(20,20,24,.3); }
+.look-paper .chart__row--one .chart__no { color: var(--acid-ink); -webkit-text-fill-color: var(--acid-ink); background-image: none; background-color: var(--acid); border-radius: 999px; width: 30px; height: 30px; display: grid; place-items: center; justify-self: center; font-size: 1rem; font-weight: 600; }
+.look-paper .chart__go { background: #17171A; border-color: transparent; color: var(--acid); }
+.look-paper .chart__pic { border-radius: 50%; }
+
+/* The wedding cards are this look's mesh tiles: tall, saturated, the caption sitting on the art. */
+.look-paper .wcard { background: none; border: 0; box-shadow: none; border-radius: var(--r-xl); }
+.look-paper .wcard__art { aspect-ratio: 4 / 5; border-radius: var(--r-xl); }
+.look-paper .wcard__body { position: absolute; inset: auto 0 0 0; padding: 34px 18px 18px; color: #fff; background: linear-gradient(to top, rgba(10,6,3,.92) 0%, rgba(10,6,3,.72) 34%, rgba(10,6,3,.28) 64%, transparent 92%); border-radius: 0 0 var(--r-xl) var(--r-xl); }
+.look-paper .wcard__body small { color: rgba(255,255,255,.82); }
+.look-paper .wcard__tier { background: var(--acid); color: var(--acid-ink); top: 14px; right: 14px; }
+
+.look-paper .pill--quiet { background: #FBFBF9; border: 0; box-shadow: 0 1px 2px rgba(20,20,24,.05); }
+.look-paper .chips .chip { background: #FBFBF9; border: 0; box-shadow: 0 1px 2px rgba(20,20,24,.05); }
+.look-paper .rows .row { border-radius: var(--r-pill); }
+.look-paper .row__v .pill { background: var(--acid); color: var(--acid-ink); }
+.look-paper .hero__stat-t b { font-size: 2rem; }
+.look-paper .hero__stat .pill { background: var(--acid); color: var(--acid-ink); }

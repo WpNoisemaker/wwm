@@ -13,10 +13,10 @@
 <link rel="stylesheet" href="<?= e(App::asset('assets/css/app.css')) ?>">
 <?php foreach (($css ?? []) as $sheet): ?><link rel="stylesheet" href="<?= e(App::asset('assets/css/' . $sheet . '.css')) ?>"><?php endforeach; ?>
 </head>
-<body<?= empty($bodyClass) ? '' : ' class="' . e($bodyClass) . '"' ?>>
+<body class="<?= e(trim(($bodyClass ?? '') . (empty($rail) ? '' : ' has-rail'))) ?>">
 <div class="shell">
 	<?php if (empty($bare)): ?><?= View::partial('partials/bar', get_defined_vars()) ?><?php endif; ?>
-	<?php if (empty($bare)): ?><?= View::partial('partials/rail', get_defined_vars()) ?><?php endif; ?>
+	<?php if (empty($bare) && !empty($rail)): ?><?= View::partial('partials/rail', get_defined_vars()) ?><?php endif; ?>
 	<main class="main" id="main"><?= $content ?></main>
 	<?php if (empty($bare)): ?><?= View::partial('partials/tabs', get_defined_vars()) ?><?php endif; ?>
 </div>

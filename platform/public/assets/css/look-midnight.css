@@ -25,11 +25,13 @@
 /* The light in the room: a wide cool glow from the upper left falling to near-black. */
 .look-midnight::after {
 	content: "";
-	position: fixed;
+	position: absolute;
 	inset: 0;
 	z-index: -1;
 	pointer-events: none;
-	background:
+	background-repeat: no-repeat;
+	background-size: 100% 2000px, 100% 2000px, 100% 100%;
+	background-image:
 		radial-gradient(120% 90% at 12% -6%, #33406B 0%, rgba(51,64,107,0) 58%),
 		radial-gradient(90% 70% at 88% 18%, #1E2A4D 0%, rgba(30,42,77,0) 62%),
 		linear-gradient(168deg, #152041 0%, #0D1428 46%, #070B16 100%);
@@ -102,3 +104,38 @@
 .look-midnight .btn, .look-midnight .btn--acid { background: var(--acid); color: var(--acid-ink); border-color: transparent; }
 .look-midnight .btn--ghost { background: rgba(255,255,255,.07); color: var(--ink); border-color: var(--edge); }
 .look-midnight .btn--ghost { background: rgba(255,255,255,.07); color: var(--ink); border-color: var(--edge); }
+
+/*
+ * Homepage — the Flasks signature: dark glass squircles lit along their top edge, floating over a
+ * field that falls from lavender-grey at the top into near-black, with the colour coming only from
+ * the mesh art glowing through the glass.
+ */
+.look-midnight { --band: #F2F2F7; --band-ink: #121218; --r-lg: 28px; --r: 22px; }
+
+.look-midnight .hero__search,
+.look-midnight .chart__row,
+.look-midnight .wcard,
+.look-midnight .mcard,
+.look-midnight .rows .row {
+	background: rgba(255,255,255,.055);
+	-webkit-backdrop-filter: blur(28px) saturate(1.4);
+	backdrop-filter: blur(28px) saturate(1.4);
+	border: 1px solid rgba(255,255,255,.1);
+	/* The hairline of light along the top edge is what makes these read as glass, not as boxes. */
+	box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 24px 50px -30px rgba(0,0,0,.95);
+}
+.look-midnight .chart__row--one { background: rgba(255,255,255,.09); }
+/* The art is the only saturated thing in the look, so it is allowed to glow past its own edge. */
+.look-midnight .chart__pic { box-shadow: 0 0 26px -6px color-mix(in srgb, var(--a) 70%, transparent); }
+.look-midnight .wcard__art { box-shadow: inset 0 -40px 60px -40px rgba(0,0,0,.6); }
+.look-midnight .chart__go { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.14); color: var(--ink); }
+.look-midnight .wcard__tier { background: rgba(10,12,20,.72); color: #EEF2FA; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.look-midnight .pill--quiet { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); color: var(--ink-2); }
+.look-midnight .chips .chip { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); }
+.look-midnight .chips .chip em { background: rgba(255,255,255,.1); }
+.look-midnight .mcard__art::after { box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); }
+.look-midnight .hero__search input { color: var(--ink); }
+.look-midnight .hero__search input::placeholder { color: var(--faint); }
+/* The band inverts to a light panel here, so its buttons must invert with it. */
+.look-midnight .cta .btn--acid { background: #121218; color: #F2F2F7; }
+.look-midnight .cta .btn--ghost { background: rgba(18,18,24,.07); color: #121218; border-color: rgba(18,18,24,.16); }
