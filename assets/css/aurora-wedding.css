@@ -178,7 +178,9 @@
 }
 .wpage--t-premium .w-sec { position: relative; }
 /* Section headings on a premium page get a hairline rule in the couple's accent. */
-.wpage--t-premium .w-sec > .wrap > h2::after {
+.wpage--t-premium .w-sec > .wrap > h2::after,
+.wpage--t-premium .w-sec > h2::after,
+.wpage--t-premium .w-title::after {
 	content: "";
 	display: block;
 	width: 52px;
@@ -187,7 +189,7 @@
 	border-radius: 2px;
 	background: linear-gradient(90deg, var(--w-accent), transparent);
 }
-.wpage--t-premium .center > h2::after, .wpage--t-premium .w-sec--center h2::after { margin-inline: auto; background: linear-gradient(90deg, transparent, var(--w-accent), transparent); }
+.wpage--t-premium .center > h2::after, .wpage--t-premium .w-sec--center h2::after, .wpage--t-premium .w-head .w-title::after { margin-inline: auto; background: linear-gradient(90deg, transparent, var(--w-accent), transparent); }
 /* Premium cards lift. */
 .wpage--t-premium a.card:hover, .wpage--t-premium a.w-card:hover { transform: translateY(-4px); box-shadow: var(--w-shadow-2); }
 /* And they arrive. */

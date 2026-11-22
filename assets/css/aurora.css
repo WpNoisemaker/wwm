@@ -193,7 +193,7 @@
 	--p-raffia: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cg stroke='%23160E22' stroke-opacity='.055' stroke-width='1'%3E%3Cpath d='M0 6h12M12 18h12M6 0v12M18 12v12'/%3E%3C/g%3E%3C/svg%3E");
 
 	/* Light-on-dark versions, for dark glass and noir meshes. */
-	--p-adire-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='112' height='112'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-opacity='.1' stroke-width='1.1'%3E%3Ccircle cx='28' cy='28' r='19'/%3E%3Ccircle cx='28' cy='28' r='12'/%3E%3Ccircle cx='84' cy='84' r='19'/%3E%3Ccircle cx='84' cy='84' r='12'/%3E%3C/g%3E%3Cg fill='%23FFD426' fill-opacity='.2'%3E%3Ccircle cx='84' cy='28' r='2.6'/%3E%3Ccircle cx='28' cy='84' r='2.6'/%3E%3Ccircle cx='56' cy='56' r='2'/%3E%3C/g%3E%3C/svg%3E");
+	--p-adire-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='112' height='112'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-opacity='.05' stroke-width='1'%3E%3Ccircle cx='28' cy='28' r='19'/%3E%3Ccircle cx='28' cy='28' r='12'/%3E%3Ccircle cx='84' cy='84' r='19'/%3E%3Ccircle cx='84' cy='84' r='12'/%3E%3C/g%3E%3Cg fill='%23FFD426' fill-opacity='.1'%3E%3Ccircle cx='84' cy='28' r='2.6'/%3E%3Ccircle cx='28' cy='84' r='2.6'/%3E%3Ccircle cx='56' cy='56' r='2'/%3E%3C/g%3E%3C/svg%3E");
 	--p-uli-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-opacity='.11' stroke-width='1.2' stroke-linecap='round'%3E%3Cpath d='M18 70c0-16 13-29 29-29s29 13 29 29-10 22-21 22-16-8-16-16 6-13 12-13 9 4 9 9'/%3E%3Cpath d='M92 24c14 6 22 20 22 35M118 86c-10 12-24 18-39 18'/%3E%3Cpath d='M96 108c6-6 6-16 0-22M110 46c-7 3-11 11-9 19'/%3E%3C/g%3E%3C/svg%3E");
 	--p-adinkra-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-opacity='.11' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M30 20v20M20 30h20M24 24l12 12M36 24 24 36'/%3E%3Cpath d='M78 18a12 12 0 0 1 0 24 12 12 0 0 0 0 24'/%3E%3Cpath d='M18 78a10 10 0 0 1 20 0 10 10 0 0 0 20 0'/%3E%3Ccircle cx='90' cy='88' r='9'/%3E%3C/g%3E%3C/svg%3E");
 
@@ -221,13 +221,14 @@
 @media (min-width: 1100px) { :root { --gutter: 44px; } }
 
 /* Tones become mesh-aware: a toned surface gets a gradient, not a flat pastel. */
-.tone-butter, .tone-marigold { --tone: var(--sun); --tone-mesh: var(--mesh-sun); --tone-ink: var(--ink); }
+.tone-butter, .tone-marigold { --tone: var(--sun); --tone-mesh: var(--mesh-sun); --tone-ink: #160E22; }
 .tone-cream { --tone: var(--sun-wash); --tone-mesh: none; --tone-ink: var(--ink); }
+.tone-white { --tone: #fff; --tone-mesh: none; --tone-ink: #160E22; }
 .tone-white { --tone: #fff; --tone-mesh: none; --tone-ink: var(--ink); }
 .tone-lavender { --tone: var(--peri); --tone-mesh: var(--mesh-dusk); --tone-ink: #fff; }
 .tone-sky, .tone-indigo { --tone: var(--peri); --tone-mesh: var(--mesh-dusk); --tone-ink: #fff; }
-.tone-mint, .tone-leaf { --tone: var(--lime); --tone-mesh: var(--mesh-reef); --tone-ink: var(--ink); }
-.tone-coral, .tone-terracotta { --tone: var(--peach); --tone-mesh: var(--mesh-blush); --tone-ink: #fff; }
+.tone-mint, .tone-leaf { --tone: var(--lime); --tone-mesh: var(--mesh-reef); --tone-ink: #10281C; }
+.tone-coral, .tone-terracotta { --tone: var(--peach); --tone-mesh: var(--mesh-blush); --tone-ink: #3A0F22; }
 .tone-jacaranda, .tone-aubergine { --tone: var(--plum); --tone-mesh: var(--mesh-noir); --tone-ink: #fff; }
 
 /* ---------------------------------------------------------------- Dark mode
@@ -674,6 +675,10 @@ a.card:hover, a.wd-card:hover, a.vendor-card:hover, a.listing-card:hover, a.post
 .stat small, .g-stat small { color: inherit; opacity: .66; font-size: .82rem; }
 .stat--mesh { background: var(--mesh-sun); color: #160E22; border-color: transparent; }
 .stat > span, .g-stat > span { opacity: 1; color: var(--on-mesh-soft, var(--muted)); font-weight: 600; }
+/* A toned or mesh tile paints its own text, so it reads the same in light and dark. */
+.stat[class*="tone-"], .stat--mesh, .stat--noir { color: var(--tone-ink, #160E22); }
+.stat[class*="tone-"] :is(span, b, small), .stat--mesh :is(span, b, small) { color: inherit; }
+.stat[class*="tone-"] :is(span, small), .stat--mesh :is(span, small) { opacity: .68; }
 .stat--noir { background: var(--mesh-noir); color: #F3F0F8; border-color: transparent; }
 
 .meter { height: 8px; border-radius: var(--r-pill); background: var(--hair); overflow: hidden; box-shadow: none; border: 0; }
@@ -1580,3 +1585,9 @@ input[type="checkbox"], input[type="radio"], .check input, .checks input, .table
 .prose img, .post__cover { border: 1px solid var(--edge); border-radius: var(--r-card); box-shadow: var(--shadow-1); }
 .post__head { background: none; border: 0; }
 .post__cta { background: var(--mesh-sun); color: #160E22; border: 0; border-radius: var(--r-pane); }
+
+/* How we reach you — only ever rendered when HQ has a channel live. */
+.notify-pick { margin: 4px 0 0; padding: 16px 18px; border: 1px solid var(--edge); border-radius: var(--r-card); background: var(--glass-2); }
+.notify-pick legend { padding: 0 8px; color: var(--muted); font: 600 .72rem/1.2 var(--font-body); letter-spacing: .1em; text-transform: uppercase; }
+.notify-pick .check { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; }
+.notify-pick .hint { margin: 10px 0 0; }

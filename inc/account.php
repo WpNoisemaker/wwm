@@ -176,6 +176,17 @@ function wd_account_save() {
 		);
 		update_user_meta( $uid, 'wd_phone', sanitize_text_field( $p['phone'] ?? '' ) );
 		update_user_meta( $uid, 'wd_country', sanitize_text_field( $p['country'] ?? '' ) );
+		// Only channels this site has actually set up can be chosen, whatever is posted.
+		if ( wd_notify_has_choice() ) {
+			$want = array();
+			foreach ( (array) ( $p['notify'] ?? array() ) as $ch ) {
+				$ch = sanitize_key( $ch );
+				if ( in_array( $ch, array( 'whatsapp', 'sms' ), true ) && wd_notify_on( $ch ) ) {
+					$want[] = $ch;
+				}
+			}
+			update_user_meta( $uid, 'wd_notify', array_values( array_unique( $want ) ) );
+		}
 		wd_back( 'profile' );
 	}
 	if ( 'password' === $part ) {

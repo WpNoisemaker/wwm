@@ -24,9 +24,13 @@
 	box-shadow: var(--shadow-2), var(--inset-top);
 }
 /* HQ runs dark, so the owner always knows which side of the product they are on. */
+/* HQ runs dark. */
 .app--hq .app__side {
-	background: var(--glass-dark) var(--p-adire-light);
-	background-blend-mode: normal;
+	/* The cloth is barely there on the rail: it should read as material, never as pattern. */
+	background-color: var(--glass-dark);
+	background-image: var(--p-adire-light);
+	background-size: 190px 190px;
+	opacity: 1;
 	border-color: var(--edge-dark);
 	color: #F3F0F8;
 	box-shadow: var(--shadow-3);

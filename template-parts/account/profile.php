@@ -20,6 +20,29 @@ $wd_u = $args['user'];
 		<?php wd_field( 'current', __( 'Current password (only needed to change your email)', 'wwmd' ), '', 'password', 'autocomplete="current-password"' ); ?>
 		<?php wd_field( 'phone', __( 'WhatsApp number', 'wwmd' ), get_user_meta( $wd_u->ID, 'wd_phone', true ), 'tel' ); ?>
 		<?php wd_field( 'country', __( 'Country you live in', 'wwmd' ), get_user_meta( $wd_u->ID, 'wd_country', true ) ); ?>
+		<?php
+		/*
+		 * How we reach you. This whole block only exists once HQ has switched a channel on and set
+		 * it up, so on a site that has not done that there is nothing here to choose and nobody is
+		 * ever asked about WhatsApp or SMS.
+		 */
+		if ( wd_notify_has_choice() ) :
+			$wd_want = wd_notify_prefs( $wd_u->ID );
+			?>
+			<fieldset class="span-all notify-pick">
+				<legend><?php esc_html_e( 'How we reach you', 'wwmd' ); ?></legend>
+				<label class="check"><input type="checkbox" checked disabled> <?php esc_html_e( 'Email — always on', 'wwmd' ); ?></label>
+				<?php foreach ( array( 'whatsapp', 'sms' ) as $wd_ch ) : ?>
+					<?php if ( wd_notify_on( $wd_ch ) ) : ?>
+						<label class="check">
+							<input type="checkbox" name="notify[]" value="<?php echo esc_attr( $wd_ch ); ?>" <?php checked( in_array( $wd_ch, $wd_want, true ) ); ?>>
+							<?php echo esc_html( wd_notify_channels()[ $wd_ch ]['label'] ); ?>
+						</label>
+					<?php endif; ?>
+				<?php endforeach; ?>
+				<p class="hint"><?php esc_html_e( 'We only use your number for the things you tick here. Leave them all unticked and we will only ever email you.', 'wwmd' ); ?></p>
+			</fieldset>
+		<?php endif; ?>
 		<button class="btn btn--ink" type="submit"><?php esc_html_e( 'Save', 'wwmd' ); ?></button>
 		<?php
 		$wd_links = array();
