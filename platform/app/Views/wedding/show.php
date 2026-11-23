@@ -88,10 +88,11 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		<section class="wrap w-cd-wrap">
 			<p class="w-cd-k">Counting down to <?= e($next['label']) ?></p>
 			<div class="cd" data-countdown="<?= e(date('c', (int) strtotime((string) $next['when']))) ?>" aria-label="Countdown to <?= e($next['label']) ?>">
-				<div class="tile"><?= dots((string) $left['d']) ?><span class="k">Days</span></div>
-				<div class="tile"><?= dots(str_pad((string) $left['h'], 2, '0', STR_PAD_LEFT)) ?><span class="k">Hours</span></div>
-				<div class="tile"><?= dots(str_pad((string) $left['m'], 2, '0', STR_PAD_LEFT)) ?><span class="k">Minutes</span></div>
-				<div class="tile is-on"><?= dots(str_pad((string) $left['s'], 2, '0', STR_PAD_LEFT)) ?><span class="k">Seconds</span></div>
+				<?php $cdn = static fn (string $k, string $v): string => (string) preg_replace('/^<span /', '<span data-cd="' . $k . '" ', dots($v), 1); ?>
+				<div class="tile"><?= $cdn('d', (string) $left['d']) ?><span class="k">Days</span></div>
+				<div class="tile"><?= $cdn('h', str_pad((string) $left['h'], 2, '0', STR_PAD_LEFT)) ?><span class="k">Hours</span></div>
+				<div class="tile"><?= $cdn('m', str_pad((string) $left['m'], 2, '0', STR_PAD_LEFT)) ?><span class="k">Minutes</span></div>
+				<div class="tile is-on"><?= $cdn('s', str_pad((string) $left['s'], 2, '0', STR_PAD_LEFT)) ?><span class="k">Seconds</span></div>
 			</div>
 		</section>
 	<?php elseif (!empty($w['wed_date']) && strtotime((string) $w['wed_date']) < time()): ?>

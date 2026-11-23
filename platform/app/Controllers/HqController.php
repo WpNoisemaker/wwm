@@ -627,6 +627,8 @@ final class HqController
                          ['button' => ['Choose a new password', $u . 'reset/sample'], 'why' => 'You get this email because someone asked to reset the password on this account.']],
             'verify' => ['Confirm your email', "Hello Ada,\n\nPlease confirm this is your email address by opening this link:\n\n{$u}verify/sample\n\nIt works once and expires in 3 days. If you did not make an account, ignore this email.",
                          ['button' => ['Confirm my email', $u . 'verify/sample'], 'title' => 'Confirm your email, Ada']],
+            'rsvp'   => ['You are on the guest list for Chidi & Amaka’s wedding', "Hello Ada,\n\nChidi & Amaka have approved your RSVP. You are on the guest list for 2 people.\n\n[[wwm-code]]\n\nShow this code at the entrance. It is for you and your party only, so please do not share it.\n\nThe programme, venue and dress code are on their page:\n{$u}w/chidi-amaka/pass/AB7Q4K",
+                         ['button' => ['Open your pass', $u . 'w/chidi-amaka/pass/AB7Q4K'], 'code' => 'AB7-Q4K', 'title' => 'You are on the guest list', 'why' => 'You get this email because you replied to Chidi & Amaka’s invitation.']],
             'paused' => ['Your shop is paused while we verify Your Business', "Hello,\n\nWe have paused Your Business on Wedding Websites & More while we verify the business by hand. Your listings are hidden until then.\n\nTo verify, reply to this email with: your full name, a phone number we can call, your business address, and a photo of a government ID or your CAC certificate. We will look at it and let you know.", []],
         ];
         $k = (string) ($_GET['k'] ?? '');

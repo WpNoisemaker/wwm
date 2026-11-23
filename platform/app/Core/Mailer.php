@@ -135,6 +135,10 @@ final class Mailer
                 $html .= $p(implode('<br>', array_map([self::class, 'inline'], $rows)));
             }
         }
+        if (!empty($o['code'])) {
+            $code = View::partial('emails/code', ['code' => (string) $o['code'], 'label' => (string) ($o['code_label'] ?? 'Your access code')]);
+            $html = str_contains($html, '[[wwm-code]]') ? str_replace('<p style="margin:0 0 16px;">[[wwm-code]]</p>', $code, $html) : $code . $html;
+        }
         if ($button && !$placed) {
             $html .= View::partial('emails/button', ['button' => $button]);
         }
