@@ -1,3 +1,10 @@
+<?php $override = tbody('legal.body.cookies', ''); if ($override !== ''): ?>
+<article class="page wrap prose">
+	<h1 class="prose__h">Cookie policy</h1>
+	<?= View::partial('page/_policies', ['now' => 'cookies']) ?>
+	<?= Blog::toHtml($override) ?>
+</article>
+<?php return; endif; ?>
 <article class="page wrap prose">
 	<span class="eyebrow">Last updated 23 November 2026</span>
 	<h1 class="prose__h">Cookie policy</h1>

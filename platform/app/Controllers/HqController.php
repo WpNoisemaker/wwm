@@ -4,10 +4,11 @@ declare(strict_types=1);
 /** Staff only. Everything here reads the real tables; nothing is estimated. */
 final class HqController
 {
-    private function gate(): void
+    /** HQ is for staff and the owner; each area needs its own permission, which the owner gives. */
+    private function gate(string $perm = ''): void
     {
         Auth::wall();
-        if (!Auth::is('staff') && !Auth::is('owner')) {
+        if ((!Auth::is('staff') && !Auth::is('owner')) || ($perm !== '' && !Staff::can($perm))) {
             http_response_code(403);
             View::render('errors/403', ['title' => 'Not for you']);
             exit;
@@ -41,7 +42,7 @@ final class HqController
 
     public function weddings(): void
     {
-        $this->gate();
+        $this->gate('weddings');
         $this->show('weddings', [
             'title' => 'Weddings',
             'rows'  => Db::all(
@@ -53,7 +54,7 @@ final class HqController
 
     public function people(): void
     {
-        $this->gate();
+        $this->gate('people');
         $this->show('people', [
             'title' => 'People',
             'rows'  => Db::all('SELECT * FROM users ORDER BY id DESC LIMIT 200'),
@@ -62,7 +63,7 @@ final class HqController
 
     public function money(): void
     {
-        $this->gate();
+        $this->gate('money');
         $this->show('money', [
             'title'    => 'Money',
             'payments' => Db::all('SELECT * FROM payments ORDER BY created_at DESC LIMIT 60'),
@@ -74,7 +75,7 @@ final class HqController
 
     public function settings(): void
     {
-        $this->gate();
+        $this->gate('settings');
         if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             Guard::must();
             foreach (['pro_price', 'premium_price', 'fee_gift', 'email', 'whatsapp'] as $k) {
@@ -183,7 +184,7 @@ final class HqController
      */
     public function testMail(): void
     {
-        $this->gate();
+        $this->gate('settings');
         Guard::must();
         $me = Auth::user();
         $ok = Mailer::send(
@@ -205,7 +206,7 @@ final class HqController
 
     public function blog(): void
     {
-        $this->gate();
+        $this->gate('blog');
         Blog::ensure();
         $this->show('blog', [
             'title' => 'Blog',
@@ -216,7 +217,7 @@ final class HqController
     /** Write, edit, schedule, publish or delete a post. */
     public function blogEdit(string $id = ''): void
     {
-        $this->gate();
+        $this->gate('blog');
         Blog::ensure();
         $p = $id !== '' ? Db::one('SELECT * FROM posts WHERE id = ?', [(int) $id]) : null;
         if ($id !== '' && !$p) {
@@ -296,5 +297,200 @@ final class HqController
             exit;
         }
         $this->show('blog-edit', ['title' => $p ? 'Edit post' : 'New post', 'p' => $p]);
+    }
+
+    /* --------------------------------------------------------------------------- staff */
+
+    /** The owner adds staff, picks what each may do, changes it, or takes someone off staff. */
+    public function staff(): void
+    {
+        $this->gate();
+        if (!Auth::is('owner')) {
+            http_response_code(403);
+            View::render('errors/403', ['title' => 'Not for you']);
+            exit;
+        }
+        Staff::table();
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+            Guard::must();
+            $do = (string) ($_POST['do'] ?? '');
+            $perms = array_keys(array_filter((array) ($_POST['perm'] ?? [])));
+            if ($do === 'add') {
+                $email = strtolower(trim((string) ($_POST['email'] ?? '')));
+                $name = mb_substr(trim((string) ($_POST['name'] ?? '')), 0, 120);
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    Guard::flash('bad', 'That email does not look right.');
+                    header('Location: ' . App::url('/hq/staff'));
+                    exit;
+                }
+                $u = Db::one('SELECT * FROM users WHERE email = ?', [$email]);
+                if ($u && (string) $u['role'] === 'owner') {
+                    Guard::flash('bad', 'That is the owner account, which can already do everything.');
+                    header('Location: ' . App::url('/hq/staff'));
+                    exit;
+                }
+                $new = !$u;
+                $uid = $u ? (int) $u['id'] : (int) Db::insert('users', ['email' => $email, 'name' => $name !== '' ? $name : $email, 'role' => 'staff', 'pass' => '']);
+                if ($u) {
+                    Db::update('users', ['role' => 'staff'], 'id = ?', [$uid]);
+                }
+                Staff::set($uid, $perms);
+                // A new person sets their own password from a link; nobody else ever knows it.
+                $tok = bin2hex(random_bytes(32));
+                Db::run("INSERT INTO tokens (user_id, kind, token, expires_at) VALUES (?, 'reset', ?, DATE_ADD(NOW(), INTERVAL 7 DAY))", [$uid, $tok]);
+                $link = App::url('/reset/' . $tok);
+                $sent = Mailer::send($email, 'You have been added to the Wedding Websites & More team',
+                    "Hello" . ($name !== '' ? ' ' . $name : '') . ",\n\nYou now have staff access to Wedding Websites & More.\n"
+                    . ($new ? "Choose your password here (the link works once, for 7 days):\n\n" : "Sign in as usual, or set a new password here (the link works once, for 7 days):\n\n")
+                    . $link . "\n\nThen open HQ: " . App::url('/hq') . "\n\n— Wedding Websites & More\n");
+                Guard::flash('ok', ($new ? 'Added. ' : 'Moved onto staff. ') . ($sent ? 'We emailed them a link to set their password.' : 'Email could not be sent from this server, so send them this link yourself: ' . $link));
+            } elseif ($do === 'save') {
+                $uid = (int) ($_POST['id'] ?? 0);
+                if (Db::val("SELECT 1 FROM users WHERE id = ? AND role = 'staff'", [$uid])) {
+                    Staff::set($uid, $perms);
+                    Guard::flash('ok', 'Access updated.');
+                }
+            } elseif ($do === 'remove') {
+                $uid = (int) ($_POST['id'] ?? 0);
+                if (Db::val("SELECT 1 FROM users WHERE id = ? AND role = 'staff'", [$uid])) {
+                    Db::update('users', ['role' => 'member'], 'id = ?', [$uid]);
+                    Db::run('DELETE FROM staff_perms WHERE user_id = ?', [$uid]);
+                    Guard::flash('ok', 'Taken off staff. Their account stays, without HQ.');
+                }
+            }
+            header('Location: ' . App::url('/hq/staff'));
+            exit;
+        }
+        $rows = Staff::all();
+        foreach ($rows as &$r) {
+            $r['perms'] = Staff::perms((int) $r['id']);
+        }
+        unset($r);
+        $this->show('staff', ['title' => 'Staff', 'rows' => $rows]);
+    }
+
+    /* ------------------------------------------------------------------- the site's words */
+
+    /** Edit the words and pictures on any page of the site. Empty means the standard text. */
+    public function content(): void
+    {
+        $this->gate('content');
+        Content::table();
+        $page = isset(Content::PAGES[$_GET['page'] ?? '']) ? (string) $_GET['page'] : 'home';
+        $fields = Content::fields($page);
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+            Guard::must();
+            $changed = 0;
+            foreach ($fields as $f) {
+                $id = str_replace('.', '__', $f['key']);
+                if ($f['type'] === 'timg') {
+                    if (!empty($_POST['reset'][$id])) {
+                        Content::set($f['key'], '');
+                        $changed++;
+                    } elseif (!empty($_FILES['img']['name'][$id])) {
+                        $file = ['name' => $_FILES['img']['name'][$id], 'type' => $_FILES['img']['type'][$id], 'tmp_name' => $_FILES['img']['tmp_name'][$id],
+                                 'error' => $_FILES['img']['error'][$id], 'size' => $_FILES['img']['size'][$id]];
+                        $path = Images::store($file, 'site');
+                        if ($path === null) {
+                            Guard::flash('bad', 'One of the pictures could not be used. Try a JPEG or PNG under 12 MB.');
+                        } else {
+                            Content::set($f['key'], $path);
+                            $changed++;
+                        }
+                    }
+                    continue;
+                }
+                if (!array_key_exists($id, (array) ($_POST['v'] ?? []))) {
+                    continue;
+                }
+                $val = str_replace("\r\n", "\n", trim((string) $_POST['v'][$id]));
+                $now = Content::get($f['key'], $f['default']);
+                if ($val === $now) {
+                    continue;
+                }
+                // Typing the standard text back, or clearing the box, returns to the standard text.
+                Content::set($f['key'], $val === $f['default'] ? '' : mb_substr($val, 0, 60000));
+                $changed++;
+            }
+            Guard::flash('ok', $changed ? 'Saved. ' . $changed . ' change' . ($changed === 1 ? '' : 's') . ' are live.' : 'Nothing changed.');
+            header('Location: ' . App::url('/hq/content?page=' . $page));
+            exit;
+        }
+        $this->show('content', ['title' => 'Site content', 'page' => $page, 'fields' => $fields]);
+    }
+
+    /* ----------------------------------------------------------------------- Google Drive */
+
+    /** Settings for Google Drive: the app's keys, full or app-made folders only, the parent folder. */
+    public function drive(): void
+    {
+        $this->gate('settings');
+        Guard::must();
+        $do = (string) ($_POST['do'] ?? '');
+        $put = static fn (string $k, string $v) => Db::run('INSERT INTO settings (k, v) VALUES (?, ?) ON DUPLICATE KEY UPDATE v = VALUES(v)', [$k, $v]);
+        if ($do === 'keys') {
+            $put('drive_client_id', trim((string) ($_POST['client_id'] ?? '')));
+            if (trim((string) ($_POST['client_secret'] ?? '')) !== '') {
+                $put('drive_client_secret', trim((string) $_POST['client_secret']));
+            }
+            $scope = isset($_POST['full']) ? 'full' : 'file';
+            if ($scope !== Site::setting('drive_scope', 'file')) {
+                $put('drive_scope', $scope);
+                Drive::disconnect();   // the access Google gave was for the other choice
+            }
+            $parent = trim((string) ($_POST['parent'] ?? ''));
+            $put('drive_parent', $parent === '' ? '' : Drive::idFrom($parent));
+            Guard::flash('ok', Drive::connected() ? 'Saved.' : 'Saved. Now connect your Google account.');
+        } elseif ($do === 'disconnect') {
+            Drive::disconnect();
+            Guard::flash('ok', 'Google Drive disconnected. Photos wait on the server until it is connected again.');
+        } elseif ($do === 'sync') {
+            Drive::retry();
+            $n = Drive::sync(60);
+            Guard::flash('ok', $n . ' photo' . ($n === 1 ? '' : 's') . ' sent to Drive. Any still waiting belong to weddings without a folder yet.');
+        }
+        header('Location: ' . App::url('/hq/settings#drive'));
+        exit;
+    }
+
+    public function driveConnect(): void
+    {
+        $this->gate('settings');
+        if (!Drive::configured()) {
+            Guard::flash('bad', 'Add the Google client ID and secret first.');
+            header('Location: ' . App::url('/hq/settings#drive'));
+            exit;
+        }
+        header('Location: ' . Drive::authUrl());
+        exit;
+    }
+
+    public function driveCallback(): void
+    {
+        $this->gate('settings');
+        $err = isset($_GET['error']) ? 'Google said: ' . (string) $_GET['error'] : Drive::finish((string) ($_GET['code'] ?? ''), (string) ($_GET['state'] ?? ''));
+        Guard::flash($err === '' ? 'ok' : 'bad', $err === '' ? 'Google Drive is connected. Give each wedding its folder in Weddings.' : $err);
+        header('Location: ' . App::url('/hq/settings#drive'));
+        exit;
+    }
+
+    /** Give a wedding its folder: make one, or use one that already exists. */
+    public function driveFolder(string $id): void
+    {
+        $this->gate('weddings');
+        Guard::must();
+        $w = Db::one('SELECT * FROM weddings WHERE id = ?', [(int) $id]);
+        if (!$w) {
+            header('Location: ' . App::url('/hq/weddings'));
+            exit;
+        }
+        if (!Drive::connected()) {
+            Guard::flash('bad', 'Connect Google Drive in Settings first.');
+        } else {
+            $err = ($_POST['do'] ?? '') === 'create' ? Drive::create($w) : Drive::attach($w, (string) ($_POST['link'] ?? ''));
+            Guard::flash($err === '' ? 'ok' : 'bad', $err === '' ? Wedding::names($w) . ' now save their guests\' photos to Drive.' : $err);
+        }
+        header('Location: ' . App::url('/hq/weddings#w' . (int) $w['id']));
+        exit;
     }
 }

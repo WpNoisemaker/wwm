@@ -9,7 +9,7 @@ $names = ['a' => (string) $w['partner_a'], 'b' => (string) $w['partner_b']];
 ?>
 <?= View::partial('account/_head', ['h' => 'Who knows you best?', 'w' => $w, 'sub' => 'A quiz about each of you', 'now' => 'quiz']) ?>
 	<?php if (!Wedding::has($w, 'squad')): ?>
-		<p class="note"><?= icon('lock') ?><span>The quiz shows on your page from Pro. Write it now and it appears when you upgrade. <a href="<?= e(App::url('/pricing')) ?>">See the plans</a></span></p>
+		<p class="note"><?= icon('lock') ?><span>The quiz shows on your page from Pro. Write it now and it appears when you upgrade. </span><?= up_tag('pro', 'The quiz') ?></p>
 	<?php endif; ?>
 	<p class="help qe-intro">Ask what family and friends should know about each of you: a nickname, a favourite food, a hometown, a fear, a football club. Leave how you met out of it; this is about who knows each of you best. Guests pick the one they know, answer, and land on that person&rsquo;s leaderboard.</p>
 	<form method="post" class="qe-form">

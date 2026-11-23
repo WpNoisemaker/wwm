@@ -7,9 +7,9 @@ $order = ['free', 'pro', 'royal', 'pearl', 'garden', 'noir', 'coral', 'indigo', 
 ?>
 <div class="page wrap">
 	<header class="page-head">
-		<span class="eyebrow">One design system, thirteen ways to wear it</span>
-		<h1>Wedding page designs</h1>
-		<p class="lede">Free pages are Classic in black &amp; white. Pro pages are Classic in your colours. Premium pages choose any design.</p>
+		<span class="eyebrow"><?= t('templates.eyebrow.one-design-system-thirteen-ways', 'One design system, thirteen ways to wear it') ?></span>
+		<h1><?= t('templates.title.wedding-page-designs', 'Wedding page designs') ?></h1>
+		<p class="lede"><?= t('templates.intro.free-pages-are-classic-in', 'Free pages are Classic in black & white. Pro pages are Classic in your colours. Premium pages choose any design.') ?></p>
 	</header>
 	<div class="designs">
 		<?php foreach ($order as $k): if (!isset($samples[$k])) { continue; } $w = $samples[$k];

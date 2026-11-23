@@ -1,3 +1,10 @@
+<?php $override = tbody('legal.body.refunds', ''); if ($override !== ''): ?>
+<article class="page wrap prose">
+	<h1 class="prose__h">Refund policy</h1>
+	<?= View::partial('page/_policies', ['now' => 'refunds']) ?>
+	<?= Blog::toHtml($override) ?>
+</article>
+<?php return; endif; ?>
 <?php $mail = Site::setting('email', 'more@' . Share::host()); ?>
 <article class="page wrap prose">
 	<span class="eyebrow">Last updated 23 November 2026</span>

@@ -52,6 +52,30 @@ final class App
         return rtrim((string) self::config('url'), '/') . '/' . ltrim($path, '/');
     }
 
+    /**
+     * Run something after the page has gone to the visitor, so they never wait for it (emails,
+     * uploads to Google Drive). On hosts that cannot hand the page over early it simply runs last.
+     */
+    public static function later(callable $job): void
+    {
+        static $jobs = null;
+        if ($jobs === null) {
+            $jobs = [];
+            register_shutdown_function(static function () use (&$jobs): void {
+                ignore_user_abort(true);
+                if (function_exists('fastcgi_finish_request')) {
+                    fastcgi_finish_request();
+                } elseif (function_exists('litespeed_finish_request')) {
+                    litespeed_finish_request();
+                }
+                foreach ($jobs as $j) {
+                    try { $j(); } catch (Throwable $e) { error_log('[wwm] later: ' . $e->getMessage()); }
+                }
+            });
+        }
+        $jobs[] = $job;
+    }
+
     /** Cache-busted asset URL, so a year-long cache header is safe. */
     public static function asset(string $path): string
     {

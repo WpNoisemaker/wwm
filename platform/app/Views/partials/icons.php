@@ -4,7 +4,7 @@
  * − / + in the day reference; "s-" icons are the small solid glyphs from the night reference.
  */
 function icon(string $n, int $s = 0, string $cls = ''): string {
-    static $line = ['arrow', 'auto', 'back', 'bag', 'bell', 'book', 'bookmark', 'calendar', 'camera', 'chart', 'chat', 'check', 'clock', 'close', 'copy', 'download', 'eye', 'filter', 'flag', 'gear', 'gift', 'globe', 'grid', 'heart', 'home', 'image', 'info', 'link', 'live', 'lock', 'mail', 'map', 'menu', 'minus', 'moon', 'more', 'music', 'next', 'out', 'pen', 'people', 'phone', 'pin', 'play', 'plus', 'qr', 'reply', 'ring', 'search', 'share', 'shield', 'sliders', 'spark', 'star', 'store', 'sun', 'ticket', 'trash', 'trophy', 'up', 'user', 'wallet'];
+    static $line = ['arrow', 'auto', 'back', 'bag', 'bell', 'book', 'bookmark', 'calendar', 'camera', 'chart', 'chat', 'check', 'chev-down', 'chev-up', 'clock', 'close', 'copy', 'download', 'eye', 'filter', 'flag', 'gear', 'gift', 'globe', 'grid', 'heart', 'home', 'image', 'info', 'link', 'live', 'lock', 'mail', 'map', 'menu', 'minus', 'moon', 'more', 'music', 'next', 'out', 'pen', 'people', 'phone', 'pin', 'play', 'plus', 'qr', 'reply', 'ring', 'search', 'share', 'shield', 'sliders', 'spark', 'star', 'store', 'sun', 'ticket', 'trash', 'trophy', 'up', 'user', 'wallet'];
     static $solid = ['bag', 'book', 'bulb', 'calendar', 'camera', 'chat', 'crown', 'eye', 'gift', 'globe', 'heart', 'live', 'lock', 'music', 'pin', 'power', 'qr', 'ring', 'shield', 'spark', 'square', 'store', 'users', 'wallet', 'warning'];
     static $alias = ['rings' => 'ring', 'cash' => 'wallet', 'talk' => 'chat', 'cal' => 'calendar', 'cam' => 'camera', 'x' => 'close'];
     $isSolid = str_starts_with($n, 's-');
@@ -58,11 +58,13 @@ function photo(?string $path, string $alt = '', bool $eager = false, string $siz
     if (str_starts_with($path, 'wp:')) {
         return '';
     }
+    if (str_starts_with($path, 'wp-content/uploads/')) {
+        // The importer keeps WordPress's own layout (2025/09/file.jpg); the files live in assets/uploads,
+        // so they are treated like every other upload: checked, and given fast copies.
+        $path = 'uploads/' . substr($path, strlen('wp-content/uploads/'));
+    }
     if (str_starts_with($path, 'http') || str_starts_with($path, '/')) {
         $src = $path;
-    } elseif (str_starts_with($path, 'wp-content/uploads/')) {
-        // The importer keeps WordPress's own layout (2025/09/file.jpg); the files live in assets/uploads.
-        $src = App::asset('assets/uploads/' . substr($path, strlen('wp-content/uploads/')));
     } elseif (str_starts_with($path, 'wp-content/')) {
         $src = App::url('/' . $path);
     } else {
@@ -88,6 +90,11 @@ function photo(?string $path, string $alt = '', bool $eager = false, string $siz
                 ? '<source type="image/webp" srcset="' . $url($stem . '-640.webp') . ' 640w, ' . $url($stem . '.webp') . ' 1600w" sizes="' . e($sizes) . '">'
                 : '';
             return '<picture>' . $webp . '<img src="' . $url($path) . '" srcset="' . $url($stem . '-640.jpg') . ' 640w, ' . $url($path) . ' 1600w" sizes="' . e($sizes) . '" alt="' . e($alt) . '"' . $lazy . $fail . '></picture>';
+        }
+        // No fast copies yet: show this one now, and make them once the page has gone out.
+        if ($stem !== $path) {
+            $file = $disk . $path;
+            App::later(static function () use ($file): void { Images::variants($file); });
         }
         return '<img src="' . $url($path) . '" alt="' . e($alt) . '"' . $lazy . $fail . '>';
     }

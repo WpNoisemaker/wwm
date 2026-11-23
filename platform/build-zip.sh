@@ -19,6 +19,8 @@ rsync -a \
 	--exclude 'build-zip.sh' \
 	--exclude 'smoke.php' \
 	--exclude 'config/config.php' \
+	--exclude 'public/assets/uploads/*' \
+	--exclude 'storage/drive' \
 	--exclude '*.log' \
 	--exclude '.DS_Store' \
 	--exclude '._*' \

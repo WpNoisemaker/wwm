@@ -7,7 +7,7 @@ declare(strict_types=1);
  */
 final class Guard
 {
-    private static function boot(): void
+    public static function boot(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start([

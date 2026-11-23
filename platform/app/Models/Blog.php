@@ -29,8 +29,8 @@ final class Blog
         if (!Db::val("SHOW COLUMNS FROM posts LIKE 'kind'")) {
             self::addColumns();
         }
-        if (Site::setting('blog_news_1', '') === '') {
-            self::firstNews();
+        if (Site::setting('blog_starter_2', '') === '') {
+            self::starter();
         }
     }
 
@@ -122,8 +122,9 @@ final class Blog
             }
             $first = $lines[0];
             if (preg_match('/^!\[([^\]]*)\]\(((?:https?:\/\/|\/|uploads\/)[^\s)]+)\)$/u', $first, $m)) {
-                $src = str_starts_with($m[2], 'uploads/') ? App::url('assets/' . $m[2]) : $m[2];
-                $out[] = '<figure><img src="' . e($src) . '" alt="' . e($m[1]) . '" loading="lazy">' . ($m[1] !== '' ? '<figcaption>' . e($m[1]) . '</figcaption>' : '') . '</figure>';
+                $img = str_starts_with($m[2], 'uploads/') ? photo($m[2], $m[1], false, '(min-width: 960px) 680px, 100vw')
+                    : '<img src="' . e($m[2]) . '" alt="' . e($m[1]) . '" loading="lazy" decoding="async" onerror="this.onerror=null;this.style.visibility=\'hidden\'">';
+                $out[] = '<figure>' . $img . ($m[1] !== '' ? '<figcaption>' . e($m[1]) . '</figcaption>' : '') . '</figure>';
             } elseif (str_starts_with($first, '### ')) {
                 $out[] = '<h3>' . $inline(substr($first, 4)) . '</h3>';
             } elseif (str_starts_with($first, '## ')) {
@@ -152,31 +153,31 @@ final class Blog
     }
 
     /**
-     * The first two news posts, about what the platform actually does now. Added once to every site,
-     * old or new; HQ can edit or delete them like any other post.
+     * The starter posts (db/blog/starter.php), written for search. Added to a site that does not
+     * have them, and brought up to date on one that does, but only where HQ has not edited the post.
      */
-    private static function firstNews(): void
+    private static function starter(): void
     {
-        Db::run("INSERT INTO settings (k, v) VALUES ('blog_news_1', '1') ON DUPLICATE KEY UPDATE v = '1'");
-        $posts = [
-            ['african-weddings-in-eleven-countries', 'African weddings in eleven countries, each with its own page',
-             'Nigeria, Ghana, Kenya, Rwanda and South Africa, and the families in the UK, the US, Canada, Australia, New Zealand and Dubai: every country now has its own listing.',
-             "Our weddings travel. The aso-ebi leaves Lagos for London, the uncles fly from Accra to Houston, and the livestream reaches Auckland at four in the morning. Wedding Websites & More now follows them.\n\n## A page for every country\n\nEvery country with a public wedding page now has its own listing: [the UK](/weddings/uk), [the US](/weddings/usa), [Canada](/weddings/canada), [Australia](/weddings/australia), [New Zealand](/weddings/new-zealand), [Dubai and the UAE](/weddings/dubai), [Ghana](/weddings/ghana), [Kenya](/weddings/kenya), [Rwanda](/weddings/rwanda), [South Africa](/weddings/south-africa) and [Nigeria](/weddings/nigeria). Each one shows the weddings coming up there, the cities, the plans and the vendors couples booked locally.\n\n## Gifts in your own currency\n\nA couple in London receives gifts in pounds, a couple in Nairobi in shillings, a couple in Toronto in Canadian dollars. Guests see the right sign and sensible amounts.\n\n## Prices in yours\n\nOn [pricing](/pricing), pick your currency and every plan price redraws. Plans are priced in naira; other currencies are a guide at today's rate.",
-             'photos/listing-dubai.jpg', date('Y-m-d H:i:s', time() - 3 * 86400)],
-            ['who-knows-them-best-quiz', 'Who knows them best? A quiz about each of you, with a leaderboard',
-             'Guests now pick the partner they know and answer that person\'s quiz. The best friend, the cousin and the colleague finally find out who really knows them.',
-             "Every family has someone who claims to know the bride best. Now there is a way to settle it.\n\n## How it works\n\nOn Pro, Premium and High Society pages, the couple writes a short quiz about each of them: the nickname at home, the food they always order, where they grew up, the football club, the thing they are secretly scared of. Not how they met; this is about who knows each of them.\n\nGuests open the page, tap the partner they know, answer, and see their score straight away. Every score goes on that partner's leaderboard, so the whole wedding can see who knows them best.\n\n## Writing yours\n\nIn your dashboard, open **Quiz**. Write up to eight questions for each of you, tick the right answer, and save. It appears on your page at once.\n\n## It counts towards the Buzz Chart\n\nEvery quiz played earns the couple buzz coins, more on higher plans. See [how each plan earns buzz](/rankings#coins).",
-             'photos/couple-dance.jpg', date('Y-m-d H:i:s', time() - 600)],
-        ];
-        foreach ($posts as [$slug, $title, $excerpt, $source, $cover, $when]) {
-            if (Db::val('SELECT 1 FROM posts WHERE slug = ?', [$slug])) {
+        Db::run("INSERT INTO settings (k, v) VALUES ('blog_starter_2', '1') ON DUPLICATE KEY UPDATE v = '1'");
+        $posts = require App::root() . '/db/blog/starter.php';
+        $now = date('Y-m-d H:i:s');
+        foreach ($posts as $slug => [$kind, $title, $metaTitle, $metaDesc, $excerpt, $cover, $daysAgo, $source]) {
+            $row = [
+                'title' => $title, 'meta_title' => $metaTitle, 'meta_desc' => $metaDesc, 'excerpt' => $excerpt,
+                'source' => $source, 'body' => self::toHtml($source), 'kind' => $kind, 'category' => self::KIND[$kind],
+                'author' => 'Wedding Websites & More', 'updated_at' => $now,
+            ];
+            $have = Db::one('SELECT id, source, published_at, updated_at, cover FROM posts WHERE slug = ?', [$slug]);
+            if (!$have) {
+                Db::insert('posts', $row + ['slug' => $slug, 'cover' => $cover, 'status' => 'live',
+                    'published_at' => date('Y-m-d H:i:s', time() - $daysAgo * 86400 - 600)]);
                 continue;
             }
-            Db::insert('posts', [
-                'slug' => $slug, 'title' => $title, 'excerpt' => $excerpt, 'source' => $source, 'body' => self::toHtml($source),
-                'cover' => $cover, 'category' => 'News', 'kind' => 'news', 'author' => 'Wedding Websites & More',
-                'status' => 'live', 'published_at' => $when, 'updated_at' => $when,
-            ]);
+            $untouched = trim((string) $have['source']) === '' || $have['updated_at'] === null
+                || strtotime((string) $have['updated_at']) <= strtotime((string) ($have['published_at'] ?? $now));
+            if ($untouched) {
+                Db::update('posts', $row + ((string) $have['cover'] === '' ? ['cover' => $cover] : []), 'id = ?', [$have['id']]);
+            }
         }
     }
 }

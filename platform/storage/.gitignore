@@ -1,0 +1,4 @@
+# Guests' photos waiting for Google Drive, and anything else the server keeps to itself.
+*
+!.htaccess
+!.gitignore

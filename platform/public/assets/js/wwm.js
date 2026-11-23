@@ -383,6 +383,56 @@
 		var i = d.querySelector('[data-photo-input]'); if (i) { e.preventDefault(); i.closest('form').scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(function () { i.click(); }, 450); }
 	});
 
+	/* ---------- locked on this plan: the Pro / Premium tag opens the upgrade sheet ---------- */
+	d.addEventListener('click', function (e) {
+		var u = e.target.closest('[data-upgrade]'); if (!u) { return; }
+		var sheet = d.getElementById('upgrade'); if (!sheet) { return; }
+		e.preventDefault();
+		var plan = u.getAttribute('data-upgrade') === 'premium' ? 'premium' : 'pro', name = plan === 'premium' ? 'Premium' : 'Pro';
+		var feature = u.getAttribute('data-feature') || 'This';
+		var tag = sheet.querySelector('[data-up-tag]'); tag.className = 'up-tag up-tag--lg up-tag--' + plan; tag.querySelector('span').textContent = name;
+		sheet.querySelector('[data-up-title]').textContent = feature + ' comes with ' + name;
+		sheet.querySelectorAll('[data-up-list]').forEach(function (l) { l.hidden = l.getAttribute('data-up-list') !== plan; });
+		sheet.querySelector('[data-up-cta]').textContent = 'Get ' + name;
+		W.WWM.open('upgrade');
+	});
+
+	/* ---------- the order of a wedding page's sections: arrows, or drag the grip ---------- */
+	var secList = d.querySelector('[data-sec-list]');
+	if (secList && !secList.hasAttribute('data-locked')) {
+		var secMove = function (li, dir) {
+			var to = dir < 0 ? li.previousElementSibling : li.nextElementSibling;
+			if (!to || !to.hasAttribute('data-key')) { return; }
+			if (dir < 0) { secList.insertBefore(li, to); } else { secList.insertBefore(to, li); }
+			li.classList.remove('is-moved'); void li.offsetWidth; li.classList.add('is-moved'); buzz();
+		};
+		secList.addEventListener('click', function (e) {
+			var b = e.target.closest('[data-sec-up],[data-sec-down]'); if (!b) { return; }
+			var li = b.closest('[data-key]'); secMove(li, b.hasAttribute('data-sec-up') ? -1 : 1);
+			b.focus();
+		});
+		secList.addEventListener('change', function (e) {
+			var c = e.target.closest('input[type=checkbox]'); if (!c) { return; }
+			c.closest('[data-key]').classList.toggle('is-off', !c.checked);
+		});
+		var drag = null;
+		secList.addEventListener('pointerdown', function (e) {
+			var g = e.target.closest('.sec-item__grip'); if (!g) { return; }
+			drag = g.closest('[data-key]'); drag.classList.add('is-dragging'); g.setPointerCapture(e.pointerId); e.preventDefault();
+		});
+		secList.addEventListener('pointermove', function (e) {
+			if (!drag) { return; }
+			var items = [].slice.call(secList.querySelectorAll('[data-key]')).filter(function (x) { return x !== drag; });
+			for (var k = 0; k < items.length; k++) {
+				var r = items[k].getBoundingClientRect();
+				if (e.clientY < r.top + r.height / 2) { if (items[k].previousElementSibling !== drag) { secList.insertBefore(drag, items[k]); buzz(); } return; }
+			}
+			var last = items[items.length - 1]; if (last && last.nextElementSibling !== drag) { secList.insertBefore(drag, last.nextElementSibling); buzz(); }
+		});
+		var secDrop = function () { if (drag) { drag.classList.remove('is-dragging'); drag = null; } };
+		secList.addEventListener('pointerup', secDrop); secList.addEventListener('pointercancel', secDrop);
+	}
+
 	/* ---------- prices in the visitor's own money ---------- */
 	var fxBox = d.querySelector('[data-fx]');
 	if (fxBox) {

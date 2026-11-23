@@ -62,7 +62,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	$planName = Site::tier((string) $w['plan']);
 	$planLine = $isFree ? 'black &amp; white' : ($key === 'classic' ? 'their own colours' : e($design['name']) . ' design'); ?>
 	<div class="plan-flag plan-flag--<?= e((string) $w['plan']) ?>">
-		<span><?php if (Wedding::has($w, 'badge')): ?><?= icon('s-shield') ?><?php endif; ?><b><?= e($planName) ?> page</b> · <?= $planLine ?><?php if ($isFree && $mine): ?> <a href="<?= e(App::url('/pricing')) ?>">Add colour</a><?php endif; ?></span>
+		<span><?php if (Wedding::has($w, 'badge')): ?><?= icon('s-shield') ?><?php endif; ?><b><?= e($planName) ?> page</b> · <?= $planLine ?><?php if ($isFree && $mine): ?> <a href="<?= e(App::url('/pricing#premium')) ?>" data-upgrade="pro" data-feature="Your colours">Add colour</a><?php endif; ?></span>
 	</div>
 	<?php if (Wedding::has($w, 'monogram')): ?>
 		<div class="monogram" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" pathLength="360" stroke-dasharray="0 9"/><circle cx="50" cy="50" r="40" pathLength="360" stroke-dasharray="0 4.5" class="monogram__in"/></svg><b><?= e(mb_strtoupper(mb_substr((string) $w['partner_a'], 0, 1))) ?><span>&amp;</span><?= e(mb_strtoupper(mb_substr((string) $w['partner_b'], 0, 1))) ?></b></div>
@@ -73,6 +73,9 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 
 	<?= View::partial('wedding/hero', compact('w', 'design', 'dz', 'names', 'photo2', 'next', 'premium')) ?>
 
+	<?php /* Each part below the invite is drawn into its own block, then shown in the order the couple chose. */
+	$blocks = []; $layout = Wedding::sections($w); $shows = static fn (string $k): bool => !in_array($k, $layout['hidden'], true); ?>
+	<?php ob_start(); ?>
 	<?php if ($next && $left): ?>
 		<section class="wrap w-cd-wrap">
 			<p class="w-cd-k">Counting down to <?= e($next['label']) ?></p>
@@ -86,7 +89,9 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	<?php elseif (!empty($w['wed_date']) && strtotime((string) $w['wed_date']) < time()): ?>
 		<section class="wrap w-cd-wrap"><p class="w-married"><?= icon('s-heart') ?> Married <?= e(Wedding::short($w)) ?>. Thank you for celebrating with them.</p></section>
 	<?php endif; ?>
+	<?php $blocks['countdown'] = ob_get_clean(); ?>
 
+	<?php ob_start(); ?>
 	<?php $chapters = is_array($dz['chapters'] ?? null) ? $dz['chapters'] : []; ?>
 	<section class="sec wrap w-story" id="story">
 		<div class="w-head reveal"><span class="eyebrow"><?= $chapters ? 'Our diary' : 'How it started' ?></span><h2>Our story</h2></div>
@@ -114,7 +119,9 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 			</div>
 		<?php endif; ?>
 	</section>
+	<?php $blocks['story'] = ob_get_clean(); ?>
 
+	<?php ob_start(); ?>
 	<?php if ($programs): ?>
 	<section class="sec wrap" id="when">
 		<div class="w-head reveal"><span class="eyebrow"><?= count($programs) > 1 ? count($programs) . ' celebrations' : 'The day' ?></span><h2>When &amp; where</h2></div>
@@ -145,7 +152,9 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		<?php endforeach; ?>
 	</section>
 	<?php endif; ?>
+	<?php $blocks['when'] = ob_get_clean(); ?>
 
+	<?php ob_start(); ?>
 	<?php if ($squad): ?>
 	<section class="sec wrap" id="squad">
 		<div class="w-head reveal"><span class="eyebrow"><?= count($squad) ?> people holding it together</span><h2>The squad</h2></div>
@@ -168,7 +177,9 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		</div>
 	</section>
 	<?php endif; ?>
+	<?php $blocks['squad'] = ob_get_clean(); ?>
 
+	<?php ob_start(); ?>
 	<?php if ($gifts || $premium): ?>
 	<section class="sec wrap" id="gifts">
 		<div class="two">
@@ -209,7 +220,9 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		</div>
 	</section>
 	<?php endif; ?>
+	<?php $blocks['gifts'] = ob_get_clean(); ?>
 
+	<?php ob_start(); ?>
 	<?php if (Wedding::has($w, 'live')):
 		$yt = '';
 		if (preg_match('~(?:youtu\.be/|youtube\.com/(?:watch\?v=|live/|embed/))([A-Za-z0-9_-]{11})~', (string) ($dz['live_url'] ?? ''), $m)) { $yt = $m[1]; } ?>
@@ -218,14 +231,17 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 			<div class="w-head reveal"><span class="eyebrow">Wherever you are</span><h2>Watch live</h2></div>
 			<div class="live-player reveal"><iframe src="https://www.youtube-nocookie.com/embed/<?= e($yt) ?>" title="<?= e($names) ?> livestream" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>
 		<?php endif; ?>
+		<?php $liveAt = Reminder::startsAt($w); ?>
 		<div class="tile w-live reveal<?= $yt !== '' ? ' gap-t-sm' : '' ?>">
 			<span class="live__dot" aria-hidden="true"></span>
-			<div><span class="v">Watch live</span><span class="k"><?= e($dz['live'] ?? 'The ceremony streams right here on the day.') ?></span></div>
-			<button class="pill pill--sm pill--glass" type="button" data-toggle aria-pressed="false" data-toast-on="We will remind you when it starts" data-toast-off="Reminder off"><span data-on="Reminder on" data-off="Remind me">Remind me</span></button>
+			<div><span class="v"><?= $yt !== '' ? 'Watch live' : 'Livestream' ?></span><span class="k"><?= e($dz['live'] ?? ($yt !== '' ? ($liveAt && $liveAt > time() ? 'Starts ' . date('D j M, g:ia', $liveAt) . '. It plays right here.' : 'It plays right here.') : 'The link goes up here before the day. Tap Remind me and we will email you when it does.')) ?></span></div>
+			<?php if (!$liveAt || $liveAt > time() - 3600): ?><button class="pill pill--sm pill--glass" type="button" data-open="remind"><?= icon('bell') ?>Remind me</button><?php endif; ?>
 		</div>
 	</section>
 	<?php endif; ?>
+	<?php $blocks['live'] = ob_get_clean(); ?>
 
+	<?php ob_start(); ?>
 	<?php if (Wedding::has($w, 'gallery')): ?>
 	<section class="sec wrap" id="photos">
 		<div class="w-head reveal"><span class="eyebrow"><?= (int) $tally['photos'] ? (int) $tally['photos'] . ' from guests' : 'From guests' ?></span><h2>Photos</h2></div>
@@ -237,7 +253,9 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		<p class="center gap-t-sm reveal"><a class="pill pill--glass" href="#wall" data-photo-add><?= icon('camera') ?>Add your photo</a></p>
 	</section>
 	<?php endif; ?>
+	<?php $blocks['photos'] = ob_get_clean(); ?>
 
+	<?php ob_start(); ?>
 	<?php
 	// Who knows them best: one quiz per partner, written by the couple, and a leaderboard for each.
 	$qz = Wedding::has($w, 'squad') ? Quiz::forWedding($w) : ['a' => [], 'b' => []];
@@ -325,14 +343,18 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		</div>
 	</section>
 	<?php endif; ?>
+	<?php $blocks['quiz'] = ob_get_clean(); ?>
 
-	<?php $palette = is_array($dz['palette'] ?? null) ? $dz['palette'] : []; if ($palette): ?>
-	<section class="sec wrap w-palette-sec">
+	<?php ob_start(); ?>
+	<?php $palette = Wedding::has($w, 'colours') && is_array($dz['palette'] ?? null) ? $dz['palette'] : []; if ($palette): ?>
+	<section class="sec wrap w-palette-sec" id="colours">
 		<div class="w-head reveal"><span class="eyebrow">Dress in these, if you can</span><h2>Colours of the day</h2></div>
 		<div class="palette reveal"><?php foreach ($palette as [$pn, $pc]): ?><span class="palette__i"><i style="background:<?= e($pc) ?>"></i><b><?= e($pn) ?></b><small><?= e($pc) ?></small></span><?php endforeach; ?></div>
 	</section>
 	<?php endif; ?>
+	<?php $blocks['palette'] = ob_get_clean(); ?>
 
+	<?php ob_start(); ?>
 	<?php if ($vendors): ?>
 	<section class="sec wrap" id="vendors">
 		<div class="w-head reveal"><span class="eyebrow">Booked and reviewed by <?= e($names) ?></span><h2>The people behind our day</h2></div>
@@ -347,7 +369,9 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		</div>
 	</section>
 	<?php endif; ?>
+	<?php $blocks['vendors'] = ob_get_clean(); ?>
 
+	<?php ob_start(); ?>
 	<section class="sec wrap w-wall" id="wall">
 		<div class="w-head reveal"><span class="eyebrow"><?= (int) $tally['notes'] ? (int) $tally['notes'] . ' wishes so far' : 'Be the first' ?></span><h2>Wall of love</h2></div>
 		<?php $canPhoto = Wedding::has($w, 'gallery'); ?>
@@ -372,6 +396,9 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 			</div>
 		<?php endif; ?>
 	</section>
+	<?php $blocks['wall'] = ob_get_clean(); ?>
+
+	<?php foreach ($layout['order'] as $bk) { if (!in_array($bk, $layout['hidden'], true)) { echo $blocks[$bk] ?? ''; } } ?>
 
 	<?php if ($sponsors): ?>
 	<section class="sec wrap w-ads">
@@ -407,17 +434,42 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		<p class="wed-foot__names"><?= e($names) ?></p>
 		<p><?= e(Wedding::when($w)) ?></p>
 		<?php if (!empty($dz['sign'])): ?><p class="wed-foot__sign"><?= e($dz['sign']) ?></p><?php endif; ?>
-		<p class="sub"><?= e($design['name']) ?> design · Made on <a href="<?= e(App::url('/')) ?>">Wedding Websites &amp; More</a> · <a href="<?= e(App::url('/join')) ?>">Make yours free</a></p>
+		<?php if ($isFree): ?>
+			<p class="sub"><?= e($design['name']) ?> design · Made on <a href="<?= e(App::url('/')) ?>">Wedding Websites &amp; More</a> · <a href="<?= e(App::url('/join')) ?>">Make yours free</a></p>
+		<?php else: ?>
+			<p class="sub"><?= e($design['name']) ?> design · Made on <a href="<?= e(App::url('/')) ?>">Wedding Websites &amp; More</a></p>
+			<a class="pill pill--glass wed-foot__cta" href="<?= e(App::url('/pricing#premium')) ?>">Make your own Premium wedding page, designed your way</a>
+		<?php endif; ?>
 	</footer>
 </article>
 
 <nav class="wed-bar" aria-label="On this page">
 	<button type="button" data-open="rsvp"><?= icon('check') ?>RSVP</button>
-	<?php if ($gifts): ?><a href="#gifts"><?= icon('gift') ?>Gifts</a><?php endif; ?>
-	<?php if ($premium): ?><button type="button" data-open="give" data-give="Spray"><?= icon('wallet') ?>Spray</button><?php endif; ?>
-	<a href="#wall"><?= icon('heart') ?>Wishes</a>
+	<?php if ($gifts && $shows('gifts')): ?><a href="#gifts"><?= icon('gift') ?>Gifts</a><?php endif; ?>
+	<?php if ($premium && $shows('gifts')): ?><button type="button" data-open="give" data-give="Spray"><?= icon('wallet') ?>Spray</button><?php endif; ?>
+	<?php if ($shows('wall')): ?><a href="#wall"><?= icon('heart') ?>Wishes</a><?php endif; ?>
 	<button type="button" data-share="<?= e($pageUrl) ?>" data-share-ping="<?= e(App::url('/w/' . $slug . '/share')) ?>"><?= icon('share') ?>Share</button>
 </nav>
+
+<?php if ($mine): ?><?= View::partial('partials/upgrade') ?><?php endif; ?>
+<?php if (Wedding::has($w, 'live')): ?>
+<div class="sheet" id="remind" role="dialog" aria-modal="true" aria-labelledby="remind-t">
+	<div class="sheet__grab" aria-hidden="true"></div>
+	<div class="sheet__head">
+		<a class="cbtn cbtn--sm" href="#" data-close aria-label="Close"><?= icon('close') ?></a>
+		<h2 id="remind-t">Remind me</h2>
+		<span></span>
+	</div>
+	<form method="post" action="<?= e(App::url('/w/' . $slug . '/remind')) ?>" class="form">
+		<?= Guard::field() ?>
+		<p class="glass__q"><?= Reminder::link($w) !== '' ? 'We will email you fifteen minutes before ' . e($names) . ' go live.' : 'We will email you the moment ' . e($names) . ' add the livestream link, and again fifteen minutes before it starts.' ?></p>
+		<label class="field"><span>Your email</span><input class="input" type="email" name="email" required autocomplete="email" inputmode="email" placeholder="you@example.com"></label>
+		<button class="pill pill--block" type="submit"><?= icon('bell') ?>Remind me</button>
+		<p class="after-pill">Two emails at most, each with a link to stop them. We never use it for anything else.</p>
+		<?php if ((string) $w['visibility'] === 'public'): ?><a class="pill pill--glass pill--block" href="<?= e(App::url('/w/' . $slug . '/live.ics')) ?>" data-no-prefetch><?= icon('calendar') ?>Or add it to your calendar</a><?php endif; ?>
+	</form>
+</div>
+<?php endif; ?>
 
 <div class="sheet" id="rsvp" role="dialog" aria-modal="true" aria-labelledby="rsvp-t">
 	<div class="sheet__grab" aria-hidden="true"></div>

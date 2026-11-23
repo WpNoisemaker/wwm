@@ -104,6 +104,9 @@ final class WeddingController
         if (!$w) {
             self::notFound();
         }
+        if (Wedding::has($w, 'live')) {
+            Reminder::tick();
+        }
 
         // A private page is not browsable; one with a pass code can be opened by typing it.
         $private = (string) $w['visibility'] !== 'public';
@@ -249,7 +252,10 @@ final class WeddingController
         $body = trim((string) ($_POST['body'] ?? ''));
         // Guests on a Pro page and up can add a photo with their note.
         $image = null;
+        $held = null;
         if (Wedding::has($w, 'gallery') && !empty($_FILES['photo']['name'])) {
+            // The full-size original goes to the wedding's Google Drive folder; the page keeps small copies.
+            $held = Drive::hold($_FILES['photo'], (int) $w['id']);
             $image = Images::store($_FILES['photo'], 'wall/' . (int) $w['id']);
             if ($image === null) {
                 Guard::flash('bad', 'That photo could not be used. Try a JPEG or PNG under 12 MB.');
@@ -261,7 +267,7 @@ final class WeddingController
             self::back($slug, 'wall');
         }
 
-        Db::insert('wall', [
+        $wallId = (int) Db::insert('wall', [
             'wedding_id' => $w['id'],
             'kind'       => $image !== null ? 'photo' : 'note',
             'name'       => mb_substr($name, 0, 160),
@@ -269,6 +275,11 @@ final class WeddingController
             'image'      => $image ?? '',
             'status'     => 'live',
         ]);
+        if ($image !== null && $held !== null) {
+            Drive::queue($w, $wallId, $held, $name);
+        } elseif ($held !== null) {
+            @unlink($held['path']);
+        }
         Buzz::add($w, $image !== null ? 'photo' : 'note');
         Guard::flash('ok', $image !== null ? 'Your photo is in their gallery.' : 'Your note is on their wall.');
         self::back($slug, $image !== null ? 'photos' : 'wall');
@@ -322,6 +333,60 @@ final class WeddingController
         $line = $score === $total ? 'Full marks. ' : ($score >= $total - 1 ? 'So close. ' : '');
         Guard::flash('ok', $line . $score . ' of ' . $total . ' on ' . $who . '’s quiz. You are number ' . $rank . ' on the leaderboard.');
         self::back($slug, 'quiz');
+    }
+
+    /** "Remind me": an email when the livestream link is added, and again just before it starts. */
+    public function remind(string $slug): void
+    {
+        Guard::must();
+        $w = Wedding::bySlug($slug);
+        if (!$w || !Wedding::has($w, 'live')) {
+            self::notFound();
+        }
+        if (Guard::tooMany('remind', 8, 30)) {
+            Guard::flash('bad', 'Give it a minute and try again.');
+            self::back($slug, 'live');
+        }
+        if (!Reminder::add($w, (string) ($_POST['email'] ?? ''))) {
+            Guard::flash('bad', 'That email does not look right. Try again?');
+            self::back($slug, 'live');
+        }
+        Guard::flash('ok', Reminder::link($w) !== ''
+            ? 'Done. We will email you fifteen minutes before it starts.'
+            : 'Done. We will email you the moment the livestream link is added, and again just before it starts.');
+        self::back($slug, 'live');
+    }
+
+    public function remindStop(string $token): void
+    {
+        $r = Reminder::stop($token);
+        Guard::flash('ok', $r ? 'You will not get any more livestream reminders.' : 'Those reminders were already stopped.');
+        header('Location: ' . App::url($r ? '/w/' . $r['slug'] : '/'));
+        exit;
+    }
+
+    /** The livestream as a calendar event, with an alert fifteen minutes before. */
+    public function ics(string $slug): void
+    {
+        $w = Wedding::bySlug($slug);
+        if (!$w || (string) $w['visibility'] !== 'public' || !Wedding::has($w, 'live')) {
+            self::notFound();
+        }
+        $start = Reminder::startsAt($w) ?? time() + 86400;
+        $page = App::url('/w/' . $w['slug'] . '#live');
+        $esc = static fn (string $t): string => str_replace(["\\", ';', ',', "\n"], ['\\\\', '\\;', '\\,', '\\n'], $t);
+        $lines = [
+            'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Wedding Websites & More//Livestream//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+            'BEGIN:VEVENT', 'UID:live-' . (int) $w['id'] . '@' . Share::host(), 'DTSTAMP:' . gmdate('Ymd\THis\Z'),
+            'DTSTART:' . gmdate('Ymd\THis\Z', $start), 'DTEND:' . gmdate('Ymd\THis\Z', $start + 3 * 3600),
+            'SUMMARY:' . $esc(Wedding::names($w) . ': livestream'), 'DESCRIPTION:' . $esc('Watch live on their page: ' . $page), 'URL:' . $page,
+            'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' . $esc(Wedding::names($w) . ' go live in 15 minutes'), 'TRIGGER:-PT15M', 'END:VALARM',
+            'END:VEVENT', 'END:VCALENDAR',
+        ];
+        header('Content-Type: text/calendar; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . preg_replace('/[^a-z0-9-]/', '', (string) $w['slug']) . '-livestream.ics"');
+        echo implode("\r\n", $lines) . "\r\n";
+        exit;
     }
 
     /* ---------------------------------------------------------------------------------------- */

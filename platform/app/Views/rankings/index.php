@@ -6,9 +6,9 @@ $max  = max(1, (int) ($rows[0]['buzz'] ?? 1));
 ?>
 <div class="page wrap">
 	<header class="page-head">
-		<span class="eyebrow">Ranked by what guests did, never by who paid</span>
+		<span class="eyebrow"><?= t('rankings.eyebrow.ranked-by-what-guests-did', 'Ranked by what guests did, never by who paid') ?></span>
 		<h1>The Buzz Chart<?= $city !== '' ? ' · ' . e($city) : '' ?></h1>
-		<p class="lede">Every visit, RSVP, wish and gift moves a page up.</p>
+		<p class="lede"><?= t('rankings.intro.every-visit-rsvp-wish-and', 'Every visit, RSVP, wish and gift moves a page up.') ?></p>
 	</header>
 
 	<nav class="chips chips--center" aria-label="Cities">
@@ -19,7 +19,7 @@ $max  = max(1, (int) ($rows[0]['buzz'] ?? 1));
 	</nav>
 
 	<?php if (!$rows): ?>
-		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('chart') ?></span><p>The chart is empty here. It fills up as guests visit, reply and give.</p></div>
+		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('chart') ?></span><p><?= t('rankings.text.the-chart-is-empty-here', 'The chart is empty here. It fills up as guests visit, reply and give.') ?></p></div>
 	<?php else: ?>
 		<div class="podium gap-t">
 			<?php foreach ($top as $i => $w): ?>
@@ -51,7 +51,7 @@ $max  = max(1, (int) ($rows[0]['buzz'] ?? 1));
 	<?php endif; ?>
 
 	<section class="sec" id="coins">
-		<div class="sec-head"><span class="eyebrow">The rules</span><h2>How a page earns buzz</h2><p>Every coin comes from something a real guest did. The same action earns more on a higher plan, and some actions only exist on the higher plans.</p></div>
+		<div class="sec-head"><span class="eyebrow"><?= t('rankings.eyebrow.the-rules', 'The rules') ?></span><h2><?= t('rankings.heading.how-a-page-earns-buzz', 'How a page earns buzz') ?></h2><p><?= tl('rankings.text.every-coin-comes-from-something', 'Every coin comes from something a real guest did. The same action earns more on a higher plan, and some actions only exist on the higher plans.') ?></p></div>
 		<div class="tbl-wrap coins-tbl">
 			<table class="tbl">
 				<thead><tr><th scope="col">When a guest&hellip;</th><?php foreach (Buzz::PLANS as $pl): ?><th scope="col" class="r"><?= e(Site::tier($pl)) ?></th><?php endforeach; ?></tr></thead>
@@ -62,6 +62,6 @@ $max  = max(1, (int) ($rows[0]['buzz'] ?? 1));
 				</tbody>
 			</table>
 		</div>
-		<p class="center sub gap-t-sm">Coins per guest action. A visit counts once per guest; refreshing the page does not add more. <a class="linkish" href="<?= e(App::url('/pricing')) ?>">Compare the plans</a></p>
+		<p class="center sub gap-t-sm">Coins per guest action. A visit counts once per guest; refreshing the page does not add more. <a class="linkish" href="<?= e(App::url('/pricing')) ?>"><?= t('rankings.button.compare-the-plans', 'Compare the plans') ?></a></p>
 	</section>
 </div>

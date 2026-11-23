@@ -17,6 +17,8 @@ final class AccountController
     private function need(): array
     {
         Auth::wall();
+        Guard::boot();
+        $_SESSION['acct_ctx'] = 'wedding';
         $w = $this->mine();
         if (!$w) {
             Guard::flash('bad', 'Make your wedding page first.');
@@ -41,11 +43,19 @@ final class AccountController
     public function index(): void
     {
         Auth::wall();
+        Guard::boot();
         $w = $this->mine();
-        if (!$w) {
-            // A marketplace seller has a shop, not a wedding.
-            self::go(Auth::is('partner') ? '/account/shop' : '/account/new');
+        $shop = Auth::is('partner') || Db::val('SELECT 1 FROM vendors WHERE user_id = ?', [Auth::id()]);
+        if (($_GET['as'] ?? '') === 'wedding') {
+            $_SESSION['acct_ctx'] = 'wedding';
+        } elseif ($shop && (!$w || ($_SESSION['acct_ctx'] ?? '') === 'shop')) {
+            // A seller lands in their shop, unless they last chose their wedding page.
+            self::go('/account/shop');
         }
+        if (!$w) {
+            self::go('/account/new');
+        }
+        $_SESSION['acct_ctx'] = 'wedding';
         $id = (int) $w['id'];
         $this->show('index', [
             'title' => Wedding::names($w),
@@ -110,11 +120,26 @@ final class AccountController
                 $hex = self::hex((string) ($_POST[$k] ?? ''));
                 if ($hex !== '') { $d[$k] = $hex; }
             }
-            if (array_key_exists('live_url', $_POST)) {
+            $linkBefore = trim((string) ($d['live_url'] ?? ''));
+            if (array_key_exists('live_url', $_POST) && Wedding::has($w, 'live')) {
                 $live = trim((string) $_POST['live_url']);
                 if ($live === '' || preg_match('~^https://(www\.)?(youtube\.com|youtu\.be)/~i', $live)) {
                     $d['live_url'] = $live;
                 }
+                $at = trim((string) ($_POST['live_at'] ?? ''));
+                $d['live_at'] = preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/', $at) ? $at : '';
+            }
+            // The colour code: up to six named colours, shown under the invite.
+            if (Wedding::has($w, 'colours') && isset($_POST['pal_name'])) {
+                $pal = [];
+                foreach ((array) $_POST['pal_name'] as $i => $name) {
+                    $name = mb_substr(trim((string) $name), 0, 40);
+                    $hex = self::hex((string) ($_POST['pal_hex'][$i] ?? ''));
+                    if ($name !== '' && $hex !== '') {
+                        $pal[] = [$name, $hex];
+                    }
+                }
+                $d['palette'] = $pal;
             }
             $design = json_encode($d, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             // Going public from private is the one change email confirmation gates. A page that is
@@ -143,6 +168,10 @@ final class AccountController
                 'design'     => $design,
                 'visibility' => $visibility,
             ], 'id = ? AND owner_id = ?', [$w['id'], Auth::id()]);
+            // A new livestream link: everyone who tapped "Remind me" hears about it now.
+            if (trim((string) ($d['live_url'] ?? '')) !== '' && trim((string) ($d['live_url'] ?? '')) !== $linkBefore) {
+                App::later(static function (): void { Reminder::run(200); });
+            }
             if ($held) {
                 Guard::flash('bad', 'Saved — but your page is still private. Confirm your email first, then make it public. We sent you a link; use "Send it again" on this page if it did not arrive.');
             } else {
@@ -208,6 +237,28 @@ final class AccountController
         $this->show('registry', ['title' => 'Registry', 'w' => $w, 'rows' => Wedding::gifts((int) $w['id'])]);
     }
 
+    /** The order of the page's sections, and which ones show. Moving and hiding come with Pro. */
+    public function sections(): void
+    {
+        $w = $this->need();
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+            Guard::must();
+            if (!Wedding::has($w, 'layout')) {
+                Guard::flash('bad', 'Moving and hiding sections comes with Pro.');
+                self::go('/account/sections');
+            }
+            $order = array_values(array_unique(array_filter((array) ($_POST['order'] ?? []), static fn ($k) => isset(Wedding::SECTIONS[$k]))));
+            $shown = array_keys(array_filter((array) ($_POST['show'] ?? [])));
+            $hidden = array_values(array_diff(array_keys(Wedding::SECTIONS), $shown));
+            $d = Wedding::design($w);
+            $d['sections'] = ['order' => $order, 'hidden' => $hidden];
+            Db::update('weddings', ['design' => json_encode($d, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)], 'id = ?', [$w['id']]);
+            Guard::flash('ok', 'Saved. Your page shows its sections in this order' . ($hidden ? ', with ' . count($hidden) . ' hidden.' : '.'));
+            self::go('/account/sections');
+        }
+        $this->show('sections', ['title' => 'Sections', 'w' => $w, 'layout' => Wedding::sections($w)]);
+    }
+
     /** "Who knows you best?": a short quiz about each partner, for guests to play on the page. */
     public function quiz(): void
     {
@@ -241,9 +292,11 @@ final class AccountController
      * A seller's shop: their business profile and their marketplace listings. Verification is
      * HQ's to give, so it is shown here and never editable.
      */
-    public function shop(): void
+    public function shop(bool $profile = false): void
     {
         Auth::wall();
+        Guard::boot();
+        $_SESSION['acct_ctx'] = 'shop';
         $uid = (int) Auth::id();
         $v = Db::one('SELECT * FROM vendors WHERE user_id = ? ORDER BY verified DESC, id LIMIT 1', [$uid]);
         if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
@@ -255,7 +308,7 @@ final class AccountController
                         'phone' => $t('phone', 40), 'instagram' => ltrim($t('instagram', 120), '@'), 'website' => $t('website', 255), 'about' => $t('about', 4000)];
                 if ($row['name'] === '') {
                     Guard::flash('bad', 'Your business needs a name.');
-                    self::go('/account/shop');
+                    self::go('/account/shop/profile');
                 }
                 if ($row['website'] !== '' && !preg_match('#^https?://#i', $row['website'])) {
                     $row['website'] = 'https://' . $row['website'];
@@ -266,7 +319,7 @@ final class AccountController
                     Db::insert('vendors', $row + ['user_id' => $uid, 'slug' => Listing::slugFor('vendors', $row['name'])]);
                 }
                 Guard::flash('ok', 'Your profile is saved.');
-                self::go('/account/shop');
+                self::go('/account/shop/profile');
             }
             $id = (int) ($_POST['id'] ?? 0);
             if ($do === 'delete' && $id) {
@@ -309,10 +362,17 @@ final class AccountController
             }
             self::go('/account/shop');
         }
-        View::render('account/shop', [
-            'title' => $v ? (string) $v['name'] : 'Your shop', 'tab' => 'account', 'appTitle' => 'Your shop', 'back' => null,
+        View::render(!empty($profile) ? 'account/shop-profile' : 'account/shop', [
+            'title' => $v ? (string) $v['name'] : 'Your shop', 'tab' => 'account', 'appTitle' => !empty($profile) ? 'Business profile' : 'Your shop',
+            'back' => !empty($profile) ? App::url('/account/shop') : null,
             'v' => $v, 'rows' => Db::all('SELECT * FROM listings WHERE partner_id = ? ORDER BY id', [$uid]),
         ]);
+    }
+
+    /** The seller's business profile: what couples see on their public page. */
+    public function shopProfile(): void
+    {
+        $this->shop(true);
     }
 
     /**

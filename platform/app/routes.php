@@ -15,6 +15,9 @@ $r->post('/w/{slug}/rsvp',      [WeddingController::class, 'rsvp']);
 $r->post('/w/{slug}/note',      [WeddingController::class, 'note']);
 $r->post('/w/{slug}/share',     [WeddingController::class, 'share']);
 $r->post('/w/{slug}/quiz',      [WeddingController::class, 'quiz']);
+$r->post('/w/{slug}/remind',    [WeddingController::class, 'remind']);   // email me about the livestream
+$r->get('/w/{slug}/live.ics',   [WeddingController::class, 'ics']);
+$r->get('/remind/stop/{token:[a-f0-9]{32}}', [WeddingController::class, 'remindStop']);
 $r->get('/rankings',            [RankingsController::class, 'index']);
 $r->get('/vendors',             [VendorController::class, 'index']);
 $r->get('/vendors/{slug}',      [VendorController::class, 'show']);
@@ -59,7 +62,9 @@ $r->any('/account/programs',    [AccountController::class, 'programs']);
 $r->any('/account/squad',       [AccountController::class, 'squad']);
 $r->any('/account/registry',    [AccountController::class, 'registry']);
 $r->any('/account/quiz',        [AccountController::class, 'quiz']);
-$r->any('/account/shop',        [AccountController::class, 'shop']);   // a marketplace seller's profile and listings
+$r->any('/account/sections',    [AccountController::class, 'sections']);
+$r->any('/account/shop',        [AccountController::class, 'shop']);   // a marketplace seller's listings
+$r->get('/account/shop/profile', [AccountController::class, 'shopProfile']);
 $r->get('/account/guests',      [AccountController::class, 'guests']);
 $r->post('/account/guests/{id:\d+}', [AccountController::class, 'guestUpdate']);
 $r->get('/account/money',       [AccountController::class, 'money']);
@@ -77,6 +82,12 @@ $r->post('/hq/test-mail',       [HqController::class, 'testMail']);
 $r->post('/hq/demo/add',        [HqController::class, 'demoAdd']);
 $r->post('/hq/demo/remove',     [HqController::class, 'demoRemove']);
 $r->post('/hq/packs/{key}',     [HqController::class, 'packAdd']);
+$r->any('/hq/staff',            [HqController::class, 'staff']);
+$r->any('/hq/content',          [HqController::class, 'content']);
+$r->post('/hq/drive',           [HqController::class, 'drive']);
+$r->get('/hq/drive/connect',    [HqController::class, 'driveConnect']);
+$r->get('/hq/drive/callback',   [HqController::class, 'driveCallback']);
+$r->post('/hq/drive/folder/{id:\d+}', [HqController::class, 'driveFolder']);
 $r->get('/hq/blog',             [HqController::class, 'blog']);
 $r->any('/hq/blog/new',         [HqController::class, 'blogEdit']);
 $r->any('/hq/blog/{id:\d+}',    [HqController::class, 'blogEdit']);

@@ -66,7 +66,8 @@ final class BlogController
         $title = trim((string) ($p['meta_title'] ?? '')) !== '' ? (string) $p['meta_title'] : (string) $p['title'];
         $desc  = trim((string) ($p['meta_desc'] ?? '')) !== '' ? (string) $p['meta_desc'] : mb_strimwidth(trim((string) $p['excerpt']) ?: strip_tags((string) $p['body']), 0, 180, '…');
         View::render('blog/show', [
-            'title'   => $title . ' · Wedding Websites & More',
+            // A search title HQ wrote is used exactly; otherwise the brand follows the post's title.
+            'title'   => trim((string) ($p['meta_title'] ?? '')) !== '' ? $title : $title . ' · Wedding Websites & More',
             'desc'    => $desc,
             'ogTitle' => $title,
             'ogType'  => 'article',

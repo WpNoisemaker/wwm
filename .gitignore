@@ -5,3 +5,7 @@ platform/config/config.php
 # it is 8 MB and changes on every build.
 platform/dist/
 *.zip
+
+# What visitors upload, and the share pictures made from it. Never part of the code.
+platform/public/assets/uploads/
+platform/storage/drive/

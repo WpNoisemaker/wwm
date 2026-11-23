@@ -24,15 +24,15 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 				<span style="--i:<?= $gi ?>" aria-hidden="true"><?= e($g) ?></span>
 			<?php endforeach; ?>
 		</p>
-		<h1 class="hero__title">The African weddings everyone is talking about</h1>
-		<p class="lede">Make a beautiful wedding page free. Watch it climb the Buzz Chart. Book vendors couples trust, shop aso-ebi and stays, and say what you can&rsquo;t say at home in the community. From Lagos to London, Accra to Houston, Nairobi to Dubai.</p>
+		<h1 class="hero__title"><?= t('home.title.the-african-weddings-everyone-is', 'The African weddings everyone is talking about') ?></h1>
+		<p class="lede"><?= t('home.intro.make-a-beautiful-wedding-page', 'Make a beautiful wedding page free. Watch it climb the Buzz Chart. Book vendors couples trust, shop aso-ebi and stays, and say what you can’t say at home in the community. From Lagos to London, Accra to Houston, Nairobi to Dubai.') ?></p>
 		<form class="searchbox hero__search" method="get" action="<?= e(App::url('/weddings')) ?>" role="search">
 			<?= icon('search') ?>
-			<input class="input" type="search" name="q" placeholder="Find a couple, a city or a hashtag" aria-label="Search weddings">
+			<input class="input" type="search" name="q" placeholder="<?= t('home.search.find-a-couple', 'Find a couple, a city or a hashtag') ?>" aria-label="Search weddings">
 		</form>
 		<div class="hero__ctas">
-			<a class="pill" href="<?= e(App::url('/join')) ?>">Create your page, free</a>
-			<a class="pill pill--glass" href="<?= e(App::url('/weddings')) ?>">Browse weddings</a>
+			<a class="pill" href="<?= e(App::url('/join')) ?>"><?= t('home.button.create-your-page-free', 'Create your page, free') ?></a>
+			<a class="pill pill--glass" href="<?= e(App::url('/weddings')) ?>"><?= t('home.button.browse-weddings', 'Browse weddings') ?></a>
 		</div>
 	</div>
 	<?php $show = $world ?? []; if ($show): ?>
@@ -56,22 +56,22 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 
 <section class="sec wrap">
 	<div class="sec-head reveal">
-		<span class="eyebrow">One platform for the whole wedding</span>
-		<h2>Everything, in one place</h2>
-		<p>Your page, your guests, your money, the people who make the day and the conversations around it.</p>
+		<span class="eyebrow"><?= t('home.eyebrow.one-platform-for-the-whole', 'One platform for the whole wedding') ?></span>
+		<h2><?= t('home.heading.everything-in-one-place', 'Everything, in one place') ?></h2>
+		<p><?= tl('home.text.your-page-your-guests-your', 'Your page, your guests, your money, the people who make the day and the conversations around it.') ?></p>
 	</div>
 	<div class="mosaic feat reveal">
 		<?php foreach ([
-			['s-ring', 'Wedding pages', 'Thirteen designs. Story, schedule, venue map and dress code in one link.', '/templates'],
-			['s-users', 'RSVP &amp; guest list', 'Guests reply in seconds, no account. Entry passes at the gate.', '/pricing'],
-			['s-gift', 'Gifts &amp; spraying', 'A registry and spraying from the seat, from anywhere in the world.', '/pricing'],
-			['s-live', 'Livestream', 'Family abroad watch the ceremony right on your page.', '/pricing'],
-			['s-crown', 'The Buzz Chart', 'The most-loved weddings this week, ranked by what guests did.', '/rankings'],
-			['s-store', 'Vendors', 'Photographers, planners, caterers and gele, reviewed by couples.', '/vendors'],
-			['s-bag', 'Marketplace', 'Aso-ebi, stays, rides and honeymoons, with payment held safe.', '/market'],
-			['s-chat', 'Community', 'Say what you can&rsquo;t say at home, under any pen name.', '/community'],
-		] as [$i, $t, $sub, $href]): ?>
-			<a class="tile tile--w2" href="<?= e(App::url($href)) ?>"><?= icon($i) ?><span class="v"><?= $t ?></span><span class="k"><?= $sub ?></span></a>
+			['s-ring', t('home.tile.pages', 'Wedding pages'), t('home.tileline.pages', 'Thirteen designs. Story, schedule, venue map and dress code in one link.'), '/templates'],
+			['s-users', t('home.tile.rsvp', 'RSVP & guest list'), t('home.tileline.rsvp', 'Guests reply in seconds, no account. Entry passes at the gate.'), '/pricing'],
+			['s-gift', t('home.tile.gifts', 'Gifts & spraying'), t('home.tileline.gifts', 'A registry and spraying from the seat, from anywhere in the world.'), '/pricing'],
+			['s-live', t('home.tile.live', 'Livestream'), t('home.tileline.live', 'Family abroad watch the ceremony right on your page.'), '/pricing'],
+			['s-crown', t('home.tile.chart', 'The Buzz Chart'), t('home.tileline.chart', 'The most-loved weddings this week, ranked by what guests did.'), '/rankings'],
+			['s-store', t('home.tile.vendors', 'Vendors'), t('home.tileline.vendors', 'Photographers, planners, caterers and gele, reviewed by couples.'), '/vendors'],
+			['s-bag', t('home.tile.market', 'Marketplace'), t('home.tileline.market', 'Aso-ebi, stays, rides and honeymoons, with payment held safe.'), '/market'],
+			['s-chat', t('home.tile.community', 'Community'), t('home.tileline.community', 'Say what you can’t say at home, under any pen name.'), '/community'],
+		] as [$i, $tt, $sub, $href]): ?>
+			<a class="tile tile--w2" href="<?= e(App::url($href)) ?>"><?= icon($i) ?><span class="v"><?= $tt ?></span><span class="k"><?= $sub ?></span></a>
 		<?php endforeach; ?>
 	</div>
 </section>
@@ -79,9 +79,9 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 <?php if ($chart): ?>
 <section class="sec wrap" id="ranked">
 	<div class="sec-head reveal">
-		<span class="eyebrow">Updated as guests reply</span>
-		<h2>The Buzz Chart</h2>
-		<p>Pages climb with RSVPs, wishes and shares. Tap one to see why it is up there.</p>
+		<span class="eyebrow"><?= t('home.eyebrow.updated-as-guests-reply', 'Updated as guests reply') ?></span>
+		<h2><?= t('home.heading.the-buzz-chart', 'The Buzz Chart') ?></h2>
+		<p><?= t('home.text.pages-climb-with-rsvps-wishes', 'Pages climb with RSVPs, wishes and shares. Tap one to see why it is up there.') ?></p>
 	</div>
 	<div class="rail reveal">
 		<?php foreach (array_slice($chart, 0, 4) as $n => $w): ?>
@@ -94,9 +94,9 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 
 <section class="sec wrap" id="designs">
 	<div class="sec-head reveal">
-		<span class="eyebrow">Ten Premium designs and counting</span>
-		<h2>A design for every kind of wedding</h2>
-		<p>Every page is built from the same glass and light. Each design composes it differently.</p>
+		<span class="eyebrow"><?= t('home.eyebrow.ten-premium-designs-and-counting', 'Ten Premium designs and counting') ?></span>
+		<h2><?= t('home.heading.a-design-for-every-kind', 'A design for every kind of wedding') ?></h2>
+		<p><?= t('home.text.every-page-is-built-from', 'Every page is built from the same glass and light. Each design composes it differently.') ?></p>
 	</div>
 	<div class="rail rail--designs reveal">
 		<?php foreach ($samples as $k => $w): if (in_array($k, ['free', 'pro'], true)) { continue; } $d = Design::get($k); ?>
@@ -112,9 +112,9 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 <?php if (count($countries) > 1): ?>
 <section class="sec wrap" id="world">
 	<div class="sec-head reveal">
-		<span class="eyebrow">Wherever the family is</span>
-		<h2>African weddings, around the world</h2>
-		<p>Lagos, Abuja, Accra, Nairobi and Kigali. London, Houston, Toronto, Melbourne, Auckland and Dubai. Every page in its own currency.</p>
+		<span class="eyebrow"><?= t('home.eyebrow.wherever-the-family-is', 'Wherever the family is') ?></span>
+		<h2><?= t('home.heading.african-weddings-around-the-world', 'African weddings, around the world') ?></h2>
+		<p><?= tl('home.text.lagos-abuja-accra-nairobi-and', 'Lagos, Abuja, Accra, Nairobi and Kigali. London, Houston, Toronto, Melbourne, Auckland and Dubai. Every page in its own currency.') ?></p>
 	</div>
 	<div class="mosaic world reveal">
 		<?php foreach ($countries as $c): ?>
@@ -127,61 +127,61 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 
 <section class="sec wrap" id="plans">
 	<div class="sec-head reveal">
-		<span class="eyebrow">Pay once per wedding</span>
-		<h2>Pick your page</h2>
-		<p>Free pages are black &amp; white. Pro pages wear your colours. Premium pages pick a design.</p>
+		<span class="eyebrow"><?= t('home.eyebrow.pay-once-per-wedding', 'Pay once per wedding') ?></span>
+		<h2><?= t('home.heading.pick-your-page', 'Pick your page') ?></h2>
+		<p><?= t('home.text.free-pages-are-black-white', 'Free pages are black & white. Pro pages wear your colours. Premium pages pick a design.') ?></p>
 	</div>
 	<div class="plans reveal">
 		<div class="glass glass--plain plan plan--mono" data-tone="mono">
-			<p class="plan__name">Free</p>
+			<p class="plan__name"><?= t('home.text.free', 'Free') ?></p>
 			<p class="plan__price"><?= Fx::show(0, $cur) ?></p>
-			<p class="plan__pitch">Everything you need to get your page live today.</p>
+			<p class="plan__pitch"><?= t('home.text.everything-you-need-to-get', 'Everything you need to get your page live today.') ?></p>
 			<div class="plan__swatch" aria-hidden="true"><i style="background:#111"></i><i style="background:#fff"></i></div>
 			<ul>
-				<li><?= icon('check') ?>Invitation &amp; event details</li>
-				<li><?= icon('check') ?>Your love story</li>
-				<li><?= icon('check') ?>RSVP &amp; wall of wishes</li>
-				<li><?= icon('check') ?>Cash &amp; gift registry</li>
+				<li><?= icon('check') ?><?= t('home.item.invitation-event-details', 'Invitation & event details') ?></li>
+				<li><?= icon('check') ?><?= t('home.item.your-love-story', 'Your love story') ?></li>
+				<li><?= icon('check') ?><?= t('home.item.rsvp-wall-of-wishes', 'RSVP & wall of wishes') ?></li>
+				<li><?= icon('check') ?><?= t('home.item.cash-gift-registry', 'Cash & gift registry') ?></li>
 			</ul>
-			<a class="pill pill--glass pill--block" href="<?= e(App::url($free ? '/w/' . $free['slug'] : '/join')) ?>">See a free page</a>
+			<a class="pill pill--glass pill--block" href="<?= e(App::url($free ? '/w/' . $free['slug'] : '/join')) ?>"><?= t('home.button.see-a-free-page', 'See a free page') ?></a>
 		</div>
 		<div class="glass plan">
-			<p class="plan__name">Pro</p>
+			<p class="plan__name"><?= t('home.text.pro', 'Pro') ?></p>
 			<p class="plan__price"><?= Fx::show($pro, $cur) ?></p>
-			<p class="plan__pitch">Your colours, your squad, guest photos and entry passes. No ads.</p>
+			<p class="plan__pitch"><?= t('home.text.your-colours-your-squad-guest', 'Your colours, your squad, guest photos and entry passes. No ads.') ?></p>
 			<div class="plan__swatch" aria-hidden="true"><i style="background:#6EAAE6"></i><i style="background:#E3DABF"></i><i style="background:#7B2D43"></i><i style="background:#C9A24B"></i></div>
 			<ul>
-				<li><?= icon('check') ?>Everything in Free, in colour</li>
-				<li><?= icon('check') ?>Bridesmaids &amp; groomsmen</li>
-				<li><?= icon('check') ?>Guest photo gallery</li>
-				<li><?= icon('check') ?>Entry passes &amp; check-in</li>
+				<li><?= icon('check') ?><?= t('home.item.everything-in-free-in-colour', 'Everything in Free, in colour') ?></li>
+				<li><?= icon('check') ?><?= t('home.item.bridesmaids-groomsmen', 'Bridesmaids & groomsmen') ?></li>
+				<li><?= icon('check') ?><?= t('home.item.guest-photo-gallery', 'Guest photo gallery') ?></li>
+				<li><?= icon('check') ?><?= t('home.item.entry-passes-checkin', 'Entry passes & check-in') ?></li>
 			</ul>
-			<a class="pill pill--glass pill--block" href="<?= e(App::url(isset($samples['pro']) ? '/w/' . $samples['pro']['slug'] : '/pricing')) ?>">See a Pro page</a>
+			<a class="pill pill--glass pill--block" href="<?= e(App::url(isset($samples['pro']) ? '/w/' . $samples['pro']['slug'] : '/pricing')) ?>"><?= t('home.button.see-a-pro-page', 'See a Pro page') ?></a>
 		</div>
 		<div class="glass plan plan--best">
 			<p class="plan__name">Premium <span class="badge badge--solid">Full owambe</span></p>
 			<p class="plan__price"><?= Fx::show($prem, $cur) ?></p>
-			<p class="plan__pitch">Every feature and any of the Premium designs. No fees on gifts.</p>
+			<p class="plan__pitch"><?= t('home.text.every-feature-and-any-of', 'Every feature and any of the Premium designs. No fees on gifts.') ?></p>
 			<div class="plan__swatch" aria-hidden="true"><?php foreach (array_slice($premiumDesigns, 1, 6) as $d): ?><i style="background:linear-gradient(135deg,<?= e($d[6][0]) ?>,<?= e($d[6][1]) ?>)"></i><?php endforeach; ?></div>
 			<ul>
-				<li><?= icon('check') ?>Ten Premium designs</li>
-				<li><?= icon('check') ?>Livestream on your page</li>
-				<li><?= icon('check') ?>Spraying from the seat</li>
-				<li><?= icon('check') ?>No charge on gifts or spraying</li>
+				<li><?= icon('check') ?><?= t('home.item.ten-premium-designs', 'Ten Premium designs') ?></li>
+				<li><?= icon('check') ?><?= t('home.item.livestream-on-your-page', 'Livestream on your page') ?></li>
+				<li><?= icon('check') ?><?= t('home.item.spraying-from-the-seat', 'Spraying from the seat') ?></li>
+				<li><?= icon('check') ?><?= t('home.item.no-charge-on-gifts-or', 'No charge on gifts or spraying') ?></li>
 			</ul>
-			<a class="pill pill--block" href="<?= e(App::url($lead ? '/w/' . $lead['slug'] : '/pricing')) ?>">See a Premium page</a>
+			<a class="pill pill--block" href="<?= e(App::url($lead ? '/w/' . $lead['slug'] : '/pricing')) ?>"><?= t('home.button.see-a-premium-page', 'See a Premium page') ?></a>
 		</div>
 	</div>
-	<p class="sec-more reveal"><a class="linkish" href="<?= e(App::url('/pricing')) ?>">Compare every plan, including High Society</a> · <a class="linkish" href="<?= e(App::url('/pricing#currency')) ?>">See prices in another currency</a></p>
+	<p class="sec-more reveal"><a class="linkish" href="<?= e(App::url('/pricing')) ?>"><?= t('home.button.compare-every-plan-including-high', 'Compare every plan, including High Society') ?></a> · <a class="linkish" href="<?= e(App::url('/pricing#currency')) ?>"><?= t('home.button.see-prices-in-another-currency', 'See prices in another currency') ?></a></p>
 </section>
 
 <?php if ($fresh): ?>
 <section class="sec wrap">
 	<div class="split split--list">
 		<div class="sec-head sec-head--side reveal">
-			<span class="eyebrow">Coming up</span>
-			<h2>Weddings this season</h2>
-			<p>Every public page, soonest first. Open one, RSVP if you are invited, or just enjoy the story.</p>
+			<span class="eyebrow"><?= t('home.eyebrow.coming-up', 'Coming up') ?></span>
+			<h2><?= t('home.heading.weddings-this-season', 'Weddings this season') ?></h2>
+			<p><?= tl('home.text.every-public-page-soonest-first', 'Every public page, soonest first. Open one, RSVP if you are invited, or just enjoy the story.') ?></p>
 			<a class="pill pill--glass pill--sm" href="<?= e(App::url('/weddings')) ?>">Browse every page <?= icon('arrow') ?></a>
 		</div>
 		<div class="rows reveal">
@@ -200,8 +200,8 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 <?php if ($listings): ?>
 <section class="sec wrap" id="market">
 	<div class="sec-head reveal">
-		<span class="eyebrow">Marketplace</span>
-		<h2>Aso-ebi, stays &amp; rides</h2>
+		<span class="eyebrow"><?= t('home.eyebrow.marketplace', 'Marketplace') ?></span>
+		<h2><?= t('home.heading.asoebi-stays-rides', 'Aso-ebi, stays & rides') ?></h2>
 	</div>
 	<div class="rail reveal">
 		<?php foreach (array_slice($listings, 0, 4) as $l): ?>
@@ -219,9 +219,9 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 <section class="sec wrap">
 	<div class="split split--list">
 		<div class="sec-head sec-head--side reveal">
-			<span class="eyebrow">Rated by couples</span>
-			<h2>The people behind the day</h2>
-			<p>Photographers, planners, caterers, gele and makeup, every one reviewed by a couple who booked them.</p>
+			<span class="eyebrow"><?= t('home.eyebrow.rated-by-couples', 'Rated by couples') ?></span>
+			<h2><?= t('home.heading.the-people-behind-the-day', 'The people behind the day') ?></h2>
+			<p><?= tl('home.text.photographers-planners-caterers-gele-and', 'Photographers, planners, caterers, gele and makeup, every one reviewed by a couple who booked them.') ?></p>
 			<a class="pill pill--glass pill--sm" href="<?= e(App::url('/vendors')) ?>">Find a vendor <?= icon('arrow') ?></a>
 		</div>
 		<div class="rows reveal">
@@ -241,11 +241,11 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 	<div class="split">
 		<div class="quote-cta reveal">
 			<div class="sec-head">
-				<span class="eyebrow">Community · no account needed</span>
-				<h2>Say it here instead</h2>
-				<p>Text-only posts on colour, under any pen name you like. Swipe through what other people are carrying.</p>
+				<span class="eyebrow"><?= t('home.eyebrow.community-no-account-needed', 'Community · no account needed') ?></span>
+				<h2><?= t('home.heading.say-it-here-instead', 'Say it here instead') ?></h2>
+				<p><?= tl('home.text.textonly-posts-on-colour-under', 'Text-only posts on colour, under any pen name you like. Swipe through what other people are carrying.') ?></p>
 			</div>
-			<a class="pill" href="<?= e(App::url('/community')) ?>">Open the community</a>
+			<a class="pill" href="<?= e(App::url('/community')) ?>"><?= t('home.button.open-the-community', 'Open the community') ?></a>
 		</div>
 		<?php if ($talks): ?>
 			<div class="home-deck reveal">
@@ -258,7 +258,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 						</article>
 					<?php endforeach; ?>
 				</div>
-				<p class="deck-pos" data-deck-pos aria-live="polite">1 of 3 · swipe for more</p>
+				<p class="deck-pos" data-deck-pos aria-live="polite"><?= t('home.text.1-of-3-swipe-for', '1 of 3 · swipe for more') ?></p>
 				<div class="actions">
 					<div class="act"><button class="cbtn cbtn--lg" type="button" data-deck-go="-1" aria-label="Previous post"><?= icon('back') ?></button><span class="act__l">Back</span></div>
 					<div class="act"><button class="cbtn cbtn--lg" type="button" data-post-like aria-label="Love this post" aria-pressed="false"><?= icon('heart') ?><span class="act__n" data-count="likes"><?= (int) $talks[0]['likes'] ?></span></button><span class="act__l">Love</span></div>
@@ -275,8 +275,8 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 <?php if ($wall): ?>
 <section class="sec wrap">
 	<div class="sec-head reveal">
-		<span class="eyebrow">Left on real pages this week</span>
-		<h2>Wall of love</h2>
+		<span class="eyebrow"><?= t('home.eyebrow.left-on-real-pages-this', 'Left on real pages this week') ?></span>
+		<h2><?= t('home.heading.wall-of-love', 'Wall of love') ?></h2>
 	</div>
 	<div class="rail rail--wishes reveal">
 		<?php foreach ($wall as $n): if ((string) $n['kind'] !== 'note' || trim((string) $n['body']) === '') { continue; } ?>
@@ -292,8 +292,8 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 <?php if ($posts): ?>
 <section class="sec wrap">
 	<div class="sec-head reveal">
-		<span class="eyebrow">From the blog</span>
-		<h2>Guides, news &amp; interviews</h2>
+		<span class="eyebrow"><?= t('home.eyebrow.from-the-blog', 'From the blog') ?></span>
+		<h2><?= t('home.heading.guides-news-interviews', 'Guides, news & interviews') ?></h2>
 	</div>
 	<div class="rail reveal">
 		<?php foreach ($posts as $p): ?>
@@ -307,14 +307,15 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 </section>
 <?php endif; ?>
 
+<?php $finalePic = timg('home.image.finale', ''); ?>
 <section class="sec wrap">
-	<div class="glass finale reveal">
-		<span class="eyebrow">It takes about ten minutes</span>
-		<h2>Make your page tonight</h2>
-		<p>Start free in black &amp; white. Add your colours, your squad and a Premium design whenever you are ready.</p>
+	<div class="glass finale reveal<?= $finalePic !== '' ? ' finale--pic' : '' ?>"<?= $finalePic !== '' ? ' style="--finale:url(\'' . e(img_url($finalePic)) . '\')"' : '' ?>>
+		<span class="eyebrow"><?= t('home.eyebrow.it-takes-about-ten-minutes', 'It takes about ten minutes') ?></span>
+		<h2><?= t('home.heading.make-your-page-tonight', 'Make your page tonight') ?></h2>
+		<p><?= tl('home.text.start-free-in-black-white', 'Start free in black & white. Add your colours, your squad and a Premium design whenever you are ready.') ?></p>
 		<div class="hero__ctas">
-			<a class="pill" href="<?= e(App::url('/join')) ?>">Create your page, free</a>
-			<a class="pill pill--glass" href="<?= e(App::url('/pricing')) ?>">See pricing</a>
+			<a class="pill" href="<?= e(App::url('/join')) ?>"><?= t('home.button.create-your-page-free-2', 'Create your page, free') ?></a>
+			<a class="pill pill--glass" href="<?= e(App::url('/pricing')) ?>"><?= t('home.button.see-pricing', 'See pricing') ?></a>
 		</div>
 	</div>
 </section>

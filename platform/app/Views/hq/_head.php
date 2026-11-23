@@ -1,8 +1,11 @@
 <?php
 /** The top of every HQ screen. */
 $now  = $now ?? '';
-$tabs = [['hq', 'Overview', '/hq', 'grid'], ['weddings', 'Weddings', '/hq/weddings', 'ring'], ['people', 'People', '/hq/people', 'people'],
-         ['money', 'Money', '/hq/money', 'wallet'], ['blog', 'Blog', '/hq/blog', 'book'], ['settings', 'Settings', '/hq/settings', 'gear']];
+$tabs = array_values(array_filter([
+	['hq', 'Overview', '/hq', 'grid', ''], ['weddings', 'Weddings', '/hq/weddings', 'ring', 'weddings'], ['people', 'People', '/hq/people', 'people', 'people'],
+	['money', 'Money', '/hq/money', 'wallet', 'money'], ['blog', 'Blog', '/hq/blog', 'book', 'blog'], ['content', 'Site content', '/hq/content', 'pen', 'content'],
+	['staff', 'Staff', '/hq/staff', 'shield', 'owner'], ['settings', 'Settings', '/hq/settings', 'gear', 'settings'],
+], static fn ($t) => $t[4] === '' || ($t[4] === 'owner' ? Auth::is('owner') : Staff::can($t[4]))));
 ?>
 <div class="page wrap">
 	<header class="page-head"><span class="eyebrow"><?= e($sub ?? 'Read straight from the database') ?></span><h1><?= e($h) ?></h1></header>

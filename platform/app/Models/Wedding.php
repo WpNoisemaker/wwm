@@ -329,6 +329,7 @@ final class Wedding
         'grand'    => 'premium',  // the larger type scale and wider layout
         'monogram' => 'society',
         'gold'     => 'society',
+        'layout'   => 'pro',      // moving and hiding the sections of the page
     ];
 
     public static function rank(string $plan): int
@@ -544,6 +545,48 @@ final class Wedding
         }
         $t = (int) strtotime((string) $w['wed_date']);
         return date((date('Y', $t) === date('Y') ? 'j M' : 'j M Y'), $t);
+    }
+
+    /**
+     * The parts of a wedding page below the invite, in their default order: the colour code sits
+     * right under the invite, then the countdown, the story and the rest. key => [name, what it
+     * is, the plan that shows it on the page].
+     */
+    public const SECTIONS = [
+        'palette'   => ['Colours of the day', 'The colours guests should wear', 'pro'],
+        'countdown' => ['Countdown', 'Days, hours and minutes to the next event', 'free'],
+        'story'     => ['Your story', 'How it started, or your diary', 'free'],
+        'when'      => ['Programmes', 'Every event, its time, place and dress code', 'free'],
+        'squad'     => ['The squad', 'Bridesmaids, groomsmen and the people holding it together', 'pro'],
+        'gifts'     => ['Gifts & spraying', 'Your registry, cash gifts and spraying', 'free'],
+        'live'      => ['Livestream', 'Watch live, for family who cannot travel', 'premium'],
+        'photos'    => ['Guest photos', 'Every photo guests add', 'pro'],
+        'quiz'      => ['Who knows them best?', 'A quiz about each of you, with leaderboards', 'pro'],
+        'vendors'   => ['Our vendors', 'The vendors you booked', 'free'],
+        'wall'      => ['Wall of love', 'Wishes and notes from guests', 'free'],
+    ];
+
+    /**
+     * The order the couple chose, and what they hid. Free pages always use the default order with
+     * nothing hidden: moving and hiding sections comes with Pro.
+     *
+     * @return array{order: list<string>, hidden: list<string>}
+     */
+    public static function sections(array $w): array
+    {
+        $all = array_keys(self::SECTIONS);
+        if (!self::has($w, 'layout')) {
+            return ['order' => $all, 'hidden' => []];
+        }
+        $saved = self::design($w)['sections'] ?? [];
+        $order = array_values(array_unique(array_filter((array) ($saved['order'] ?? []), static fn ($k) => isset(self::SECTIONS[$k]))));
+        foreach ($all as $i => $k) {            // a section added later slots in at its default place
+            if (!in_array($k, $order, true)) {
+                array_splice($order, min($i, count($order)), 0, [$k]);
+            }
+        }
+        $hidden = array_values(array_intersect((array) ($saved['hidden'] ?? []), $all));
+        return ['order' => $order, 'hidden' => $hidden];
     }
 
     /** The vendors the couple booked: the ones this couple has reviewed. */

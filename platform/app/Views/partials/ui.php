@@ -134,3 +134,47 @@ function pager(int $page, int $pages, array $query = []): string
     return '<nav class="pager" aria-label="Pages"><a class="cbtn"' . $prev . ' aria-label="Previous page">' . icon('back') . '</a>'
          . '<span>Page ' . $page . ' of ' . $pages . '</span><a class="cbtn"' . $next . ' aria-label="Next page">' . icon('next') . '</a></nav>';
 }
+
+/**
+ * A Pro or Premium tag on something a page's plan does not include. It opens the upgrade sheet,
+ * which says what the feature is and links to the plans.
+ */
+function up_tag(string $plan, string $feature, string $cls = ''): string
+{
+    $name = $plan === 'premium' ? 'Premium' : 'Pro';
+    return '<button type="button" class="up-tag up-tag--' . e($plan) . ($cls !== '' ? ' ' . e($cls) : '') . '" data-upgrade="' . e($plan) . '" data-feature="' . e($feature) . '"'
+        . ' aria-label="' . e($feature . ' comes with ' . $name . '. See how to get it') . '">' . icon('s-spark') . '<span>' . $name . '</span></button>';
+}
+
+/** An editable piece of the site's own text (see Content), escaped for the page. */
+function t(string $key, string $default): string
+{
+    return e(Content::get($key, $default));
+}
+
+/** Editable text that may run to several lines. */
+function tl(string $key, string $default): string
+{
+    return nl2br(e(Content::get($key, $default)));
+}
+
+/** An editable picture: the path HQ uploaded, or the default. */
+function timg(string $key, string $default): string
+{
+    return Content::get($key, $default);
+}
+
+/** A picture path as a full address, for link previews and backgrounds. */
+function img_url(string $path): string
+{
+    if ($path === '' || str_starts_with($path, 'http')) {
+        return $path;
+    }
+    return App::url((str_starts_with($path, 'uploads/') ? 'assets/' : 'assets/img/') . ltrim($path, '/'));
+}
+
+/** A whole page HQ may have rewritten, in the blog's writing format; '' keeps the standard text. */
+function tbody(string $key, string $default): string
+{
+    return Content::get($key, $default);
+}

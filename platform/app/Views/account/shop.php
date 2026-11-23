@@ -13,7 +13,7 @@ $kindSelect = static function (string $on): string {
 	return $o;
 };
 ?>
-<?= View::partial('account/_head', ['h' => $v ? (string) $v['name'] : 'Your shop', 'sub' => 'Your shop on the marketplace']) ?>
+<?= View::partial('account/_head', ['h' => $v ? (string) $v['name'] : 'Your shop', 'sub' => 'Your seller shop', 'now' => 'shop']) ?>
 	<div class="split-2">
 		<div class="acct-list">
 			<?php foreach ($rows as $l): $ph = first_photo((string) $l['photos']); ?>
@@ -53,24 +53,21 @@ $kindSelect = static function (string $on): string {
 				<button class="pill pill--block" type="submit">Add listing</button>
 			</form>
 		</div>
-		<aside>
-			<form method="post" class="form glass glass--plain glass--tight">
-				<?= Guard::field() ?><input type="hidden" name="do" value="profile">
-				<div class="row row--between"><h2 class="h3">Your profile</h2><?php if ($v && (int) $v['verified']): ?><span class="badge badge--solid"><?= icon('check') ?>Verified</span><?php endif; ?></div>
-				<label class="field"><span>Business name</span><input class="input" name="name" value="<?= e((string) ($v['name'] ?? '')) ?>" required></label>
-				<label class="field"><span>What you do</span><input class="input" name="category" value="<?= e((string) ($v['category'] ?? '')) ?>" placeholder="Car hire, stays, aso-ebi"></label>
-				<div class="form-grid form-grid--2">
-					<label class="field"><span>City</span><input class="input" name="city" value="<?= e((string) ($v['city'] ?? '')) ?>"></label>
-					<label class="field"><span>State</span><input class="input" name="state" value="<?= e((string) ($v['state'] ?? '')) ?>"></label>
-				</div>
-				<label class="field"><span>Phone</span><input class="input" name="phone" type="tel" value="<?= e((string) ($v['phone'] ?? '')) ?>"></label>
-				<label class="field"><span>Instagram</span><input class="input" name="instagram" value="<?= e((string) ($v['instagram'] ?? '')) ?>" placeholder="yourhandle"></label>
-				<label class="field"><span>Website</span><input class="input" name="website" value="<?= e((string) ($v['website'] ?? '')) ?>"></label>
-				<label class="field"><span>About your business</span><textarea class="input" name="about" rows="5"><?= e((string) ($v['about'] ?? '')) ?></textarea></label>
-				<button class="pill pill--block" type="submit">Save profile</button>
-				<p class="help"><?= $v && (int) $v['verified'] ? 'Verified by Wedding Websites &amp; More.' : 'HQ verifies sellers once they have checked the business.' ?><?php if ($v): ?> <a class="linkish" href="<?= e(App::url('/vendors/' . $v['slug'])) ?>">See your public profile</a><?php endif; ?></p>
-			</form>
-			<p class="help gap-t-sm">Signing in with an @example.com email? Put your own in <a class="linkish" href="<?= e(App::url('/account/settings')) ?>">Settings</a>.</p>
+		<aside class="acct-list">
+			<div class="form glass glass--plain glass--tight shop-card">
+				<?php if ($v): ?>
+					<div class="shop-head"><?= sq((string) $v['logo'], '', 'shop-head__pic') ?><div><p class="row-item__t"><?= e((string) $v['name']) ?></p><p class="row-item__s"><?= e(trim((string) $v['category'] . ((string) $v['city'] !== '' ? ' · ' . $v['city'] : ''), ' ·')) ?></p></div></div>
+					<?php if ((int) $v['verified']): ?><p><span class="badge badge--solid"><?= icon('check') ?>Verified seller</span></p><?php else: ?><p class="help">HQ verifies sellers once they have checked the business.</p><?php endif; ?>
+					<p class="help"><?= count($rows) ?> listing<?= count($rows) === 1 ? '' : 's' ?> · <?= count(array_filter($rows, static fn ($r) => $r['status'] === 'live')) ?> live</p>
+					<a class="pill pill--glass pill--block" href="<?= e(App::url('/vendors/' . $v['slug'])) ?>">See your public profile</a>
+					<a class="pill pill--glass pill--block" href="<?= e(App::url('/account/shop/profile')) ?>">Edit your business profile</a>
+				<?php else: ?>
+					<h2 class="h3">Set up your shop</h2>
+					<p class="help">Add your business name, what you do and how couples reach you. Then add your first listing.</p>
+					<a class="pill pill--block" href="<?= e(App::url('/account/shop/profile')) ?>">Set up your business profile</a>
+				<?php endif; ?>
+			</div>
+			<p class="help">Signing in with an @example.com email? Put your own in <a class="linkish" href="<?= e(App::url('/account/settings')) ?>">Account</a>.</p>
 		</aside>
 	</div>
 </div>

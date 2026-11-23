@@ -8,8 +8,8 @@ $price = static fn (array $l): string => (int) $l['on_ask'] ? 'Price on request'
 ?>
 <div class="page wrap">
 	<header class="page-head">
-		<span class="eyebrow">Your money is held until the booking happens</span>
-		<h1>Aso-ebi, stays, rides &amp; honeymoons</h1>
+		<span class="eyebrow"><?= t('market.eyebrow.your-money-is-held-until', 'Your money is held until the booking happens') ?></span>
+		<h1><?= t('market.title.asoebi-stays-rides-honeymoons', 'Aso-ebi, stays, rides & honeymoons') ?></h1>
 		<p class="lede"><?= e(number_format($total)) ?> listing<?= $total === 1 ? '' : 's' ?><?= $f['city'] !== '' ? ' in ' . e($f['city']) : '' ?></p>
 	</header>
 	<form class="searchbox narrow" method="get" action="<?= e(App::url('/market')) ?>" role="search">
@@ -32,7 +32,7 @@ $price = static fn (array $l): string => (int) $l['on_ask'] ? 'Price on request'
 	<?php endif; ?>
 
 	<?php if (!$rows): ?>
-		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('bag') ?></span><p>Nothing listed for that yet.</p><a class="pill pill--glass" href="<?= e(App::url('/market')) ?>">Show everything</a></div>
+		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('bag') ?></span><p><?= t('market.text.nothing-listed-for-that-yet', 'Nothing listed for that yet.') ?></p><a class="pill pill--glass" href="<?= e(App::url('/market')) ?>"><?= t('market.button.show-everything', 'Show everything') ?></a></div>
 	<?php else: ?>
 		<div class="cards gap-t">
 			<?php foreach ($rows as $l): ?>

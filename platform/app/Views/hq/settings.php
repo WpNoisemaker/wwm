@@ -32,6 +32,32 @@
 				<p class="help">Sends a test to <?= e((string) Auth::user()['email']) ?>. If it does not arrive, leave confirmation off.</p>
 				<button class="pill pill--glass pill--block" type="submit">Send me a test email</button>
 			</form>
+			<div class="form glass glass--plain glass--tight" id="drive">
+				<div class="row row--between"><h2 class="h3">Google Drive for guest photos</h2><?php if (Drive::connected()): ?><span class="badge badge--solid"><?= icon('check') ?>Connected</span><?php endif; ?></div>
+				<?php $dc = Drive::counts(); ?>
+				<?php if (Drive::connected()): ?>
+					<p class="help">Connected as <b><?= e(Site::setting('drive_email', 'your Google account')) ?></b>. Each wedding saves its guests' photos, full size, to its own folder; give weddings their folder in <a class="linkish" href="<?= e(App::url('/hq/weddings')) ?>">Weddings</a>.</p>
+					<p class="help"><?= (int) $dc['sent'] ?> sent · <?= (int) $dc['waiting'] ?> waiting<?= $dc['failed'] ? ' · ' . (int) $dc['failed'] . ' could not be sent' : '' ?></p>
+					<form method="post" action="<?= e(App::url('/hq/drive')) ?>" class="form-actions"><?= Guard::field() ?><button class="pill pill--sm" type="submit" name="do" value="sync">Send waiting photos now</button><button class="pill pill--sm pill--glass" type="submit" name="do" value="disconnect" data-confirm="Disconnect Google Drive? New photos wait on the server until you connect again.">Disconnect</button></form>
+				<?php else: ?>
+					<p class="help">Guests' photos are kept on the server until Google Drive is connected<?= $dc['waiting'] ? ' (' . (int) $dc['waiting'] . ' waiting now)' : '' ?>.</p>
+				<?php endif; ?>
+				<details class="faq__q"<?= Drive::configured() ? '' : ' open' ?>>
+					<summary><span><?= Drive::configured() ? 'Google keys and options' : 'Set it up' ?></span><i class="faq__i" aria-hidden="true"></i></summary>
+					<form method="post" action="<?= e(App::url('/hq/drive')) ?>" class="form">
+						<?= Guard::field() ?><input type="hidden" name="do" value="keys">
+						<p class="help">In Google Cloud Console, make a project, turn on the Google Drive API, and create an OAuth client of type <b>Web application</b> with this redirect address:</p>
+						<p><code class="code-line"><?= e(Drive::redirect()) ?></code> <button class="pill pill--sm pill--glass" type="button" data-copy="<?= e(Drive::redirect()) ?>">Copy</button></p>
+						<label class="field"><span>Client ID</span><input class="input" name="client_id" value="<?= e(Site::setting('drive_client_id')) ?>" autocomplete="off"></label>
+						<label class="field"><span>Client secret<?= Site::setting('drive_client_secret') !== '' ? ' (saved; type to replace)' : '' ?></span><input class="input" name="client_secret" type="password" autocomplete="new-password"></label>
+						<label class="field"><span>Parent folder for new wedding folders (optional)</span><input class="input" name="parent" value="<?= e(Site::setting('drive_parent')) ?>" placeholder="Paste a Drive folder link"></label>
+						<label class="check"><span>Let the platform use folders I make myself in Drive (asks Google for full Drive access)</span><input type="checkbox" name="full" value="1"<?= Drive::full() ? ' checked' : '' ?>></label>
+						<p class="help">Left off, the platform only touches the folders it makes for each wedding, and Google does not need to review the app.</p>
+						<button class="pill pill--block" type="submit">Save</button>
+					</form>
+				</details>
+				<?php if (Drive::configured()): ?><a class="pill pill--block<?= Drive::connected() ? ' pill--glass' : '' ?>" href="<?= e(App::url('/hq/drive/connect')) ?>" data-no-prefetch><?= Drive::connected() ? 'Reconnect Google Drive' : 'Connect Google Drive' ?></a><?php endif; ?>
+			</div>
 			<div class="form glass glass--plain glass--tight" id="packs">
 				<h2 class="h3">From the old site</h2>
 				<?php foreach (Pack::ALL as $pk => $pn): $here = Pack::present($pk); ?>

@@ -1,6 +1,6 @@
 <?= View::partial('account/_head', ['h' => 'The squad', 'w' => $w, 'sub' => 'Everyone standing with you', 'now' => 'squad']) ?>
 	<?php if (!Wedding::has($w, 'squad')): ?>
-		<p class="note"><?= icon('lock') ?><span>The squad shows on your page from Pro. Fill it in now and it appears when you upgrade. <a href="<?= e(App::url('/pricing')) ?>">See the plans</a></span></p>
+		<p class="note"><?= icon('lock') ?><span>The squad shows on your page from Pro. Fill it in now and it appears when you upgrade. </span><?= up_tag('pro', 'The squad') ?></p>
 	<?php endif; ?>
 	<div class="acct-list">
 		<?php foreach ($rows as $r): ?>

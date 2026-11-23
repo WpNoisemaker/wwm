@@ -1,3 +1,10 @@
+<?php $override = tbody('legal.body.privacy', ''); if ($override !== ''): ?>
+<article class="page wrap prose">
+	<h1 class="prose__h">Privacy policy</h1>
+	<?= View::partial('page/_policies', ['now' => 'privacy']) ?>
+	<?= Blog::toHtml($override) ?>
+</article>
+<?php return; endif; ?>
 <?php $mail = Site::setting('email', 'more@' . Share::host()); ?>
 <article class="page wrap prose">
 	<span class="eyebrow">Last updated 23 November 2026</span>

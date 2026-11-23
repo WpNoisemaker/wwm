@@ -7,7 +7,7 @@ $q = static function (array $over) use ($f): string {
 ?>
 <div class="page wrap">
 	<header class="page-head">
-		<span class="eyebrow">Real pages, real guests</span>
+		<span class="eyebrow"><?= t('weddings.eyebrow.real-pages-real-guests', 'Real pages, real guests') ?></span>
 		<h1><?= $f['q'] !== '' ? 'Weddings matching “' . e($f['q']) . '”' : 'Wedding pages' ?></h1>
 		<p class="lede"><?= e(number_format($total)) ?><?= $f['plan'] !== '' ? ' ' . e(Site::tier($f['plan'])) : '' ?> page<?= $total === 1 ? '' : 's' ?><?= $f['city'] !== '' ? ' in ' . e($f['city']) : ($f['country'] !== '' ? ' in ' . e($f['country']) : '') ?><?= $f['style'] !== '' ? ' · ' . e($f['style']) : '' ?></p>
 	</header>
@@ -52,8 +52,8 @@ $q = static function (array $over) use ($f): string {
 	<?php if (!$rows): ?>
 		<div class="glass glass--plain empty gap-t">
 			<span class="cbtn"><?= icon('search') ?></span>
-			<p>Nothing matches that yet. Try a different spelling, or clear the filters.</p>
-			<a class="pill pill--glass" href="<?= e(App::url('/weddings')) ?>">Show every page</a>
+			<p><?= t('weddings.text.nothing-matches-that-yet-try', 'Nothing matches that yet. Try a different spelling, or clear the filters.') ?></p>
+			<a class="pill pill--glass" href="<?= e(App::url('/weddings')) ?>"><?= t('weddings.button.show-every-page', 'Show every page') ?></a>
 		</div>
 	<?php else: ?>
 		<div class="cards gap-t">

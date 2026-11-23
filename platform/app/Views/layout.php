@@ -26,7 +26,7 @@ if ($ink)      { $htmlAttr .= ' data-ink="' . e($ink) . '"'; }
 if (!empty($wtpl)) { $htmlAttr .= ' data-tpl="' . e($wtpl) . '"'; }
 $home  = App::url('/');
 $base  = (string) parse_url($home, PHP_URL_PATH);
-$og    = $ogImage ?? App::url('assets/img/brand/og.jpg');
+$og    = $ogImage ?? img_url(timg('site.image.share', 'brand/og.jpg'));
 // The page's own address, for link previews: the site's origin plus the path asked for.
 $origin = (string) preg_replace('#^(https?://[^/]+).*$#', '$1', (string) App::config('url'));
 $canon  = $canonical ?? ($origin . strtok((string) ($_SERVER['REQUEST_URI'] ?? '/'), '?'));

@@ -3,16 +3,18 @@
 		<?php foreach ([[$nums['people'], 'People'], [$nums['weddings'], 'Wedding pages'], [$nums['public'], 'Public'], [$nums['guests'], 'Guests'], [$nums['vendors'], 'Vendors']] as [$n, $l]): ?>
 			<div class="tile"><span class="k"><?= e($l) ?></span><?= dots((string) (int) $n, 'dotnum--sm kpi-dots') ?></div>
 		<?php endforeach; ?>
-		<?= kv('Gifts received', money(short_money((int) $nums['raised'])), '', true) ?>
-		<?= kv('Payouts waiting', money(short_money((int) $nums['owed'])), (int) $nums['owed'] > 0 ? 'is-on' : '', true) ?>
-		<a class="tile tile--glyph" href="<?= e(App::url('/hq/settings')) ?>"><?= icon('s-spark') ?><span>Settings</span></a>
+		<?php if (Staff::can('money')): ?>
+			<?= kv('Gifts received', money(short_money((int) $nums['raised'])), '', true) ?>
+			<?= kv('Payouts waiting', money(short_money((int) $nums['owed'])), (int) $nums['owed'] > 0 ? 'is-on' : '', true) ?>
+		<?php endif; ?>
+		<?php if (Staff::can('settings')): ?><a class="tile tile--glyph" href="<?= e(App::url('/hq/settings')) ?>"><?= icon('s-spark') ?><span>Settings</span></a><?php endif; ?>
 	</div>
-	<?php foreach (Pack::ALL as $pk => $pn): if (!Pack::present($pk)): ?>
+	<?php if (Auth::is('owner')): foreach (Pack::ALL as $pk => $pn): if (!Pack::present($pk)): ?>
 		<div class="note gap-t"><?= icon('info') ?><span><?= e(Pack::ABOUT[$pk][0] ?? $pn) ?>: not here yet. <a href="<?= e(App::url('/hq/settings#packs')) ?>">Restore in Settings</a>.</span></div>
-	<?php endif; endforeach; ?>
+	<?php endif; endforeach; endif; ?>
 	<div class="split-2 gap-t">
 		<div>
-			<?php if ($asks): ?>
+			<?php if ($asks && Staff::can('money')): ?>
 				<div class="block-head"><h2 class="h2">Payouts waiting</h2></div>
 				<div class="rows">
 					<?php foreach ($asks as $a): ?>
@@ -22,7 +24,8 @@
 					<?php endforeach; ?>
 				</div>
 			<?php endif; ?>
-			<div class="block-head<?= $asks ? ' gap-t' : '' ?>"><h2 class="h2">Newest accounts</h2></div>
+			<?php if (Staff::can('people')): ?>
+			<div class="block-head<?= $asks && Staff::can('money') ? ' gap-t' : '' ?>"><h2 class="h2">Newest accounts</h2></div>
 			<div class="rows">
 				<?php foreach ($recent as $u): ?>
 					<div class="row-item"><span class="row-item__ico"><?= icon('user') ?></span>
@@ -30,6 +33,7 @@
 						<span class="row-item__end"><span class="badge"><?= e($u['role']) ?></span></span></div>
 				<?php endforeach; ?>
 			</div>
+			<?php endif; ?>
 		</div>
 		<aside>
 			<div class="block-head"><h2 class="h2">Pages by plan</h2></div>

@@ -9,9 +9,9 @@ $topicUrl = static fn (string $t, string $s): string => App::url('/community?' .
 ?>
 <div class="page wrap">
 	<header class="page-head">
-		<span class="eyebrow">No account · any pen name</span>
-		<h1>Say it here instead</h1>
-		<p class="lede">Love, family, money, faith, in-laws and starting over. Words on colour, under any name you like.</p>
+		<span class="eyebrow"><?= t('community.eyebrow.no-account-any-pen-name', 'No account · any pen name') ?></span>
+		<h1><?= t('community.title.say-it-here-instead', 'Say it here instead') ?></h1>
+		<p class="lede"><?= t('community.intro.love-family-money-faith-inlaws', 'Love, family, money, faith, in-laws and starting over. Words on colour, under any name you like.') ?></p>
 	</header>
 	<div class="wrap-narrow-flash"><?= flashes() ?></div>
 
@@ -27,7 +27,7 @@ $topicUrl = static fn (string $t, string $s): string => App::url('/community?' .
 	</nav>
 
 	<?php if (!$rows): ?>
-		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('chat') ?></span><p>Nothing here yet. Be the first to say it.</p><button class="pill" type="button" data-open="compose">Write a post</button></div>
+		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('chat') ?></span><p><?= t('community.text.nothing-here-yet-be-the', 'Nothing here yet. Be the first to say it.') ?></p><button class="pill" type="button" data-open="compose">Write a post</button></div>
 	<?php else: ?>
 	<div class="talk gap-t">
 		<div class="talk__main">
@@ -51,7 +51,7 @@ $topicUrl = static fn (string $t, string $s): string => App::url('/community?' .
 				<div class="act"><button class="cbtn cbtn--lg" type="button" data-deck-go="1" aria-label="Next post"><?= icon('next') ?></button><span class="act__l">Next</span></div>
 			</div>
 			<button class="pill pill--block gap-t-sm" type="button" data-open="compose">Write a post</button>
-			<p class="after-pill">No account needed. Only your pen name appears.</p>
+			<p class="after-pill"><?= t('community.text.no-account-needed-only-your', 'No account needed. Only your pen name appears.') ?></p>
 		</div>
 		<aside class="talk__side">
 			<div class="block-head"><h2 class="h2"><?= $sort === 'new' ? 'Just posted' : 'Most felt' ?></h2></div>
@@ -73,7 +73,7 @@ $topicUrl = static fn (string $t, string $s): string => App::url('/community?' .
 	<div class="sheet__grab" aria-hidden="true"></div>
 	<div class="sheet__head">
 		<a class="cbtn cbtn--sm" href="#" data-close aria-label="Close"><?= icon('close') ?></a>
-		<h2 id="compose-t">New post</h2><span></span>
+		<h2 id="compose-t"><?= t('community.heading.new-post', 'New post') ?></h2><span></span>
 	</div>
 	<form class="compose-form" method="post" action="<?= e(App::url('/community/post')) ?>">
 		<?= Guard::field() ?>
@@ -94,7 +94,7 @@ $topicUrl = static fn (string $t, string $s): string => App::url('/community?' .
 		</div>
 		<label class="field"><span>Pen name: anything you like</span><input class="input" name="pen_name" maxlength="40" placeholder="Quiet Storm" autocomplete="off"></label>
 		<button class="pill pill--block" type="submit">Post</button>
-		<p class="after-pill">Only your pen name appears on the post.</p>
+		<p class="after-pill"><?= t('community.text.only-your-pen-name-appears', 'Only your pen name appears on the post.') ?></p>
 	</form>
 </div>
 <script>

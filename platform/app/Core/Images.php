@@ -73,4 +73,45 @@ final class Images
         }
         imagedestroy($dst);
     }
+
+    /**
+     * Make the smaller and WebP copies for a picture that arrived without them (the old site's
+     * uploads, or a file put on the server by hand). Runs after the page has gone out, once per
+     * picture: the next visitor gets the fast copies.
+     */
+    public static function variants(string $file): void
+    {
+        $stem = (string) preg_replace('/\.(jpe?g|png|webp)$/i', '', $file);
+        if ($stem === $file || is_file($stem . '-640.jpg') || !is_file($file) || !function_exists('imagecreatetruecolor')) {
+            return;
+        }
+        if ((int) @filesize($file) > 40 * 1024 * 1024) {
+            return;
+        }
+        $info = @getimagesize($file);
+        if (!$info) {
+            return;
+        }
+        $src = match ($info[2]) {
+            IMAGETYPE_JPEG => @imagecreatefromjpeg($file),
+            IMAGETYPE_PNG  => @imagecreatefrompng($file),
+            IMAGETYPE_WEBP => function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($file) : false,
+            default        => false,
+        };
+        if (!$src) {
+            return;
+        }
+        self::write($src, $stem . '-640', 640);
+        if (function_exists('imagewebp') && !is_file($stem . '.webp')) {
+            $w = imagesx($src);
+            $h = imagesy($src);
+            $k = min(1, 1600 / max($w, $h));
+            $dst = imagecreatetruecolor(max(1, (int) round($w * $k)), max(1, (int) round($h * $k)));
+            imagefill($dst, 0, 0, imagecolorallocate($dst, 255, 255, 255));
+            imagecopyresampled($dst, $src, 0, 0, 0, 0, imagesx($dst), imagesy($dst), $w, $h);
+            imagewebp($dst, $stem . '.webp', 78);
+            imagedestroy($dst);
+        }
+        imagedestroy($src);
+    }
 }

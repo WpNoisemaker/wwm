@@ -16,8 +16,9 @@ Plain PHP. No Composer, no Node, no build step, nothing to compile. Upload, open
 
 ## Already installed? Updating to the new design
 
-Your database, settings and accounts stay exactly as they are. Nothing in the database changes shape,
-so there is no upgrade step to run.
+Your database, settings and accounts stay exactly as they are. There is no upgrade step to run: the
+few new tables (quiz scores, reminders, staff access, site content, Google Drive) create themselves
+the first time they are needed.
 
 1. cPanel → **File Manager** → open the folder the site lives in (the one with `install.php` deleted and
    `config/` inside it).
@@ -29,6 +30,10 @@ so there is no upgrade step to run.
    - **Couples from the old site → Ibrahim & Ummi → Restore.** Their Premium page comes back in the
      Ivory & Gold design with their account. Their old password still works. If the old demo page was
      sitting at `/w/ibrahim-ummi`, it is replaced; a real page there is never touched.
+   - **From the old site → Marketplace sellers → Restore.** AbujaCarhire, ViaskyNigeria, IX-Projects,
+     Cedar Court Villas, Ẹbí Lace & Gele and Organized by Sheedah come back as verified sellers with
+     their listings, and the listings that were only demo content are removed. Their sign-in emails
+     are placeholders (name@example.com); each seller changes theirs under **Account**.
    - **Demo content → Remove all demo content**, then **Add demo content**, to get the new demo: a
      wedding page for every design and plan, and African couples in the UK, US, Canada, Australia,
      Dubai, New Zealand, Kenya, Ghana and Rwanda, each in their own currency.
@@ -38,8 +43,39 @@ so there is no upgrade step to run.
 5. Open the site on your phone → browser menu → **Install app** (Android) or **Share → Add to Home
    Screen** (iPhone). It opens full screen like an app and keeps working when the signal drops.
 
-Guest photos uploaded to wedding pages are saved in `public/assets/uploads/` (the folder must be
-writable, which it is by default on cPanel). Back that folder up with the database.
+Guest photos uploaded to wedding pages are saved in `public/assets/uploads/` as small, fast copies
+(the folder must be writable, which it is by default on cPanel). The full-size originals go to Google
+Drive once it is connected (see below); until then they wait in `storage/`, which is never served to
+anyone. Back up `public/assets/uploads/` and `storage/` with the database.
+
+### Background jobs (recommended)
+
+cPanel → **Cron Jobs** → add one, every five minutes:
+
+```
+php /home/YOURCPUSER/public_html/cron.php
+```
+
+It sends livestream reminders on time and guests' photos to Google Drive. The site also does both as
+people use it, so this only makes them punctual.
+
+### Google Drive for guests' photos
+
+Each wedding page gets its own Drive folder, and every photo a guest adds is saved there full size.
+
+1. **HQ → Settings → Google Drive → Set it up.** It shows the redirect address to use.
+2. In [Google Cloud Console](https://console.cloud.google.com/): create a project → **APIs & Services →
+   Library → Google Drive API → Enable** → **OAuth consent screen** (External, add your email) →
+   **Credentials → Create credentials → OAuth client ID → Web application**, and paste the redirect
+   address under *Authorised redirect URIs*. Copy the Client ID and Client secret into HQ, save.
+3. **Connect Google Drive** and sign in with the Google account that should hold the photos.
+4. **HQ → Weddings**: for each Pro, Premium or High Society page, tap **Make a folder** (or paste a link
+   to a folder you made). Photos already waiting are sent straight away.
+
+By default the platform only touches the folders it makes, so Google does not need to review the app.
+If you want to paste folders you made yourself in Drive, tick *full Drive access* first; Google then
+shows an "unverified app" warning on the one sign-in, which is safe to accept for your own account.
+Set the consent screen to **In production** so the connection does not expire after a week.
 
 Optional tidy-up: these files from the previous version are no longer used and can be deleted —
 `public/assets/css/` (everything except `wwm.css`), `public/assets/js/app.js`, `public/assets/js/deck.js`,
@@ -231,7 +267,10 @@ email, so edit its address in the database or ask the person to make a fresh acc
 Sign in at `/sign-in`, then:
 
 - **HQ → Settings** — plan prices and the gift service fee
-- **HQ → People** — promote anyone who needs staff access
+- **HQ → Staff** — add staff by email and tick what each can do (weddings, people, money, blog, site
+  text & images, marketplace, settings). Change it any time. They get a link to set their own password.
+- **HQ → Site content** — change the words and pictures on the front page and the other pages
+- **HQ → Blog** — write, schedule and publish guides, news, features and interviews
 - **HQ → Settings → Email confirmation** — **off** until you turn it on. When it is on, anyone who signs up from
   that moment must confirm their email before making their page public or asking for a payout. Everyone who
   already has an account, including anyone imported from WordPress, is never asked. Use **Send me a test email**

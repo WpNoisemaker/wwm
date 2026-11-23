@@ -7,8 +7,8 @@ $q = static function (array $o) use ($f): string {
 ?>
 <div class="page wrap">
 	<header class="page-head">
-		<span class="eyebrow">Reviewed by couples who booked them</span>
-		<h1>The people behind the day</h1>
+		<span class="eyebrow"><?= t('vendors.eyebrow.reviewed-by-couples-who-booked', 'Reviewed by couples who booked them') ?></span>
+		<h1><?= t('vendors.title.the-people-behind-the-day', 'The people behind the day') ?></h1>
 		<p class="lede"><?= e(number_format($total)) ?> vendor<?= $total === 1 ? '' : 's' ?><?= $f['city'] !== '' ? ' in ' . e($f['city']) : '' ?></p>
 	</header>
 	<form class="searchbox narrow" method="get" action="<?= e(App::url('/vendors')) ?>" role="search">
@@ -31,7 +31,7 @@ $q = static function (array $o) use ($f): string {
 	<?php endif; ?>
 
 	<?php if (!$rows): ?>
-		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('store') ?></span><p>No vendors match that yet.</p><a class="pill pill--glass" href="<?= e(App::url('/vendors')) ?>">Show everyone</a></div>
+		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('store') ?></span><p><?= t('vendors.text.no-vendors-match-that-yet', 'No vendors match that yet.') ?></p><a class="pill pill--glass" href="<?= e(App::url('/vendors')) ?>"><?= t('vendors.button.show-everyone', 'Show everyone') ?></a></div>
 	<?php else: ?>
 		<div class="cards gap-t">
 			<?php foreach ($rows as $v): ?>

@@ -9,14 +9,14 @@ $plans = [
 ?>
 <div class="page wrap">
 	<header class="page-head">
-		<span class="eyebrow">Paid once per wedding, never monthly</span>
-		<h1>Start free. Go Premium for the full owambe</h1>
-		<p class="lede">Moving up later only costs the difference. Everything you have added carries over, and the new plan&rsquo;s features switch on the moment you upgrade.</p>
+		<span class="eyebrow"><?= t('pricing.eyebrow.paid-once-per-wedding-never', 'Paid once per wedding, never monthly') ?></span>
+		<h1><?= t('pricing.title.start-free-go-premium-for', 'Start free. Go Premium for the full owambe') ?></h1>
+		<p class="lede"><?= t('pricing.intro.moving-up-later-only-costs', 'Moving up later only costs the difference. Everything you have added carries over, and the new plan’s features switch on the moment you upgrade.') ?></p>
 	</header>
 	<?= View::partial('partials/currency', ['cur' => $cur]) ?>
 	<div class="plans plans--4">
 		<?php foreach ($plans as [$k, $n, $p, $pitch, $items, $note, $cta]): ?>
-			<div class="glass plan<?= $k === 'free' ? ' glass--plain plan--mono' : '' ?><?= $k === 'premium' ? ' plan--best' : '' ?>"<?= $k === 'free' ? ' data-tone="mono"' : '' ?>>
+			<div class="glass plan<?= $k === 'free' ? ' glass--plain plan--mono' : '' ?><?= $k === 'premium' ? ' plan--best' : '' ?>" id="<?= e($k) ?>"<?= $k === 'free' ? ' data-tone="mono"' : '' ?>>
 				<p class="plan__name"><?= e($n) ?><?php if ($k === 'premium'): ?> <span class="badge badge--solid">Full owambe</span><?php endif; ?></p>
 				<p class="plan__price"><?= $p === null ? 'By quote' : Fx::show((int) $p, $cur) ?></p>
 				<p class="plan__pitch"><?= $pitch ?></p>
@@ -28,12 +28,12 @@ $plans = [
 		<?php endforeach; ?>
 	</div>
 	<p class="center sub gap-t">A Free or Pro page adds a <?= e($fee) ?>% service fee to cash gifts, which guests can choose to cover. Premium adds none.</p>
-	<p class="center gap-t-sm"><a class="linkish" href="<?= e(App::url('/templates')) ?>">See every Premium design on a real page</a> · <a class="linkish" href="<?= e(App::url('/rankings#coins')) ?>">How each plan earns buzz</a></p>
-	<p class="center sub gap-t-sm">Paid pages stay live for good. Free pages can be removed at any time. All payments are final: <a class="linkish" href="<?= e(App::url('/refunds')) ?>">no refunds</a>.</p>
+	<p class="center gap-t-sm"><a class="linkish" href="<?= e(App::url('/templates')) ?>"><?= t('pricing.button.see-every-premium-design-on', 'See every Premium design on a real page') ?></a> · <a class="linkish" href="<?= e(App::url('/rankings#coins')) ?>"><?= t('pricing.button.how-each-plan-earns-buzz', 'How each plan earns buzz') ?></a></p>
+	<p class="center sub gap-t-sm">Paid pages stay live for good. Free pages can be removed at any time. All payments are final: <a class="linkish" href="<?= e(App::url('/refunds')) ?>"><?= t('pricing.button.no-refunds', 'no refunds') ?></a>.</p>
 </div>
 
 <section class="sec wrap">
-	<div class="sec-head"><span class="eyebrow">Before you pay</span><h2>Questions people ask</h2></div>
+	<div class="sec-head"><span class="eyebrow"><?= t('pricing.eyebrow.before-you-pay', 'Before you pay') ?></span><h2><?= t('pricing.heading.questions-people-ask', 'Questions people ask') ?></h2></div>
 	<div class="faq narrow" style="width:min(100%,760px)">
 		<?php foreach ([
 			['Is the free wedding page really free?', 'Yes. Your page, invitation and programs, RSVP, love story, wall of love, vendor list and cash and gift registry are free for as long as you want them. When guests send cash gifts through a free page a small service fee is added, which guests can choose to cover. Free pages also carry two small sponsored slots.'],

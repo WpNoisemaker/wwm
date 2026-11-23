@@ -33,23 +33,48 @@ $isPremium = Wedding::rank((string) $w['plan']) >= Wedding::rank('premium');
 					<?php foreach ($choices as $k => $label): ?><option value="<?= e($k) ?>"<?= Design::get((string) $w['template'])['key'] === $k ? ' selected' : '' ?>><?= e($label) ?></option><?php endforeach; ?>
 				</select>
 			</label>
-			<p class="help"><?= $isPremium ? 'Your page wears this design.' : 'Free pages are Classic in black &amp; white and Pro pages are Classic in your colours. The other designs come with Premium.' ?> <a class="linkish" href="<?= e(App::url('/templates')) ?>">See them all</a></p>
+			<p class="help"><?= $isPremium ? 'Your page wears this design.' : 'Free pages are Classic in black &amp; white and Pro pages are Classic in your colours.' ?> <a class="linkish" href="<?= e(App::url('/templates')) ?>">See them all</a></p>
+			<?php if (!$isPremium): ?><div class="lock-row gap-t-sm"><span class="help">Ten more designs, from Royal to Savannah</span><?= up_tag('premium', 'Every Premium design') ?></div><?php endif; ?>
 			<?php if (Wedding::has($w, 'colours')): ?>
 				<div class="form-grid form-grid--2 gap-t-sm">
 					<label class="field"><span>Main colour</span><input name="primary" type="color" value="<?= e($d['primary'] ?? '#7A5C3A') ?>"></label>
 					<label class="field"><span>Accent</span><input name="accent" type="color" value="<?= e($d['accent'] ?? '#C3A46A') ?>"></label>
 				</div>
 			<?php else: ?>
-				<p class="note gap-t-sm"><?= icon('lock') ?><span>Your own colours come with Pro. <a href="<?= e(App::url('/pricing')) ?>">See the plans</a></span></p>
+				<div class="form-grid form-grid--2 gap-t-sm locked" data-upgrade="pro" data-feature="Your own colours">
+					<label class="field"><span>Main colour</span><input type="color" value="#7A5C3A" disabled></label>
+					<label class="field"><span>Accent</span><input type="color" value="#C3A46A" disabled></label>
+				</div>
+				<div class="lock-row"><span class="help">Your own colours</span><?= up_tag('pro', 'Your own colours') ?></div>
 			<?php endif; ?>
 		</section>
-		<?php if (Wedding::has($w, 'live')): ?>
-		<section class="glass glass--plain glass--tight acct-card" id="live">
-			<h2 class="h3">Livestream</h2>
-			<label class="field"><span>YouTube link for the day</span><input class="input" name="live_url" type="url" inputmode="url" value="<?= e($d['live_url'] ?? '') ?>" placeholder="https://youtube.com/live/…"></label>
-			<p class="help">Start a YouTube live (or schedule one), paste its link here, and it plays right on your page.</p>
+		<section class="glass glass--plain glass--tight acct-card" id="colours">
+			<div class="lock-row"><h2 class="h3">Colours of the day</h2><?php if (!Wedding::has($w, 'colours')): ?><?= up_tag('pro', 'Your colour code') ?><?php endif; ?></div>
+			<p class="help">The colours you would like guests to wear. They show right under your invite.</p>
+			<?php $pal = is_array($d['palette'] ?? null) ? array_values($d['palette']) : []; $canPal = Wedding::has($w, 'colours'); ?>
+			<div class="palette-ed<?= $canPal ? '' : ' locked' ?>"<?= $canPal ? '' : ' data-upgrade="pro" data-feature="Your colour code"' ?>>
+				<?php for ($i = 0; $i < 6; $i++): $row = $pal[$i] ?? null; ?>
+					<div class="palette-ed__row">
+						<input type="color" name="pal_hex[]" value="<?= e((string) ($row[1] ?? ['#C9A24B', '#7B2D43', '#E9DCC0', '#2E4A3A', '#1F3A5F', '#F2E6D8'][$i])) ?>" aria-label="Colour <?= $i + 1 ?>"<?= $canPal ? '' : ' disabled' ?>>
+						<input class="input" name="pal_name[]" value="<?= e((string) ($row[0] ?? '')) ?>" placeholder="<?= e(['Gold', 'Wine', 'Ivory', 'Emerald', 'Royal blue', 'Champagne'][$i]) ?>" aria-label="Name of colour <?= $i + 1 ?>"<?= $canPal ? '' : ' disabled' ?>>
+					</div>
+				<?php endfor; ?>
+			</div>
+			<p class="help">Name a colour to use it; leave the name empty to leave it out.</p>
 		</section>
-		<?php endif; ?>
+		<section class="glass glass--plain glass--tight acct-card" id="live">
+			<div class="lock-row"><h2 class="h3">Livestream</h2><?php if (!Wedding::has($w, 'live')): ?><?= up_tag('premium', 'Livestream on your page') ?><?php endif; ?></div>
+			<?php if (Wedding::has($w, 'live')): ?>
+				<div class="form-grid form-grid--2">
+					<label class="field"><span>YouTube link for the day</span><input class="input" name="live_url" type="url" inputmode="url" value="<?= e($d['live_url'] ?? '') ?>" placeholder="https://youtube.com/live/…"></label>
+					<label class="field"><span>It starts at (optional)</span><input class="input" name="live_at" type="datetime-local" value="<?= e((string) ($d['live_at'] ?? '')) ?>"></label>
+				</div>
+				<p class="help">Start a YouTube live (or schedule one), paste its link here, and it plays right on your page. Leave the time empty and we use your next event's. <?php $subs = Reminder::count((int) $w['id']); ?><?= $subs ? 'The moment you add it, ' . $subs . ' guest' . ($subs === 1 ? '' : 's') . ' who asked to be reminded get an email.' : 'Guests who tap Remind me get an email the moment you add it.' ?></p>
+			<?php else: ?>
+				<label class="field locked" data-upgrade="premium" data-feature="Livestream on your page"><span>YouTube link for the day</span><input class="input" type="url" placeholder="https://youtube.com/live/…" disabled></label>
+				<p class="help">Family who cannot travel watch the ceremony right on your page.</p>
+			<?php endif; ?>
+		</section>
 		<section class="glass glass--plain glass--tight acct-card" id="visibility">
 			<h2 class="h3">Who can see it</h2>
 			<div class="radios">
