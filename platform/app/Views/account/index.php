@@ -1,57 +1,62 @@
 <?php
 /**
- * The couple's dashboard: the night control panel, tile for tile, drawn with their real numbers.
+ * The couple's dashboard: their link, two buttons, four numbers and what is still missing. Nothing else.
  * @var array $w @var array $tally @var array $dash @var ?array $next @var array $todo
  */
-$design  = Design::forWedding($w);
 $public  = (string) $w['visibility'] === 'public';
-$rsvpPct = $dash['guests'] > 0 ? (int) round($dash['coming'] / $dash['guests'] * 100) : 0;
-$giftPct = $dash['target'] > 0 ? min(100, (int) round($tally['raised'] / $dash['target'] * 100)) : 0;
 $days    = Wedding::daysTo($w);
 $url     = App::url('/w/' . $w['slug']);
 ?>
 <?= View::partial('account/_head', ['h' => Wedding::names($w), 'w' => $w, 'sub' => Wedding::when($w), 'now' => 'overview']) ?>
-	<div class="split-2">
-		<div>
-			<div class="mosaic panel">
-				<a class="tile tile--glyph tile--sq<?= $public ? ' is-on' : '' ?>" href="<?= e(App::url('/account/page#visibility')) ?>"><?= icon('s-power') ?><span><?= $public ? 'Live' : 'Private' ?></span></a>
-				<a class="tile tile--glyph tile--sq" href="<?= e(App::url('/account/page#story')) ?>"><?= icon('s-book') ?><span>Story</span></a>
-				<?= kv('Plan', Site::tier((string) $w['plan']), 'tile--w2') ?>
-				<a class="tile tile--glyph tile--sq" href="<?= e(App::url('/account/programs')) ?>"><?= icon('s-calendar') ?><span><?= (int) $dash['programs'] ?> events</span></a>
-				<a class="tile tile--glyph tile--sq" href="<?= e(App::url('/account/squad')) ?>"><?= icon('s-users') ?><span>Squad <?= (int) $dash['squad'] ?></span></a>
-				<?= meter($giftPct, 'Gifts funded') ?>
-				<?= kv('Design', $design['name'], 'tile--w2') ?>
-				<div class="tile tile--w2 tile--h2 tile--ticks">
-					<div><span class="k">Guests coming</span><span class="v"><?= number_format($dash['heads']) ?></span><span class="k gap-k">Replies</span><span class="v"><?= number_format($dash['guests']) ?></span><span class="k gap-k">Can't make it</span><span class="v"><?= number_format($dash['declined']) ?></span></div>
-					<div class="ticks" aria-hidden="true"><?php for ($i = 0; $i < 12; $i++): ?><i<?= $i === (int) round($rsvpPct / 100 * 11) ? ' class="is-on"' : '' ?>></i><?php endfor; ?></div>
-				</div>
-				<?= meter($rsvpPct, 'RSVPs in') ?>
-				<?= kv('Gifts', money(short_money((int) $tally['raised']), (string) $w['currency']), '', true) ?>
-				<?= kv('This week', money(short_money((int) $dash['week']), (string) $w['currency']), '', true) ?>
-				<a class="tile tile--glyph tile--sq" href="<?= e(App::url('/w/' . $w['slug'] . '#wall')) ?>"><?= icon('s-heart') ?><span><?= (int) $dash['notes'] ?> wishes</span></a>
-				<a class="tile tile--glyph tile--sq" href="<?= e(App::url('/w/' . $w['slug'] . '#photos')) ?>"><?= icon('s-camera') ?><span><?= (int) $dash['photos'] ?> photos</span></a>
-				<?= kv('Page views', number_format((int) $w['views']), 'tile--w2') ?>
-				<div class="tile tile--w2 tile--num"><div><span class="k">Days to go</span><span class="v v--sm"><?= e(Wedding::short($w)) ?></span></div><?= $days !== null && $days >= 0 ? dots((string) $days, 'dotnum--sm') : '<span class="v">Done</span>' ?></div>
-			</div>
+	<div class="cdash">
+		<div class="glass glass--tight linkcard">
+			<div><span class="k">Your page</span><span class="v v--sm linkcard__url"><?= e(preg_replace('#^https?://#', '', $url)) ?></span></div>
+			<button class="cbtn" type="button" data-share="<?= e($url) ?>" aria-label="Share your page"><?= icon('share') ?></button>
+		</div>
+		<div class="cdash__acts">
+			<a class="pill" href="<?= e(App::url('/account/page')) ?>"><?= icon('pen') ?>Edit your page</a>
+			<a class="pill pill--glass" href="<?= e($url) ?>"><?= icon('eye') ?>View it</a>
+		</div>
+		<?php if (!$public): ?>
+			<p class="note"><?= icon('lock') ?><span>Your page is private. Only people with the pass code can open it. <a href="<?= e(App::url('/account/page#visibility')) ?>">Make it public</a> when you are ready.</span></p>
+		<?php endif; ?>
 
-			<div class="gap-t">
-				<div class="block-head"><h2 class="h2">What is left</h2></div>
+		<div class="cdash__stats">
+			<a class="tile cdash__stat" href="<?= e(App::url('/account/guests')) ?>"><span class="k">Guests coming</span><span class="v"><?= number_format((int) $dash['heads']) ?></span><span class="sub"><?= number_format((int) $dash['guests']) ?> replies</span></a>
+			<?php $pend = (int) ($dash['pending'] ?? 0); ?>
+			<a class="tile cdash__stat<?= $pend ? ' is-on' : '' ?>" href="<?= e(App::url('/account/guests#waiting')) ?>"><span class="k">Waiting for you</span><span class="v"><?= number_format($pend) ?></span><span class="sub"><?= $pend ? 'RSVPs to approve' : 'All RSVPs checked' ?></span></a>
+			<a class="tile cdash__stat" href="<?= e(App::url('/account/money')) ?>"><span class="k">Gifts received</span><span class="v"><?= money(short_money((int) $tally['raised']), (string) $w['currency']) ?></span><span class="sub"><?= money(short_money((int) $dash['week']), (string) $w['currency']) ?> this week</span></a>
+			<div class="tile cdash__stat"><span class="k"><?= $days !== null && $days >= 0 ? 'Days to go' : 'Wedding' ?></span><span class="v"><?= $days !== null && $days >= 0 ? (int) $days : 'Done' ?></span><span class="sub"><?= number_format((int) $w['views']) ?> page views</span></div>
+		</div>
+
+		<?php if ($next): $u = Wedding::until($next['when']); ?>
+			<div class="tile next-up"><span class="k">Next up</span><span class="v"><?= e($next['label']) ?></span><span class="sub">in <?= (int) $u['d'] ?> day<?= (int) $u['d'] === 1 ? '' : 's' ?><?= $next['venue'] ? ' · ' . e($next['venue']) : '' ?></span></div>
+		<?php endif; ?>
+
+		<?php $left = array_values(array_filter($todo, static fn ($t) => !$t[2])); ?>
+		<div class="gap-t">
+			<div class="block-head"><h2 class="h2"><?= $left ? 'Still to add' : 'Your page has everything' ?></h2></div>
+			<?php if ($left): ?>
 				<div class="rows">
-					<?php foreach ($todo as [$label, $href, $done]): ?>
+					<?php foreach ($left as [$label, $href]): ?>
 						<a class="row-item" href="<?= e(App::url($href)) ?>">
-							<span class="row-item__ico"><?= icon($done ? 'check' : 'plus') ?></span>
+							<span class="row-item__ico"><?= icon('plus') ?></span>
 							<span><span class="row-item__t"><?= e($label) ?></span></span>
-							<span class="row-item__end"><?= $done ? '<span class="badge badge--solid">Done</span>' : '<span class="badge">Add</span>' ?></span>
+							<span class="row-item__end"><span class="badge">Add</span></span>
 						</a>
 					<?php endforeach; ?>
 				</div>
-			</div>
-			<?php if (Managed::has($w)): ?>
-			<div class="gap-t" id="managed">
-				<div class="block-head"><h2 class="h2">Our team looks after your page</h2></div>
-				<p class="help">Your <?= e(Site::tier((string) $w['plan'])) ?> plan includes our team setting up your page and keeping it updated. Tell us what to add or change, and send photos if you have them.</p>
+			<?php else: ?>
+				<p class="help">Story, programme, squad and registry are in. You can change anything from the tabs above at any time.</p>
+			<?php endif; ?>
+		</div>
+
+		<?php if (Managed::has($w)): ?>
+		<div class="gap-t" id="managed">
+			<details class="glass glass--plain glass--tight cdash__help"<?= array_filter($requests ?? [], static fn ($r) => $r['status'] !== 'done') ? ' open' : '' ?>>
+				<summary><span><span class="row-item__t">Want us to make the changes?</span><span class="row-item__s">Optional. Your <?= e(Site::tier((string) $w['plan'])) ?> plan includes our team. You can still do everything yourself.</span></span><?= icon('chev-down') ?></summary>
 				<?php if (!Managed::managing()): ?>
-				<form method="post" action="<?= e(App::url('/account/request')) ?>" enctype="multipart/form-data" class="form glass glass--plain glass--tight gap-t-sm">
+				<form method="post" action="<?= e(App::url('/account/request')) ?>" enctype="multipart/form-data" class="form gap-t-sm">
 					<?= Guard::field() ?>
 					<label class="field"><span>What should we add or change?</span><textarea class="input" name="body" rows="3" required maxlength="4000" placeholder="Add the after-party on 20 December, 8pm, at the same venue."></textarea></label>
 					<label class="photo-pick"><input type="file" name="files[]" accept="image/jpeg,image/png,image/webp" multiple data-photo-input><?= icon('camera') ?><span data-photo-name>Add up to 3 photos</span></label>
@@ -66,27 +71,10 @@ $url     = App::url('/w/' . $w['slug']);
 						<?php endforeach; ?>
 					</div>
 				<?php endif; ?>
-			</div>
-			<?php endif; ?>
+			</details>
 		</div>
-		<aside>
-			<div class="glass glass--tight linkcard">
-				<div><span class="k">Your page</span><span class="v v--sm linkcard__url"><?= e(preg_replace('#^https?://#', '', $url)) ?></span></div>
-				<button class="cbtn" type="button" data-share="<?= e($url) ?>" aria-label="Share your page"><?= icon('share') ?></button>
-			</div>
-			<div class="quick">
-				<a href="<?= e($url) ?>"><span class="cbtn cbtn--lg"><?= icon('eye') ?></span>View</a>
-				<a href="<?= e(App::url('/account/page')) ?>"><span class="cbtn cbtn--lg"><?= icon('pen') ?></span>Edit</a>
-				<a href="<?= e(App::url('/account/guests')) ?>"><span class="cbtn cbtn--lg"><?= icon('people') ?></span>Guests</a>
-				<a href="<?= e(App::url('/account/money')) ?>"><span class="cbtn cbtn--lg"><?= icon('wallet') ?></span>Money</a>
-			</div>
-			<?php if (!$public): ?>
-				<p class="note"><?= icon('lock') ?><span>Your page is private, so nobody can find it yet. <a href="<?= e(App::url('/account/page#visibility')) ?>">Make it public</a> when you are ready.</span></p>
-			<?php endif; ?>
-			<?php if ($next): $u = Wedding::until($next['when']); ?>
-				<div class="tile next-up"><span class="k">Next up</span><span class="v"><?= e($next['label']) ?></span><span class="sub">in <?= (int) $u['d'] ?> day<?= (int) $u['d'] === 1 ? '' : 's' ?><?= $next['venue'] ? ' · ' . e($next['venue']) : '' ?></span></div>
-			<?php endif; ?>
-			<form method="post" action="<?= e(App::url('/sign-out')) ?>" class="gap-t-sm center"><?= Guard::field() ?><button class="linkish" type="submit">Sign out</button></form>
-		</aside>
+		<?php endif; ?>
+
+		<form method="post" action="<?= e(App::url('/sign-out')) ?>" class="gap-t center"><?= Guard::field() ?><button class="linkish" type="submit">Sign out</button></form>
 	</div>
 </div>

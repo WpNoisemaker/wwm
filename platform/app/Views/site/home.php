@@ -168,10 +168,10 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 		<div class="glass plan plan--best">
 			<p class="plan__name">Premium <span class="badge badge--solid">Full owambe</span></p>
 			<p class="plan__price"><?= Fx::show($prem, $cur) ?></p>
-			<p class="plan__pitch"><?= t('home.text.every-feature-and-any-of', 'Every feature and any Premium design. Our team sets up your page and keeps it updated. No fees on gifts.') ?></p>
+			<p class="plan__pitch"><?= t('home.text.every-feature-and-any-of', 'Every feature and any Premium design. You can do it all yourself, or let our team set it up and keep it updated. No fees on gifts.') ?></p>
 			<div class="plan__swatch" aria-hidden="true"><?php foreach (array_slice($premiumDesigns, 1, 6) as $d): ?><i style="background:linear-gradient(135deg,<?= e($d[6][0]) ?>,<?= e($d[6][1]) ?>)"></i><?php endforeach; ?></div>
 			<ul>
-				<li><?= icon('check') ?><?= t('home.item.we-set-up-your-page', 'We set up your page and keep it updated') ?></li>
+				<li><?= icon('check') ?><?= t('home.item.we-set-up-your-page', 'Optional: we set up your page and keep it updated') ?></li>
 				<li><?= icon('check') ?><?= t('home.item.ten-premium-designs', 'Ten Premium designs') ?></li>
 				<li><?= icon('check') ?><?= t('home.item.background-music-on-your-page', 'Background music on your page') ?></li>
 				<li><?= icon('check') ?><?= t('home.item.voice-notes-on-your-wall', 'Voice notes on your wall of love') ?></li>

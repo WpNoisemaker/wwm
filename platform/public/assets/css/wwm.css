@@ -2358,3 +2358,21 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .upbar__fill { display: block; width: 0; height: 100%; border-radius: inherit; background: var(--ink); transition: width .25s var(--ease); }
 .upbar__t { font-size: 13px; color: var(--ink-2); text-align: center; font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) { .upbar__fill { transition: none; } }
+
+/* ---------- couple dashboard: one calm column ---------- */
+.cdash { max-width: 760px; margin-inline: auto; }
+.cdash__acts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+.cdash__acts .pill { padding: 0 16px; }
+.cdash__acts .ico { width: 17px; height: 17px; }
+.cdash__stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+.cdash__stat { display: grid; align-content: start; gap: 2px; min-height: 104px; padding: 16px 18px; border-radius: 22px; color: inherit; }
+.cdash__stat .v { font-size: 28px; font-weight: 300; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.cdash__stat .sub { font-size: 12.5px; color: var(--ink-3); }
+.cdash .next-up { padding: 16px 18px; }
+.cdash__help summary { list-style: none; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; cursor: pointer; }
+.cdash__help summary::-webkit-details-marker { display: none; }
+.cdash__help summary > span { display: grid; gap: 3px; }
+.cdash__help .row-item__s { white-space: normal; overflow: visible; }
+.cdash__help summary .ico { transition: transform .25s var(--ease); }
+.cdash__help[open] summary .ico { transform: rotate(180deg); }
+@media (min-width: 700px) { .cdash__stats { grid-template-columns: repeat(4, minmax(0, 1fr)); } .cdash__acts { max-width: 460px; } }
