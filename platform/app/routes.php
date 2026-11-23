@@ -9,6 +9,7 @@
 // --- The public site --------------------------------------------------------------------------
 $r->get('/',                    [SiteController::class, 'home']);
 $r->get('/weddings',            [WeddingController::class, 'index']);
+$r->get('/weddings/near',       [WeddingController::class, 'near']);    // weddings near the visitor
 $r->get('/weddings/{place:[a-z-]+}', [WeddingController::class, 'place']);   // each country's own listing
 $r->any('/w/{slug}',            [WeddingController::class, 'show']);   // GET shows it; POST is the pass-code form on a private page
 $r->post('/w/{slug}/rsvp',      [WeddingController::class, 'rsvp']);

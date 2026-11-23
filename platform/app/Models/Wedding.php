@@ -90,7 +90,6 @@ final class Wedding
 
     public const PER_PAGE = 12;
 
-    public const SORTS = ['soon' => 'Coming soon', 'new' => 'Newest', 'buzz' => 'Most buzz'];
 
     /**
      * The six styles the homepage links to. There is no style column — a wedding is whatever its
@@ -192,14 +191,79 @@ final class Wedding
     }
 
     /** Soonest first is the default: a directory is for finding a day you can still turn up to. */
+    /**
+     * What is happening on a page right now: replies, wishes, quiz plays and gifts in the last two
+     * weeks, weighted by how much each one means. Buzz settles ties, so a quiet week still ranks.
+     */
+    private const TRENDING = '(SELECT COUNT(*) FROM guests tg WHERE tg.wedding_id = w.id AND tg.created_at > NOW() - INTERVAL 14 DAY) * 3
+        + (SELECT COUNT(*) FROM wall tw WHERE tw.wedding_id = w.id AND tw.created_at > NOW() - INTERVAL 14 DAY) * 2
+        + (SELECT COUNT(*) FROM quiz_scores tq WHERE tq.wedding_id = w.id AND tq.created_at > NOW() - INTERVAL 14 DAY)
+        + (SELECT COUNT(*) FROM payments tp WHERE tp.wedding_id = w.id AND tp.created_at > NOW() - INTERVAL 14 DAY) * 4';
+
+    /** The sorts a visitor can choose, Trending first: it is what every list opens on. */
+    public const SORTS = ['trending' => 'Trending', 'top' => 'Top ranked', 'soon' => 'Coming up', 'new' => 'Just added'];
+
     private static function order(string $sort): string
     {
         return match ($sort) {
             'new'  => 'w.created_at DESC, w.id DESC',
-            'buzz' => 'w.buzz DESC, w.views DESC, w.id DESC',
-            default => 'CASE WHEN w.wed_date >= CURDATE() THEN 0 WHEN w.wed_date IS NULL THEN 2 ELSE 1 END,'
+            'top', 'buzz' => 'w.buzz DESC, w.views DESC, w.id DESC',
+            'soon' => 'CASE WHEN w.wed_date >= CURDATE() THEN 0 WHEN w.wed_date IS NULL THEN 2 ELSE 1 END,'
                      . ' CASE WHEN w.wed_date >= CURDATE() THEN w.wed_date END ASC, w.wed_date DESC, w.id DESC',
+            default => '(' . self::TRENDING . ') DESC, w.buzz DESC, w.id DESC',
         };
+    }
+
+    /** Make sure everything the trending sort reads exists, on sites that have never had a quiz. */
+    public static function readyToSort(): void
+    {
+        Quiz::table();
+    }
+
+    /**
+     * Each public page's place on the chart: everywhere, or within one country.
+     *
+     * @return array<int,int> wedding id => rank, 1 first
+     */
+    public static function ranks(string $country = ''): array
+    {
+        static $cache = [];
+        if (!isset($cache[$country])) {
+            $rows = Db::all("SELECT id FROM weddings WHERE visibility = 'public'" . ($country !== '' ? ' AND country = ?' : '') . ' ORDER BY buzz DESC, views DESC, id DESC',
+                $country !== '' ? [$country] : []);
+            $cache[$country] = [];
+            foreach ($rows as $i => $r) {
+                $cache[$country][(int) $r['id']] = $i + 1;
+            }
+        }
+        return $cache[$country];
+    }
+
+    /** The highest-ranked public pages, everywhere. */
+    public static function top(int $n = 5): array
+    {
+        return Db::all("SELECT * FROM weddings WHERE visibility = 'public' ORDER BY buzz DESC, views DESC, id DESC LIMIT ?", [$n]);
+    }
+
+    /**
+     * Public pages nearest a point, by their city, closest first: [where you are, the pages with
+     * how far away each one is].
+     *
+     * @return array{0:array,1:array<int,array<string,mixed>>}
+     */
+    public static function near(float $lat, float $lng, int $n = 8): array
+    {
+        $here = Places::nearest($lat, $lng);
+        $out = [];
+        foreach (Db::all("SELECT * FROM weddings WHERE visibility = 'public' AND city <> ''") as $w) {
+            $at = Places::at((string) $w['city']);
+            if ($at) {
+                $w['km'] = Places::km($lat, $lng, $at[0], $at[1]);
+                $out[] = $w;
+            }
+        }
+        usort($out, static fn ($a, $b) => [$a['km'], -$a['buzz']] <=> [$b['km'], -$b['buzz']]);
+        return [$here, array_slice($out, 0, $n)];
     }
 
     /**

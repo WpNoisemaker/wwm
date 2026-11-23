@@ -1898,3 +1898,16 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .input[type="file"] { height: auto; min-height: 52px; padding: 7px 10px; color: var(--ink-3); font-size: 13.5px; line-height: 36px; cursor: pointer; }
 .input[type="file"]::file-selector-button { margin-right: 12px; height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--tile-on); color: var(--ink); font: inherit; font-size: 13.5px; cursor: pointer; }
 .input[type="file"]:disabled { cursor: not-allowed; }
+
+/* ---------- rankings and weddings near you ---------- */
+.sq__rank { position: absolute; left: 10px; top: 10px; z-index: 2; display: grid; place-items: center; min-width: 34px; height: 26px; padding: 0 9px; border-radius: 999px;
+	background: rgba(10, 14, 22, .55); color: #fff; font-size: 12px; font-weight: 500; letter-spacing: .02em; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.showcase__i .sq__rank { left: 12px; top: 12px; }
+.showcase__more { margin-top: 14px; text-align: center; font-size: 13.5px; }
+.near__ask { display: grid; justify-items: center; gap: 12px; text-align: center; padding: 26px 22px; border-radius: 32px; width: min(100%, 620px); margin-inline: auto; }
+.near__ask p { color: var(--ink-2); font-size: 14.5px; max-width: 440px; }
+.near__ask .pill.is-busy { opacity: .7; pointer-events: none; }
+.near__where { display: flex; align-items: center; justify-content: center; gap: 8px; margin: -6px 0 16px; color: var(--ink-2); font-size: 14px; }
+.near__where b { color: var(--ink); font-weight: 400; }
+.near__body.is-in { animation: nearin .45s var(--ease); }
+@keyframes nearin { from { opacity: 0; transform: translateY(8px); } }

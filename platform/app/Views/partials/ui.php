@@ -67,11 +67,12 @@ function initials(array $w): string
 }
 
 /** A wedding as a card: squircle photo, names, and one line under them. */
-function wedding_card(array $w, string $sub = '', string $tag = '', string $cls = ''): string
+function wedding_card(array $w, string $sub = '', string $tag = '', string $cls = '', int $rank = 0): string
 {
     $sub = $sub !== '' ? $sub : trim(Wedding::where($w) . ' · ' . Wedding::short($w), ' ·');
     return '<a class="card' . ($cls !== '' ? ' ' . e($cls) : '') . '" href="' . e(App::url('/w/' . $w['slug'])) . '">'
          . '<span class="sq">' . (photo((string) $w['cover'], Wedding::names($w)) ?: '<span class="fill-art" aria-hidden="true">' . initials($w) . '</span>')
+         . ($rank > 0 ? '<span class="sq__rank" aria-label="Ranked ' . $rank . '">#' . $rank . '</span>' : '')
          . ($tag !== '' ? '<span class="sq__tag">' . e($tag) . '</span>' : '') . '</span>'
          . '<span class="card__cap"><span class="card__t">' . e(Wedding::names($w)) . '</span><span class="card__s">' . e($sub) . '</span></span></a>';
 }

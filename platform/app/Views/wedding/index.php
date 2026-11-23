@@ -1,7 +1,7 @@
 <?php
 /** The wedding directory: search, a row of sorts and styles, the cities, then the pages. */
 $q = static function (array $over) use ($f): string {
-	$all = array_filter(array_merge(['q' => $f['q'], 'plan' => $f['plan'], 'country' => $f['country'], 'city' => $f['city'], 'style' => $f['style'], 'sort' => $f['sort']], $over), static fn ($v) => $v !== '' && $v !== null);
+	$all = array_filter(array_merge(['q' => $f['q'], 'plan' => $f['plan'], 'country' => $f['country'], 'city' => $f['city'], 'style' => $f['style'], 'sort' => $f['sort'] === 'trending' ? null : $f['sort']], $over), static fn ($v) => $v !== '' && $v !== null);
 	return App::url('/weddings') . ($all ? '?' . http_build_query($all) : '');
 };
 ?>
@@ -15,7 +15,7 @@ $q = static function (array $over) use ($f): string {
 	<form class="searchbox narrow" method="get" action="<?= e(App::url('/weddings')) ?>" role="search">
 		<?= icon('search') ?>
 		<input class="input" type="search" name="q" value="<?= e($f['q']) ?>" placeholder="A couple, a city or a hashtag" aria-label="Search weddings">
-		<?php foreach (['plan', 'country', 'city', 'style', 'sort'] as $k): if ($f[$k] !== '' && !($k === 'sort' && $f[$k] === 'soon')): ?><input type="hidden" name="<?= $k ?>" value="<?= e($f[$k]) ?>"><?php endif; endforeach; ?>
+		<?php foreach (['plan', 'country', 'city', 'style', 'sort'] as $k): if ($f[$k] !== '' && !($k === 'sort' && $f[$k] === 'trending')): ?><input type="hidden" name="<?= $k ?>" value="<?= e($f[$k]) ?>"><?php endif; endforeach; ?>
 	</form>
 
 	<nav class="seg seg--center seg--plans gap-t-sm" aria-label="Plan">
@@ -25,8 +25,8 @@ $q = static function (array $over) use ($f): string {
 		<?php endforeach; ?>
 	</nav>
 	<nav class="chips chips--center gap-t-sm" aria-label="Sort and style">
-		<?php foreach ([['soon', 'Coming up'], ['new', 'Just added'], ['buzz', 'Most buzz']] as [$k, $label]): ?>
-			<a class="chip<?= $f['sort'] === $k ? ' is-on' : '' ?>" href="<?= e($q(['sort' => $k === 'soon' ? null : $k, 'page' => null])) ?>"<?= $f['sort'] === $k ? ' aria-current="true"' : '' ?>><?= e($label) ?></a>
+		<?php foreach (Wedding::SORTS as $k => $label): ?>
+			<a class="chip<?= $f['sort'] === $k ? ' is-on' : '' ?>" href="<?= e($q(['sort' => $k === 'trending' ? null : $k, 'page' => null])) ?>"<?= $f['sort'] === $k ? ' aria-current="true"' : '' ?>><?= e($label) ?></a>
 		<?php endforeach; ?>
 		<?php foreach ($styles as $st): ?>
 			<a class="chip<?= $f['style'] === $st ? ' is-on' : '' ?>" href="<?= e($q(['style' => $f['style'] === $st ? null : $st, 'page' => null])) ?>"><?= e($st) ?></a>
@@ -56,11 +56,15 @@ $q = static function (array $over) use ($f): string {
 			<a class="pill pill--glass" href="<?= e(App::url('/weddings')) ?>"><?= t('weddings.button.show-every-page', 'Show every page') ?></a>
 		</div>
 	<?php else: ?>
+		<?php $ranks = Wedding::ranks(); ?>
 		<div class="cards gap-t">
 			<?php foreach ($rows as $w): ?>
-				<?= wedding_card($w, trim(Wedding::short($w) . ' · ' . Wedding::place($w), ' ·'), Site::tier((string) $w['plan'])) ?>
+				<?= wedding_card($w, trim(Wedding::short($w) . ' · ' . Wedding::place($w), ' ·'), Site::tier((string) $w['plan']), '', $ranks[(int) $w['id']] ?? 0) ?>
 			<?php endforeach; ?>
 		</div>
-		<?= pager($page, $pages, ['q' => $f['q'], 'plan' => $f['plan'], 'country' => $f['country'], 'city' => $f['city'], 'style' => $f['style'], 'sort' => $f['sort'] === 'soon' ? '' : $f['sort']]) ?>
+		<?= pager($page, $pages, ['q' => $f['q'], 'plan' => $f['plan'], 'country' => $f['country'], 'city' => $f['city'], 'style' => $f['style'], 'sort' => $f['sort'] === 'trending' ? '' : $f['sort']]) ?>
 	<?php endif; ?>
 </div>
+<?php if ($page === 1 && $f['q'] === '' && $f['city'] === '' && $f['country'] === ''): ?>
+<?= View::partial('partials/near', ['eyebrow' => 'Near you', 'heading' => 'Weddings in your city']) ?>
+<?php endif; ?>

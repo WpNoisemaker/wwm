@@ -59,6 +59,13 @@ register_shutdown_function(static function (): void {
     }
 });
 
+// Content changes a site already installed should also get, applied once each.
+try {
+    Upgrade::run();
+} catch (Throwable $e) {
+    error_log('[wwm] upgrades: ' . $e->getMessage());
+}
+
 $r = new Router();
 require $root . '/app/routes.php';
 // A site installed in a folder (example.com/weddings/) routes the same as one at the root.

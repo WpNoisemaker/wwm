@@ -35,15 +35,16 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 			<a class="pill pill--glass" href="<?= e(App::url('/weddings')) ?>"><?= t('home.button.browse-weddings', 'Browse weddings') ?></a>
 		</div>
 	</div>
-	<?php $show = $world ?? []; if ($show): ?>
-	<div class="showcase">
+	<?php $show = $top ?? []; if ($show): ?>
+	<div class="showcase" aria-label="The top-ranked weddings">
 		<?php foreach ($show as $n => $w): ?>
 			<a class="card showcase__i" href="<?= e(App::url('/w/' . $w['slug'])) ?>">
-				<?= sq((string) $w['cover'], Wedding::names($w), '', $n < 2, initials($w)) ?>
+				<span class="sq"><?= photo((string) $w['cover'], Wedding::names($w), $n < 2) ?: '<span class="fill-art" aria-hidden="true">' . initials($w) . '</span>' ?><span class="sq__rank" aria-label="Ranked <?= $n + 1 ?>">#<?= $n + 1 ?></span></span>
 				<span class="card__cap"><span class="card__t"><?= e(Wedding::names($w)) ?></span><span class="card__s"><?= e(Wedding::place($w)) ?></span></span>
 			</a>
 		<?php endforeach; ?>
 	</div>
+	<p class="showcase__more"><a class="linkish" href="<?= e(App::url('/weddings?sort=top')) ?>"><?= t('home.button.see-the-full-ranking', 'See the full ranking') ?></a></p>
 	<?php endif; ?>
 </section>
 
@@ -76,19 +77,21 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 	</div>
 </section>
 
-<?php if ($chart): ?>
+<?= View::partial('partials/near', ['eyebrow' => t('home.eyebrow.near-you', 'Near you'), 'heading' => t('home.heading.weddings-in-your-city', 'Weddings in your city')]) ?>
+
+<?php if ($trending): $ranks = Wedding::ranks(); ?>
 <section class="sec wrap" id="ranked">
 	<div class="sec-head reveal">
 		<span class="eyebrow"><?= t('home.eyebrow.updated-as-guests-reply', 'Updated as guests reply') ?></span>
-		<h2><?= t('home.heading.the-buzz-chart', 'The Buzz Chart') ?></h2>
+		<h2><?= t('home.heading.trending-now', 'Trending now') ?></h2>
 		<p><?= t('home.text.pages-climb-with-rsvps-wishes', 'Pages climb with RSVPs, wishes and shares. Tap one to see why it is up there.') ?></p>
 	</div>
 	<div class="rail reveal">
-		<?php foreach (array_slice($chart, 0, 4) as $n => $w): ?>
-			<?= wedding_card($w, '#' . ($n + 1) . ' · ' . trim((string) $w['city'] . ' · ' . Wedding::short($w), ' ·'), Site::tier((string) $w['plan'])) ?>
+		<?php foreach ($trending as $w): ?>
+			<?= wedding_card($w, trim((string) $w['city'] . ' · ' . Wedding::short($w), ' ·'), Site::tier((string) $w['plan']), '', $ranks[(int) $w['id']] ?? 0) ?>
 		<?php endforeach; ?>
 	</div>
-	<p class="sec-more reveal"><a class="pill pill--glass pill--sm" href="<?= e(App::url('/rankings')) ?>">See the whole chart <?= icon('arrow') ?></a></p>
+	<p class="sec-more reveal"><a class="pill pill--glass pill--sm" href="<?= e(App::url('/weddings')) ?>"><?= t('home.button.explore-every-wedding', 'Explore every wedding') ?> <?= icon('arrow') ?></a> <a class="pill pill--glass pill--sm" href="<?= e(App::url('/rankings')) ?>"><?= t('home.button.see-the-buzz-chart', 'The Buzz Chart') ?></a></p>
 </section>
 <?php endif; ?>
 

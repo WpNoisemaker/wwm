@@ -20,7 +20,7 @@ return [
             'story' => "We met at a cousin's naming ceremony in Kaduna, where Halima corrected the way Yusuf was carrying a tray of jollof. He has been taking instructions ever since. Our mothers had been planning this for two years before we admitted it was a good idea.",
             'city' => 'Abuja', 'state' => 'FCT', 'venue' => 'Abuja Event Centre', 'days' => 35, 'time' => '16:00:00',
             'plan' => 'society', 'template' => 'savannah', 'colours' => ['#A4552B', '#EBB874'],
-            'cover' => 'photos/listing-olive-gele.jpg', 'photo2' => 'photos/listing-couple-olive.jpg', 'buzz' => 5120, 'views' => 9400, 'culture' => 'hausa', 'guests' => 44,
+            'cover' => 'photos/listing-couple-olive.jpg', 'photo2' => 'seed/reception-hall.jpg', 'buzz' => 5120, 'views' => 9400, 'culture' => 'hausa', 'guests' => 44,
         ],
         [
             'email' => 'premium@demo.test', 'key' => 'chidi', 'slug' => 'chidi-amaka',
@@ -38,7 +38,7 @@ return [
             'story' => "Temi planned the guest list. Bayo planned the band. Neither of us planned for six hundred people, but here we are, and the caterer has been warned.",
             'city' => 'Lagos', 'state' => 'Lagos', 'venue' => 'Harbour Point, Victoria Island', 'days' => 28, 'time' => '13:00:00',
             'plan' => 'premium', 'template' => 'owambe', 'colours' => ['#0F7B5F', '#F4B400'],
-            'cover' => 'photos/listing-guests-magenta.jpg', 'photo2' => 'photos/listing-coral-gele.jpg', 'buzz' => 4105, 'views' => 7000, 'culture' => 'yoruba', 'guests' => 46,
+            'cover' => 'couples/demo/trad-1.jpg', 'photo2' => 'seed/table-setting.jpg', 'buzz' => 4105, 'views' => 7000, 'culture' => 'yoruba', 'guests' => 46,
         ],
         [
             'email' => 'musa@demo.test', 'key' => 'musa', 'slug' => 'musa-zainab',
@@ -47,7 +47,7 @@ return [
             'story' => "Musa was in Manchester and Zainab was in Kaduna for the first six years of this. They kept a shared note on their phones titled Things To Do When We Are In The Same Country. It is now forty-one items long and the first is a wedding.",
             'city' => 'Kaduna', 'state' => 'Kaduna', 'venue' => 'Umaru Musa Yar\'Adua Hall', 'days' => 60, 'time' => '12:00:00',
             'plan' => 'premium', 'template' => 'indigo', 'colours' => ['#22385A', '#8DB2D8'],
-            'cover' => 'photos/listing-couple-olive.jpg', 'photo2' => 'seed/couple-beach-close.jpg', 'buzz' => 3240, 'views' => 5100, 'culture' => 'hausa', 'guests' => 36,
+            'cover' => 'couples/demo/trad-7.jpg', 'photo2' => 'seed/small-chops.jpg', 'buzz' => 3240, 'views' => 5100, 'culture' => 'hausa', 'guests' => 36,
         ],
         [
             'email' => 'obinna@demo.test', 'key' => 'obinna', 'slug' => 'obinna-adaeze',
@@ -56,7 +56,7 @@ return [
             'story' => "Adaeze's grandmother chose the coral before she chose the groom. Obinna passed the palm wine test on his second try and has been reminded about the first one at every family meeting since.",
             'city' => 'Owerri', 'state' => 'Imo', 'venue' => 'Concorde Hotel Gardens', 'days' => 42, 'time' => '12:00:00',
             'plan' => 'premium', 'template' => 'coral', 'colours' => ['#B4432D', '#E8A07A'],
-            'cover' => 'photos/listing-coral-gele.jpg', 'photo2' => 'photos/listing-red-gele.jpg', 'buzz' => 3990, 'views' => 6400, 'culture' => 'igbo', 'guests' => 38,
+            'cover' => 'couples/demo/trad-4.jpg', 'photo2' => 'seed/dessert-table.jpg', 'buzz' => 3990, 'views' => 6400, 'culture' => 'igbo', 'guests' => 38,
         ],
         [
             'email' => 'pro@demo.test', 'key' => 'seyi', 'slug' => 'seyi-folake',
@@ -65,7 +65,7 @@ return [
             'story' => "Seyi has been talking about this day since secondary school, according to everyone who was in secondary school with him. Folake took longer to be sure and wants it noted that she was right to.",
             'city' => 'Ibadan', 'state' => 'Oyo', 'venue' => 'Botanical Gardens, UI', 'days' => 90, 'time' => '11:00:00',
             'plan' => 'premium', 'template' => 'garden', 'colours' => ['#4E6B4A', '#E8B4A6'],
-            'cover' => 'photos/couple-field.jpg', 'photo2' => 'seed/couple-field-bouquet.jpg', 'buzz' => 3880, 'views' => 6100, 'culture' => 'yoruba', 'guests' => 38,
+            'cover' => 'couples/demo/trad-2.jpg', 'photo2' => 'seed/reception-hall.jpg', 'buzz' => 3880, 'views' => 6100, 'culture' => 'yoruba', 'guests' => 38,
         ],
         [
             'email' => 'simi@demo.test', 'key' => 'simi', 'slug' => 'kunle-simi',
@@ -74,7 +74,7 @@ return [
             'story' => "We are not loud people, and this is not going to be a loud wedding. Eighty guests, white flowers, a string quartet that has promised to learn one Asa song, and everyone we love in one room.",
             'city' => 'Lagos', 'state' => 'Lagos', 'venue' => 'The George, Ikoyi', 'days' => 66, 'time' => '15:00:00',
             'plan' => 'premium', 'template' => 'pearl', 'colours' => ['#8E5F55', '#E3C9AE'],
-            'cover' => 'photos/bride-white.jpg', 'photo2' => 'seed/groom-smile.jpg', 'buzz' => 3600, 'views' => 5600, 'culture' => 'church', 'guests' => 34,
+            'cover' => 'couples/demo/white-3.jpg', 'photo2' => 'seed/dessert-table.jpg', 'buzz' => 3600, 'views' => 5600, 'culture' => 'church', 'guests' => 34,
         ],
         [
             'email' => 'tunde@demo.test', 'key' => 'tunde', 'slug' => 'tunde-bisi',
@@ -83,7 +83,7 @@ return [
             'story' => "Bisi runs a catering business and Tunde keeps the accounts, so the wedding budget is the most scrutinised document in Abeokuta. We are told the small chops will be the best part. We are choosing to believe that is about the food.",
             'city' => 'Abeokuta', 'state' => 'Ogun', 'venue' => 'Kuto Event Hall', 'days' => 75, 'time' => '12:00:00',
             'plan' => 'premium', 'template' => 'asooke', 'colours' => ['#7A2E3B', '#D9A441'],
-            'cover' => 'photos/listing-fan-lady.jpg', 'photo2' => 'photos/listing-green-gele.jpg', 'buzz' => 2980, 'views' => 4300, 'culture' => 'yoruba', 'guests' => 30,
+            'cover' => 'couples/demo/trad-5.jpg', 'photo2' => 'seed/table-setting.jpg', 'buzz' => 2980, 'views' => 4300, 'culture' => 'yoruba', 'guests' => 30,
         ],
         [
             'email' => 'femi@demo.test', 'key' => 'femi', 'slug' => 'femi-kemi',
@@ -92,7 +92,7 @@ return [
             'story' => "We have been together since university, which means there is a photograph of us at every age, in every bad haircut. This page is our album. Please add to it.",
             'city' => 'Ibadan', 'state' => 'Oyo', 'venue' => 'Kakanfo Inn', 'days' => 80, 'time' => '13:00:00',
             'plan' => 'premium', 'template' => 'keepsake', 'colours' => ['#3E5C76', '#F2B84B'],
-            'cover' => 'photos/couple-dance.jpg', 'photo2' => 'seed/couple-beach-close.jpg', 'buzz' => 2700, 'views' => 3900, 'culture' => 'yoruba', 'guests' => 28,
+            'cover' => 'couples/demo/trad-8.jpg', 'photo2' => 'seed/dessert-table.jpg', 'buzz' => 2700, 'views' => 3900, 'culture' => 'yoruba', 'guests' => 28,
         ],
         [
             'email' => 'daniel@demo.test', 'key' => 'daniel', 'slug' => 'daniel-ifeoma',
@@ -101,7 +101,7 @@ return [
             'story' => "We are getting married in January, when Jos is cold enough that the photographer has asked everyone to bring a wrapper for the outdoor shots. Our guests are being warned. Our grandmother is being kept warm first.",
             'city' => 'Jos', 'state' => 'Plateau', 'venue' => 'Plateau Hotel Ballroom', 'days' => 52, 'time' => '18:00:00',
             'plan' => 'premium', 'template' => 'noir', 'colours' => ['#C8A15A', '#E9DCC0'],
-            'cover' => 'photos/bride-window.jpg', 'photo2' => 'photos/groom-suit.jpg', 'buzz' => 2550, 'views' => 3700, 'culture' => 'church', 'guests' => 30,
+            'cover' => 'photos/couple-dance.jpg', 'photo2' => 'seed/couple-dance-close.jpg', 'buzz' => 2550, 'views' => 3700, 'culture' => 'church', 'guests' => 30,
         ],
         [
             'email' => 'emeka@demo.test', 'key' => 'emeka', 'slug' => 'emeka-ngozi',
@@ -110,7 +110,7 @@ return [
             'story' => "Emeka cannot dance. Ngozi has accepted this and booked six lessons anyway. The lessons are going badly and we have decided to make it a feature of the reception.",
             'city' => 'Lagos', 'state' => 'Lagos', 'venue' => 'The Wheatbaker Ballroom, Ikoyi', 'days' => 50, 'time' => '14:00:00',
             'plan' => 'pro', 'template' => 'classic', 'colours' => ['#7A4FD0', '#E9B8D6'],
-            'cover' => 'seed/couple-dance-close.jpg', 'photo2' => 'photos/couple-dance.jpg', 'buzz' => 2400, 'views' => 3500, 'culture' => 'igbo', 'guests' => 32,
+            'cover' => 'couples/demo/white-7.jpg', 'photo2' => 'seed/reception-hall.jpg', 'buzz' => 2400, 'views' => 3500, 'culture' => 'igbo', 'guests' => 32,
         ],
         [
             'email' => 'free@demo.test', 'key' => 'kola', 'slug' => 'kola-lara',
@@ -119,7 +119,7 @@ return [
             'story' => "We are getting married on a beach because Lara refused to be indoors for it and Kola refused to be in agbada for it. We compromised: it is outdoors, and Kola will be in linen.",
             'city' => 'Lagos', 'state' => 'Lagos', 'venue' => 'Landmark Beach, Victoria Island', 'days' => 120, 'time' => '16:00:00',
             'plan' => 'free', 'template' => 'classic', 'colours' => ['#E2683C', '#FFD426'],
-            'cover' => 'photos/couple-beach.jpg', 'photo2' => 'photos/couple-field.jpg', 'buzz' => 1450, 'views' => 2100, 'culture' => 'church', 'guests' => 26,
+            'cover' => 'photos/couple-beach.jpg', 'photo2' => 'seed/table-setting.jpg', 'buzz' => 1450, 'views' => 2100, 'culture' => 'church', 'guests' => 26,
         ],
         [
             // The one private page, so the pass-code screen can be seen. Code: TOLUAYO
@@ -129,7 +129,7 @@ return [
             'story' => "This page is private. Guests need the code we sent with their invitation, and it does not appear in the directory or on the Buzz Chart.",
             'city' => 'Port Harcourt', 'state' => 'Rivers', 'venue' => 'By invitation', 'days' => 45, 'time' => '13:00:00',
             'plan' => 'free', 'template' => 'classic', 'colours' => ['#3F6F8F', '#B8D4E6'],
-            'cover' => 'photos/couple-dance.jpg', 'photo2' => '', 'buzz' => 600, 'views' => 400, 'culture' => 'yoruba', 'guests' => 14,
+            'cover' => 'seed/couple-dance-close.jpg', 'photo2' => 'seed/dessert-table.jpg', 'buzz' => 600, 'views' => 400, 'culture' => 'yoruba', 'guests' => 14,
             'visibility' => 'private', 'pass_code' => 'TOLUAYO',
         ],
         // ---- African weddings around the world ------------------------------------------------
@@ -140,7 +140,7 @@ return [
             'story' => "Dapo grew up in Peckham, Amara in Enugu, and they met at a friend's naming ceremony in Croydon. Half the family is flying in from Lagos, the other half is driving down from Manchester, and the aso-ebi has been in transit since July.",
             'city' => 'London', 'state' => 'England', 'venue' => 'The Landmark London', 'days' => 33, 'time' => '13:00:00',
             'plan' => 'premium', 'template' => 'pearl', 'colours' => ['#8E5F55', '#E3C9AE'],
-            'cover' => 'seed/bride-blazer.jpg', 'photo2' => 'seed/groom-smile.jpg', 'buzz' => 3720, 'views' => 6100, 'culture' => 'diaspora', 'guests' => 34,
+            'cover' => 'couples/demo/white-2.jpg', 'photo2' => 'seed/table-setting.jpg', 'buzz' => 3720, 'views' => 6100, 'culture' => 'diaspora', 'guests' => 34,
         ],
         [
             'email' => 'tayo@demo.test', 'key' => 'tayo', 'slug' => 'tayo-bimpe', 'country' => 'United States',
@@ -149,7 +149,7 @@ return [
             'story' => "We met at a Nigerian Students Association party in Houston in 2019 and argued about whose state makes the best jollof. Five years later we are still arguing, but now it is in front of four hundred people.",
             'city' => 'Houston', 'state' => 'Texas', 'venue' => 'The Bell Tower on 34th', 'days' => 47, 'time' => '14:00:00',
             'plan' => 'pro', 'template' => 'classic', 'colours' => ['#1F6F8B', '#F2C14E'],
-            'cover' => 'photos/listing-red-gele.jpg', 'photo2' => 'photos/listing-guests-magenta.jpg', 'buzz' => 3110, 'views' => 4900, 'culture' => 'diaspora', 'guests' => 32,
+            'cover' => 'couples/demo/trad-3.jpg', 'photo2' => 'seed/dessert-table.jpg', 'buzz' => 3110, 'views' => 4900, 'culture' => 'diaspora', 'guests' => 32,
         ],
         [
             'email' => 'uche@demo.test', 'key' => 'uche', 'slug' => 'uche-nneka', 'country' => 'Canada',
@@ -158,7 +158,7 @@ return [
             'story' => "Uche moved to Toronto for a master's and Nneka moved for a job, and they found each other at a church choir rehearsal neither of them could sing at. The igba nkwu is in Enugu in December; this is the Toronto celebration for everyone who could not travel.",
             'city' => 'Toronto', 'state' => 'Ontario', 'venue' => 'Liberty Grand', 'days' => 58, 'time' => '15:00:00',
             'plan' => 'premium', 'template' => 'indigo', 'colours' => ['#22385A', '#8DB2D8'],
-            'cover' => 'seed/couple-beach-close.jpg', 'photo2' => 'photos/couple-beach.jpg', 'buzz' => 2860, 'views' => 4200, 'culture' => 'igbo', 'guests' => 30,
+            'cover' => 'photos/couple-field.jpg', 'photo2' => 'seed/couple-field-bouquet.jpg', 'buzz' => 2860, 'views' => 4200, 'culture' => 'igbo', 'guests' => 30,
         ],
         [
             'email' => 'kwame@demo.test', 'key' => 'kwame', 'slug' => 'kwame-efua', 'country' => 'Australia',
@@ -167,7 +167,7 @@ return [
             'story' => "Kwame is from Kumasi and Efua is from Cape Coast, and they met at an Afrobeats night in Melbourne. We are keeping it small and on the beach, and we will be in kente whatever the weather does.",
             'city' => 'Melbourne', 'state' => 'Victoria', 'venue' => 'St Kilda Beach Pavilion', 'days' => 96, 'time' => '16:00:00',
             'plan' => 'free', 'template' => 'classic', 'colours' => ['#C8102E', '#FCD116'],
-            'cover' => 'seed/bridal-bouquet.jpg', 'photo2' => 'photos/couple-field.jpg', 'buzz' => 1320, 'views' => 1800, 'culture' => 'ghana', 'guests' => 20,
+            'cover' => 'couples/demo/kente-3.jpg', 'photo2' => 'seed/dessert-table.jpg', 'buzz' => 1320, 'views' => 1800, 'culture' => 'ghana', 'guests' => 20,
         ],
         [
             'email' => 'ahmed@demo.test', 'key' => 'ahmed', 'slug' => 'ahmed-hadiza', 'country' => 'United Arab Emirates',
@@ -176,7 +176,7 @@ return [
             'story' => "Ahmed works in Dubai and Hadiza flew out from Kano for what was meant to be a week. It was a very good week. Our families are meeting in the middle, and the middle has very good weather.",
             'city' => 'Dubai', 'state' => 'Dubai', 'venue' => 'Atlantis The Palm', 'days' => 40, 'time' => '18:00:00',
             'plan' => 'society', 'template' => 'noir', 'colours' => ['#C8A15A', '#E9DCC0'],
-            'cover' => 'photos/listing-dubai.jpg', 'photo2' => 'seed/getting-ready-details.jpg', 'buzz' => 4440, 'views' => 7700, 'culture' => 'hausa', 'guests' => 38,
+            'cover' => 'couples/demo/white-1.jpg', 'photo2' => 'photos/listing-dubai.jpg', 'buzz' => 4440, 'views' => 7700, 'culture' => 'hausa', 'guests' => 38,
         ],
         [
             'email' => 'segun@demo.test', 'key' => 'segun', 'slug' => 'segun-moyo', 'country' => 'New Zealand',
@@ -185,7 +185,7 @@ return [
             'story' => "Two Ibadan kids who ended up in Auckland, nine time zones from home. Our parents will be watching the livestream at four in the morning and have already asked us to start on time.",
             'city' => 'Auckland', 'state' => 'Auckland', 'venue' => 'Auckland Domain Wintergardens', 'days' => 110, 'time' => '12:00:00',
             'plan' => 'pro', 'template' => 'classic', 'colours' => ['#2E7D5B', '#F4C430'],
-            'cover' => 'seed/groom-smile.jpg', 'photo2' => 'photos/bride-white.jpg', 'buzz' => 1760, 'views' => 2300, 'culture' => 'yoruba', 'guests' => 24,
+            'cover' => 'seed/couple-beach-close.jpg', 'photo2' => 'seed/small-chops.jpg', 'buzz' => 1760, 'views' => 2300, 'culture' => 'yoruba', 'guests' => 24,
         ],
         [
             'email' => 'brian@demo.test', 'key' => 'brian', 'slug' => 'brian-wanjiru', 'country' => 'Kenya',
@@ -194,7 +194,7 @@ return [
             'story' => "The ruracio was two weeks ago and the goats have been delivered. Now it is the church and a garden reception in Karen, with nyama choma for everybody and a band that has promised to play Sauti Sol.",
             'city' => 'Nairobi', 'state' => 'Nairobi', 'venue' => 'Windsor Golf Hotel', 'days' => 64, 'time' => '10:00:00',
             'plan' => 'premium', 'template' => 'garden', 'colours' => ['#4E6B4A', '#E8B4A6'],
-            'cover' => 'photos/listing-green-gele.jpg', 'photo2' => 'photos/couple-field.jpg', 'buzz' => 3350, 'views' => 5000, 'culture' => 'kenya', 'guests' => 32,
+            'cover' => 'couples/demo/white-4.jpg', 'photo2' => 'seed/table-setting.jpg', 'buzz' => 3350, 'views' => 5000, 'culture' => 'kenya', 'guests' => 32,
         ],
         [
             'email' => 'kofi@demo.test', 'key' => 'kofi', 'slug' => 'kofi-akosua', 'country' => 'Ghana',
@@ -203,7 +203,7 @@ return [
             'story' => "Kofi knocked with schnapps and a very nervous uncle. Akosua's family said yes after a long silence that Kofi still talks about. The engagement is in the morning, the church after lunch, and the party until they close the hall.",
             'city' => 'Accra', 'state' => 'Greater Accra', 'venue' => 'Labadi Beach Hotel', 'days' => 70, 'time' => '09:00:00',
             'plan' => 'premium', 'template' => 'keepsake', 'colours' => ['#3E5C76', '#F2B84B'],
-            'cover' => 'seed/makeup-close.jpg', 'photo2' => 'photos/couple-dance.jpg', 'buzz' => 3020, 'views' => 4600, 'culture' => 'ghana', 'guests' => 30,
+            'cover' => 'couples/demo/kente-1.jpg', 'photo2' => 'seed/reception-hall.jpg', 'buzz' => 3020, 'views' => 4600, 'culture' => 'ghana', 'guests' => 30,
         ],
         [
             'email' => 'eric@demo.test', 'key' => 'eric', 'slug' => 'eric-aline', 'country' => 'Rwanda',
@@ -212,7 +212,7 @@ return [
             'story' => "Our families met for the gusaba with speeches, cows and a lot of laughter, and agreed on everything except the guest list. The church is in Kigali and the reception is in the gardens, with a view of the thousand hills.",
             'city' => 'Kigali', 'state' => 'Kigali', 'venue' => 'Kigali Serena Hotel Gardens', 'days' => 85, 'time' => '10:00:00',
             'plan' => 'premium', 'template' => 'savannah', 'colours' => ['#A4552B', '#EBB874'],
-            'cover' => 'seed/couple-field-bouquet.jpg', 'photo2' => 'seed/couple-beach-close.jpg', 'buzz' => 2720, 'views' => 3900, 'culture' => 'rwanda', 'guests' => 28,
+            'cover' => 'couples/demo/white-5.jpg', 'photo2' => 'seed/table-setting.jpg', 'buzz' => 2720, 'views' => 3900, 'culture' => 'rwanda', 'guests' => 28,
         ],
         [
             'email' => 'nnamdi@demo.test', 'key' => 'nnamdi', 'slug' => 'nnamdi-ifeoma', 'country' => 'United Kingdom',
@@ -221,7 +221,7 @@ return [
             'story' => "We met in the queue at the passport office in London, which we agree is the least romantic place on earth. The traditional wedding was in Enugu at Easter; this one is for Manchester, where we live, work and have far too many friends.",
             'city' => 'Manchester', 'state' => 'England', 'venue' => 'The Midland Hotel', 'days' => 26, 'time' => '12:00:00',
             'plan' => 'pro', 'template' => 'classic', 'colours' => ['#5B2A86', '#E7C873'],
-            'cover' => 'photos/listing-couple-olive.jpg', 'photo2' => 'photos/groom-suit.jpg', 'buzz' => 2410, 'views' => 3300, 'culture' => 'igbo', 'guests' => 28,
+            'cover' => 'couples/demo/white-8.jpg', 'photo2' => 'seed/table-setting.jpg', 'buzz' => 2410, 'views' => 3300, 'culture' => 'igbo', 'guests' => 28,
         ],
         [
             'email' => 'yaw@demo.test', 'key' => 'yaw', 'slug' => 'yaw-abena', 'country' => 'United Kingdom',
@@ -230,7 +230,7 @@ return [
             'story' => "Yaw's uncles knocked in Kumasi while we watched on a laptop in Birmingham, and they took longer to agree than the wedding took to plan. We are keeping it simple: church, a hall in Digbeth and a very long highlife set.",
             'city' => 'Birmingham', 'state' => 'England', 'venue' => 'The Bond, Digbeth', 'days' => 75, 'time' => '13:00:00',
             'plan' => 'free', 'template' => 'classic', 'colours' => ['#1D4E89', '#F2A541'],
-            'cover' => 'photos/listing-coral-gele.jpg', 'photo2' => 'photos/couple-dance.jpg', 'buzz' => 980, 'views' => 1300, 'culture' => 'ghana', 'guests' => 18,
+            'cover' => 'couples/demo/kente-4.jpg', 'photo2' => 'seed/reception-hall.jpg', 'buzz' => 980, 'views' => 1300, 'culture' => 'ghana', 'guests' => 18,
         ],
         [
             'email' => 'ikenna@demo.test', 'key' => 'ikenna', 'slug' => 'ikenna-chioma', 'country' => 'United States',
@@ -239,7 +239,7 @@ return [
             'story' => "We met at a friend's graduation party in Atlanta, and Chioma's father asked for Ikenna's surname before his first name. The wine-carrying is in the afternoon, the reception in the evening, and the dancing has been rehearsed since spring.",
             'city' => 'Atlanta', 'state' => 'Georgia', 'venue' => 'The Biltmore Ballrooms', 'days' => 52, 'time' => '14:00:00',
             'plan' => 'premium', 'template' => 'royal', 'colours' => ['#4B1D3F', '#D4A373'],
-            'cover' => 'photos/listing-couple-magenta.jpg', 'photo2' => 'seed/reception-hall.jpg', 'buzz' => 3290, 'views' => 4700, 'culture' => 'igbo', 'guests' => 32,
+            'cover' => 'couples/demo/trad-6.jpg', 'photo2' => 'seed/reception-hall.jpg', 'buzz' => 3290, 'views' => 4700, 'culture' => 'igbo', 'guests' => 32,
         ],
         [
             'email' => 'kunle@demo.test', 'key' => 'kunle', 'slug' => 'kunle-folake', 'country' => 'United States',
@@ -248,7 +248,7 @@ return [
             'story' => "Kunle's mother has already printed the aso-ebi list and Folake's has printed a longer one. The church is in Silver Spring, the party is down the road, and everyone is welcome as long as they RSVP.",
             'city' => 'Silver Spring', 'state' => 'Maryland', 'venue' => 'The Silver Spring Civic Building', 'days' => 120, 'time' => '13:00:00',
             'plan' => 'free', 'template' => 'classic', 'colours' => ['#0B6E4F', '#FFD166'],
-            'cover' => 'photos/bride-window.jpg', 'photo2' => 'photos/couple-beach.jpg', 'buzz' => 860, 'views' => 1100, 'culture' => 'yoruba', 'guests' => 16,
+            'cover' => 'couples/demo/white-6-close.jpg', 'photo2' => 'seed/table-setting.jpg', 'buzz' => 860, 'views' => 1100, 'culture' => 'yoruba', 'guests' => 16,
         ],
         [
             'email' => 'ade@demo.test', 'key' => 'ade', 'slug' => 'ade-temi', 'country' => 'Canada',
@@ -257,7 +257,7 @@ return [
             'story' => "We met at a church potluck in Calgary where Ade brought jollof and Temi told him it needed more pepper. Our families are flying in from Lagos and Houston, and we have warned them about the cold.",
             'city' => 'Calgary', 'state' => 'Alberta', 'venue' => 'Hotel Arts', 'days' => 88, 'time' => '14:00:00',
             'plan' => 'pro', 'template' => 'classic', 'colours' => ['#7A1F2B', '#E9C46A'],
-            'cover' => 'seed/couple-dance-close.jpg', 'photo2' => 'photos/bride-white.jpg', 'buzz' => 1540, 'views' => 2100, 'culture' => 'yoruba', 'guests' => 22,
+            'cover' => 'couples/demo/trad-2-close.jpg', 'photo2' => 'seed/reception-hall.jpg', 'buzz' => 1540, 'views' => 2100, 'culture' => 'yoruba', 'guests' => 22,
         ],
         [
             'email' => 'otieno@demo.test', 'key' => 'otieno', 'slug' => 'otieno-achieng', 'country' => 'Kenya',
@@ -266,7 +266,7 @@ return [
             'story' => "The ruracio went on until midnight and both our fathers made speeches. Now we are taking everyone to the coast: church in the morning, then the beach until the band runs out of songs.",
             'city' => 'Mombasa', 'state' => 'Mombasa', 'venue' => 'Serena Beach Resort', 'days' => 57, 'time' => '10:00:00',
             'plan' => 'pro', 'template' => 'classic', 'colours' => ['#006D77', '#E29578'],
-            'cover' => 'seed/couple-beach-close.jpg', 'photo2' => 'seed/table-setting.jpg', 'buzz' => 1690, 'views' => 2400, 'culture' => 'kenya', 'guests' => 24,
+            'cover' => 'couples/demo/white-3-close.jpg', 'photo2' => 'seed/table-setting.jpg', 'buzz' => 1690, 'views' => 2400, 'culture' => 'kenya', 'guests' => 24,
         ],
         [
             'email' => 'kojo@demo.test', 'key' => 'kojo', 'slug' => 'kojo-ama', 'country' => 'Ghana',
@@ -275,7 +275,7 @@ return [
             'story' => "We sat next to each other in sixth form and argued about everything. Ten years on, the families have done the knocking, the kente has been woven, and the brass band has been paid in advance.",
             'city' => 'Kumasi', 'state' => 'Ashanti', 'venue' => 'Golden Tulip Kumasi City', 'days' => 44, 'time' => '09:00:00',
             'plan' => 'pro', 'template' => 'classic', 'colours' => ['#7F4F24', '#F4D35E'],
-            'cover' => 'photos/couple-dance.jpg', 'photo2' => 'seed/dessert-table.jpg', 'buzz' => 1880, 'views' => 2500, 'culture' => 'ghana', 'guests' => 24,
+            'cover' => 'couples/demo/kente-2.jpg', 'photo2' => 'seed/dessert-table.jpg', 'buzz' => 1880, 'views' => 2500, 'culture' => 'ghana', 'guests' => 24,
         ],
         [
             'email' => 'chuka@demo.test', 'key' => 'chuka', 'slug' => 'chuka-lindiwe', 'country' => 'South Africa',
@@ -284,7 +284,7 @@ return [
             'story' => "Chuka is from Onitsha and Lindiwe is from Soweto, and we met at a jazz night in Melville. The lobola talks took two Saturdays and a lot of patience. The wedding brings both families to one table, with palm wine and umqombothi side by side.",
             'city' => 'Johannesburg', 'state' => 'Gauteng', 'venue' => 'The Maslow, Sandton', 'days' => 66, 'time' => '13:00:00',
             'plan' => 'premium', 'template' => 'coral', 'colours' => ['#C44536', '#F4A259'],
-            'cover' => 'photos/listing-guests-magenta.jpg', 'photo2' => 'seed/small-chops.jpg', 'buzz' => 2650, 'views' => 3800, 'culture' => 'diaspora', 'guests' => 30,
+            'cover' => 'couples/demo/white-6.jpg', 'photo2' => 'seed/small-chops.jpg', 'buzz' => 2650, 'views' => 3800, 'culture' => 'diaspora', 'guests' => 30,
         ],
     ],
 

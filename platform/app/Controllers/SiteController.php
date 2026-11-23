@@ -7,7 +7,7 @@ final class SiteController
     public function home(): void
     {
         $data = Site::home();
-        $shown = array_map(static fn ($w) => (int) $w['id'], array_merge(array_slice($data['chart'], 0, 4), $data['world']));
+        $shown = array_map(static fn ($w) => (int) $w['id'], array_merge($data['top'], $data['trending']));
         View::render('site/home', $data + [
             'title'    => 'Wedding Websites & More: the African weddings everyone is talking about',
             'desc'     => 'Wedding pages, the Buzz Chart, vendors, a marketplace and a community for African weddings, from Lagos to London, Accra to Houston. Make your wedding page free.',

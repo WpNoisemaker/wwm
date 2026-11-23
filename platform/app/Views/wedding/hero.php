@@ -182,8 +182,9 @@ case 'party': ?>
 case 'invite':
 	$full = is_array($dz['names'] ?? null) ? $dz['names'] : [$a, $b]; ?>
 	<div class="trio trio--invite">
-		<div class="trio__a"><span class="sq-label"><?= e($w['venue'] ?: 'The venue') ?></span><?= $photoA ?></div>
-		<div class="trio__b"><span class="sq-label"><?= e($city ?: 'Our story') ?></span><?= $photoB ?></div>
+		<?php $lab = is_array($dz['labels'] ?? null) ? $dz['labels'] : []; ?>
+		<div class="trio__a"><span class="sq-label"><?= e((string) ($lab[0] ?? ($w['venue'] ?: 'The venue'))) ?></span><?= $photoA ?></div>
+		<div class="trio__b"><span class="sq-label"><?= e((string) ($lab[1] ?? ($city ?: 'Our story'))) ?></span><?= $photoB ?></div>
 		<div class="trio__c">
 			<div class="glass invite">
 				<p class="invite__hosts"><?= e($dz['hosts'] ?? 'Together with their families') ?></p>

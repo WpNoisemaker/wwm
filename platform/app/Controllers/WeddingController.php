@@ -13,7 +13,7 @@ final class WeddingController
             'style' => Wedding::styleKey((string) ($_GET['style'] ?? '')),
             'plan'  => isset(Wedding::PLANS[$_GET['plan'] ?? '']) ? (string) $_GET['plan'] : '',
             'country' => trim((string) ($_GET['country'] ?? '')),
-            'sort'  => in_array($_GET['sort'] ?? '', ['soon', 'new', 'buzz'], true) ? (string) $_GET['sort'] : 'soon',
+            'sort'  => self::sort(),
         ];
         $per   = 12;
         $total = Wedding::countSearch($filter);
@@ -35,6 +35,43 @@ final class WeddingController
         ]);
     }
 
+    /** Trending unless the visitor picked another; the old "buzz" links land on Top ranked. */
+    private static function sort(): string
+    {
+        Wedding::readyToSort();
+        $s = (string) ($_GET['sort'] ?? '');
+        $s = $s === 'buzz' ? 'top' : $s;
+        return isset(Wedding::SORTS[$s]) ? $s : 'trending';
+    }
+
+    /** Weddings near the visitor, from the location their browser shared. A small piece of HTML. */
+    public function near(): void
+    {
+        $lat = (float) ($_GET['lat'] ?? 0);
+        $lng = (float) ($_GET['lng'] ?? 0);
+        header('Cache-Control: private, max-age=300');
+        if (abs($lat) > 90 || abs($lng) > 180 || ($lat == 0.0 && $lng == 0.0)) {
+            http_response_code(400);
+            exit;
+        }
+        [[$city, $country, $dist], $rows] = Wedding::near($lat, $lng, 8);
+        $ranks = Wedding::ranks();
+        $where = $dist < 120 ? $city : 'your area';
+        echo '<p class="near__where">' . icon('pin') . '<span>Near <b>' . e($where) . '</b>' . ($dist < 120 && $country !== '' ? ', ' . e($country) : '') . '</span></p>';
+        if (!$rows) {
+            echo '<p class="sub center">No public wedding pages near you yet.</p>';
+            exit;
+        }
+        echo '<div class="rail">';
+        foreach ($rows as $w) {
+            $km = (float) $w['km'];
+            $away = $km < 15 ? 'In ' . (string) $w['city'] : number_format($km < 100 ? round($km) : round($km, -1)) . ' km · ' . (string) $w['city'];
+            echo wedding_card($w, $away . ' · ' . Wedding::short($w), Site::tier((string) $w['plan']), '', $ranks[(int) $w['id']] ?? 0);
+        }
+        echo '</div>';
+        exit;
+    }
+
     /** A country's own listing: /weddings/uk, /weddings/ghana and the rest. */
     public function place(string $place): void
     {
@@ -50,7 +87,7 @@ final class WeddingController
             'style'   => '',
             'plan'    => isset(Wedding::PLANS[$_GET['plan'] ?? '']) ? (string) $_GET['plan'] : '',
             'country' => $country,
-            'sort'    => in_array($_GET['sort'] ?? '', ['soon', 'new', 'buzz'], true) ? (string) $_GET['sort'] : 'soon',
+            'sort'    => self::sort(),
         ];
         $per    = 12;
         $total  = Wedding::countSearch($filter);

@@ -17,7 +17,8 @@ final class Site
             'listings' => self::listings(6),
             'talks'    => Talk::feed('', 'top', 3),
             'countries' => Wedding::countryList(),
-            'world'    => self::world(5),
+            'top'      => Wedding::top(5),
+            'trending' => self::trending(4),
             'wall'     => self::wall(7),
             'posts'    => self::posts(3),
             'stats'    => self::stats(),
@@ -33,6 +34,13 @@ final class Site
              ORDER BY w.buzz DESC, w.views DESC LIMIT ?",
             [$n]
         );
+    }
+
+    /** @return array<int,array<string,mixed>> What is happening right now: the trending pages. */
+    public static function trending(int $n = 4): array
+    {
+        Wedding::readyToSort();
+        return Wedding::search(['sort' => 'trending'], $n);
     }
 
     /** @return array<int,array<string,mixed>> The most-talked-about page in each country, busiest first. */
@@ -124,5 +132,11 @@ final class Site
     {
         $v = Db::val('SELECT v FROM settings WHERE k = ?', [$key]);
         return $v === null || $v === '' ? $fallback : (string) $v;
+    }
+
+    /** Every setting at once, for pages that read many of them. */
+    public static function settings(): array
+    {
+        return array_column(Db::all('SELECT k, v FROM settings'), 'v', 'k');
     }
 }

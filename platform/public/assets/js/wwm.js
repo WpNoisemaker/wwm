@@ -383,6 +383,36 @@
 		var i = d.querySelector('[data-photo-input]'); if (i) { e.preventDefault(); i.closest('form').scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(function () { i.click(); }, 450); }
 	});
 
+	/* ---------- weddings near you: only after a tap, or if the visitor allowed it before ---------- */
+	var near = d.querySelector('[data-near]');
+	if (near) {
+		var nBody = near.querySelector('[data-near-body]'), nSrc = near.getAttribute('data-src');
+		var nLoad = function (lat, lng) {
+			fetch(nSrc + '?lat=' + (+lat).toFixed(3) + '&lng=' + (+lng).toFixed(3), { credentials: 'same-origin' })
+				.then(function (r) { return r.ok ? r.text() : Promise.reject(); })
+				.then(function (html) { nBody.innerHTML = html; nBody.classList.add('is-in'); })
+				.catch(function () { toast('Could not load weddings near you just now'); });
+		};
+		var nAsk = function (quiet) {
+			var b = near.querySelector('[data-near-go]');
+			if (!navigator.geolocation) { if (!quiet) { toast('This browser cannot share a location'); } return; }
+			if (b) { b.classList.add('is-busy'); b.disabled = true; }
+			navigator.geolocation.getCurrentPosition(function (pos) {
+				try { sessionStorage.setItem('wwm-near', pos.coords.latitude + ',' + pos.coords.longitude); } catch (er) {}
+				nLoad(pos.coords.latitude, pos.coords.longitude);
+			}, function () {
+				if (b) { b.classList.remove('is-busy'); b.disabled = false; }
+				if (!quiet) { toast('Location is off for this site. Turn it on to see weddings near you.'); }
+			}, { enableHighAccuracy: false, timeout: 12000, maximumAge: 600000 });
+		};
+		near.addEventListener('click', function (e) { if (e.target.closest('[data-near-go]')) { e.preventDefault(); nAsk(false); } });
+		var nSaved = null; try { nSaved = sessionStorage.getItem('wwm-near'); } catch (er) {}
+		if (nSaved) { var nc = nSaved.split(','); nLoad(nc[0], nc[1]); }
+		else if (navigator.permissions && navigator.permissions.query) {
+			navigator.permissions.query({ name: 'geolocation' }).then(function (st) { if (st.state === 'granted') { nAsk(true); } }).catch(function () {});
+		}
+	}
+
 	/* ---------- background music: soft, from the first tap, and easy to stop ---------- */
 	var mus = d.querySelector('[data-music]');
 	if (mus) {
