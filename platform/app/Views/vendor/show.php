@@ -110,7 +110,7 @@ $here = '/vendors/' . $v['slug'];
 					<figure class="review">
 						<p class="stars" aria-label="<?= (int) $r['stars'] ?> out of 5"><?= $stars((int) $r['stars']) ?></p>
 						<blockquote><?= e((string) $r['body']) ?></blockquote>
-						<figcaption><?= e((string) ($r['name'] ?: 'A customer')) ?> · <?= e(ago((string) $r['created_at'])) ?></figcaption>
+						<figcaption><?= e((string) ($r['name'] ?: 'A customer')) ?><?php if (!empty($r['guest']) && !empty($r['wslug'])): ?>, guest at <a href="<?= e(App::url('/w/' . $r['wslug'])) ?>"><?= e(Wedding::names($r)) ?></a>&rsquo;s wedding<?php endif; ?> · <?= e(ago((string) $r['created_at'])) ?></figcaption>
 						<?php if (trim((string) $r['reply']) !== ''): ?><p class="review__reply"><b><?= e($v['name']) ?> replied</b><?= e((string) $r['reply']) ?></p><?php endif; ?>
 					</figure>
 				<?php endforeach; ?>

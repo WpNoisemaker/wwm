@@ -277,6 +277,45 @@ final class WeddingController
         self::back($slug, 'rsvp');
     }
 
+    /**
+     * A guest rates one of the vendors listed on this wedding page. No account: a name, stars and a
+     * few words. Only vendors the couple listed, a few reviews per visitor, and one per vendor.
+     */
+    public function review(string $slug): void
+    {
+        Guard::must();
+        $w = Wedding::bySlug($slug);
+        if (!$w) {
+            self::notFound();
+        }
+        $vid = (int) ($_POST['vendor_id'] ?? 0);
+        $v = null;
+        foreach (Wedding::vendors($w) as $x) {
+            if ((int) $x['id'] === $vid) {
+                $v = $x;
+            }
+        }
+        $name = trim((string) ($_POST['name'] ?? ''));
+        $body = trim((string) ($_POST['body'] ?? ''));
+        if (!$v) {
+            Guard::flash('bad', 'That vendor is not listed on this page.');
+        } elseif (!empty($_SESSION['vrev'][$vid]) || Guard::tooMany('vreview', 6, 60)) {
+            Guard::flash('bad', 'You already reviewed ' . $v['name'] . ' from this phone.');
+        } elseif ($name === '' || mb_strlen($body) < 10) {
+            Guard::flash('bad', 'Put your name and say a little about how they did: a sentence or two.');
+        } else {
+            Db::insert('reviews', [
+                'vendor_id' => $vid, 'user_id' => Auth::id() ?: null, 'wedding_id' => $w['id'], 'guest' => 1,
+                'name' => mb_substr($name, 0, 160), 'stars' => max(1, min(5, (int) ($_POST['stars'] ?? 5))),
+                'body' => mb_substr($body, 0, 2000), 'status' => 'live',
+            ]);
+            Market::rate($vid);
+            $_SESSION['vrev'][$vid] = 1;
+            Guard::flash('ok', 'Thank you. Your review is on ' . $v['name'] . '’s profile.');
+        }
+        self::back($slug, 'vendors');
+    }
+
     /** The reply this phone sent: still waiting, approved (with its pass), or nothing. */
     private static function myReply(array $w): ?array
     {

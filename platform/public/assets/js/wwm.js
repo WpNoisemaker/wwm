@@ -448,6 +448,13 @@
 		d.addEventListener('keydown', function (e) { if (e.key === 'Escape') { stop(); } });
 	});
 
+	/* ---------- a guest rating a vendor from the wedding page ---------- */
+	d.addEventListener('click', function (e) {
+		var b = e.target.closest('[data-vreview]'); if (!b) { return; }
+		var id = d.querySelector('[data-vreview-id]'), t = d.querySelector('[data-vreview-title]');
+		if (id) { id.value = b.dataset.vreview; } if (t) { t.textContent = 'Rate ' + b.dataset.vname; }
+	});
+
 	/* ---------- copy and share ---------- */
 	d.addEventListener('click', function (e) {
 		var sh = e.target.closest('[data-share]');

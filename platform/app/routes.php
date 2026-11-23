@@ -15,6 +15,7 @@ $r->any('/w/{slug}',            [WeddingController::class, 'show']);   // GET sh
 $r->post('/w/{slug}/rsvp',      [WeddingController::class, 'rsvp']);
 $r->get('/w/{slug}/pass/{code:[A-Za-z0-9-]+}',       [WeddingController::class, 'pass']);
 $r->post('/w/{slug}/pass/{code:[A-Za-z0-9-]+}/in',   [WeddingController::class, 'checkIn']);
+$r->post('/w/{slug}/review',    [WeddingController::class, 'review']);
 $r->get('/face/{id:\d+}',      [WeddingController::class, 'face']);
 $r->post('/w/{slug}/note',      [WeddingController::class, 'note']);
 $r->post('/w/{slug}/photo',     [WeddingController::class, 'photo']);
@@ -85,6 +86,7 @@ $r->post('/account/bank',       [AccountController::class, 'bank']);
 $r->post('/account/bank/check', [AccountController::class, 'bankCheck']);
 $r->post('/account/bank/save',  [AccountController::class, 'bankSave']);
 $r->any('/account/registry',    [AccountController::class, 'registry']);
+$r->any('/account/vendors',     [AccountController::class, 'vendors']);
 $r->any('/account/quiz',        [AccountController::class, 'quiz']);
 $r->any('/account/sections',    [AccountController::class, 'sections']);
 $r->any('/account/shop',        [AccountController::class, 'shop']);   // a marketplace seller's listings

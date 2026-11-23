@@ -668,10 +668,14 @@ final class Wedding
     /** The vendors the couple booked: the ones this couple has reviewed. */
     public static function vendors(array $w): array
     {
+        // Vendors the couple listed, and any the couple reviewed by name (older pages).
         return Db::all(
-            "SELECT v.*, MAX(r.stars) stars, MAX(r.body) said FROM vendors v JOIN reviews r ON r.vendor_id = v.id
-             WHERE r.status = 'live' AND r.name = ? GROUP BY v.id ORDER BY v.verified DESC, v.name",
-            [self::names($w)]
+            "SELECT v.*, wv.role, cr.stars, cr.body said FROM vendors v
+             LEFT JOIN wedding_vendors wv ON wv.vendor_id = v.id AND wv.wedding_id = ?
+             LEFT JOIN (SELECT vendor_id, MAX(stars) stars, MAX(body) body FROM reviews WHERE status = 'live' AND guest = 0 AND name = ? GROUP BY vendor_id) cr ON cr.vendor_id = v.id
+             WHERE v.status = 'active' AND (wv.vendor_id IS NOT NULL OR cr.vendor_id IS NOT NULL)
+             ORDER BY v.verified DESC, v.name",
+            [$w['id'], self::names($w)]
         );
     }
 

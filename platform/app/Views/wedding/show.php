@@ -412,14 +412,16 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	<?php ob_start(); ?>
 	<?php if ($vendors): ?>
 	<section class="sec wrap" id="vendors">
-		<div class="w-head reveal"><span class="eyebrow">Booked and reviewed by <?= e($names) ?></span><h2>The people behind our day</h2></div>
+		<div class="w-head reveal"><span class="eyebrow">Booked by <?= e($names) ?></span><h2>The people behind our day</h2><p class="w-sub">Were you at the wedding? Rate a vendor and say how they did. No account needed.</p></div>
 		<div class="rows narrow reveal" style="width:min(100%,720px)">
 			<?php foreach ($vendors as $v): ?>
-				<a class="row-item" href="<?= e(App::url('/vendors/' . $v['slug'])) ?>">
-					<?= sq((string) $v['logo'], '', 'row-item__pic') ?>
-					<span><span class="row-item__t"><?= e($v['name']) ?><?php if ((int) $v['verified']): ?> <span class="badge"><?= icon('check') ?>Verified</span><?php endif; ?></span><span class="row-item__s"><?= e($v['category'] . ' · ' . $v['city']) ?></span><?php if ($v['said']): ?><span class="row-item__s">“<?= e(mb_strimwidth((string) $v['said'], 0, 90, '…')) ?>”</span><?php endif; ?></span>
-					<span class="row-item__end"><?= str_repeat('★', max(0, min(5, (int) $v['stars']))) ?></span>
-				</a>
+				<div class="row-item wv">
+					<a class="wv__link" href="<?= e(App::url('/vendors/' . $v['slug'])) ?>">
+						<?= sq((string) $v['logo'], '', 'row-item__pic') ?>
+						<span><span class="row-item__t"><?= e($v['name']) ?><?php if ((int) $v['verified']): ?> <span class="badge"><?= icon('check') ?>Verified</span><?php endif; ?></span><span class="row-item__s"><?= e(trim(($v['role'] ?: $v['category']) . ' · ' . $v['city'], ' ·')) ?><?php if ((int) $v['reviews']): ?> · <span class="wv__rate"><?= icon('star') ?><?= e(number_format((float) $v['rating'], 1)) ?> (<?= (int) $v['reviews'] ?>)</span><?php endif; ?></span><?php if (!empty($v['said'])): ?><span class="row-item__s">“<?= e(mb_strimwidth((string) $v['said'], 0, 90, '…')) ?>”</span><?php endif; ?></span>
+					</a>
+					<button class="pill pill--sm pill--glass" type="button" data-open="vreview" data-vreview="<?= (int) $v['id'] ?>" data-vname="<?= e($v['name']) ?>" aria-label="Rate <?= e($v['name']) ?>"><?= icon('star') ?>Rate</button>
+				</div>
 			<?php endforeach; ?>
 		</div>
 	</section>
@@ -596,6 +598,27 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		<p class="after-pill">No account needed. <?= e($names) ?> approve every RSVP, then we email you your access code.</p>
 	</form>
 </div>
+
+<?php if ($vendors): ?>
+<div class="sheet" id="vreview" role="dialog" aria-modal="true" aria-labelledby="vreview-t">
+	<div class="sheet__grab" aria-hidden="true"></div>
+	<div class="sheet__head">
+		<a class="cbtn cbtn--sm" href="#" data-close aria-label="Close"><?= icon('close') ?></a>
+		<h2 id="vreview-t" data-vreview-title>Rate a vendor</h2><span></span>
+	</div>
+	<form class="form" method="post" action="<?= e(App::url('/w/' . $slug . '/review')) ?>">
+		<?= Guard::field() ?>
+		<input type="hidden" name="vendor_id" value="<?= (int) $vendors[0]['id'] ?>" data-vreview-id>
+		<fieldset class="star-pick center-pick" aria-label="Your rating">
+			<?php for ($i = 5; $i >= 1; $i--): ?><input type="radio" id="vs<?= $i ?>" name="stars" value="<?= $i ?>"<?= $i === 5 ? ' checked' : '' ?>><label for="vs<?= $i ?>" title="<?= $i ?> star<?= $i > 1 ? 's' : '' ?>">★</label><?php endfor; ?>
+		</fieldset>
+		<label class="field"><span>Your name</span><input class="input" name="name" required maxlength="160" autocomplete="name"></label>
+		<label class="field"><span>How did they do?</span><textarea class="input" name="body" rows="3" required minlength="10" maxlength="2000" placeholder="The jollof was the talk of the night, and everyone was served on time."></textarea></label>
+		<button class="pill pill--block" type="submit">Post my review</button>
+		<p class="after-pill">It shows on their profile as from a guest at <?= e($names) ?>&rsquo;s wedding.</p>
+	</form>
+</div>
+<?php endif; ?>
 
 <div class="sheet" id="give" role="dialog" aria-modal="true" aria-labelledby="give-t">
 	<div class="sheet__grab" aria-hidden="true"></div>

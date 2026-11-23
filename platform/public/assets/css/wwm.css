@@ -2404,3 +2404,17 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .pass__door { display: grid; gap: 10px; margin-top: 18px; }
 .pass__when .ico { width: 14px; height: 14px; vertical-align: -2px; }
 .pass-page .pass > .pill--block { margin-top: 14px; }
+
+/* ---------- wedding page vendors: open their profile, or rate them as a guest ---------- */
+.wv { grid-template-columns: minmax(0, 1fr) auto; padding: 0 12px 0 0; }
+.wv__link { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 14px; padding: 10px 0 10px 10px; color: inherit; min-width: 0; }
+.wv .pill .ico { width: 15px; height: 15px; }
+.wv__rate { display: inline-flex; align-items: center; gap: 3px; }
+.wv__rate .ico { width: 12px; height: 12px; }
+.w-sub { margin: 8px auto 0; max-width: 520px; color: var(--ink-2); font-size: 14px; }
+.center-pick { display: flex; justify-content: center; margin: 4px auto 6px; width: 100%; }
+.center-pick label { font-size: 34px; }
+.hero__lede { max-width: 720px; margin-inline: auto; text-wrap: pretty; }
+.wv .row-item__t { white-space: normal; overflow: visible; }
+.wv .row-item__s { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.wv > .pill--sm { padding: 0 14px; }

@@ -465,6 +465,39 @@ final class AccountController
         return $out;
     }
 
+    /**
+     * The vendors the couple booked. They show on the wedding page, where guests can rate them.
+     * Picked from the vendors on the site, by name.
+     */
+    public function vendors(): void
+    {
+        $w = $this->need();
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+            Guard::must();
+            if (($_POST['do'] ?? '') === 'remove') {
+                Db::run('DELETE FROM wedding_vendors WHERE wedding_id = ? AND vendor_id = ?', [$w['id'], (int) ($_POST['vendor_id'] ?? 0)]);
+                Guard::flash('ok', 'Removed from your page.');
+            } else {
+                $name = trim((string) ($_POST['vendor'] ?? ''));
+                $v = $name === '' ? null : Db::one("SELECT id, name FROM vendors WHERE status = 'active' AND (name = ? OR slug = ?) LIMIT 1", [$name, $name]);
+                if (!$v) {
+                    Guard::flash('bad', 'We could not find "' . $name . '" among the vendors here. Pick one from the list as you type.');
+                } else {
+                    Db::run('INSERT INTO wedding_vendors (wedding_id, vendor_id, role) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE role = VALUES(role)',
+                        [$w['id'], $v['id'], mb_substr(trim((string) ($_POST['role'] ?? '')), 0, 80)]);
+                    Guard::flash('ok', $v['name'] . ' is on your page. Your guests can rate them there.');
+                }
+            }
+            self::go('/account/vendors');
+        }
+        $this->show('vendors', [
+            'title' => 'Vendors',
+            'w'     => $w,
+            'rows'  => Db::all('SELECT v.id, v.name, v.slug, v.category, v.city, v.logo, wv.role FROM wedding_vendors wv JOIN vendors v ON v.id = wv.vendor_id WHERE wv.wedding_id = ? ORDER BY wv.created_at', [$w['id']]),
+            'all'   => Db::all("SELECT name, category, city FROM vendors WHERE status = 'active' ORDER BY name LIMIT 2000"),
+        ]);
+    }
+
     public function registry(): void
     {
         $w = $this->need();

@@ -298,6 +298,9 @@ CREATE TABLE reviews (
   id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
   vendor_id  INT UNSIGNED NOT NULL,
   user_id    INT UNSIGNED NULL,
+  -- A guest's review from a wedding page: no account, and the wedding they were at.
+  wedding_id INT UNSIGNED NULL,
+  guest      TINYINT(1)   NOT NULL DEFAULT 0,
   name       VARCHAR(160) NOT NULL DEFAULT '',
   stars      TINYINT      NOT NULL DEFAULT 5,
   body       TEXT         NULL,
@@ -306,6 +309,7 @@ CREATE TABLE reviews (
   created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   KEY ix_vendor (vendor_id, status, created_at),
+  KEY ix_wed (wedding_id),
   CONSTRAINT fk_rev_vendor FOREIGN KEY (vendor_id) REFERENCES vendors (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -554,4 +558,14 @@ CREATE TABLE quiz_scores (
   PRIMARY KEY (id),
   KEY board (wedding_id, side, score),
   CONSTRAINT quiz_scores_wedding FOREIGN KEY (wedding_id) REFERENCES weddings (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- The vendors a couple booked, listed on their page so guests can find and rate them.
+CREATE TABLE wedding_vendors (
+  wedding_id INT UNSIGNED NOT NULL,
+  vendor_id  INT UNSIGNED NOT NULL,
+  role       VARCHAR(80)  NOT NULL DEFAULT '',
+  created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (wedding_id, vendor_id),
+  KEY ix_vendor (vendor_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

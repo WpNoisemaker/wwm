@@ -51,7 +51,8 @@ final class Vendor
     public static function reviews(int $id, int $n = 12): array
     {
         return Db::all(
-            "SELECT * FROM reviews WHERE vendor_id = ? AND status = 'live' ORDER BY created_at DESC LIMIT ?",
+            "SELECT r.*, w.partner_a, w.partner_b, w.slug wslug FROM reviews r LEFT JOIN weddings w ON w.id = r.wedding_id
+             WHERE r.vendor_id = ? AND r.status = 'live' ORDER BY r.created_at DESC LIMIT ?",
             [$id, $n]
         );
     }
