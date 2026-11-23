@@ -134,6 +134,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 		<span class="eyebrow"><?= t('home.eyebrow.pay-once-per-wedding', 'Pay once per wedding') ?></span>
 		<h2><?= t('home.heading.pick-your-page', 'Pick your page') ?></h2>
 		<p><?= t('home.text.free-pages-are-black-white', 'Free pages are black & white. Pro pages wear your colours. Premium pages pick a design.') ?></p>
+		<?= View::partial('partials/currency', ['cur' => $cur, 'compact' => true]) ?>
 	</div>
 	<div class="plans reveal">
 		<div class="glass glass--plain plan plan--mono" data-tone="mono">

@@ -582,32 +582,51 @@
 	}
 
 	/* ---------- prices in the visitor's own money ---------- */
-	var fxBox = d.querySelector('[data-fx]');
-	if (fxBox) {
-		var fxMap = JSON.parse(fxBox.getAttribute('data-fx') || '{}');
+	var fxData = d.getElementById('fx-rates');
+	if (fxData) {
+		var fxMap = {}; try { fxMap = JSON.parse(fxData.textContent || '{}'); } catch (e) {}
 		var fxAmount = function (ngn, rate) {
 			var v = ngn / rate; if (v <= 0) { return 0; }
 			var step = v < 1000 ? 1 : Math.pow(10, Math.floor(Math.log10(v)) - 2);
 			return Math.round(v / step) * step;
 		};
-		var fxApply = function (cur) {
+		var fxApply = function (cur, remember) {
 			var r = fxMap[cur]; if (!r) { return; }
 			d.querySelectorAll('[data-ngn]').forEach(function (el) {
 				var n = +el.getAttribute('data-ngn'); el.textContent = '';
 				if (cur !== 'NGN' && n > 0) { var g = d.createElement('span'); g.className = 'fx-guide'; g.textContent = '≈ '; el.appendChild(g); }
 				var m = d.createElement('span'); m.className = 'money'; m.textContent = r[1] + fmt(fxAmount(n, r[0])); el.appendChild(m);
 			});
-			fxBox.querySelectorAll('[data-cur]').forEach(function (c) {
+			d.querySelectorAll('[data-cur]').forEach(function (c) {
 				var on = c.getAttribute('data-cur') === cur; c.classList.toggle('is-on', on);
 				if (on) { c.setAttribute('aria-current', 'true'); } else { c.removeAttribute('aria-current'); }
 			});
-			var note = fxBox.querySelector('[data-fx-note]'); if (note) { note.hidden = cur === 'NGN'; }
-			d.cookie = 'wwm-cur=' + cur + ';path=/;max-age=31536000;samesite=lax';
+			d.querySelectorAll('[data-cur-select]').forEach(function (s) { s.value = cur; });
+			d.querySelectorAll('[data-fx-note]').forEach(function (n) { n.hidden = cur === 'NGN'; });
+			if (remember) { d.cookie = 'wwm-cur=' + cur + ';path=/;max-age=31536000;samesite=lax'; }
 		};
-		fxBox.addEventListener('click', function (e) {
-			var c = e.target.closest('[data-cur]'); if (!c) { return; }
-			e.preventDefault(); fxApply(c.getAttribute('data-cur')); buzz();
+		d.addEventListener('click', function (e) {
+			var c = e.target.closest('[data-cur]'); if (!c || !fxMap[c.getAttribute('data-cur')]) { return; }
+			e.preventDefault(); fxApply(c.getAttribute('data-cur'), true); buzz();
 		});
+		d.addEventListener('change', function (e) {
+			if (e.target.matches && e.target.matches('[data-cur-select]')) { fxApply(e.target.value, true); buzz(); }
+		});
+		d.querySelectorAll('[data-fx-pick]').forEach(function (f) { f.addEventListener('submit', function (e) { e.preventDefault(); }); });
+		// First visit, nothing chosen and no country from the host: the time zone says where they are.
+		if (fxData.getAttribute('data-src') === 'default' && !/(?:^|;\s*)wwm-cur=/.test(d.cookie)) {
+			var tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+			var tzCur = (function (z) {
+				if (/^Europe\/(London|Belfast|Guernsey|Isle_of_Man|Jersey)$/.test(z)) { return 'GBP'; }
+				if (/^Europe\/(Dublin|Berlin|Paris|Amsterdam|Brussels|Madrid|Rome|Lisbon|Vienna|Helsinki|Athens|Luxembourg|Bratislava|Ljubljana|Tallinn|Riga|Vilnius|Malta|Zagreb|Monaco)$/.test(z)) { return 'EUR'; }
+				if (/^America\/(Toronto|Vancouver|Edmonton|Winnipeg|Halifax|St_Johns|Regina|Montreal|Moncton|Whitehorse|Yellowknife|Iqaluit)$/.test(z)) { return 'CAD'; }
+				if (/^(America\/(New_York|Chicago|Denver|Los_Angeles|Phoenix|Anchorage|Detroit|Boise|Juneau|Indiana\/.+|Kentucky\/.+|North_Dakota\/.+)|Pacific\/Honolulu)$/.test(z)) { return 'USD'; }
+				if (/^Australia\//.test(z)) { return 'AUD'; }
+				if (/^Pacific\/(Auckland|Chatham)$/.test(z)) { return 'NZD'; }
+				return { 'Asia/Dubai': 'AED', 'Africa/Accra': 'GHS', 'Africa/Nairobi': 'KES', 'Africa/Johannesburg': 'ZAR', 'Africa/Kigali': 'RWF', 'Africa/Lagos': 'NGN' }[z] || '';
+			})(tz);
+			if (tzCur && tzCur !== fxData.getAttribute('data-cur')) { fxApply(tzCur, true); }
+		}
 	}
 
 	/* ---------- the wedding page's quiz: pick the partner you know ---------- */

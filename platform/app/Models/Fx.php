@@ -51,26 +51,31 @@ final class Fx
         return $r;
     }
 
-    /** The visitor's choice: ?cur= first, then what they picked before, then a guess from their region. */
+    /** How the currency on screen was chosen: chosen (by the visitor), ip (the host knows their country) or default. */
+    public static string $src = 'default';
+    /** Set once a price is on the page, so the layout hands the browser the rates to redraw it. */
+    public static bool $used = false;
+
+    /**
+     * The visitor's currency: their own choice first (?cur= or the one they picked before), then their
+     * country where the host passes it on (Cloudflare does). Otherwise naira; in the browser, the
+     * visitor's time zone then says where they are and the prices redraw in their money.
+     */
     public static function pick(): string
     {
         foreach ([$_GET['cur'] ?? '', $_COOKIE['wwm-cur'] ?? ''] as $c) {
             $c = strtoupper((string) $c);
             if (isset(self::DEFAULT[$c])) {
+                self::$src = 'chosen';
                 return $c;
             }
         }
         $cc = strtoupper((string) ($_SERVER['HTTP_CF_IPCOUNTRY'] ?? ''));
-        if (isset(self::REGION[$cc])) {
-            return self::REGION[$cc];
+        if ($cc !== '' && $cc !== 'XX') {
+            self::$src = 'ip';
+            return self::REGION[$cc] ?? 'NGN';
         }
-        if (preg_match_all('/[a-z]{2,3}-([A-Za-z]{2})\b/', (string) ($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? ''), $m)) {
-            foreach ($m[1] as $cc) {
-                if (isset(self::REGION[strtoupper($cc)])) {
-                    return self::REGION[strtoupper($cc)];
-                }
-            }
-        }
+        self::$src = 'default';
         return 'NGN';
     }
 
@@ -88,6 +93,7 @@ final class Fx
     /** The price as HTML, marked so the picker can redraw it in another currency. */
     public static function show(int $ngn, string $cur): string
     {
+        self::$used = true;
         $n = self::amount($ngn, $cur);
         $guide = $cur !== 'NGN' && $ngn > 0 ? '≈ ' : '';
         return '<span data-ngn="' . $ngn . '">' . ($guide !== '' ? '<span class="fx-guide">' . $guide . '</span>' : '')

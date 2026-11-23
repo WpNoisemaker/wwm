@@ -98,6 +98,7 @@ $ogDesc  = $ogDesc ?? ($desc ?? 'Wedding pages for African couples: invite, RSVP
 	<?= View::partial('partials/footer') ?>
 	<?= View::partial('partials/tabs', ['tab' => $tab]) ?>
 <?php endif; ?>
+<?php if (Fx::$used): ?><script type="application/json" id="fx-rates" data-cur="<?= e(Fx::pick()) ?>" data-src="<?= e(Fx::$src) ?>"><?= Fx::forScript() ?></script><?php endif; ?>
 <script src="<?= e(App::asset('assets/js/wwm.js')) ?>" defer></script>
 </body>
 </html>
