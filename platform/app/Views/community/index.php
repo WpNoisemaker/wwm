@@ -9,9 +9,9 @@ $topicUrl = static fn (string $t, string $s): string => App::url('/community?' .
 ?>
 <div class="page wrap">
 	<header class="page-head">
-		<span class="eyebrow"><?= t('community.eyebrow.no-account-any-pen-name', 'No account · any pen name') ?></span>
-		<h1><?= t('community.title.say-it-here-instead', 'Say it here instead') ?></h1>
-		<p class="lede"><?= t('community.intro.love-family-money-faith-inlaws', 'Love, family, money, faith, in-laws and starting over. Words on colour, under any name you like.') ?></p>
+		<span class="eyebrow"><?= t('community.eyebrow.no-account-any-pen-name', 'Anonymous Community') ?></span>
+		<h1><?= t('community.title.say-it-here-instead', 'Ask, share and get advice, without your name') ?></h1>
+		<p class="lede"><?= t('community.intro.love-family-money-faith-inlaws', 'A safe place to voice your concerns and ask questions about your relationship, your wedding, marriage and family life. You do not need an account. Only the pen name you choose is shown, and nobody can see who you are.') ?></p>
 	</header>
 	<div class="wrap-narrow-flash"><?= flashes() ?></div>
 

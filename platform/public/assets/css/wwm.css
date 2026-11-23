@@ -2236,3 +2236,12 @@ html, body { overflow-x: hidden; max-width: 100%; }
 @media print { .cms-go, .cms-bar { display: none !important; } }
 @media (min-width: 960px) { .cms-bar { bottom: 22px; } }
 .promo__edit { display: inline-flex; align-items: center; gap: 6px; margin: 8px auto 0; padding: 6px 12px; border-radius: 999px; background: #E9B949; color: #2B2113; font-size: 12.5px; text-decoration: none; } .promo__edit .ico { width: 13px; height: 13px; } .promo-band .promo__edit { display: flex; width: max-content; }
+/* ---------- threaded replies ---------- */
+.replies--sub { margin: 10px 0 0 14px; padding-left: 12px; border-left: 2px solid var(--tile-line); gap: 8px; }
+.reply__answer summary { display: inline-flex; align-items: center; gap: 5px; margin-top: 8px; font-size: 12.5px; color: var(--ink-3); cursor: pointer; list-style: none; }
+.reply__answer summary::-webkit-details-marker { display: none; }
+.reply__answer summary .ico { width: 13px; height: 13px; }
+.reply__answer[open] summary { color: var(--ink); }
+.reply__answer .form { display: grid; gap: 8px; margin-top: 8px; }
+.reply__row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+.tabbar a { line-height: 1.15; text-align: center; }

@@ -5,7 +5,7 @@ return [
 	['chart',  'Buzz Chart', '/rankings',  'rankings'],
 	['store',  'Vendors',    '/vendors',   'vendors'],
 	['bag',    'Market',     '/market',    'market'],
-	['chat',   'Community',  '/community', 'community'],
+	['chat',   'Anonymous Community',  '/community', 'community'],
 	['book',   'Blog',       '/blog',      'blog'],
 	['wallet', 'Pricing',    '/pricing',   'pricing'],
 ];

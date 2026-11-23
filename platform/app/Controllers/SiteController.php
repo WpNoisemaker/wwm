@@ -78,7 +78,7 @@ final class SiteController
             ],
             'shortcuts'        => [
                 ['name' => 'Make a wedding page', 'url' => $base . 'join', 'icons' => [['src' => App::url('assets/img/brand/icon-192.png'), 'sizes' => '192x192']]],
-                ['name' => 'Community', 'url' => $base . 'community', 'icons' => [['src' => App::url('assets/img/brand/icon-192.png'), 'sizes' => '192x192']]],
+                ['name' => 'Anonymous Community', 'url' => $base . 'community', 'icons' => [['src' => App::url('assets/img/brand/icon-192.png'), 'sizes' => '192x192']]],
                 ['name' => 'Your page', 'url' => $base . 'account', 'icons' => [['src' => App::url('assets/img/brand/icon-192.png'), 'sizes' => '192x192']]],
             ],
         ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);

@@ -14,7 +14,7 @@
 			<div><h2><?= t('site.heading.platform', 'Platform') ?></h2><ul>
 				<li><a href="<?= e(App::url('/weddings')) ?>">Wedding pages</a></li>
 				<li><a href="<?= e(App::url('/rankings')) ?>">Buzz Chart</a></li>
-				<li><a href="<?= e(App::url('/community')) ?>">Community</a></li>
+				<li><a href="<?= e(App::url('/community')) ?>">Anonymous Community</a></li>
 				<li><a href="<?= e(App::url('/blog')) ?>">Blog</a></li>
 			</ul></div>
 			<div><h2><?= t('site.heading.shop', 'Shop') ?></h2><ul>

@@ -8,7 +8,7 @@ declare(strict_types=1);
  */
 final class Upgrade
 {
-    private const STEPS = ['couple-photos-1', 'ibrahim-ummi-photos-1', 'wall-voice-squad-1', 'squad-profiles-1', 'market-2'];
+    private const STEPS = ['couple-photos-1', 'ibrahim-ummi-photos-1', 'wall-voice-squad-1', 'squad-profiles-1', 'market-2', 'talk-threads-1'];
 
     public static function run(): void
     {
@@ -25,6 +25,7 @@ final class Upgrade
                     'wall-voice-squad-1'   => self::wallVoiceSquad(),
                     'squad-profiles-1'     => self::squadProfiles(),
                     'market-2'             => Market::install(),
+                    'talk-threads-1'       => Db::val("SHOW COLUMNS FROM talk_replies LIKE 'parent_id'") ?: Db::run('ALTER TABLE talk_replies ADD COLUMN parent_id INT UNSIGNED NULL AFTER talk_id'),
                 };
             } catch (Throwable $e) {
                 error_log('[wwm] upgrade ' . $step . ': ' . $e->getMessage());

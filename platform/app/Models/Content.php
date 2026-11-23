@@ -60,7 +60,7 @@ final class Content
         'rankings'  => ['Buzz Chart', ['rankings/index.php']],
         'vendors'   => ['Vendors', ['vendor/index.php']],
         'market'    => ['Marketplace', ['market/index.php']],
-        'community' => ['Community', ['community/index.php']],
+        'community' => ['Anonymous Community', ['community/index.php']],
         'pricing'   => ['Pricing', ['page/pricing.php']],
         'templates' => ['Designs', ['site/templates.php']],
         'about'     => ['About us', ['page/about.php']],

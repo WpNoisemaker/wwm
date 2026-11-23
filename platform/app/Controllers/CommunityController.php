@@ -22,8 +22,8 @@ final class CommunityController
             $liked[(int) $l['subject_id']] = true;
         }
         View::render('community/index', [
-            'title'  => 'The community: say it here instead',
-            'desc'   => 'Love, family, money, faith, in-laws and starting over. No account, any pen name.',
+            'title'  => 'Anonymous Community: ask and share about relationships, weddings, marriage and family',
+            'desc'   => 'A safe place to voice your concerns and ask questions about your relationship, wedding, marriage and family life. No account needed; only your pen name shows.',
             'tab'    => 'community',
             'action' => '<button class="cbtn" type="button" data-open="compose" aria-label="Write a post">' . icon('pen') . '</button>',
             'liked'  => $liked,
@@ -43,7 +43,7 @@ final class CommunityController
             return;
         }
         View::render('community/show', [
-            'title'   => '“' . mb_strimwidth(trim((string) preg_replace('/\s+/', ' ', (string) $t['body'])), 0, 64, '…') . '” · Community',
+            'title'   => '“' . mb_strimwidth(trim((string) preg_replace('/\s+/', ' ', (string) $t['body'])), 0, 64, '…') . '” · Anonymous Community',
             'desc'    => mb_strimwidth(trim((string) preg_replace('/\s+/', ' ', (string) $t['body'])), 0, 180, '…'),
             // The preview is the post itself, on its own colour, with our address under it.
             'ogImage' => Share::url('t', (string) $t['id'], implode('|', [$t['body'], $t['bg'], $t['topic'], $t['pen_name']])),
@@ -51,7 +51,7 @@ final class CommunityController
             'ogDesc'  => mb_strimwidth(trim((string) preg_replace('/\s+/', ' ', (string) $t['body'])), 0, 200, '…') . ' Reply under any pen name.',
             'ogType'  => 'article',
             'tab'     => 'community',
-            'appTitle'=> 'Community',
+            'appTitle'=> 'Anonymous Community',
             'back'    => App::url('/community'),
             'liked'   => (bool) Db::val("SELECT 1 FROM likes WHERE subject = 'talk' AND subject_id = ? AND voter = ?", [(int) $t['id'], self::key()]),
             't'       => $t,
@@ -98,8 +98,12 @@ final class CommunityController
         if (mb_strlen($body) < 2) {
             self::go('/community/' . (int) $id);
         }
-        Db::insert('talk_replies', [
+        // A reply can answer another reply on the same post.
+        $parent = (int) ($_POST['parent_id'] ?? 0);
+        $parent = $parent && Db::val("SELECT 1 FROM talk_replies WHERE id = ? AND talk_id = ? AND status = 'live'", [$parent, (int) $id]) ? $parent : null;
+        $rid = (int) Db::insert('talk_replies', [
             'talk_id'    => (int) $id,
+            'parent_id'  => $parent,
             'pen_name'   => mb_substr(trim((string) ($_POST['pen_name'] ?? '')) ?: 'Someone', 0, 60),
             'body'       => mb_substr($body, 0, 1500),
             'status'     => 'live',
@@ -107,7 +111,7 @@ final class CommunityController
         ]);
         Db::run('UPDATE talks SET replies = replies + 1 WHERE id = ?', [(int) $id]);
         Guard::flash('ok', 'Replied under your pen name.');
-        self::go('/community/' . (int) $id);
+        self::go('/community/' . (int) $id . '#r' . $rid);
     }
 
     /** One like per browser per post. The key identifies a browser, never a person. */

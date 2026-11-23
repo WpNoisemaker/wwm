@@ -12,7 +12,7 @@ $tab      = $tab ?? '';
 $wed      = !empty($wed);
 $bare     = !empty($bare);
 $tabTitles = ['home' => 'Wedding Pages', 'weddings' => 'Weddings', 'rankings' => 'Buzz Chart', 'vendors' => 'Vendors', 'market' => 'Market',
-              'community' => 'Community', 'blog' => 'Blog', 'pricing' => 'Pricing', 'account' => 'Your Page', 'hq' => 'HQ', 'search' => 'Search'];
+              'community' => 'Anonymous Community', 'blog' => 'Blog', 'pricing' => 'Pricing', 'account' => 'Your Page', 'hq' => 'HQ', 'search' => 'Search'];
 $appTitle = $appTitle ?? ($tabTitles[$tab] ?? mb_strimwidth((string) ($title ?? 'Wedding Websites & More'), 0, 22, '…'));
 $back     = $back ?? null;           // a URL turns the left button into a back arrow
 $action   = $action ?? null;         // HTML for the right-hand button

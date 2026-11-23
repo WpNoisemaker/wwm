@@ -26,11 +26,28 @@
 			<?php if (!$replies): ?>
 				<p class="sub">Nobody has answered yet. Say something kind.</p>
 			<?php else: ?>
-				<div class="replies">
-					<?php foreach ($replies as $r): ?>
-						<div class="reply"><p><?= nl2br(e((string) $r['body'])) ?></p><span><?= e((string) ($r['pen_name'] ?: 'Someone')) ?> · <?= e(ago((string) $r['created_at'])) ?></span></div>
-					<?php endforeach; ?>
-				</div>
+				<?php
+				// Replies as a thread: each answer sits under the reply it answers.
+				$kids = [];
+				foreach ($replies as $r) { $kids[(int) ($r['parent_id'] ?? 0)][] = $r; }
+				$tree = static function (int $parent, int $depth) use (&$tree, $kids, $t): string {
+					if (empty($kids[$parent])) { return ''; }
+					$o = '<div class="replies' . ($depth ? ' replies--sub' : '') . '">';
+					foreach ($kids[$parent] as $r) {
+						$rid = (int) $r['id'];
+						$o .= '<div class="reply" id="r' . $rid . '"><p>' . nl2br(e((string) $r['body'])) . '</p><span>' . e((string) ($r['pen_name'] ?: 'Someone')) . ' · ' . e(ago((string) $r['created_at'])) . '</span>'
+							. '<details class="reply__answer"><summary>' . icon('reply') . 'Reply</summary>'
+							. '<form method="post" action="' . e(App::url('/community/' . $t['id'] . '/reply')) . '" class="form">' . Guard::field()
+							. '<input type="hidden" name="parent_id" value="' . $rid . '">'
+							. '<label class="sr" for="rb' . $rid . '">Your reply</label><textarea class="input" id="rb' . $rid . '" name="body" rows="2" required maxlength="1500" placeholder="Reply to ' . e((string) ($r['pen_name'] ?: 'Someone')) . '"></textarea>'
+							. '<div class="reply__row"><label class="sr" for="rn' . $rid . '">Pen name</label><input class="input" id="rn' . $rid . '" name="pen_name" maxlength="40" placeholder="Pen name" autocomplete="off"><button class="pill pill--sm" type="submit">Reply</button></div>'
+							. '</form></details>'
+							. $tree($rid, min($depth + 1, 4)) . '</div>';
+					}
+					return $o . '</div>';
+				};
+				echo $tree(0, 0);
+				?>
 			<?php endif; ?>
 			<form id="reply" method="post" action="<?= e(App::url('/community/' . $t['id'] . '/reply')) ?>" class="form glass glass--plain glass--tight gap-t">
 				<?= Guard::field() ?>

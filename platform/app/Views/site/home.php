@@ -71,7 +71,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 			['s-crown', t('home.tile.chart', 'The Buzz Chart'), t('home.tileline.chart', 'The most-loved weddings this week, ranked by what guests did.'), '/rankings'],
 			['s-store', t('home.tile.vendors', 'Vendors'), t('home.tileline.vendors', 'Photographers, planners, caterers and gele, reviewed by couples.'), '/vendors'],
 			['s-bag', t('home.tile.market', 'Marketplace'), t('home.tileline.market', 'Aso-ebi, stays, rides and honeymoons, with payment held safe.'), '/market'],
-			['s-chat', t('home.tile.community', 'Community'), t('home.tileline.community', 'Say what you can’t say at home, under any pen name.'), '/community'],
+			['s-chat', t('home.tile.community', 'Anonymous Community'), t('home.tileline.community', 'Ask questions and share worries about relationships, weddings, marriage and family, under any pen name.'), '/community'],
 		] as [$i, $tt, $sub, $href]): ?>
 			<a class="tile tile--w2" href="<?= e(App::url($href)) ?>"><?= icon($i) ?><span class="v"><?= $tt ?></span><span class="k"><?= $sub ?></span></a>
 		<?php endforeach; ?>
@@ -248,7 +248,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 	<div class="split">
 		<div class="quote-cta reveal">
 			<div class="sec-head">
-				<span class="eyebrow"><?= t('home.eyebrow.community-no-account-needed', 'Community · no account needed') ?></span>
+				<span class="eyebrow"><?= t('home.eyebrow.community-no-account-needed', 'Anonymous Community · no account needed') ?></span>
 				<h2><?= t('home.heading.say-it-here-instead', 'Say it here instead') ?></h2>
 				<p><?= tl('home.text.textonly-posts-on-colour-under', 'Text-only posts on colour, under any pen name you like. Swipe through what other people are carrying.') ?></p>
 			</div>

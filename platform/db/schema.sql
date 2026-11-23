@@ -429,6 +429,7 @@ CREATE TABLE talks (
 CREATE TABLE talk_replies (
   id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
   talk_id    INT UNSIGNED NOT NULL,
+  parent_id  INT UNSIGNED NULL,   -- the reply this answers; NULL answers the post itself
   pen_name   VARCHAR(40)  NOT NULL DEFAULT '',
   body       TEXT         NOT NULL,
   likes      INT UNSIGNED NOT NULL DEFAULT 0,

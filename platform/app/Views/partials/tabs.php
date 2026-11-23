@@ -6,7 +6,7 @@ $tabs = [
 	['home', 'Home', '/', 'home'],
 	['ring', 'Weddings', '/weddings', 'weddings'],
 	null,
-	['chat', 'Community', '/community', 'community'],
+	['chat', 'Anonymous Community', '/community', 'community'],
 	['user', $in ? 'You' : 'Sign in', $in ? '/account' : '/sign-in', 'account'],
 ];
 ?>

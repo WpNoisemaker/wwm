@@ -64,7 +64,7 @@ $flags = ['#008751', '#FCD116', '#CE1126', '#00A1DE', '#FAD201', '#078930', '#F7
 			<tr><td align="center" style="padding:26px 20px 0;font-family:<?= $f ?>;font-size:12.5px;line-height:1.7;color:#8A93A5;">
 				<a href="<?= e(App::url('/weddings')) ?>" style="color:#C3CAD6;text-decoration:none;">Weddings</a> &nbsp;·&nbsp;
 				<a href="<?= e(App::url('/market')) ?>" style="color:#C3CAD6;text-decoration:none;">Marketplace</a> &nbsp;·&nbsp;
-				<a href="<?= e(App::url('/community')) ?>" style="color:#C3CAD6;text-decoration:none;">Community</a> &nbsp;·&nbsp;
+				<a href="<?= e(App::url('/community')) ?>" style="color:#C3CAD6;text-decoration:none;">Anonymous Community</a> &nbsp;·&nbsp;
 				<a href="<?= e(App::url('/help')) ?>" style="color:#C3CAD6;text-decoration:none;">Help</a>
 				<br><?= e($why) ?><?php if ($unsub !== ''): ?> <a href="<?= e($unsub) ?>" style="color:#C3CAD6;">Stop these emails</a>.<?php endif; ?>
 				<br>Wedding Websites &amp; More &nbsp;·&nbsp; Made in Abuja
