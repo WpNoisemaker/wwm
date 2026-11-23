@@ -15,7 +15,7 @@ $more = [
 	<div class="sheet__head">
 		<a class="cbtn cbtn--sm" href="#" data-close aria-label="Close"><?= icon('close') ?></a>
 		<h2 id="menu-t">Menu</h2>
-		<button class="cbtn cbtn--sm" type="button" data-theme-toggle aria-label="Switch between day and night"><?= icon('moon') ?></button>
+		<span></span>
 	</div>
 	<nav class="mnu" aria-label="All sections">
 		<?php foreach (array_merge($nav, $more) as [$i, $t, $h, $k]): ?>

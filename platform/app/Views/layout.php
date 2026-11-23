@@ -90,7 +90,16 @@ $ogDesc  = $ogDesc ?? ($desc ?? 'Wedding pages for African couples: invite, RSVP
 			<a class="cbtn" href="<?= e($home) ?>" aria-label="Wedding Websites &amp; More, home"><span class="logo">&amp;</span></a>
 		<?php endif; ?>
 		<p class="appbar__title<?= mb_strlen($appTitle) > 16 ? ' appbar__title--long' : '' ?>"><?= e($appTitle) ?></p>
-		<?= $action ?? '<a class="cbtn" href="#menu" data-open="menu" aria-label="Menu" aria-haspopup="dialog">' . icon('menu') . '</a>' ?>
+		<?php if (isset($action)): ?><?= $action ?><?php else: $me = Auth::check() ? Auth::user() : null; ?>
+			<span class="appbar__end">
+				<?php if ($me): ?>
+					<a class="cbtn appbar__me" href="<?= e(App::url('/account')) ?>" aria-label="Your account"><span aria-hidden="true"><?= e(mb_strtoupper(mb_substr(trim((string) ($me['name'] ?? '')) ?: 'Y', 0, 1))) ?></span></a>
+				<?php else: ?>
+					<a class="cbtn" href="<?= e(App::url('/sign-in')) ?>" aria-label="Sign in"><?= icon('user') ?></a>
+				<?php endif; ?>
+				<a class="cbtn" href="#menu" data-open="menu" aria-label="Menu" aria-haspopup="dialog"><?= icon('menu') ?></a>
+			</span>
+		<?php endif; ?>
 	</header>
 	<?= View::partial('partials/menu', ['tab' => $tab]) ?>
 <?php endif; ?>
