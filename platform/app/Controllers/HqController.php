@@ -758,6 +758,52 @@ final class HqController
         $this->show('ads', ['title' => 'Ads', 'ads' => Db::all('SELECT * FROM ads ORDER BY sort, id'), 'slots' => Promo::slots(), 'on' => Site::setting('ads_premium', '1') !== '0']);
     }
 
+    /** Change requests from Premium and High Society couples: open ones first. */
+    public function requests(): void
+    {
+        $this->gate('weddings');
+        Managed::table();
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+            Guard::must();
+            $r = Db::one('SELECT r.*, w.slug, w.partner_a, w.partner_b, u.email, u.name FROM page_requests r JOIN weddings w ON w.id = r.wedding_id LEFT JOIN users u ON u.id = w.owner_id WHERE r.id = ?', [(int) ($_POST['id'] ?? 0)]);
+            if ($r && ($_POST['do'] ?? '') === 'done') {
+                $note = mb_substr(trim((string) ($_POST['reply'] ?? '')), 0, 2000);
+                Db::update('page_requests', ['status' => 'done', 'reply' => $note, 'done_at' => date('Y-m-d H:i:s')], 'id = ?', [$r['id']]);
+                if (filter_var((string) $r['email'], FILTER_VALIDATE_EMAIL)) {
+                    $url = App::url('/w/' . $r['slug']);
+                    App::later(static fn () => Mailer::send((string) $r['email'], 'Your page is updated',
+                        'Hello ' . ($r['name'] ?: 'there') . ",\n\nWe made the change you asked for:\n\n" . $r['body'] . ($note !== '' ? "\n\nOur note: " . $note : '') . "\n\nSee your page: " . $url,
+                        ['button' => ['See your page', $url], 'quote' => (string) $r['body']]));
+                }
+                Guard::flash('ok', 'Marked done. We emailed the couple.');
+            }
+            header('Location: ' . App::url('/hq/requests'));
+            exit;
+        }
+        $this->show('requests', ['title' => 'Requests', 'rows' => Db::all(
+            "SELECT r.*, w.slug, w.partner_a, w.partner_b, w.plan FROM page_requests r JOIN weddings w ON w.id = r.wedding_id
+             ORDER BY r.status = 'done', r.id DESC LIMIT 200")]);
+    }
+
+    /** Open a couple's dashboard to work on their page, or stop. */
+    public function manage(string $id): void
+    {
+        $this->gate('weddings');
+        Guard::boot();
+        if ($id === 'stop') {
+            unset($_SESSION['manage']);
+            header('Location: ' . App::url('/hq/requests'));
+            exit;
+        }
+        $w = Db::one('SELECT id FROM weddings WHERE id = ?', [(int) $id]);
+        if ($w) {
+            $_SESSION['manage'] = (int) $w['id'];
+            $_SESSION['acct_ctx'] = 'wedding';
+        }
+        header('Location: ' . App::url('/account/page'));
+        exit;
+    }
+
     private static function json(array $d, int $code = 200): never
     {
         http_response_code($code);

@@ -23,6 +23,7 @@
 		</ul>
 		<ul class="upgrade__list" data-up-list="premium" hidden>
 			<li><?= icon('check') ?>Every Premium design</li>
+			<li><?= icon('check') ?>Our team sets up your page and keeps it updated</li>
 			<li><?= icon('check') ?>Background music on your page</li>
 			<li><?= icon('check') ?>Voice notes on your wall of love</li>
 			<li><?= icon('check') ?>Livestream on your page</li>

@@ -10,7 +10,35 @@ final class AccountController
     /** The signed-in user's wedding, or null. */
     private function mine(): ?array
     {
+        // Staff running the managed service open a couple's dashboard from HQ and work on their page.
+        if ($id = Managed::managing()) {
+            return Db::one('SELECT * FROM weddings WHERE id = ?', [$id]);
+        }
         return Db::one('SELECT * FROM weddings WHERE owner_id = ? ORDER BY id LIMIT 1', [Auth::id()]);
+    }
+
+    /** A change request to our team (Premium and High Society): words, and up to three photos. */
+    public function request(): void
+    {
+        Guard::must();
+        $w = $this->need();
+        if (!Managed::has($w) || Managed::managing()) {
+            self::go('/account');
+        }
+        $body = trim((string) ($_POST['body'] ?? ''));
+        if (mb_strlen($body) < 3) {
+            Guard::flash('bad', 'Tell us what to add or change.');
+            self::go('/account#managed');
+        }
+        $files = [];
+        foreach (self::fileList('files') as $f) {
+            if (count($files) < 3 && ($f['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK && ($img = Images::store($f, 'requests/' . (int) $w['id']))) {
+                $files[] = $img;
+            }
+        }
+        Managed::add($w, (int) Auth::id(), $body, $files);
+        Guard::flash('ok', 'Sent to our team. We will make the change and let you know here.');
+        self::go('/account#managed');
     }
 
     /** Every page here needs an account and a wedding behind it. */
@@ -64,6 +92,7 @@ final class AccountController
         $this->show('index', [
             'title' => Wedding::names($w),
             'w'     => $w,
+            'requests' => Managed::has($w) ? Managed::forWedding((int) $w['id']) : [],
             'tally' => Wedding::tally($id),
             'dash'  => Wedding::dash($id),
             'next'  => Wedding::nextMoment($w, Wedding::programs($id)),
@@ -688,6 +717,10 @@ final class AccountController
     {
         Guard::must();
         $w   = $this->need();
+        if (Managed::managing()) {
+            Guard::flash('bad', 'Only the couple can ask for a payout.');
+            self::go('/account/money');
+        }
         if (Verify::needed(Auth::user())) {
             Guard::flash('bad', 'Confirm your email before you ask for a payout. Money goes to a bank account, so we need to know the address on this account is really yours.');
             self::go('/account/money');

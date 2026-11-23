@@ -10,6 +10,7 @@
 					<span><span class="row-item__t"><?= e(Wedding::names($w)) ?></span><span class="row-item__s"><?= e($w['city'] ?: 'No city') ?> · <?= e($w['email'] ?: 'No owner') ?> · <?= e(Design::forWedding($w)['name']) ?></span></span>
 					<span class="row-item__end"><span class="badge"><?= e(Site::tier((string) $w['plan'])) ?></span><span class="sub"><?= e($w['visibility']) ?></span></span>
 				</a>
+				<a class="pill pill--sm pill--glass hq-wed__manage" href="<?= e(App::url('/hq/manage/' . (int) $w['id'])) ?>"><?= icon('pen') ?>Manage page</a>
 				<?php if (Wedding::has($w, 'gallery')): ?>
 					<div class="hq-wed__drive">
 						<?php if ($f): ?>

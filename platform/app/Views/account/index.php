@@ -46,6 +46,28 @@ $url     = App::url('/w/' . $w['slug']);
 					<?php endforeach; ?>
 				</div>
 			</div>
+			<?php if (Managed::has($w)): ?>
+			<div class="gap-t" id="managed">
+				<div class="block-head"><h2 class="h2">Our team looks after your page</h2></div>
+				<p class="help">Your <?= e(Site::tier((string) $w['plan'])) ?> plan includes our team setting up your page and keeping it updated. Tell us what to add or change, and send photos if you have them.</p>
+				<?php if (!Managed::managing()): ?>
+				<form method="post" action="<?= e(App::url('/account/request')) ?>" enctype="multipart/form-data" class="form glass glass--plain glass--tight gap-t-sm">
+					<?= Guard::field() ?>
+					<label class="field"><span>What should we add or change?</span><textarea class="input" name="body" rows="3" required maxlength="4000" placeholder="Add the after-party on 20 December, 8pm, at the same venue."></textarea></label>
+					<label class="photo-pick"><input type="file" name="files[]" accept="image/jpeg,image/png,image/webp" multiple data-photo-input><?= icon('camera') ?><span data-photo-name>Add up to 3 photos</span></label>
+					<button class="pill pill--block" type="submit">Send to our team</button>
+				</form>
+				<?php endif; ?>
+				<?php if (!empty($requests)): ?>
+					<div class="rows gap-t-sm">
+						<?php foreach ($requests as $rq): ?>
+							<div class="row-item"><span class="row-item__ico"><?= icon($rq['status'] === 'done' ? 'check' : 'clock') ?></span>
+								<span><span class="row-item__t"><?= e(mb_strimwidth((string) $rq['body'], 0, 90, '…')) ?></span><span class="row-item__s"><?= $rq['status'] === 'done' ? 'Done' . (trim((string) $rq['reply']) !== '' ? ': ' . e((string) $rq['reply']) : '') : 'With our team' ?> · <?= e(ago((string) $rq['created_at'])) ?></span></span></div>
+						<?php endforeach; ?>
+					</div>
+				<?php endif; ?>
+			</div>
+			<?php endif; ?>
 		</div>
 		<aside>
 			<div class="glass glass--tight linkcard">

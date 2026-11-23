@@ -41,6 +41,9 @@ $tabs = $ctx === 'shop'
 			<?php endforeach; ?>
 		</nav>
 	<?php endif; ?>
+	<?php if (Managed::managing() && !empty($w)): ?>
+		<p class="note note--bad"><?= icon('shield') ?><span>You are managing <b><?= e(Wedding::names($w)) ?></b>’s page as our team. Changes save to their page.</span><a class="pill pill--sm" href="<?= e(App::url('/hq/manage/stop')) ?>">Stop managing</a></p>
+	<?php endif; ?>
 	<?= flashes() ?>
 	<?= View::partial('partials/upgrade') ?>
 	<?php if (Verify::needed(Auth::user())): ?>

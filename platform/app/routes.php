@@ -74,6 +74,7 @@ $r->any('/account/page',        [AccountController::class, 'page']);
 $r->any('/account/programs',    [AccountController::class, 'programs']);
 $r->any('/account/squad',       [AccountController::class, 'squad']);
 $r->any('/account/story',       [AccountController::class, 'story']);
+$r->post('/account/request',    [AccountController::class, 'request']);
 $r->any('/account/registry',    [AccountController::class, 'registry']);
 $r->any('/account/quiz',        [AccountController::class, 'quiz']);
 $r->any('/account/sections',    [AccountController::class, 'sections']);
@@ -105,6 +106,8 @@ $r->post('/hq/drive/folder/{id:\d+}', [HqController::class, 'driveFolder']);
 $r->any('/hq/market',           [HqController::class, 'market']);
 $r->get('/hq/emails',           [HqController::class, 'emails']);
 $r->any('/hq/ads',              [HqController::class, 'ads']);
+$r->any('/hq/requests',         [HqController::class, 'requests']);
+$r->get('/hq/manage/{id:\d+|stop}', [HqController::class, 'manage']);
 $r->get('/hq/edit',             [HqController::class, 'edit']);         // edit mode on or off
 $r->post('/hq/edit/save',       [HqController::class, 'editSave']);     // words changed on the page
 $r->post('/hq/edit/image',      [HqController::class, 'editImage']);    // a picture replaced on the page
