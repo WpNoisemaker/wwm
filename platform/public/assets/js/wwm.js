@@ -260,7 +260,11 @@
 				c.querySelectorAll('a').forEach(function (a) { a.tabIndex = n === i ? 0 : -1; });
 			});
 			front = cards[i];
-			if (pos) { pos.textContent = (i + 1) + ' of ' + cards.length + (deck.dataset.more ? (i === cards.length - 1 ? ' · swipe again for the community' : ' · swipe for more') : ''); }
+			// Ads sit between the posts: the count is of posts, and the post buttons rest while an ad is on top.
+			var isAd = front.dataset.ad === '1', posts = cards.filter(function (c) { return c.dataset.ad !== '1'; }),
+				nth = cards.slice(0, i + 1).filter(function (c) { return c.dataset.ad !== '1'; }).length;
+			var acts = deck.parentNode.querySelector('.actions'); if (acts) { acts.classList.toggle('is-ad', isAd); }
+			if (pos) { pos.textContent = isAd ? 'Ad · swipe for more' : nth + ' of ' + posts.length + (deck.dataset.more ? (i === cards.length - 1 ? ' · swipe again for the community' : ' · swipe for more') : ''); }
 			var like = d.querySelector('[data-post-like]'), save = d.querySelector('[data-post-save]'), open = d.querySelector('[data-post-open]');
 			if (like) { var on = front.dataset.liked === '1'; like.classList.toggle('is-on', on); like.setAttribute('aria-pressed', on); }
 			if (save) { var sv = !!saved[front.dataset.id]; save.classList.toggle('is-on', sv); save.setAttribute('aria-pressed', sv); }
@@ -303,7 +307,7 @@
 		var likeBtn = d.querySelector('[data-post-like]');
 		if (likeBtn) {
 			likeBtn.addEventListener('click', function (e) {
-				e.preventDefault(); if (!front) { return; }
+				e.preventDefault(); if (!front || front.dataset.ad === '1') { return; }
 				var card = front, on = card.dataset.liked !== '1';
 				card.dataset.liked = on ? '1' : '0'; card.dataset.likes = Math.max(0, +(card.dataset.likes || 0) + (on ? 1 : -1)); lay(); buzz();
 				var body = new FormData(); body.append('_t', csrf());
@@ -316,7 +320,7 @@
 		var saveBtn = d.querySelector('[data-post-save]');
 		if (saveBtn) {
 			saveBtn.addEventListener('click', function (e) {
-				e.preventDefault(); if (!front) { return; }
+				e.preventDefault(); if (!front || front.dataset.ad === '1') { return; }
 				var id = front.dataset.id; if (saved[id]) { delete saved[id]; } else { saved[id] = 1; }
 				try { localStorage.setItem('wwm-saved', JSON.stringify(saved)); } catch (er) {}
 				lay(); buzz(); toast(saved[id] ? 'Saved on this phone' : 'Removed from saved');

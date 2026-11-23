@@ -41,7 +41,8 @@ $kindLabel = static fn (array $p): string => Blog::KIND[(string) ($p['kind'] ?? 
 		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('book') ?></span><p><?= $s ? 'Nothing in ' . e($s[1]) . ' yet. The first one is on its way.' : 'Nothing published yet.' ?></p><?php if ($s): ?><a class="pill pill--glass" href="<?= e(App::url('/blog')) ?>">Read everything else</a><?php endif; ?></div>
 	<?php elseif ($rows): ?>
 		<div class="stories gap-t">
-			<?php foreach ($rows as $po): ?>
+			<?php foreach ($rows as $bi => $po): ?>
+				<?php if ($bi === 3): ?><?= Promo::html('story', 0) ?><?php endif; ?>
 				<a class="story-card" href="<?= e(App::url('/blog/' . $po['slug'])) ?>">
 					<?= sq((string) $po['cover'], '', 'sq--wide') ?>
 					<span class="eyebrow"><?= e($kindLabel($po)) ?> · <?= Blog::minutes($po) ?> min read</span>

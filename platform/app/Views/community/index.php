@@ -32,7 +32,8 @@ $topicUrl = static fn (string $t, string $s): string => App::url('/community?' .
 	<div class="talk gap-t">
 		<div class="talk__main">
 			<div class="deck" data-deck tabindex="0" aria-label="Posts. Swipe, or use the arrow keys, to move between them.">
-				<?php foreach ($rows as $t): $long = mb_strlen((string) $t['body']) > 150; ?>
+				<?php foreach ($rows as $k => $t): $long = mb_strlen((string) $t['body']) > 150; ?>
+					<?php if ($k > 0 && $k % 8 === 4): ?><?= Promo::html('post', intdiv($k, 8)) ?><?php endif; ?>
 					<article class="post <?= e(talk_colour((string) $t['bg'])) ?>" data-id="<?= (int) $t['id'] ?>" data-href="<?= e(App::url('/community/' . $t['id'] . ($sort === 'new' ? '?s=new' : ''))) ?>"
 					         data-like="<?= e(App::url('/community/' . $t['id'] . '/like')) ?>" data-likes="<?= (int) $t['likes'] ?>" data-replies="<?= (int) $t['replies'] ?>" data-liked="<?= isset($liked[(int) $t['id']]) ? '1' : '0' ?>">
 						<span class="post__topic"><?= e(Talk::topic((string) $t['topic'])) ?></span>

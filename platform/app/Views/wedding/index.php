@@ -58,7 +58,8 @@ $q = static function (array $over) use ($f): string {
 	<?php else: ?>
 		<?php $ranks = Wedding::ranks(); ?>
 		<div class="cards gap-t">
-			<?php foreach ($rows as $w): ?>
+			<?php foreach ($rows as $ci => $w): ?>
+				<?php if ($ci === 6): ?><?= Promo::html('card', 2) ?><?php endif; ?>
 				<?= wedding_card($w, trim(Wedding::short($w) . ' · ' . Wedding::place($w), ' ·'), Site::tier((string) $w['plan']), '', $ranks[(int) $w['id']] ?? 0) ?>
 			<?php endforeach; ?>
 		</div>

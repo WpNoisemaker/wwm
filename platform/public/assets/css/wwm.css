@@ -2013,3 +2013,40 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .squad__social .ico { width: 13px; height: 13px; flex: none; }
 .squad__social span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 @media (min-width: 760px) { .squad { grid-template-columns: repeat(auto-fit, minmax(200px, 270px)); justify-content: center; } }
+
+/* ---------- the site's own ad for Premium, in the shape of each slot ---------- */
+.promo__tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: linear-gradient(135deg, #F4E2B4, #C9A45C); color: #2B2113; font-size: 11.5px; font-weight: 500; letter-spacing: .02em; }
+.promo__tag .ico { width: 13px; height: 13px; }
+.promo__lab { font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; opacity: .75; }
+/* a card in the community deck */
+.post--ad { --c: linear-gradient(160deg, #1B2233 0%, #26324B 55%, #3A3150 100%); padding: 58px 22px 22px; place-items: stretch; grid-template-rows: minmax(0, 1fr) auto; gap: 12px; }
+.post--ad .post__topic { background: rgba(255, 255, 255, .12); text-transform: uppercase; letter-spacing: .08em; font-size: 10.5px; }
+.post--ad .promo__body { align-content: center; gap: 10px; min-height: 0; }
+.post--ad .promo__pic { width: min(40%, 170px); aspect-ratio: 1 / 1.05; }
+.promo__t { font-size: 22px; font-weight: 300; line-height: 1.25; text-wrap: balance; }
+.promo__s { font-size: 14px; line-height: 1.45; opacity: .82; max-width: 30ch; text-wrap: pretty; }
+.promo__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 12px; }
+.promo__p { font-size: 12.5px; opacity: .78; white-space: nowrap; }
+.post--ad .promo__go { min-height: 44px; padding: 0 22px; font-size: 14px; }
+.post--ad .promo__t { font-size: 20px; }
+.post--ad .promo__s { font-size: 13.5px; }
+.promo--band .promo__foot { justify-content: flex-start; margin-top: 4px; }
+.actions.is-ad [data-post-like], .actions.is-ad [data-post-save], .actions.is-ad [data-post-share], .actions.is-ad [data-post-open] { opacity: .35; pointer-events: none; }
+/* a card among wedding cards */
+.promo-card .sq { background: linear-gradient(160deg, #1B2233, #3A3150); }
+.promo-card .promo__ad { left: auto; right: 10px; top: 10px; bottom: auto; transform: none; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; padding: 4px 9px; }
+.promo-card__over { position: absolute; inset: auto 0 0; display: grid; justify-items: center; gap: 8px; padding: 40px 12px 14px; text-align: center; color: #fff; background: linear-gradient(180deg, transparent, rgba(12, 16, 26, .78)); }
+.promo-card__t { font-size: 14px; line-height: 1.25; text-wrap: balance; }
+/* a story among blog posts */
+.promo-story .eyebrow { color: var(--ink-3); }
+.promo-story .promo__cta { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); }
+.promo-story .promo__cta .ico { width: 14px; height: 14px; color: #D8B66A; }
+/* a band on a free wedding page */
+.promo--band { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; align-items: center; max-width: 720px; margin: 0 auto; padding: 14px; border-radius: 30px;
+	background: var(--tile); border: 1px solid var(--tile-line); color: inherit; text-decoration: none; transition: background .2s; }
+.promo--band:hover { background: var(--tile-on); }
+.promo--band .promo__pic { width: 96px; aspect-ratio: 1 / 1.1; }
+.promo--band .promo__in { display: grid; justify-items: start; gap: 6px; min-width: 0; }
+.promo--band .promo__t { font-size: 18px; }
+.promo--band .promo__s { font-size: 13px; max-width: none; }
+@media (min-width: 640px) { .promo--band { grid-template-columns: 150px minmax(0, 1fr); gap: 22px; padding: 16px; } .promo--band .promo__pic { width: 150px; } .promo--band .promo__t { font-size: 21px; } }

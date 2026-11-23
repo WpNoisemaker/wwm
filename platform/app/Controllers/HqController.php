@@ -97,6 +97,7 @@ final class HqController
             }
             // A ticked box is present in the POST, an unticked one is simply absent.
             Verify::set(isset($_POST['email_verify']));
+            Db::run('INSERT INTO settings (k, v) VALUES (?, ?) ON DUPLICATE KEY UPDATE v = VALUES(v)', ['ads_premium', isset($_POST['ads_premium']) ? '1' : '0']);
             Guard::flash('ok', 'Saved. The pricing page now shows these.');
             header('Location: ' . App::url('/hq/settings'));
             exit;

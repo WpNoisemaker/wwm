@@ -450,7 +450,15 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	</section>
 	<?php $blocks['wall'] = ob_get_clean(); ?>
 
-	<?php foreach ($layout['order'] as $bk) { if (!in_array($bk, $layout['hidden'], true)) { echo $blocks[$bk] ?? ''; } } ?>
+	<?php
+	// A free page carries the site's ads: one Premium band after its third section, sponsors at the foot.
+	$adAt = Wedding::has($w, 'quiet') ? 0 : 3; $shownN = 0;
+	foreach ($layout['order'] as $bk) {
+		if (in_array($bk, $layout['hidden'], true) || trim($blocks[$bk] ?? '') === '') { continue; }
+		echo $blocks[$bk];
+		if (++$shownN === $adAt) { echo Promo::html('band', (int) $w['id']); }
+	}
+	?>
 
 	<?php if ($sponsors): ?>
 	<section class="sec wrap w-ads">
