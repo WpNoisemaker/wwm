@@ -275,6 +275,17 @@ Sign in at `/sign-in`, then:
   text & images, marketplace, settings). Change it any time. They get a link to set their own password.
 - **HQ → Site content** — change the words and pictures on the front page and the other pages
 - **HQ → Blog** — write, schedule and publish guides, news, features and interviews
+- **HQ → Marketplace** — every seller, with any reports against them. Verify, pause (the seller is emailed to
+  verify by hand), reinstate, remove or delete. Five open reports pause a seller on their own; fifteen
+  remove them; you can reverse either. **Categories** (from the same page) are what sellers may list in:
+  add one, or open and close them. Sellers cannot make their own.
+- **The marketplace never holds money.** Customers make a free customer account to message a seller; the
+  seller sends an invoice (with their own payment link or bank details) or a payment link in the chat, and
+  the customer pays them directly. The listing, the chat and every invoice say so plainly.
+- **HQ → Settings → Ads for Premium** — the site's own ads for Premium, on free wedding pages, between the
+  community cards, among the wedding pages and in the blog. On by default; Pro and up never carry ads.
+- **HQ → Settings → See what our emails look like** — every email is sent in the branded design, with the
+  same words as plain text alongside
 - **HQ → Settings → Email confirmation** — **off** until you turn it on. When it is on, anyone who signs up from
   that moment must confirm their email before making their page public or asking for a payout. Everyone who
   already has an account, including anyone imported from WordPress, is never asked. Use **Send me a test email**
@@ -292,7 +303,7 @@ looks and behaves before a single real couple has signed up:
 
 - **10 wedding pages** across all four plans, with programs, guests, a wall of love, a gift registry and
   real payments behind the totals. One page is already past, one is private.
-- **8 vendors** with reviews, **8 marketplace listings**, and the **45 anonymous community conversations**
+- **8 vendors** with reviews, and the **45 anonymous community conversations**
   with their replies.
 - Accounts to sign in with. **Every demo account uses the password `DemoPass2026!`**
 
@@ -303,7 +314,6 @@ looks and behaves before a single real couple has signed up:
 | `pro@demo.test` | Couple, Pro | Seyi & Folake — squad, gallery, their own colours |
 | `free@demo.test` | Couple, Free | Kola & Lara — the free page and its upgrade nudge |
 | `vendor@demo.test` | Vendor | Owns the Golden Lens profile |
-| `seller@demo.test` | Marketplace seller | Owns the marketplace listings |
 | `staff@demo.test` | Staff | Can open HQ, but cannot remove the demo |
 
 The other six couples sign in as `musa@`, `ibrahim@`, `tunde@`, `emeka@`, `daniel@` and `tolu@` `demo.test`,
