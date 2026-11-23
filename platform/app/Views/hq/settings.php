@@ -1,6 +1,6 @@
 <?= View::partial('hq/_head', ['h' => 'Settings', 'sub' => 'These control the pricing page and the fee on every gift', 'now' => 'settings']) ?>
 	<div class="split-2">
-		<form method="post" class="form glass glass--plain glass--tight acct-card">
+		<form method="post" class="form glass glass--plain glass--tight acct-card" enctype="multipart/form-data">
 			<?= Guard::field() ?>
 			<h2 class="h3">Plans</h2>
 			<div class="form-grid form-grid--2">
@@ -24,6 +24,15 @@
 			<h2 class="h3 gap-t-sm">Email confirmation</h2>
 			<label class="check"><span>Ask new sign-ups to confirm their email</span><input type="checkbox" name="email_verify" value="1" <?= $verify['on'] ? 'checked' : '' ?>></label>
 			<p class="help">This stays off until you turn it on. When it is on, anyone who signs up from then on must follow a link before making their page public or asking for a payout. Existing accounts are never asked.<?php if ($verify['on'] && $verify['since'] !== ''): ?> It has been on since <?= e(date('j M Y, g:ia', (int) strtotime($verify['since']))) ?>.<?php endif; ?></p>
+			<h2 class="h3 gap-t-sm">Spraying: the ₦1,000 notes</h2>
+			<p class="help">When a guest's spray lands, notes fly across their screen. Upload clear photos of a real ₦1,000 note, front and back, cropped to the edges of the note. Until you do, a plain drawn note is used.</p>
+			<?php foreach (['front' => 'Front of the note', 'back' => 'Back of the note'] as $side => $label): $cur = Site::setting('spray_note_' . $side, ''); ?>
+				<div class="spray-set">
+					<?php if ($cur !== ''): ?><img src="<?= e(img_url($cur)) ?>" alt="<?= e($label) ?>" width="120" height="62"><?php endif; ?>
+					<label class="field"><span><?= e($label) ?><?= $cur !== '' ? ' · saved; choose a file to replace it' : '' ?></span><input class="input" type="file" name="spray_<?= $side ?>" accept="image/jpeg,image/png,image/webp"></label>
+					<?php if ($cur !== ''): ?><label class="check"><span>Remove this photo</span><input type="checkbox" name="spray_<?= $side ?>_off" value="1"></label><?php endif; ?>
+				</div>
+			<?php endforeach; ?>
 			<h2 class="h3 gap-t-sm">Bachs: bank transfers</h2>
 			<p class="help">Each couple gets their own account number for gifts and spraying. Guests transfer money to it, and the page shows each payment the moment it lands. <?= Bachs::on() ? '<b>Connected' . (str_starts_with(Bachs::key(), 'sk_live_') ? ' (live)' : ' (sandbox)') . '.</b>' : '<b>Not connected.</b>' ?></p>
 			<label class="field"><span>Secret key (sk_sandbox_… or sk_live_…)<?= Bachs::on() ? ' · saved; type to replace' : '' ?></span><input class="input" name="bachs_key" type="password" autocomplete="new-password"></label>

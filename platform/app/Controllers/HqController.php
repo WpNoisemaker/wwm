@@ -101,6 +101,14 @@ final class HqController
                     Db::run('INSERT INTO settings (k, v) VALUES (?, ?) ON DUPLICATE KEY UPDATE v = VALUES(v)', [$k, trim((string) $_POST[$k])]);
                 }
             }
+            // Photos of a real ₦1,000 note, front and back, for the notes that fly when a guest sprays.
+            foreach (['front', 'back'] as $side) {
+                if (!empty($_POST['spray_' . $side . '_off'])) {
+                    Db::run('DELETE FROM settings WHERE k = ?', ['spray_note_' . $side]);
+                } elseif (!empty($_FILES['spray_' . $side]['name']) && ($img = Images::store($_FILES['spray_' . $side], 'site'))) {
+                    Db::run('INSERT INTO settings (k, v) VALUES (?, ?) ON DUPLICATE KEY UPDATE v = VALUES(v)', ['spray_note_' . $side, $img]);
+                }
+            }
             // A ticked box is present in the POST, an unticked one is simply absent.
             Verify::set(isset($_POST['email_verify']));
             Guard::flash('ok', 'Saved. The pricing page now shows these prices.');

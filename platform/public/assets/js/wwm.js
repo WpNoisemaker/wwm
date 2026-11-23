@@ -455,6 +455,23 @@
 		if (id) { id.value = b.dataset.vreview; } if (t) { t.textContent = 'Rate ' + b.dataset.vname; }
 	});
 
+	/* ---------- spraying: ₦1,000 notes flutter down when a spray lands ---------- */
+	var rain = function () {
+		if (W.matchMedia && W.matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
+		// ₦1,000 notes fluttering down: the photos HQ uploaded (front and back), or a plain drawn note.
+		var pics = []; var src = d.querySelector('[data-notes]'); try { pics = JSON.parse((src && src.getAttribute('data-notes')) || '[]'); } catch (er) { pics = []; }
+		var box = d.createElement('div'); box.className = 'money-rain'; box.setAttribute('aria-hidden', 'true');
+		for (var i = 0; i < 22; i++) {
+			var n = d.createElement('span'); n.className = 'note-fall' + (pics.length ? '' : ' note-fall--drawn');
+			if (pics.length) { var im = d.createElement('img'); im.src = pics[i % pics.length]; im.alt = ''; n.appendChild(im); } else { n.innerHTML = '<b>₦1000</b>'; }
+			n.style.left = (Math.random() * 96 - 4) + '%'; n.style.animationDelay = (Math.random() * 1.6) + 's'; n.style.animationDuration = (2.6 + Math.random() * 1.6) + 's';
+			n.style.setProperty('--r', (Math.random() * 60 - 30) + 'deg'); n.style.setProperty('--x', (Math.random() * 120 - 60) + 'px'); n.style.setProperty('--w', (64 + Math.random() * 30) + 'px');
+			box.appendChild(n);
+		}
+		d.body.appendChild(box); setTimeout(function () { box.remove(); }, 5200);
+	};
+	W.WWM.rain = rain;
+
 	/* ---------- marketplace cards: swipe through a listing's photos, or use the arrows ---------- */
 	d.querySelectorAll('[data-cgal]').forEach(function (g) {
 		var tr = g.querySelector('[data-cgal-track]'), dots = [].slice.call(g.querySelectorAll('.lcard__dots i')), n = g.querySelector('[data-cgal-n]'),
@@ -1129,12 +1146,6 @@
 			gf.querySelectorAll('[data-g-copy="' + k + '"]').forEach(function (b) { b.setAttribute('data-copy', v.replace(/[₦,]/g, '')); });
 		};
 		var gPoll = 0;
-		var rain = function () {
-			if (W.matchMedia && W.matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
-			var box = d.createElement('div'); box.className = 'money-rain'; box.setAttribute('aria-hidden', 'true');
-			for (var i = 0; i < 26; i++) { var n = d.createElement('span'); n.textContent = '₦'; n.style.left = Math.random() * 100 + '%'; n.style.animationDelay = (Math.random() * 1.2) + 's'; n.style.fontSize = (18 + Math.random() * 22) + 'px'; box.appendChild(n); }
-			d.body.appendChild(box); setTimeout(function () { box.remove(); }, 4200);
-		};
 		gf.addEventListener('submit', function (e) {
 			e.preventDefault();
 			var fd = new FormData(gf); var amt = d.getElementById('g-amount'); fd.append('amount', amt ? amt.value : '0');

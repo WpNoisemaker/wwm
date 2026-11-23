@@ -52,7 +52,8 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	</div>
 </header>
 
-<article class="wed wed--<?= e($key) ?>" data-hero="<?= e($hero) ?>">
+<?php $notes = array_values(array_filter(array_map(static fn ($k) => Site::setting('spray_note_' . $k, ''), ['front', 'back']))); ?>
+<article class="wed wed--<?= e($key) ?>" data-hero="<?= e($hero) ?>" data-notes="<?= e(json_encode(array_map('img_url', $notes), JSON_UNESCAPED_SLASHES)) ?>">
 	<div class="wrap"><?= flashes() ?></div>
 	<?php if (!empty($pass['waiting'])): ?>
 		<section class="wrap pass-wrap">
