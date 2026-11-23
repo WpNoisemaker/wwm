@@ -12,7 +12,7 @@ $tab      = $tab ?? '';
 $wed      = !empty($wed);
 $bare     = !empty($bare);
 $tabTitles = ['home' => 'Wedding Pages', 'weddings' => 'Weddings', 'rankings' => 'Buzz Chart', 'vendors' => 'Vendors', 'market' => 'Market',
-              'community' => 'Community', 'blog' => 'Stories', 'pricing' => 'Pricing', 'account' => 'Your Page', 'hq' => 'HQ', 'search' => 'Search'];
+              'community' => 'Community', 'blog' => 'Blog', 'pricing' => 'Pricing', 'account' => 'Your Page', 'hq' => 'HQ', 'search' => 'Search'];
 $appTitle = $appTitle ?? ($tabTitles[$tab] ?? mb_strimwidth((string) ($title ?? 'Wedding Websites & More'), 0, 22, '…'));
 $back     = $back ?? null;           // a URL turns the left button into a back arrow
 $action   = $action ?? null;         // HTML for the right-hand button
@@ -27,6 +27,11 @@ if (!empty($wtpl)) { $htmlAttr .= ' data-tpl="' . e($wtpl) . '"'; }
 $home  = App::url('/');
 $base  = (string) parse_url($home, PHP_URL_PATH);
 $og    = $ogImage ?? App::url('assets/img/brand/og.jpg');
+// The page's own address, for link previews: the site's origin plus the path asked for.
+$origin = (string) preg_replace('#^(https?://[^/]+).*$#', '$1', (string) App::config('url'));
+$canon  = $canonical ?? ($origin . strtok((string) ($_SERVER['REQUEST_URI'] ?? '/'), '?'));
+$ogTitle = $ogTitle ?? ($title ?? 'Wedding Websites & More');
+$ogDesc  = $ogDesc ?? ($desc ?? 'Wedding pages for African couples: invite, RSVP, gifts, spraying and livestream in one link.');
 ?>
 <!doctype html>
 <html lang="en"<?= $htmlAttr ?>>
@@ -44,10 +49,22 @@ $og    = $ogImage ?? App::url('assets/img/brand/og.jpg');
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Weddings">
-<meta property="og:title" content="<?= e($title ?? 'Wedding Websites & More') ?>">
-<?php if (!empty($desc)): ?><meta property="og:description" content="<?= e($desc) ?>"><?php endif; ?>
+<link rel="canonical" href="<?= e($canon) ?>">
+<meta property="og:site_name" content="Wedding Websites &amp; More">
+<meta property="og:type" content="<?= e($ogType ?? 'website') ?>">
+<meta property="og:url" content="<?= e($canon) ?>">
+<meta property="og:title" content="<?= e($ogTitle) ?>">
+<meta property="og:description" content="<?= e($ogDesc) ?>">
 <meta property="og:image" content="<?= e($og) ?>">
+<meta property="og:image:secure_url" content="<?= e($og) ?>">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="<?= e($ogAlt ?? $ogTitle) ?>">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<?= e($ogTitle) ?>">
+<meta name="twitter:description" content="<?= e($ogDesc) ?>">
+<meta name="twitter:image" content="<?= e($og) ?>">
 <link rel="preload" as="font" type="font/woff2" href="<?= e(App::url('assets/fonts/urbanist-latin.woff2')) ?>" crossorigin>
 <link rel="stylesheet" href="<?= e(App::asset('assets/css/wwm.css')) ?>">
 <?php if (!$fixTheme): ?>

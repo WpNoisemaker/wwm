@@ -2,7 +2,7 @@
 /** The top of every account screen: flashes, the email note, a title on desktop, and the sections. */
 $now  = $now ?? '';
 $tabs = [['overview', 'Overview', '/account', 'grid'], ['page', 'Page', '/account/page', 'pen'], ['programs', 'Programs', '/account/programs', 'calendar'],
-         ['squad', 'Squad', '/account/squad', 'people'], ['registry', 'Registry', '/account/registry', 'gift'], ['guests', 'Guests', '/account/guests', 'user'],
+         ['squad', 'Squad', '/account/squad', 'people'], ['registry', 'Registry', '/account/registry', 'gift'], ['quiz', 'Quiz', '/account/quiz', 'star'], ['guests', 'Guests', '/account/guests', 'user'],
          ['money', 'Money', '/account/money', 'wallet'], ['settings', 'Settings', '/account/settings', 'gear']];
 ?>
 <div class="page wrap">

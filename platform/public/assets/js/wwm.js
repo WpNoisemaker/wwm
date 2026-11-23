@@ -50,20 +50,7 @@
 	}
 	d.querySelectorAll('[data-dots]').forEach(function (el) { setDots(el, el.getAttribute('data-value') || el.textContent.trim()); });
 
-	/* ---------- naira: Urbanist has no ₦, so text written by script gets the drawn one ---------- */
-	function naira(scope) {
-		var tw = d.createTreeWalker(scope || d.body, NodeFilter.SHOW_TEXT, null), hits = [];
-		while (tw.nextNode()) { var t = tw.currentNode; if (t.nodeValue.indexOf('₦') > -1 && !t.parentNode.closest('script,style,textarea,title,option')) { hits.push(t); } }
-		hits.forEach(function (t) {
-			var f = d.createElement('span');
-			t.nodeValue.split('₦').forEach(function (part, n) {
-				if (n) { var s = d.createElement('span'); s.className = 'ngn'; s.textContent = 'N'; s.setAttribute('aria-hidden', 'true'); f.appendChild(s); var r = d.createElement('span'); r.className = 'sr'; r.textContent = 'naira '; f.appendChild(r); }
-				if (part) { f.appendChild(d.createTextNode(part)); }
-			});
-			t.parentNode.replaceChild(f, t);
-		});
-	}
-	function setText(el, text) { el.textContent = text; naira(el); }
+	function setText(el, text) { el.textContent = text; }
 
 	/* ---------- toast ---------- */
 	var toastEl, toastT;
@@ -72,7 +59,7 @@
 		setText(toastEl, msg); toastEl.classList.add('is-on');
 		clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove('is-on'); }, 2600);
 	}
-	W.WWM = { fmt: fmt, toast: toast, dots: setDots, naira: naira, text: setText };
+	W.WWM = { fmt: fmt, toast: toast, dots: setDots, text: setText };
 
 	/* ---------- theme: follows the device until the visitor picks ---------- */
 	/* Night is the look of the site, all day, every day. The button switches to day and back, and the
@@ -259,6 +246,7 @@
 			if (like) { var on = front.dataset.liked === '1'; like.classList.toggle('is-on', on); like.setAttribute('aria-pressed', on); }
 			if (save) { var sv = !!saved[front.dataset.id]; save.classList.toggle('is-on', sv); save.setAttribute('aria-pressed', sv); }
 			if (open) { open.href = front.dataset.href; }
+			var shr = d.querySelector('[data-post-share]'); if (shr) { shr.setAttribute('data-share', front.dataset.href); }
 			d.querySelectorAll('[data-count]').forEach(function (n) { n.textContent = fmt(+(front.dataset[n.dataset.count] || 0)); });
 		}
 		function go(dir) {
@@ -332,6 +320,7 @@
 		var sh = e.target.closest('[data-share]');
 		if (sh) {
 			e.preventDefault(); var url = sh.dataset.share && sh.dataset.share !== '' ? sh.dataset.share : location.href;
+			if (sh.dataset.sharePing) { var fd = new FormData(); fd.append('_t', csrf()); fetch(sh.dataset.sharePing, { method: 'POST', body: fd, credentials: 'same-origin' }).catch(function () {}); }
 			if (navigator.share) { navigator.share({ title: d.title, url: url }).catch(function () {}); }
 			else { try { navigator.clipboard.writeText(url); toast('Link copied'); } catch (er) { toast(url); } }
 			return;
@@ -394,19 +383,54 @@
 		var i = d.querySelector('[data-photo-input]'); if (i) { e.preventDefault(); i.closest('form').scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(function () { i.click(); }, 450); }
 	});
 
-	/* ---------- the wedding page's quiz ---------- */
-	d.querySelectorAll('[data-quiz]').forEach(function (q) {
-		var items = q.querySelectorAll('[data-q]'), score = 0, done = 0, out = q.querySelector('[data-quiz-score]');
-		items.forEach(function (it) {
-			it.addEventListener('click', function (e) {
-				var b = e.target.closest('button'); if (!b || it.dataset.done) { return; }
-				it.dataset.done = '1'; done++;
-				var right = b.hasAttribute('data-right'); if (right) { score++; }
-				b.classList.add(right ? 'is-right' : 'is-wrong');
-				var r = it.querySelector('[data-right]'); if (r) { r.classList.add('is-right'); }
-				buzz();
-				if (out) { setText(out, score + ' of ' + items.length + (done === items.length ? (score === items.length ? ' · You know them well' : ' · Not bad at all') : '')); }
+	/* ---------- prices in the visitor's own money ---------- */
+	var fxBox = d.querySelector('[data-fx]');
+	if (fxBox) {
+		var fxMap = JSON.parse(fxBox.getAttribute('data-fx') || '{}');
+		var fxAmount = function (ngn, rate) {
+			var v = ngn / rate; if (v <= 0) { return 0; }
+			var step = v < 1000 ? 1 : Math.pow(10, Math.floor(Math.log10(v)) - 2);
+			return Math.round(v / step) * step;
+		};
+		var fxApply = function (cur) {
+			var r = fxMap[cur]; if (!r) { return; }
+			d.querySelectorAll('[data-ngn]').forEach(function (el) {
+				var n = +el.getAttribute('data-ngn'); el.textContent = '';
+				if (cur !== 'NGN' && n > 0) { var g = d.createElement('span'); g.className = 'fx-guide'; g.textContent = '≈ '; el.appendChild(g); }
+				var m = d.createElement('span'); m.className = 'money'; m.textContent = r[1] + fmt(fxAmount(n, r[0])); el.appendChild(m);
 			});
+			fxBox.querySelectorAll('[data-cur]').forEach(function (c) {
+				var on = c.getAttribute('data-cur') === cur; c.classList.toggle('is-on', on);
+				if (on) { c.setAttribute('aria-current', 'true'); } else { c.removeAttribute('aria-current'); }
+			});
+			var note = fxBox.querySelector('[data-fx-note]'); if (note) { note.hidden = cur === 'NGN'; }
+			d.cookie = 'wwm-cur=' + cur + ';path=/;max-age=31536000;samesite=lax';
+		};
+		fxBox.addEventListener('click', function (e) {
+			var c = e.target.closest('[data-cur]'); if (!c) { return; }
+			e.preventDefault(); fxApply(c.getAttribute('data-cur')); buzz();
 		});
-	});
+	}
+
+	/* ---------- the wedding page's quiz: pick the partner you know ---------- */
+	var qSides = d.querySelector('[data-quiz-sides]');
+	if (qSides) {
+		qSides.setAttribute('data-ready', '');
+		var qPick = function (side) {
+			d.querySelectorAll('[data-quiz-side]').forEach(function (p) { p.classList.toggle('is-on', p.getAttribute('data-quiz-side') === side); });
+			d.querySelectorAll('.quiz-pick__b').forEach(function (b) {
+				var on = b.getAttribute('data-quiz-pick') === side; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', on ? 'true' : 'false');
+			});
+		};
+		d.addEventListener('click', function (e) {
+			var b = e.target.closest('[data-quiz-pick]'); if (!b) { return; }
+			qPick(b.getAttribute('data-quiz-pick')); buzz();
+			if (!b.classList.contains('quiz-pick__b')) { var top = d.getElementById('quiz'); if (top) { top.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }
+		});
+		qSides.addEventListener('change', function (e) {
+			var r = e.target; if (r.type !== 'radio') { return; }
+			r.closest('.quiz__opts').querySelectorAll('label').forEach(function (l) { l.classList.toggle('is-on', l.contains(r)); });
+			buzz();
+		});
+	}
 })();

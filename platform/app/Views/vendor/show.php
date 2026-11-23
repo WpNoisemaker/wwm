@@ -22,6 +22,20 @@ $stars = static fn (int $n): string => str_repeat('★', max(0, min(5, $n))) . '
 		</div>
 	</div>
 
+	<?php if (!empty($sells)): ?>
+	<section class="sec">
+		<div class="sec-head"><span class="eyebrow">Book on the marketplace</span><h2>What <?= e($v['name']) ?> offers</h2></div>
+		<div class="rail">
+			<?php foreach ($sells as $m): ?>
+				<a class="card" href="<?= e(App::url('/market/' . $m['slug'])) ?>">
+					<?= sq(first_photo((string) $m['photos']), (string) $m['title']) ?>
+					<span class="card__cap"><span class="card__t"><?= e($m['title']) ?></span><span class="card__s"><?= (int) $m['on_ask'] ? 'Price on request' : money(short_money((int) $m['price'])) . ((string) $m['price_unit'] !== '' ? ' ' . e($m['price_unit']) : '') ?><?= (string) $m['city'] !== '' ? ' · ' . e($m['city']) : '' ?></span></span>
+				</a>
+			<?php endforeach; ?>
+		</div>
+	</section>
+	<?php endif; ?>
+
 	<section class="sec">
 		<div class="sec-head"><span class="eyebrow"><?= count($reviews) ?> review<?= count($reviews) === 1 ? '' : 's' ?></span><h2>What couples said</h2></div>
 		<?php if (!$reviews): ?>

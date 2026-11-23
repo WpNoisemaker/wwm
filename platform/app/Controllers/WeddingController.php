@@ -35,6 +35,69 @@ final class WeddingController
         ]);
     }
 
+    /** A country's own listing: /weddings/uk, /weddings/ghana and the rest. */
+    public function place(string $place): void
+    {
+        $p = Wedding::PLACES[$place] ?? null;
+        if (!$p) {
+            self::notFound();
+        }
+        [$country, $in, $line] = $p;
+        $page   = max(1, (int) ($_GET['page'] ?? 1));
+        $filter = [
+            'q'       => trim((string) ($_GET['q'] ?? '')),
+            'city'    => trim((string) ($_GET['city'] ?? '')),
+            'style'   => '',
+            'plan'    => isset(Wedding::PLANS[$_GET['plan'] ?? '']) ? (string) $_GET['plan'] : '',
+            'country' => $country,
+            'sort'    => in_array($_GET['sort'] ?? '', ['soon', 'new', 'buzz'], true) ? (string) $_GET['sort'] : 'soon',
+        ];
+        $per    = 12;
+        $total  = Wedding::countSearch($filter);
+        $all    = Wedding::countSearch(['country' => $country]);
+        $others = [];
+        foreach (Wedding::countryList() as $c) {
+            $slug = Wedding::placeSlug((string) $c['country']);
+            if ($slug !== '' && $slug !== $place) {
+                $others[$slug] = ['name' => Wedding::PLACES[$slug][1], 'n' => (int) $c['n']];
+            }
+        }
+        $cur    = Wedding::CURRENCY[$country] ?? 'NGN';
+        $cities = Wedding::cityList(24, $country);
+        $names  = array_map(static fn ($c) => (string) $c['city'], $cities);
+        $vendors = $names ? Db::all(
+            'SELECT * FROM vendors WHERE city IN (' . implode(',', array_fill(0, count($names), '?')) . ')
+             ORDER BY verified DESC, rating DESC, reviews DESC LIMIT 4',
+            $names
+        ) : [];
+
+        View::render('wedding/place', [
+            'title'   => 'African weddings in ' . $in,
+            'desc'    => $line,
+            'ogImage' => Share::url('p', $place, (string) $all),
+            'tab'     => 'weddings',
+            'css'     => ['wedding'],
+            'appTitle'=> ucfirst(preg_replace('/^the /', '', explode(' and ', $in)[0])),
+            'back'    => App::url('/weddings'),
+            'place'   => $place,
+            'country' => $country,
+            'in'      => $in,
+            'line'    => $line,
+            'rows'    => Wedding::search($filter, $per, ($page - 1) * $per),
+            'total'   => $total,
+            'all'     => $all,
+            'pages'   => (int) ceil($total / $per),
+            'page'    => $page,
+            'f'       => $filter,
+            'cities'  => $cities,
+            'vendors' => $vendors,
+            'plans'   => Wedding::planCounts($country),
+            'soon'    => Wedding::soonCount($country),
+            'cur'     => $cur,
+            'others'  => $others,
+        ]);
+    }
+
     public function show(string $slug): void
     {
         $w = Wedding::bySlug($slug);
@@ -60,6 +123,11 @@ final class WeddingController
               || ($_SERVER['HTTP_X_PURPOSE'] ?? '') === 'prefetch';
         if (!$mine && !$ahead) {
             Db::run('UPDATE weddings SET views = views + 1 WHERE id = ?', [$w['id']]);
+            // A visit earns buzz once per visitor per page, so refreshing cannot pump the chart.
+            if (empty($_SESSION['seen'][(int) $w['id']])) {
+                $_SESSION['seen'][(int) $w['id']] = 1;
+                Buzz::add($w, 'visit');
+            }
         }
 
         $id       = (int) $w['id'];
@@ -77,7 +145,11 @@ final class WeddingController
             'ink'      => $design['ink'] === 'dark' ? 'dark' : '',
             'themeColor'      => $design['theme'] === 'auto' ? ((string) $w['plan'] === 'free' ? '#6E6E6E' : '#6F8590') : $design['swatch'][0],
             'themeColorNight' => $design['theme'] === 'auto' ? ((string) $w['plan'] === 'free' ? '#141414' : '#1E242E') : $design['swatch'][0],
-            'ogImage'  => (string) $w['cover'] !== '' && !str_starts_with((string) $w['cover'], 'http') ? App::url('assets/img/' . $w['cover']) : null,
+            // The preview is the couple: their photo, names, date and city. A private page keeps the brand's.
+            'ogImage'  => (string) $w['visibility'] === 'public' ? Share::url('w', (string) $w['slug'], implode('|', [$w['cover'], Wedding::names($w), $w['wed_date'], $w['city'], $w['country'], $w['plan'], $w['design']])) : null,
+            'ogTitle'  => Wedding::names($w) . ' are getting married',
+            'ogDesc'   => trim(Wedding::when($w) . ' · ' . Wedding::place($w), ' ·') . '. ' . (trim((string) $w['tagline']) !== '' ? trim((string) $w['tagline']) . ' ' : '') . 'RSVP, send a gift and leave them a note.',
+            'ogAlt'    => Wedding::names($w) . ', ' . Wedding::when($w),
             'design'   => $design,
             'dz'       => $dz,
             'title'    => Wedding::names($w) . ' — ' . Wedding::when($w),
@@ -140,12 +212,24 @@ final class WeddingController
         if ($pass !== null) {
             $_SESSION['passes'][(string) $w['slug']] = ['code' => $pass, 'name' => $name, 'party' => $party];
         }
-        Db::run('UPDATE weddings SET buzz = buzz + 12 WHERE id = ?', [$w['id']]);
+        Buzz::add($w, 'rsvp');
 
         Guard::flash('ok', $coming === 'no'
             ? 'Thank you for letting them know.'
             : 'You are on the list. They will be glad you are coming.');
         self::back($slug, 'rsvp');
+    }
+
+    /** The share button was used. Counted once per visitor per page; answers with no page. */
+    public function share(string $slug): void
+    {
+        $w = Wedding::bySlug($slug);
+        if ($w && Guard::ok() && empty($_SESSION['shared'][(int) $w['id']])) {
+            $_SESSION['shared'][(int) $w['id']] = 1;
+            Buzz::add($w, 'share');
+        }
+        http_response_code(204);
+        exit;
     }
 
     /** A love note on the wall. */
@@ -185,9 +269,59 @@ final class WeddingController
             'image'      => $image ?? '',
             'status'     => 'live',
         ]);
-        Db::run('UPDATE weddings SET buzz = buzz + ? WHERE id = ?', [$image !== null ? 10 : 6, $w['id']]);
+        Buzz::add($w, $image !== null ? 'photo' : 'note');
         Guard::flash('ok', $image !== null ? 'Your photo is in their gallery.' : 'Your note is on their wall.');
         self::back($slug, $image !== null ? 'photos' : 'wall');
+    }
+
+    /**
+     * "Who knows them best?" A guest picks the partner they know and answers that partner's quiz.
+     * It is marked here, never in the browser, then the score goes on that partner's leaderboard.
+     */
+    public function quiz(string $slug): void
+    {
+        Guard::must();
+        $w = Wedding::bySlug($slug);
+        if (!$w || !Wedding::has($w, 'squad')) {
+            self::notFound();
+        }
+        $mine = Auth::check() && (int) $w['owner_id'] === Auth::id();
+        if ((string) $w['visibility'] !== 'public' && !$mine && !Wedding::unlocked($w)) {
+            self::notFound();
+        }
+        $side = ($_POST['side'] ?? '') === 'b' ? 'b' : 'a';
+        $who  = (string) ($side === 'a' ? $w['partner_a'] : $w['partner_b']);
+        $qs   = Quiz::forWedding($w)[$side];
+        if (!$qs) {
+            self::back($slug, 'quiz');
+        }
+        if (!empty($_SESSION['quiz'][(int) $w['id']][$side])) {
+            Guard::flash('bad', 'You have already played ' . $who . '’s quiz. Your score is on the leaderboard.');
+            self::back($slug, 'quiz');
+        }
+        if (Guard::tooMany('quiz', 12, 20)) {
+            Guard::flash('bad', 'Give it a minute before playing again.');
+            self::back($slug, 'quiz');
+        }
+        $name = trim(preg_replace('/\s+/', ' ', (string) ($_POST['name'] ?? '')));
+        $picked = (array) ($_POST['q'] ?? []);
+        if ($name === '' || count(array_filter(array_keys($qs), static fn ($i) => isset($picked[$i]))) < count($qs)) {
+            Guard::flash('bad', 'Answer every question and add your name for the leaderboard.');
+            self::back($slug, 'quiz');
+        }
+        $score = 0;
+        foreach ($qs as $i => [, , $right]) {
+            if ((string) $picked[$i] === (string) $right) {
+                $score++;
+            }
+        }
+        $total = count($qs);
+        $rank  = Quiz::save((int) $w['id'], $side, mb_substr($name, 0, 60), $score, $total);
+        $_SESSION['quiz'][(int) $w['id']][$side] = ['score' => $score, 'total' => $total, 'rank' => $rank, 'name' => $name];
+        Buzz::add($w, 'quiz');
+        $line = $score === $total ? 'Full marks. ' : ($score >= $total - 1 ? 'So close. ' : '');
+        Guard::flash('ok', $line . $score . ' of ' . $total . ' on ' . $who . '’s quiz. You are number ' . $rank . ' on the leaderboard.');
+        self::back($slug, 'quiz');
     }
 
     /* ---------------------------------------------------------------------------------------- */

@@ -8,10 +8,28 @@ declare(strict_types=1);
  */
 final class Pack
 {
-    public const ALL = ['ibrahim-ummi' => 'Ibrahim & Ummi'];
+    public const ALL = ['ibrahim-ummi' => 'Ibrahim & Ummi', 'market' => 'Marketplace sellers'];
+
+    /** What each pack is, in a line, for HQ. */
+    public const ABOUT = [
+        'ibrahim-ummi' => ['Ibrahim & Ummi’s page from the old site', 'On this site · Ivory & Gold, Premium'],
+        'market'       => ['AbujaCarhire, ViaskyNigeria, IX-Projects, Cedar Court Villas, Ẹbí Lace & Gele and Organized by Sheedah', 'On this site · six verified sellers'],
+    ];
+
+    /** Placeholder sign-in emails for the sellers, until each business's own is put in. */
+    public const SELLER_DOMAIN = 'example.com';
 
     public static function present(string $key): bool
     {
+        if ($key === 'market') {
+            $want = array_keys(require App::root() . '/db/packs/market.php');
+            $have = (int) Db::val(
+                'SELECT COUNT(*) FROM users WHERE email IN (' . implode(',', array_fill(0, count($want), '?')) . ')',
+                array_map(static fn ($k) => $k . '@' . self::SELLER_DOMAIN, $want),
+                0
+            );
+            return $have === count($want);
+        }
         return (bool) Db::val('SELECT 1 FROM weddings WHERE slug = ?', [$key]);
     }
 
@@ -48,6 +66,9 @@ final class Pack
         if (!isset(self::ALL[$key])) {
             throw new InvalidArgumentException('Unknown pack');
         }
+        if ($key === 'market') {
+            return self::market();
+        }
         if (self::present($key) && !self::clearDemoCopy($key)) {
             return 'exists';
         }
@@ -79,5 +100,58 @@ final class Pack
             throw $e;
         }
         return 'added';
+    }
+
+    /**
+     * The marketplace sellers. Listings that were only ever demo content go first, since the old
+     * site never had them. Then each seller that is not here yet gets an account, a verified
+     * business profile and their listings. A seller already on the site is left exactly as it is.
+     */
+    private static function market(): string
+    {
+        $sellers = require App::root() . '/db/packs/market.php';
+        if (Db::val("SHOW TABLES LIKE 'demo_rows'")) {
+            $ids = array_map('intval', array_column(Db::all("SELECT row_id FROM demo_rows WHERE tbl = 'listings'"), 'row_id'));
+            if ($ids) {
+                Db::run('DELETE FROM listings WHERE id IN (' . implode(',', $ids) . ')');
+                Db::run("DELETE FROM demo_rows WHERE tbl = 'listings'");
+            }
+        }
+        $added = 0;
+        foreach ($sellers as $login => $s) {
+            $email = $login . '@' . self::SELLER_DOMAIN;
+            if (Db::val('SELECT 1 FROM users WHERE email = ?', [$email])) {
+                continue;
+            }
+            $pdo = Db::pdo();
+            $pdo->beginTransaction();
+            try {
+                $uid = (int) Db::insert('users', [
+                    'email' => $email, 'pass' => $s['hash'], 'name' => $s['name'], 'role' => 'partner',
+                    'country' => $s['state'] === 'Greater Accra' ? 'Ghana' : 'Nigeria',
+                ]);
+                Db::insert('vendors', [
+                    'user_id' => $uid, 'slug' => Listing::slugFor('vendors', $s['slug'] ?? $s['name']), 'name' => $s['name'],
+                    'category' => $s['category'], 'city' => $s['city'], 'state' => $s['state'], 'about' => $s['about'],
+                    'logo' => $s['logo'], 'verified' => 1,
+                ]);
+                foreach ($s['listings'] as $l) {
+                    [$title, $unit, $price, $city, $state, $about, $features, $photos] = $l;
+                    $text = $about . ($features ? "\n\nWhat you get:\n• " . implode("\n• ", $features) : '');
+                    Db::insert('listings', [
+                        'partner_id' => $uid, 'slug' => Listing::slugFor('listings', $title), 'title' => $title,
+                        'kind' => $l[8] ?? $s['kind'], 'about' => $text, 'city' => $city, 'state' => $state,
+                        'price' => (int) $price, 'price_unit' => $unit, 'on_ask' => ($s['ask'] || !empty($l[9])) ? 1 : 0,
+                        'photos' => json_encode($photos, JSON_UNESCAPED_SLASHES), 'status' => 'live',
+                    ]);
+                }
+                $pdo->commit();
+                $added++;
+            } catch (Throwable $e) {
+                $pdo->rollBack();
+                throw $e;
+            }
+        }
+        return $added > 0 ? 'added' : 'exists';
     }
 }

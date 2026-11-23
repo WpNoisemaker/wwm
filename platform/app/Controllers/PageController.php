@@ -11,16 +11,20 @@ final class PageController
             'desc'    => 'Start free. Pro, Premium and High Society are paid once per wedding, never monthly.',
             'tab'     => '',
             'css'     => ['pages'],
-            'pro'     => number_format((int) Site::setting('pro_price', '198000')),
-            'premium' => number_format((int) Site::setting('premium_price', '448000')),
+            'pro'     => (int) Site::setting('pro_price', '198000'),
+            'premium' => (int) Site::setting('premium_price', '448000'),
+            'cur'     => Fx::pick(),
             'fee'     => Site::setting('fee_gift', '4'),
         ]);
     }
 
     public function about(): void   { $this->simple('about',   'About us'); }
     public function help(): void    { $this->simple('help',    'Help'); }
-    public function terms(): void   { $this->simple('terms',   'Terms of use'); }
-    public function privacy(): void { $this->simple('privacy', 'Privacy'); }
+    public function terms(): void      { $this->simple('terms',   'Terms & conditions'); }
+    public function privacy(): void    { $this->simple('privacy', 'Privacy policy'); }
+    public function refunds(): void    { $this->simple('refunds', 'Refund policy'); }
+    public function guidelines(): void { $this->simple('community-guidelines', 'Community guidelines'); }
+    public function cookies(): void    { $this->simple('cookies', 'Cookie policy'); }
 
     private function simple(string $tpl, string $title): void
     {

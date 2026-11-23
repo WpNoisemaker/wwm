@@ -122,4 +122,59 @@ final class SiteController
             'tab'      => '',
         ]);
     }
+
+    /** The picture a link preview shows for a page. */
+    public function og(string $kind, string $key): void
+    {
+        Share::serve($kind, $key);
+    }
+
+    /** Every public page worth finding, for search engines. */
+    public function sitemap(): void
+    {
+        Blog::ensure();
+        header('Content-Type: application/xml; charset=utf-8');
+        header('Cache-Control: public, max-age=3600');
+        $x = static fn (string $s): string => htmlspecialchars($s, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+        $urls = [];
+        $add = static function (string $path, ?string $mod = null, string $freq = 'weekly') use (&$urls): void {
+            $urls[] = [App::url($path), $mod, $freq];
+        };
+        foreach (['/', '/weddings', '/rankings', '/vendors', '/market', '/community', '/blog', '/pricing', '/templates', '/about', '/help',
+                  '/terms', '/privacy', '/refunds', '/community-guidelines', '/cookies'] as $pth) {
+            $add($pth, null, in_array($pth, ['/', '/weddings', '/rankings', '/community', '/blog'], true) ? 'daily' : 'monthly');
+        }
+        foreach (array_keys(Blog::SECTIONS) as $sec) {
+            $add('/blog/' . $sec, null, 'daily');
+        }
+        foreach (Wedding::countryList() as $c) {
+            $slug = Wedding::placeSlug((string) $c['country']);
+            if ($slug !== '') {
+                $add('/weddings/' . $slug, null, 'daily');
+            }
+        }
+        foreach (Db::all("SELECT slug, created_at FROM weddings WHERE visibility = 'public' ORDER BY id") as $r) {
+            $add('/w/' . $r['slug'], (string) $r['created_at']);
+        }
+        foreach (Db::all('SELECT slug, created_at FROM vendors ORDER BY id') as $r) {
+            $add('/vendors/' . $r['slug'], (string) $r['created_at'], 'monthly');
+        }
+        foreach (Db::all("SELECT slug, created_at FROM listings WHERE status = 'live' ORDER BY id") as $r) {
+            $add('/market/' . $r['slug'], (string) $r['created_at'], 'monthly');
+        }
+        foreach (Db::all("SELECT slug, COALESCE(updated_at, published_at) m FROM posts WHERE status = 'live' AND (published_at IS NULL OR published_at <= NOW()) ORDER BY id") as $r) {
+            $add('/blog/' . $r['slug'], $r['m'] ? (string) $r['m'] : null, 'monthly');
+        }
+        echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        foreach ($urls as [$loc, $mod, $freq]) {
+            echo '<url><loc>' . $x($loc) . '</loc>' . ($mod ? '<lastmod>' . date('Y-m-d', (int) strtotime($mod)) . '</lastmod>' : '') . '<changefreq>' . $freq . '</changefreq></url>';
+        }
+        echo '</urlset>';
+    }
+
+    public function robots(): void
+    {
+        header('Content-Type: text/plain; charset=utf-8');
+        echo "User-agent: *\nDisallow: /account\nDisallow: /hq\nDisallow: /sign-in\nDisallow: /join\nDisallow: /forgot\nDisallow: /reset\nDisallow: /verify\nDisallow: /search\nAllow: /\n\nSitemap: " . App::url('/sitemap.xml') . "\n";
+    }
 }

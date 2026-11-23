@@ -38,12 +38,14 @@ final class VendorController
             return;
         }
         View::render('vendor/show', [
-            'title'   => $v['name'] . ' — ' . ($v['category'] ?: 'Vendor') . ', ' . $v['city'],
+            'title'   => $v['name'] . ' — ' . ($v['category'] ?: 'Vendor') . ((string) $v['city'] !== '' ? ', ' . $v['city'] : ''),
             'desc'    => mb_substr(trim((string) $v['about']) ?: ($v['name'] . ' on Wedding Websites & More.'), 0, 180),
             'tab'     => 'vendors',
             'css'     => ['market'],
             'v'       => $v,
+            'ogImage' => Share::url('v', (string) $v['slug'], implode('|', [$v['logo'], $v['name'], $v['category'], $v['city'], $v['verified']])),
             'reviews' => Vendor::reviews((int) $v['id']),
+            'sells'   => $v['user_id'] ? Listing::bySeller((int) $v['user_id']) : [],
         ]);
     }
 }

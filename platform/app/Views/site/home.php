@@ -10,6 +10,7 @@
 $pro   = (int) Site::setting('pro_price', '198000');
 $countries = $countries ?? [];
 $prem  = (int) Site::setting('premium_price', '448000');
+$cur   = Fx::pick();
 $lead  = $samples['ivory'] ?? ($chart[0] ?? null);
 $other = null;
 foreach ($chart as $c) { if (!$lead || $c['id'] !== $lead['id']) { $other = $c; break; } }
@@ -117,7 +118,8 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 	</div>
 	<div class="mosaic world reveal">
 		<?php foreach ($countries as $c): ?>
-			<a class="tile world__i" href="<?= e(App::url('/weddings?country=' . urlencode((string) $c['country']))) ?>"><span class="k"><?= (int) $c['n'] ?> page<?= (int) $c['n'] === 1 ? '' : 's' ?></span><span class="v"><?= e($c['country']) ?></span></a>
+			<?php $slug = Wedding::placeSlug((string) $c['country']); ?>
+			<a class="tile world__i" href="<?= e(App::url($slug !== '' ? '/weddings/' . $slug : '/weddings?country=' . urlencode((string) $c['country']))) ?>"><span class="k"><?= (int) $c['n'] ?> page<?= (int) $c['n'] === 1 ? '' : 's' ?></span><span class="v"><?= e($c['country']) ?></span></a>
 		<?php endforeach; ?>
 	</div>
 </section>
@@ -132,7 +134,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 	<div class="plans reveal">
 		<div class="glass glass--plain plan plan--mono" data-tone="mono">
 			<p class="plan__name">Free</p>
-			<p class="plan__price"><?= money('0') ?></p>
+			<p class="plan__price"><?= Fx::show(0, $cur) ?></p>
 			<p class="plan__pitch">Everything you need to get your page live today.</p>
 			<div class="plan__swatch" aria-hidden="true"><i style="background:#111"></i><i style="background:#fff"></i></div>
 			<ul>
@@ -145,7 +147,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 		</div>
 		<div class="glass plan">
 			<p class="plan__name">Pro</p>
-			<p class="plan__price"><?= money(number_format($pro)) ?></p>
+			<p class="plan__price"><?= Fx::show($pro, $cur) ?></p>
 			<p class="plan__pitch">Your colours, your squad, guest photos and entry passes. No ads.</p>
 			<div class="plan__swatch" aria-hidden="true"><i style="background:#6EAAE6"></i><i style="background:#E3DABF"></i><i style="background:#7B2D43"></i><i style="background:#C9A24B"></i></div>
 			<ul>
@@ -158,7 +160,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 		</div>
 		<div class="glass plan plan--best">
 			<p class="plan__name">Premium <span class="badge badge--solid">Full owambe</span></p>
-			<p class="plan__price"><?= money(number_format($prem)) ?></p>
+			<p class="plan__price"><?= Fx::show($prem, $cur) ?></p>
 			<p class="plan__pitch">Every feature and any of the Premium designs. No fees on gifts.</p>
 			<div class="plan__swatch" aria-hidden="true"><?php foreach (array_slice($premiumDesigns, 1, 6) as $d): ?><i style="background:linear-gradient(135deg,<?= e($d[6][0]) ?>,<?= e($d[6][1]) ?>)"></i><?php endforeach; ?></div>
 			<ul>
@@ -170,7 +172,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 			<a class="pill pill--block" href="<?= e(App::url($lead ? '/w/' . $lead['slug'] : '/pricing')) ?>">See a Premium page</a>
 		</div>
 	</div>
-	<p class="sec-more reveal"><a class="linkish" href="<?= e(App::url('/pricing')) ?>">Compare every plan, including High Society</a></p>
+	<p class="sec-more reveal"><a class="linkish" href="<?= e(App::url('/pricing')) ?>">Compare every plan, including High Society</a> · <a class="linkish" href="<?= e(App::url('/pricing#currency')) ?>">See prices in another currency</a></p>
 </section>
 
 <?php if ($fresh): ?>
@@ -205,7 +207,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 		<?php foreach (array_slice($listings, 0, 4) as $l): ?>
 			<a class="card" href="<?= e(App::url('/market/' . $l['slug'])) ?>">
 				<?= sq(first_photo((string) $l['photos']), (string) $l['title']) ?>
-				<span class="card__cap"><span class="card__t"><?= e($l['title']) ?></span><span class="card__s"><?= (int) $l['on_ask'] ? 'Price on request' : money(short_money((int) $l['price'])) . ' ' . e((string) $l['price_unit']) ?> · <?= e($l['city']) ?></span></span>
+				<span class="card__cap"><span class="card__t"><?= e($l['title']) ?></span><span class="card__s"><?= (int) $l['on_ask'] ? 'Price on request' : money(short_money((int) $l['price'])) . ' ' . e((string) $l['price_unit']) ?><?= !empty($l['seller']) ? ' · ' . e((string) $l['seller']) : ((string) $l['city'] !== '' ? ' · ' . e($l['city']) : '') ?></span></span>
 			</a>
 		<?php endforeach; ?>
 	</div>
@@ -251,17 +253,18 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 					<?php foreach (array_slice($talks, 0, 3) as $t): ?>
 						<article class="post <?= e(talk_colour((string) $t['bg'])) ?>" data-id="<?= (int) $t['id'] ?>" data-href="<?= e(App::url('/community/' . $t['id'])) ?>" data-like="<?= e(App::url('/community/' . $t['id'] . '/like')) ?>" data-likes="<?= (int) $t['likes'] ?>" data-replies="<?= (int) $t['replies'] ?>" data-liked="0">
 							<span class="post__topic"><?= e(Talk::topic((string) $t['topic'])) ?></span>
-							<p class="post__text<?= mb_strlen((string) $t['body']) > 140 ? ' post__text--long' : '' ?>"><?= e(mb_strimwidth((string) $t['body'], 0, 240, '…')) ?></p>
+							<div class="post__body"><p class="post__text<?= mb_strlen((string) $t['body']) > 140 ? ' post__text--long' : '' ?>"><?= e(mb_strimwidth((string) $t['body'], 0, 240, '…')) ?></p><span class="post__mark"><i aria-hidden="true">&amp;</i><?= e(Share::host()) ?></span></div>
 							<span class="post__meta"><?= e($t['pen_name'] ?: 'Someone') ?> · <?= (int) $t['replies'] ?> replies</span>
 						</article>
 					<?php endforeach; ?>
 				</div>
 				<p class="deck-pos" data-deck-pos aria-live="polite">1 of 3 · swipe for more</p>
 				<div class="actions">
-					<div class="act"><button class="cbtn cbtn--lg" type="button" data-deck-go="-1" aria-label="Previous post"><?= icon('back') ?></button></div>
-					<div class="act"><button class="cbtn cbtn--lg" type="button" data-post-like aria-label="Like" aria-pressed="false"><?= icon('heart') ?></button><span class="count" data-count="likes"><?= (int) $talks[0]['likes'] ?></span></div>
-					<div class="act"><a class="cbtn cbtn--lg" href="<?= e(App::url('/community/' . $talks[0]['id'])) ?>" data-post-open aria-label="Open the replies"><?= icon('chat') ?></a><span class="count" data-count="replies"><?= (int) $talks[0]['replies'] ?></span></div>
-					<div class="act"><button class="cbtn cbtn--lg" type="button" data-deck-go="1" aria-label="Next post"><?= icon('next') ?></button></div>
+					<div class="act"><button class="cbtn cbtn--lg" type="button" data-deck-go="-1" aria-label="Previous post"><?= icon('back') ?></button><span class="act__l">Back</span></div>
+					<div class="act"><button class="cbtn cbtn--lg" type="button" data-post-like aria-label="Love this post" aria-pressed="false"><?= icon('heart') ?><span class="act__n" data-count="likes"><?= (int) $talks[0]['likes'] ?></span></button><span class="act__l">Love</span></div>
+					<div class="act"><a class="cbtn cbtn--lg" href="<?= e(App::url('/community/' . $talks[0]['id'])) ?>" data-post-open aria-label="Read and write replies"><?= icon('chat') ?><span class="act__n" data-count="replies"><?= (int) $talks[0]['replies'] ?></span></a><span class="act__l">Reply</span></div>
+					<div class="act"><button class="cbtn cbtn--lg" type="button" data-share="<?= e(App::url('/community/' . $talks[0]['id'])) ?>" data-post-share aria-label="Share this post"><?= icon('share') ?></button><span class="act__l">Share</span></div>
+					<div class="act"><button class="cbtn cbtn--lg" type="button" data-deck-go="1" aria-label="Next post"><?= icon('next') ?></button><span class="act__l">Next</span></div>
 				</div>
 				<?= Guard::field() ?>
 			</div>
@@ -289,17 +292,18 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 <?php if ($posts): ?>
 <section class="sec wrap">
 	<div class="sec-head reveal">
-		<span class="eyebrow">Stories</span>
-		<h2>Planning, honestly</h2>
+		<span class="eyebrow">From the blog</span>
+		<h2>Guides, news &amp; interviews</h2>
 	</div>
 	<div class="rail reveal">
 		<?php foreach ($posts as $p): ?>
 			<a class="card" href="<?= e(App::url('/blog/' . $p['slug'])) ?>">
 				<?= sq((string) $p['cover'], '', 'sq--wide') ?>
-				<span class="card__cap"><span class="card__t"><?= e($p['title']) ?></span><span class="card__s"><?= e($p['category'] ?: 'Story') ?></span></span>
+				<span class="card__cap"><span class="card__t"><?= e($p['title']) ?></span><span class="card__s"><?= e(Blog::KIND[(string) ($p['kind'] ?? 'guide')] ?? 'Guide') ?> · <?= Blog::minutes($p) ?> min read</span></span>
 			</a>
 		<?php endforeach; ?>
 	</div>
+	<p class="sec-more reveal"><a class="pill pill--glass pill--sm" href="<?= e(App::url('/blog')) ?>">Read the blog <?= icon('arrow') ?></a></p>
 </section>
 <?php endif; ?>
 

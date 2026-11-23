@@ -75,7 +75,7 @@ final class Site
 
     public static function listings(int $n = 6): array
     {
-        return Db::all("SELECT * FROM listings WHERE status='live' ORDER BY id DESC LIMIT ?", [$n]);
+        return Listing::search([], $n);
     }
 
     public static function stats(): array
@@ -99,10 +99,7 @@ final class Site
     /** @return array<int,array<string,mixed>> The latest wedding tips and how-tos. */
     public static function posts(int $n = 3): array
     {
-        return Db::all(
-            "SELECT * FROM posts WHERE status='live' ORDER BY published_at DESC, id DESC LIMIT ?",
-            [$n]
-        );
+        return Blog::live('', $n);
     }
 
     /**

@@ -15,7 +15,7 @@
 				<li><a href="<?= e(App::url('/weddings')) ?>">Wedding pages</a></li>
 				<li><a href="<?= e(App::url('/rankings')) ?>">Buzz Chart</a></li>
 				<li><a href="<?= e(App::url('/community')) ?>">Community</a></li>
-				<li><a href="<?= e(App::url('/blog')) ?>">Stories</a></li>
+				<li><a href="<?= e(App::url('/blog')) ?>">Blog</a></li>
 			</ul></div>
 			<div><h2>Shop</h2><ul>
 				<li><a href="<?= e(App::url('/vendors')) ?>">Vendors</a></li>
@@ -30,10 +30,17 @@
 			<div><h2>Help</h2><ul>
 				<li><a href="<?= e(App::url('/help')) ?>">Help</a></li>
 				<li><a href="<?= e(App::url('/about')) ?>">About</a></li>
-				<li><a href="<?= e(App::url('/terms')) ?>">Terms</a></li>
-				<li><a href="<?= e(App::url('/privacy')) ?>">Privacy</a></li>
+				<li><a href="<?= e(App::url('/terms')) ?>">Terms &amp; conditions</a></li>
+				<li><a href="<?= e(App::url('/privacy')) ?>">Privacy policy</a></li>
+				<li><a href="<?= e(App::url('/refunds')) ?>">Refund policy</a></li>
+				<li><a href="<?= e(App::url('/community-guidelines')) ?>">Community guidelines</a></li>
+				<li><a href="<?= e(App::url('/cookies')) ?>">Cookies</a></li>
 			</ul></div>
 		</div>
 	</div>
+	<nav class="site-foot__places" aria-label="Weddings by country">
+		<h2>Weddings in</h2>
+		<?php foreach (Wedding::PLACES as $slug => $pl): ?><a href="<?= e(App::url('/weddings/' . $slug)) ?>"><?= e(ucfirst(preg_replace('/^the /', '', explode(' and ', $pl[1])[0]))) ?></a><?php endforeach; ?>
+	</nav>
 	<div class="site-foot__base"><span>&copy; <?= date('Y') ?> Wedding Websites &amp; More</span><span>Made in Lagos</span></div>
 </footer>

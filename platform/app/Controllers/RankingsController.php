@@ -3,10 +3,6 @@ declare(strict_types=1);
 
 final class RankingsController
 {
-    /** Every earning action, so the chart explains itself rather than looking arbitrary. */
-    public const COINS = ['Visits', 'RSVPs', 'Love notes', 'Note likes', 'Vendor reviews', 'Gifts',
-                          'Guest photos', 'Photo likes', 'Quiz plays', 'Check-ins', 'Live viewers', 'Spraying'];
-
     public function index(): void
     {
         $city = trim((string) ($_GET['city'] ?? ''));

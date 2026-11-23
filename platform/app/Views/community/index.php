@@ -36,18 +36,19 @@ $topicUrl = static fn (string $t, string $s): string => App::url('/community?' .
 					<article class="post <?= e(talk_colour((string) $t['bg'])) ?>" data-id="<?= (int) $t['id'] ?>" data-href="<?= e(App::url('/community/' . $t['id'])) ?>"
 					         data-like="<?= e(App::url('/community/' . $t['id'] . '/like')) ?>" data-likes="<?= (int) $t['likes'] ?>" data-replies="<?= (int) $t['replies'] ?>" data-liked="<?= isset($liked[(int) $t['id']]) ? '1' : '0' ?>">
 						<span class="post__topic"><?= e(Talk::topic((string) $t['topic'])) ?></span>
-						<p class="post__text<?= $long ? ' post__text--long' : '' ?>"><?= e(mb_strimwidth((string) $t['body'], 0, 320, '…')) ?></p>
+						<div class="post__body"><p class="post__text<?= $long ? ' post__text--long' : '' ?>"><?= e(mb_strimwidth((string) $t['body'], 0, 320, '…')) ?></p><span class="post__mark"><i aria-hidden="true">&amp;</i><?= e(Share::host()) ?></span></div>
 						<span class="post__meta"><?= e($t['pen_name'] ?: 'Someone') ?> · <?= e(ago((string) $t['created_at'])) ?></span>
 					</article>
 				<?php endforeach; ?>
 			</div>
 			<p class="deck-pos" data-deck-pos aria-live="polite">1 of <?= count($rows) ?></p>
 			<div class="actions">
-				<div class="act"><button class="cbtn cbtn--lg" type="button" data-deck-go="-1" aria-label="Previous post"><?= icon('back') ?></button><span class="count">Back</span></div>
-				<div class="act"><button class="cbtn cbtn--lg" type="button" data-post-like aria-label="Like" aria-pressed="false"><?= icon('heart') ?></button><span class="count" data-count="likes"><?= (int) $rows[0]['likes'] ?></span></div>
-				<div class="act"><a class="cbtn cbtn--lg" href="<?= e(App::url('/community/' . $rows[0]['id'])) ?>" data-post-open aria-label="Open the replies"><?= icon('chat') ?></a><span class="count" data-count="replies"><?= (int) $rows[0]['replies'] ?></span></div>
-				<div class="act"><button class="cbtn cbtn--lg" type="button" data-post-save aria-label="Save on this phone" aria-pressed="false"><?= icon('bookmark') ?></button><span class="count">Save</span></div>
-				<div class="act"><button class="cbtn cbtn--lg" type="button" data-deck-go="1" aria-label="Next post"><?= icon('next') ?></button><span class="count">Next</span></div>
+				<div class="act"><button class="cbtn cbtn--lg" type="button" data-deck-go="-1" aria-label="Previous post"><?= icon('back') ?></button><span class="act__l">Back</span></div>
+				<div class="act"><button class="cbtn cbtn--lg" type="button" data-post-like aria-label="Love this post" aria-pressed="false"><?= icon('heart') ?><span class="act__n" data-count="likes"><?= (int) $rows[0]['likes'] ?></span></button><span class="act__l">Love</span></div>
+				<div class="act"><a class="cbtn cbtn--lg" href="<?= e(App::url('/community/' . $rows[0]['id'])) ?>" data-post-open aria-label="Read and write replies"><?= icon('chat') ?><span class="act__n" data-count="replies"><?= (int) $rows[0]['replies'] ?></span></a><span class="act__l">Reply</span></div>
+				<div class="act"><button class="cbtn cbtn--lg" type="button" data-share="<?= e(App::url('/community/' . $rows[0]['id'])) ?>" data-post-share aria-label="Share this post"><?= icon('share') ?></button><span class="act__l">Share</span></div>
+				<div class="act"><button class="cbtn cbtn--lg" type="button" data-post-save aria-label="Save on this phone" aria-pressed="false"><?= icon('bookmark') ?></button><span class="act__l">Save</span></div>
+				<div class="act"><button class="cbtn cbtn--lg" type="button" data-deck-go="1" aria-label="Next post"><?= icon('next') ?></button><span class="act__l">Next</span></div>
 			</div>
 			<button class="pill pill--block gap-t-sm" type="button" data-open="compose">Write a post</button>
 			<p class="after-pill">No account needed. Only your pen name appears.</p>

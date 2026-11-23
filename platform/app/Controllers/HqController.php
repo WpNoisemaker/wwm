@@ -83,6 +83,17 @@ final class HqController
                             [$k, trim((string) $_POST[$k])]);
                 }
             }
+            // Exchange rates: naira for one unit of each currency, for prices shown abroad.
+            if (isset($_POST['fx']) && is_array($_POST['fx'])) {
+                $fx = [];
+                foreach (Fx::DEFAULT as $k => $def) {
+                    $v = str_replace(',', '', trim((string) ($_POST['fx'][$k] ?? '')));
+                    if ($k !== 'NGN' && is_numeric($v) && (float) $v > 0) {
+                        $fx[$k] = round((float) $v, 4);
+                    }
+                }
+                Db::run('INSERT INTO settings (k, v) VALUES (?, ?) ON DUPLICATE KEY UPDATE v = VALUES(v)', ['fx_rates', json_encode($fx)]);
+            }
             // A ticked box is present in the POST, an unticked one is simply absent.
             Verify::set(isset($_POST['email_verify']));
             Guard::flash('ok', 'Saved. The pricing page now shows these.');
@@ -98,6 +109,7 @@ final class HqController
                 'email'         => Site::setting('email', ''),
                 'whatsapp'      => Site::setting('whatsapp', ''),
             ],
+            'fx'     => Fx::rates(),
             'verify' => ['on' => Verify::enabled(), 'since' => Site::setting('email_verify_since', '')],
             'demo'   => ['present' => Demo::present(), 'counts' => Demo::counts(), 'logins' => Demo::logins(), 'password' => Demo::PASSWORD],
         ]);
@@ -135,9 +147,15 @@ final class HqController
         Guard::must();
         try {
             $r = Pack::install($key);
-            Guard::flash('ok', $r === 'added'
-                ? (Pack::ALL[$key] ?? 'The') . "'s page is back, with their account. Their old password still works."
-                : (Pack::ALL[$key] ?? 'That') . "'s page is already on this site, so nothing was changed.");
+            if ($key === 'market') {
+                Guard::flash('ok', $r === 'added'
+                    ? 'The marketplace sellers are back, verified, with their listings. Listings that were only demo content are gone.'
+                    : 'Every seller is already on this site, so nothing was changed.');
+            } else {
+                Guard::flash('ok', $r === 'added'
+                    ? (Pack::ALL[$key] ?? 'The') . "'s page is back, with their account. Their old password still works."
+                    : (Pack::ALL[$key] ?? 'That') . "'s page is already on this site, so nothing was changed.");
+            }
         } catch (Throwable $e) {
             Guard::flash('bad', 'The page was not added: ' . $e->getMessage());
         }
@@ -181,5 +199,102 @@ final class HqController
         );
         header('Location: ' . App::url('/hq/settings'));
         exit;
+    }
+
+    /* ---------------------------------------------------------------------------- the blog */
+
+    public function blog(): void
+    {
+        $this->gate();
+        Blog::ensure();
+        $this->show('blog', [
+            'title' => 'Blog',
+            'rows'  => Db::all('SELECT id, slug, title, kind, author, status, featured, published_at FROM posts ORDER BY COALESCE(published_at, NOW()) DESC, id DESC'),
+        ]);
+    }
+
+    /** Write, edit, schedule, publish or delete a post. */
+    public function blogEdit(string $id = ''): void
+    {
+        $this->gate();
+        Blog::ensure();
+        $p = $id !== '' ? Db::one('SELECT * FROM posts WHERE id = ?', [(int) $id]) : null;
+        if ($id !== '' && !$p) {
+            header('Location: ' . App::url('/hq/blog'));
+            exit;
+        }
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+            Guard::must();
+            if ($p && ($_POST['do'] ?? '') === 'delete') {
+                Db::run('DELETE FROM posts WHERE id = ?', [$p['id']]);
+                Guard::flash('ok', 'Post deleted.');
+                header('Location: ' . App::url('/hq/blog'));
+                exit;
+            }
+            $t = static fn (string $k, int $max): string => mb_substr(trim((string) ($_POST[$k] ?? '')), 0, $max);
+            $title = $t('title', 255);
+            if ($title === '') {
+                Guard::flash('bad', 'A post needs a title.');
+                header('Location: ' . App::url($p ? '/hq/blog/' . $p['id'] : '/hq/blog/new'));
+                exit;
+            }
+            $source = str_replace("\r\n", "\n", (string) ($_POST['body'] ?? ''));
+            if (!empty($_FILES['inline']['name'])) {
+                $pic = Images::store($_FILES['inline'], 'blog');
+                if ($pic !== null) {
+                    $source = rtrim($source) . "\n\n![" . $t('inline_alt', 160) . '](' . $pic . ')';
+                }
+            }
+            $kind = in_array($_POST['kind'] ?? '', ['guide', 'news', 'feature'], true) ? (string) $_POST['kind'] : 'guide';
+            $live = ($_POST['status'] ?? '') === 'live';
+            $date = trim((string) ($_POST['date'] ?? ''));
+            $when = preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) ? $date . ' ' . (preg_match('/^\d{2}:\d{2}$/', (string) ($_POST['time'] ?? '')) ? $_POST['time'] : '09:00') . ':00' : null;
+            $row = [
+                'title' => $title, 'kind' => $kind, 'category' => Blog::KIND[$kind], 'author' => $t('author', 120),
+                'excerpt' => $t('excerpt', 500), 'source' => $source,
+                'body' => Blog::isHtml($source) ? $source : Blog::toHtml($source),
+                'meta_title' => $t('meta_title', 190), 'meta_desc' => $t('meta_desc', 300),
+                'featured' => isset($_POST['featured']) ? 1 : 0,
+                'status' => $live ? 'live' : 'draft',
+                'published_at' => $when ?? ($live ? ($p['published_at'] ?? date('Y-m-d H:i:s')) : ($p['published_at'] ?? null)),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ];
+            $slug = strtolower(trim((string) preg_replace('/[^a-z0-9]+/i', '-', $t('slug', 160)), '-'));
+            if ($slug === '' || in_array($slug, ['guides', 'news', 'features', 'feed-xml'], true)) {
+                $slug = $p && $t('slug', 160) === '' ? (string) $p['slug'] : $title;
+            }
+            if (!$p || $slug !== (string) $p['slug']) {
+                $base = strtolower(trim((string) preg_replace('/[^a-z0-9]+/i', '-', (string) (iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $slug) ?: $slug)), '-')) ?: 'post';
+                if (in_array($base, ['guides', 'news', 'features'], true)) {
+                    $base .= '-post';
+                }
+                $row['slug'] = $base;
+                for ($n = 2; Db::val('SELECT 1 FROM posts WHERE slug = ? AND id <> ?', [$row['slug'], (int) ($p['id'] ?? 0)]); $n++) {
+                    $row['slug'] = $base . '-' . $n;
+                }
+            }
+            if (!empty($_FILES['cover']['name'])) {
+                $cover = Images::store($_FILES['cover'], 'blog');
+                if ($cover === null) {
+                    Guard::flash('bad', 'That cover photo could not be used. Try a JPEG or PNG under 12 MB.');
+                } else {
+                    $row['cover'] = $cover;
+                }
+            } elseif (isset($_POST['no_cover'])) {
+                $row['cover'] = '';
+            }
+            if ($p) {
+                Db::update('posts', $row, 'id = ?', [$p['id']]);
+                $pid = (int) $p['id'];
+            } else {
+                $pid = (int) Db::insert('posts', $row);
+            }
+            $saved = Db::one('SELECT slug, status, published_at FROM posts WHERE id = ?', [$pid]);
+            $future = $saved && $saved['published_at'] && strtotime((string) $saved['published_at']) > time();
+            Guard::flash('ok', !$live ? 'Saved as a draft.' : ($future ? 'Scheduled. It goes live on ' . date('j M, g:ia', (int) strtotime((string) $saved['published_at'])) . '.' : 'Published.'));
+            header('Location: ' . App::url('/hq/blog/' . $pid));
+            exit;
+        }
+        $this->show('blog-edit', ['title' => $p ? 'Edit post' : 'New post', 'p' => $p]);
     }
 }

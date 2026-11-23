@@ -40,7 +40,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	<p class="wed-head__title"><?= e($names) ?></p>
 	<div class="wed-head__tools">
 		<button class="pill pill--sm wed-head__rsvp" type="button" data-open="rsvp">RSVP</button>
-		<button class="cbtn" type="button" data-share="<?= e($pageUrl) ?>" aria-label="Share this page"><?= icon('share') ?></button>
+		<button class="cbtn" type="button" data-share="<?= e($pageUrl) ?>" data-share-ping="<?= e(App::url('/w/' . $slug . '/share')) ?>" aria-label="Share this page"><?= icon('share') ?></button>
 	</div>
 </header>
 
@@ -238,17 +238,90 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	</section>
 	<?php endif; ?>
 
-	<?php $quiz = Wedding::has($w, 'squad') ? Wedding::quiz($w, $programs, $squad) : []; if ($quiz): ?>
+	<?php
+	// Who knows them best: one quiz per partner, written by the couple, and a leaderboard for each.
+	$qz = Wedding::has($w, 'squad') ? Quiz::forWedding($w) : ['a' => [], 'b' => []];
+	$qSides = array_keys(array_filter($qz));
+	$played = $_SESSION['quiz'][(int) $w['id']] ?? [];
+	$qOn = isset($played['b']) && !isset($played['a']) && in_array('b', $qSides, true) ? 'b' : ($qSides[0] ?? 'a');
+	if ($qSides): ?>
 	<section class="sec wrap" id="quiz">
-		<div class="w-head reveal"><span class="eyebrow">How well do you know them?</span><h2>The quiz</h2></div>
-		<div class="glass glass--plain quiz reveal" data-quiz>
-			<?php foreach ($quiz as $qi => [$q, $opts, $right]): ?>
-				<div class="quiz__q" data-q>
-					<p><span class="quiz__n"><?= $qi + 1 ?></span><?= e($q) ?></p>
-					<div class="quiz__opts"><?php foreach ($opts as $oi => $o): ?><button class="chip" type="button"<?= $oi === (int) $right ? ' data-right' : '' ?>><?= e($o) ?></button><?php endforeach; ?></div>
+		<div class="w-head reveal">
+			<span class="eyebrow">Who knows them best?</span>
+			<h2>The quiz</h2>
+			<p class="sub">Pick the one you know. Answer what their family and friends should know, and see where you land on their leaderboard.</p>
+		</div>
+		<?php if (count($qSides) > 1): ?>
+			<div class="quiz-pick reveal" role="tablist" aria-label="Whose quiz">
+				<?php foreach ($qSides as $sd): $nm = (string) ($sd === 'a' ? $w['partner_a'] : $w['partner_b']); ?>
+					<button class="quiz-pick__b<?= $sd === $qOn ? ' is-on' : '' ?>" type="button" role="tab" aria-selected="<?= $sd === $qOn ? 'true' : 'false' ?>" aria-controls="quiz-<?= $sd ?>" data-quiz-pick="<?= $sd ?>">
+						<span class="quiz-pick__i" aria-hidden="true"><?= e(mb_strtoupper(mb_substr($nm, 0, 1))) ?></span>
+						<span><span class="quiz-pick__k">I know</span><span class="quiz-pick__n"><?= e($nm) ?></span></span>
+					</button>
+				<?php endforeach; ?>
+			</div>
+		<?php endif; ?>
+		<div class="quiz-sides" data-quiz-sides>
+		<?php foreach ($qSides as $sd):
+			$nm = (string) ($sd === 'a' ? $w['partner_a'] : $w['partner_b']);
+			$board = Quiz::board((int) $w['id'], $sd, 10);
+			$players = Quiz::players((int) $w['id'], $sd);
+			$me = $played[$sd] ?? null; ?>
+			<div class="quiz-side<?= $sd === $qOn ? ' is-on' : '' ?>" id="quiz-<?= $sd ?>" data-quiz-side="<?= $sd ?>" role="tabpanel">
+				<?php if ($me): ?>
+					<div class="glass quiz quiz--done reveal">
+						<span class="eyebrow"><?= e($nm) ?>&rsquo;s quiz</span>
+						<p class="quiz__big"><?= dots((string) $me['score'], 'dotnum--md') ?><span>of <?= (int) $me['total'] ?></span></p>
+						<p class="quiz__score">You are number <?= (int) $me['rank'] ?> of <?= $players ?> on <?= e($nm) ?>&rsquo;s leaderboard.</p>
+						<?php foreach ($qSides as $other): if ($other !== $sd && empty($played[$other])): ?>
+							<button class="pill pill--glass pill--sm" type="button" data-quiz-pick="<?= $other ?>">Now try <?= e((string) ($other === 'a' ? $w['partner_a'] : $w['partner_b'])) ?>&rsquo;s</button>
+						<?php endif; endforeach; ?>
+					</div>
+				<?php else: ?>
+					<form class="glass glass--plain quiz reveal" method="post" action="<?= e(App::url('/w/' . $w['slug'] . '/quiz')) ?>">
+						<?= Guard::field() ?><input type="hidden" name="side" value="<?= $sd ?>">
+						<p class="quiz__lead"><?= count($qz[$sd]) ?> questions about <?= e($nm) ?></p>
+						<?php foreach ($qz[$sd] as $qi => [$q, $opts]): ?>
+							<fieldset class="quiz__q">
+								<legend><span class="quiz__n"><?= $qi + 1 ?></span><span><?= e($q) ?></span></legend>
+								<div class="quiz__opts">
+									<?php foreach ($opts as $oi => $o): ?>
+										<label class="chip"><input type="radio" name="q[<?= $qi ?>]" value="<?= $oi ?>" required><span><?= e($o) ?></span></label>
+									<?php endforeach; ?>
+								</div>
+							</fieldset>
+						<?php endforeach; ?>
+						<label class="field quiz__name"><span>Your name, for the leaderboard</span><input class="input" name="name" maxlength="60" autocomplete="name" required></label>
+						<button class="pill pill--block" type="submit">See how well I know <?= e($nm) ?></button>
+					</form>
+				<?php endif; ?>
+				<div class="glass glass--plain board reveal">
+					<div class="board__head"><p class="board__h">Who knows <?= e($nm) ?> best</p><span class="board__n"><?= $players ?> played</span></div>
+					<?php if ($board): ?>
+						<ol class="board__list">
+							<?php foreach ($board as $bi => $b): $mineRow = $me && (string) $b['name'] === (string) $me['name'] && (int) $b['score'] === (int) $me['score']; ?>
+								<li class="board__row<?= $bi === 0 ? ' is-top' : '' ?><?= $mineRow ? ' is-me' : '' ?>">
+									<span class="board__rank"><?= $bi + 1 ?></span>
+									<span class="board__name"><?= e((string) $b['name']) ?></span>
+									<span class="board__score"><?= (int) $b['score'] ?><span>/<?= (int) $b['total'] ?></span></span>
+								</li>
+							<?php endforeach; ?>
+						</ol>
+					<?php else: ?>
+						<p class="board__empty">Nobody yet. Be the first name on <?= e($nm) ?>&rsquo;s board.</p>
+					<?php endif; ?>
 				</div>
-			<?php endforeach; ?>
-			<p class="quiz__score" data-quiz-score aria-live="polite">Tap an answer to start</p>
+			</div>
+		<?php endforeach; ?>
+		</div>
+	</section>
+	<?php elseif ($mine && Wedding::has($w, 'squad')): ?>
+	<section class="sec wrap" id="quiz">
+		<div class="glass glass--plain quiz-empty reveal">
+			<span class="eyebrow">Only you can see this</span>
+			<h2>Who knows you best?</h2>
+			<p class="sub">Write a short quiz for each of you: the nickname at home, the food you always order, where you grew up. Guests pick the one they know and climb that person&rsquo;s leaderboard.</p>
+			<a class="pill" href="<?= e(App::url('/account/quiz')) ?>">Write your quizzes</a>
 		</div>
 	</section>
 	<?php endif; ?>
@@ -343,7 +416,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	<?php if ($gifts): ?><a href="#gifts"><?= icon('gift') ?>Gifts</a><?php endif; ?>
 	<?php if ($premium): ?><button type="button" data-open="give" data-give="Spray"><?= icon('wallet') ?>Spray</button><?php endif; ?>
 	<a href="#wall"><?= icon('heart') ?>Wishes</a>
-	<button type="button" data-share="<?= e($pageUrl) ?>"><?= icon('share') ?>Share</button>
+	<button type="button" data-share="<?= e($pageUrl) ?>" data-share-ping="<?= e(App::url('/w/' . $slug . '/share')) ?>"><?= icon('share') ?>Share</button>
 </nav>
 
 <div class="sheet" id="rsvp" role="dialog" aria-modal="true" aria-labelledby="rsvp-t">

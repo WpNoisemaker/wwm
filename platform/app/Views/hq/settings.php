@@ -9,6 +9,13 @@
 			</div>
 			<label class="field"><span>Service fee on cash gifts (%)</span><input class="input" name="fee_gift" type="number" min="0" max="20" step="0.1" value="<?= e($v['fee_gift']) ?>"></label>
 			<p class="help">Applied to Free and Pro pages. Premium and above pay none.</p>
+			<h2 class="h3 gap-t-sm">Exchange rates</h2>
+			<p class="help">Naira for one unit of each currency. Visitors abroad see plan prices converted at these rates on the pricing page.</p>
+			<div class="form-grid form-grid--2">
+				<?php foreach ($fx as $k => $rate): if ($k === 'NGN') { continue; } ?>
+					<label class="field"><span><?= e(trim(cur_sign($k))) ?> <?= e(Fx::NAMES[$k]) ?></span><input class="input" name="fx[<?= e($k) ?>]" inputmode="decimal" value="<?= e(rtrim(rtrim(number_format((float) $rate, 2, '.', ''), '0'), '.')) ?>"></label>
+				<?php endforeach; ?>
+			</div>
 			<h2 class="h3 gap-t-sm">Contact</h2>
 			<label class="field"><span>Contact email</span><input class="input" name="email" type="email" value="<?= e($v['email']) ?>"></label>
 			<label class="field"><span>WhatsApp number</span><input class="input" name="whatsapp" value="<?= e($v['whatsapp']) ?>" placeholder="2348000000000"></label>
@@ -26,15 +33,15 @@
 				<button class="pill pill--glass pill--block" type="submit">Send me a test email</button>
 			</form>
 			<div class="form glass glass--plain glass--tight" id="packs">
-				<h2 class="h3">Couples from the old site</h2>
+				<h2 class="h3">From the old site</h2>
 				<?php foreach (Pack::ALL as $pk => $pn): $here = Pack::present($pk); ?>
 					<div class="row-item row-item--plain">
-						<span><span class="row-item__t"><?= e($pn) ?></span><span class="row-item__s"><?= $here ? 'On this site · Ivory &amp; Gold, Premium' : 'Not added yet' ?></span></span>
-						<?php if ($here): ?><a class="pill pill--sm pill--glass" href="<?= e(App::url('/w/' . $pk)) ?>">Open</a>
+						<span><span class="row-item__t"><?= e($pn) ?></span><span class="row-item__s"><?= $here ? e(Pack::ABOUT[$pk][1] ?? 'On this site') : 'Not added yet' ?></span></span>
+						<?php if ($here): ?><a class="pill pill--sm pill--glass" href="<?= e(App::url($pk === 'market' ? '/market' : '/w/' . $pk)) ?>">Open</a>
 						<?php elseif (Auth::is('owner')): ?><form method="post" action="<?= e(App::url('/hq/packs/' . $pk)) ?>"><?= Guard::field() ?><button class="pill pill--sm" type="submit">Restore</button></form><?php endif; ?>
 					</div>
 				<?php endforeach; ?>
-				<p class="help">Adds the couple&rsquo;s page and account exactly as they had it. It never overwrites anything already here.</p>
+				<p class="help">Adds each page, seller and account exactly as the old site had them. It never overwrites anything already here.</p>
 			</div>
 			<div class="form glass glass--plain glass--tight">
 				<h2 class="h3">Demo content</h2>

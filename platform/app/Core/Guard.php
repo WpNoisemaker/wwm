@@ -123,7 +123,8 @@ final class Guard
     /** Simple per-action throttle, so a shared host is not a free brute-force target. */
     public static function tooMany(string $action, int $limit = 8, int $minutes = 15): bool
     {
-        $key = substr($action . ':' . (string) ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0'), 0, 120);
+        // The address is only ever kept scrambled, and only until the window runs out.
+        $key = substr($action . ':' . hash('sha256', 'wwm|' . (string) ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0')), 0, 120);
         Db::run('DELETE FROM throttle WHERE expires_at < NOW()');
         Db::run(
             'INSERT INTO throttle (bucket, hits, expires_at) VALUES (?, 1, DATE_ADD(NOW(), INTERVAL ? MINUTE))

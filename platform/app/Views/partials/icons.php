@@ -16,18 +16,14 @@ function icon(string $n, int $s = 0, string $cls = ''): string {
     return '<svg class="ico' . ($isSolid ? ' ico--solid' : '') . ($cls !== '' ? ' ' . $cls : '') . '"' . $size . ' aria-hidden="true" focusable="false"><use href="#' . ($isSolid ? 's-' : 'i-') . $k . '"/></svg>';
 }
 
-/**
- * An amount, with the naira drawn rather than typed. $raw gives the plain text for a screen
- * reader; the drawn sign is hidden from it so the amount is not read as "N 2.7m".
- */
+/** An amount with its currency sign. The ₦ comes from the Urbanist naira face in the stylesheet. */
 function money(string $amount, string $cur = 'NGN'): string {
-    $sign = ['NGN' => '<span class="ngn">N</span>', 'USD' => '$', 'GHS' => 'GH₵', 'KES' => 'KSh ', 'ZAR' => 'R', 'GBP' => '£', 'EUR' => '€',
-             'CAD' => 'C$', 'AUD' => 'A$', 'NZD' => 'NZ$', 'AED' => 'AED ', 'RWF' => 'FRw '];
-    $sym  = ['NGN' => '₦', 'USD' => '$', 'GHS' => 'GH₵', 'KES' => 'KSh ', 'ZAR' => 'R', 'GBP' => '£', 'EUR' => '€',
-             'CAD' => 'C$', 'AUD' => 'A$', 'NZD' => 'NZ$', 'AED' => 'AED ', 'RWF' => 'FRw '];
-    $draw = $sign[$cur] ?? e($cur) . ' ';
-    $read = $sym[$cur] ?? $cur;
-    return '<span class="money"><span class="sr">' . e($read . $amount) . '</span><span aria-hidden="true">' . $draw . e($amount) . '</span></span>';
+    return '<span class="money">' . e(cur_sign($cur) . $amount) . '</span>';
+}
+
+function cur_sign(string $cur): string {
+    return ['NGN' => '₦', 'USD' => '$', 'GHS' => 'GH₵', 'KES' => 'KSh ', 'ZAR' => 'R', 'GBP' => '£', 'EUR' => '€',
+            'CAD' => 'C$', 'AUD' => 'A$', 'NZD' => 'NZ$', 'AED' => 'AED ', 'RWF' => 'FRw '][$cur] ?? $cur . ' ';
 }
 
 /** 2756500 -> "2.7m". Kept short because these sit inside small tiles. */

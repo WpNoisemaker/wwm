@@ -7,8 +7,15 @@ $photos = is_array($photos) ? array_values($photos) : [];
 	<div class="profile">
 		<?= sq($photos[0] ?? '', (string) $l['title'], 'profile__pic', true) ?>
 		<div class="profile__body">
-			<span class="eyebrow"><?= e(Listing::kindName((string) $l['kind'])) ?> · <?= e($l['city']) ?></span>
+			<span class="eyebrow"><?= e(Listing::kindName((string) $l['kind'])) ?><?= (string) $l['city'] !== '' ? ' · ' . e($l['city']) : '' ?></span>
 			<h1 class="profile__h"><?= e($l['title']) ?></h1>
+			<?php if (!empty($l['seller'])): ?>
+				<a class="seller" href="<?= e(App::url('/vendors/' . $l['seller_slug'])) ?>">
+					<span class="seller__k">Sold by</span>
+					<span class="seller__n"><?= e((string) $l['seller']) ?></span>
+					<?php if ((int) $l['seller_ok']): ?><span class="badge"><?= icon('check') ?>Verified</span><?php endif; ?>
+				</a>
+			<?php endif; ?>
 			<div class="glass glass--tight listing-price">
 				<span class="k">Price</span>
 				<span class="total__v"><?= (int) $l['on_ask'] ? 'On request' : money(number_format((int) $l['price'])) ?></span>
@@ -33,7 +40,7 @@ $photos = is_array($photos) ? array_values($photos) : [];
 			<?php foreach (array_slice($others, 0, 4) as $m): ?>
 				<a class="card" href="<?= e(App::url('/market/' . $m['slug'])) ?>">
 					<?= sq(first_photo((string) $m['photos']), (string) $m['title']) ?>
-					<span class="card__cap"><span class="card__t"><?= e($m['title']) ?></span><span class="card__s"><?= (int) $m['on_ask'] ? 'Price on request' : money(short_money((int) $m['price'])) ?> · <?= e($m['city']) ?></span></span>
+					<span class="card__cap"><span class="card__t"><?= e($m['title']) ?></span><span class="card__s"><?= (int) $m['on_ask'] ? 'Price on request' : money(short_money((int) $m['price'])) ?><?= !empty($m['seller']) ? ' · ' . e((string) $m['seller']) : ((string) $m['city'] !== '' ? ' · ' . e($m['city']) : '') ?></span></span>
 				</a>
 			<?php endforeach; ?>
 		</div>

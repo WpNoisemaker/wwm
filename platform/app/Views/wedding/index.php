@@ -36,7 +36,8 @@ $q = static function (array $over) use ($f): string {
 		<nav class="chips chips--center chips--quiet" aria-label="Countries">
 			<a class="chip<?= $f['country'] === '' ? ' is-on' : '' ?>" href="<?= e($q(['country' => null, 'city' => null, 'page' => null])) ?>">Everywhere</a>
 			<?php foreach ($countries as $c): ?>
-				<a class="chip<?= $f['country'] === $c['country'] ? ' is-on' : '' ?>" href="<?= e($q(['country' => $f['country'] === $c['country'] ? null : $c['country'], 'city' => null, 'page' => null])) ?>"><?= e($c['country']) ?> <span class="chip__n"><?= (int) $c['n'] ?></span></a>
+				<?php $slug = Wedding::placeSlug((string) $c['country']); ?>
+				<a class="chip<?= $f['country'] === $c['country'] ? ' is-on' : '' ?>" href="<?= e($slug !== '' ? App::url('/weddings/' . $slug) : $q(['country' => $f['country'] === $c['country'] ? null : $c['country'], 'city' => null, 'page' => null])) ?>"><?= e($c['country']) ?> <span class="chip__n"><?= (int) $c['n'] ?></span></a>
 			<?php endforeach; ?>
 		</nav>
 	<?php endif; ?>

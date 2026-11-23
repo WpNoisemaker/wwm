@@ -397,11 +397,19 @@ CREATE TABLE posts (
   title      VARCHAR(255) NOT NULL,
   excerpt    VARCHAR(500) NOT NULL DEFAULT '',
   body       LONGTEXT     NULL,
+  source     MEDIUMTEXT   NULL,
   cover      VARCHAR(255) NOT NULL DEFAULT '',
   category   VARCHAR(80)  NOT NULL DEFAULT '',
+  -- The section: a guide (written for search), news, or a feature or interview.
+  kind       ENUM('guide','news','feature') NOT NULL DEFAULT 'guide',
+  author     VARCHAR(120) NOT NULL DEFAULT '',
+  meta_title VARCHAR(190) NOT NULL DEFAULT '',
+  meta_desc  VARCHAR(300) NOT NULL DEFAULT '',
+  featured   TINYINT(1)   NOT NULL DEFAULT 0,
   status     ENUM('live','draft') NOT NULL DEFAULT 'draft',
   wp_id      INT UNSIGNED NULL,
   published_at DATETIME   NULL,
+  updated_at DATETIME     NULL,
   PRIMARY KEY (id),
   UNIQUE KEY uq_slug (slug),
   UNIQUE KEY uq_wp (wp_id),
@@ -449,4 +457,18 @@ CREATE TABLE import_log (
   created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY uq_kind_wp (kind, wp_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- "Who knows them best?": one row per guest who played a partner's quiz.
+CREATE TABLE quiz_scores (
+  id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  wedding_id INT UNSIGNED NOT NULL,
+  side       CHAR(1)      NOT NULL,
+  name       VARCHAR(80)  NOT NULL DEFAULT '',
+  score      TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  total      TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY board (wedding_id, side, score),
+  CONSTRAINT quiz_scores_wedding FOREIGN KEY (wedding_id) REFERENCES weddings (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

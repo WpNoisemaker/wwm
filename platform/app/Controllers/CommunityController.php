@@ -43,8 +43,13 @@ final class CommunityController
             return;
         }
         View::render('community/show', [
-            'title'   => Talk::topic((string) $t['topic']) . ' · Community',
-            'desc'    => mb_strimwidth((string) $t['body'], 0, 150, '…'),
+            'title'   => '“' . mb_strimwidth(trim((string) preg_replace('/\s+/', ' ', (string) $t['body'])), 0, 64, '…') . '” · Community',
+            'desc'    => mb_strimwidth(trim((string) preg_replace('/\s+/', ' ', (string) $t['body'])), 0, 180, '…'),
+            // The preview is the post itself, on its own colour, with our address under it.
+            'ogImage' => Share::url('t', (string) $t['id'], implode('|', [$t['body'], $t['bg'], $t['topic'], $t['pen_name']])),
+            'ogTitle' => ($t['pen_name'] ?: 'Someone') . ' asked the community · ' . Talk::topic((string) $t['topic']),
+            'ogDesc'  => mb_strimwidth(trim((string) preg_replace('/\s+/', ' ', (string) $t['body'])), 0, 200, '…') . ' Reply under any pen name.',
+            'ogType'  => 'article',
             'tab'     => 'community',
             'appTitle'=> 'Community',
             'back'    => App::url('/community'),

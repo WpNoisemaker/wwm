@@ -2,9 +2,9 @@
 declare(strict_types=1);
 
 /**
- * Demo content: thirteen wedding pages, one for every design and plan, their guests, gifts and notes, eight
- * vendors with reviews, eight marketplace listings, and the 45 community conversations — plus the
- * accounts to sign in and look around.
+ * Demo content: thirty wedding pages in eleven countries, one for every design and plan, their guests,
+ * gifts, notes and quiz leaderboards, vendors with reviews, and the 45 community conversations, plus
+ * the accounts to sign in and look around. The marketplace is not demo: it holds the real sellers.
  *
  * Every row it creates is recorded in a small table (demo_rows). That record is what lets remove()
  * delete exactly the demo rows and never touch anything a real person has made, even after the demo
@@ -24,6 +24,21 @@ final class Demo
         'CAD' => [25, 50, 75, 100, 150, 250], 'AUD' => [25, 50, 75, 100, 150, 250], 'NZD' => [25, 50, 75, 100, 150, 250],
         'AED' => [100, 150, 200, 300, 500, 1000], 'KES' => [1000, 2000, 3000, 5000, 10000, 20000], 'GHS' => [100, 200, 300, 500, 800, 1000],
         'RWF' => [10000, 20000, 30000, 50000, 100000, 200000], 'ZAR' => [200, 300, 500, 800, 1000, 2000],
+    ];
+
+    /**
+     * Questions for the demo's "who knows them best" quizzes: the things family and friends know
+     * about one person. Never how the couple met; that belongs to the couple, not the quiz.
+     */
+    private const QUIZ_BANK = [
+        ["What is {n}'s favourite food?", ['Jollof rice', 'Pounded yam and egusi', 'Suya', 'Fried plantain', 'Pepper soup', 'Moi moi', 'Fufu and light soup', 'Waakye', 'Nyama choma']],
+        ["Which drink does {n} always order?", ['Chapman', 'Malt', 'Zobo', 'Coke, no ice', 'Palm wine', 'Tea with three sugars', 'Just water', 'Fanta']],
+        ["Which football club does {n} support?", ['Arsenal', 'Chelsea', 'Manchester United', 'Liverpool', 'Barcelona', 'Real Madrid', 'None, they hate football']],
+        ["What is {n}'s favourite colour?", ['Burgundy', 'Emerald green', 'Royal blue', 'Gold', 'Black', 'Lilac', 'Peach', 'White']],
+        ["Which month is {n}'s birthday?", ['January', 'March', 'April', 'June', 'August', 'September', 'November', 'December']],
+        ["What is {n} most scared of?", ['Cockroaches', 'Flying', 'Dogs', 'Heights', 'Lizards', 'Deep water', 'Their mother']],
+        ["What would {n} do on a free Saturday?", ['Sleep until noon', 'Watch football', 'Cook for everyone', 'Go to the market', 'Binge a Nollywood series', 'Go to the gym', 'Visit family']],
+        ["Who does {n} play the most?", ['Burna Boy', 'Wizkid', 'Asake', 'Tems', 'Sauti Sol', 'Sarkodie', 'Davido', 'Simi']],
     ];
 
     /** Plans from which a guest pass code is issued, matching the real RSVP flow. */
@@ -61,7 +76,6 @@ final class Demo
             ['email' => 'emeka@demo.test',   'who' => 'Couple — Pro',           'shows' => 'Emeka & Ngozi: Classic in their own colours, squad, gallery'],
             ['email' => 'free@demo.test',    'who' => 'Couple — Free',          'shows' => 'Kola & Lara: the free page, black & white'],
             ['email' => 'vendor@demo.test',  'who' => 'Vendor',                 'shows' => 'Owns the Golden Lens profile'],
-            ['email' => 'seller@demo.test',  'who' => 'Marketplace seller',     'shows' => 'Owns the marketplace listings'],
             ['email' => 'staff@demo.test',   'who' => 'Staff',                  'shows' => 'Can open HQ (but not remove the demo content)'],
         ];
     }
@@ -165,13 +179,33 @@ final class Demo
         $n = 0;
         foreach ($c['weddings'] as $i => $w) {
             $when = $now + $w['days'] * 86400;
+            // Pro pages and up get a quiz about each partner, five questions each.
+            $quizzes = null;
+            if ($w['plan'] !== 'free') {
+                $quizzes = [];
+                foreach (['a' => $w['a'], 'b' => $w['b']] as $side => $name) {
+                    $keys = array_keys(self::QUIZ_BANK);
+                    usort($keys, static fn () => mt_rand(-1, 1));
+                    $quizzes[$side] = [];
+                    foreach (array_slice($keys, 0, 5) as $k) {
+                        [$q, $pool] = self::QUIZ_BANK[$k];
+                        usort($pool, static fn () => mt_rand(-1, 1));
+                        $opts = array_slice($pool, 0, mt_rand(3, 4));
+                        $quizzes[$side][] = [str_replace('{n}', $name, $q), $opts, mt_rand(0, count($opts) - 1)];
+                    }
+                }
+            }
+            $design = ['primary' => $w['colours'][0], 'accent' => $w['colours'][1], 'photo2' => $w['photo2'] ?? ''];
+            if ($quizzes) {
+                $design['quizzes'] = $quizzes;
+            }
             $wid = self::put('weddings', [
                 'owner_id' => $uid[$w['email']], 'slug' => $w['slug'], 'partner_a' => $w['a'], 'partner_b' => $w['b'],
                 'hashtag' => $w['hashtag'], 'tagline' => $w['tagline'], 'story' => $w['story'],
                 'wed_date' => date('Y-m-d', $when), 'wed_time' => $w['time'],
                 'city' => $w['city'], 'state' => $w['state'], 'country' => $w['country'] ?? 'Nigeria', 'venue' => $w['venue'],
                 'cover' => $w['cover'], 'plan' => $w['plan'], 'template' => $w['template'],
-                'design' => json_encode(['primary' => $w['colours'][0], 'accent' => $w['colours'][1], 'photo2' => $w['photo2'] ?? '']),
+                'design' => json_encode($design, JSON_UNESCAPED_UNICODE),
                 'currency' => Wedding::CURRENCY[$w['country'] ?? 'Nigeria'] ?? 'NGN', 'visibility' => $w['visibility'] ?? 'public', 'pass_code' => $w['pass_code'] ?? '',
                 'buzz' => $w['buzz'], 'views' => $w['views'], 'created_at' => $ago(86400 * mt_rand(20, 90)),
             ]);
@@ -227,6 +261,21 @@ final class Demo
                     'checked_in' => $w['days'] < 0 && $coming === 'yes' && mt_rand(1, 10) <= 8 ? date('Y-m-d H:i:s', $when + mt_rand(0, 7200)) : null,
                     'created_at' => $ago(mt_rand(3600, 24 * 86400)),
                 ]);
+            }
+
+            // Their leaderboards: friends and family who have played each partner's quiz.
+            if ($quizzes) {
+                Quiz::table();
+                foreach ($quizzes as $side => $qs) {
+                    for ($k = mt_rand(4, 9); $k > 0; $k--) {
+                        $total = count($qs);
+                        $score = max(1, min($total, $total - mt_rand(0, 3) + (mt_rand(0, 3) === 0 ? 1 : 0)));
+                        self::put('quiz_scores', [
+                            'wedding_id' => $wid, 'side' => $side, 'name' => $pick($c['first']) . ' ' . substr($pick($c['last']), 0, 1) . '.',
+                            'score' => $score, 'total' => $total, 'created_at' => $ago(mt_rand(3600, 20 * 86400)),
+                        ]);
+                    }
+                }
             }
 
             // The wall of love: a few notes, and a photograph or two.

@@ -8,7 +8,7 @@
 		<a class="tile tile--glyph" href="<?= e(App::url('/hq/settings')) ?>"><?= icon('s-spark') ?><span>Settings</span></a>
 	</div>
 	<?php foreach (Pack::ALL as $pk => $pn): if (!Pack::present($pk)): ?>
-		<div class="note gap-t"><?= icon('info') ?><span><?= e($pn) ?>&rsquo;s page from the old site is not here yet. <a href="<?= e(App::url('/hq/settings#packs')) ?>">Restore it in Settings</a>.</span></div>
+		<div class="note gap-t"><?= icon('info') ?><span><?= e(Pack::ABOUT[$pk][0] ?? $pn) ?>: not here yet. <a href="<?= e(App::url('/hq/settings#packs')) ?>">Restore in Settings</a>.</span></div>
 	<?php endif; endforeach; ?>
 	<div class="split-2 gap-t">
 		<div>

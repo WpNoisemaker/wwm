@@ -43,7 +43,8 @@ final class AccountController
         Auth::wall();
         $w = $this->mine();
         if (!$w) {
-            self::go('/account/new');
+            // A marketplace seller has a shop, not a wedding.
+            self::go(Auth::is('partner') ? '/account/shop' : '/account/new');
         }
         $id = (int) $w['id'];
         $this->show('index', [
@@ -207,6 +208,113 @@ final class AccountController
         $this->show('registry', ['title' => 'Registry', 'w' => $w, 'rows' => Wedding::gifts((int) $w['id'])]);
     }
 
+    /** "Who knows you best?": a short quiz about each partner, for guests to play on the page. */
+    public function quiz(): void
+    {
+        $w = $this->need();
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+            Guard::must();
+            $d = Wedding::design($w);
+            $d['quizzes'] = ['a' => Quiz::clean((array) ($_POST['a'] ?? [])), 'b' => Quiz::clean((array) ($_POST['b'] ?? []))];
+            unset($d['quiz']);   // the old single quiz about the couple, if a page still had one
+            Db::update('weddings', ['design' => json_encode($d, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)], 'id = ?', [$w['id']]);
+            foreach (['a', 'b'] as $side) {
+                if (!empty($_POST['restart'][$side])) {
+                    Quiz::table();
+                    Db::run('DELETE FROM quiz_scores WHERE wedding_id = ? AND side = ?', [$w['id'], $side]);
+                }
+            }
+            $n = count($d['quizzes']['a']) + count($d['quizzes']['b']);
+            Guard::flash('ok', $n ? 'Saved. ' . $n . ' question' . ($n === 1 ? '' : 's') . ' ready for your guests.' : 'Saved. Add a question or two and the quiz appears on your page.');
+            self::go('/account/quiz');
+        }
+        Quiz::table();
+        $this->show('quiz', [
+            'title'   => 'Who knows you best?',
+            'w'       => $w,
+            'quizzes' => Quiz::forWedding($w),
+            'players' => ['a' => Quiz::players((int) $w['id'], 'a'), 'b' => Quiz::players((int) $w['id'], 'b')],
+        ]);
+    }
+
+    /**
+     * A seller's shop: their business profile and their marketplace listings. Verification is
+     * HQ's to give, so it is shown here and never editable.
+     */
+    public function shop(): void
+    {
+        Auth::wall();
+        $uid = (int) Auth::id();
+        $v = Db::one('SELECT * FROM vendors WHERE user_id = ? ORDER BY verified DESC, id LIMIT 1', [$uid]);
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+            Guard::must();
+            $do = (string) ($_POST['do'] ?? '');
+            $t = static fn (string $k, int $max = 190): string => mb_substr(trim((string) ($_POST[$k] ?? '')), 0, $max);
+            if ($do === 'profile') {
+                $row = ['name' => $t('name', 190), 'category' => $t('category', 80), 'city' => $t('city', 120), 'state' => $t('state', 120),
+                        'phone' => $t('phone', 40), 'instagram' => ltrim($t('instagram', 120), '@'), 'website' => $t('website', 255), 'about' => $t('about', 4000)];
+                if ($row['name'] === '') {
+                    Guard::flash('bad', 'Your business needs a name.');
+                    self::go('/account/shop');
+                }
+                if ($row['website'] !== '' && !preg_match('#^https?://#i', $row['website'])) {
+                    $row['website'] = 'https://' . $row['website'];
+                }
+                if ($v) {
+                    Db::update('vendors', $row, 'id = ?', [$v['id']]);
+                } else {
+                    Db::insert('vendors', $row + ['user_id' => $uid, 'slug' => Listing::slugFor('vendors', $row['name'])]);
+                }
+                Guard::flash('ok', 'Your profile is saved.');
+                self::go('/account/shop');
+            }
+            $id = (int) ($_POST['id'] ?? 0);
+            if ($do === 'delete' && $id) {
+                Db::run('DELETE FROM listings WHERE id = ? AND partner_id = ?', [$id, $uid]);
+                Guard::flash('ok', 'Listing removed.');
+                self::go('/account/shop');
+            }
+            if ($do === 'listing') {
+                $row = [
+                    'title' => $t('title'), 'kind' => isset(Listing::KINDS[$_POST['kind'] ?? '']) ? (string) $_POST['kind'] : 'service',
+                    'city' => $t('city', 120), 'price' => max(0, (int) preg_replace('/\D/', '', (string) ($_POST['price'] ?? '0'))),
+                    'price_unit' => $t('price_unit', 40), 'on_ask' => isset($_POST['on_ask']) ? 1 : 0, 'about' => $t('about', 6000),
+                    'status' => ($_POST['status'] ?? 'live') === 'paused' ? 'paused' : 'live',
+                ];
+                if ($row['title'] === '') {
+                    Guard::flash('bad', 'A listing needs a title.');
+                    self::go('/account/shop');
+                }
+                $old = $id ? Db::one('SELECT * FROM listings WHERE id = ? AND partner_id = ?', [$id, $uid]) : null;
+                if ($id && !$old) {
+                    self::go('/account/shop');
+                }
+                if (!empty($_FILES['photo']['name'])) {
+                    $img = Images::store($_FILES['photo'], 'listings/' . $uid);
+                    if ($img === null) {
+                        Guard::flash('bad', 'That photo could not be used. Try a JPEG or PNG under 12 MB.');
+                        self::go('/account/shop');
+                    }
+                    $photos = $old ? (json_decode((string) $old['photos'], true) ?: []) : [];
+                    array_unshift($photos, $img);
+                    $row['photos'] = json_encode(array_slice($photos, 0, 6), JSON_UNESCAPED_SLASHES);
+                }
+                if ($old) {
+                    Db::update('listings', $row, 'id = ? AND partner_id = ?', [$id, $uid]);
+                } else {
+                    Db::insert('listings', $row + ['partner_id' => $uid, 'slug' => Listing::slugFor('listings', $row['title']), 'photos' => $row['photos'] ?? '[]']);
+                }
+                Guard::flash('ok', $old ? 'Listing saved.' : 'Listing added. It is live on the marketplace.');
+                self::go('/account/shop');
+            }
+            self::go('/account/shop');
+        }
+        View::render('account/shop', [
+            'title' => $v ? (string) $v['name'] : 'Your shop', 'tab' => 'account', 'appTitle' => 'Your shop', 'back' => null,
+            'v' => $v, 'rows' => Db::all('SELECT * FROM listings WHERE partner_id = ? ORDER BY id', [$uid]),
+        ]);
+    }
+
     /**
      * Add, edit or delete one row of a list that belongs to this wedding. The wedding_id is always
      * in the WHERE clause, so a guessed id from another couple's page matches nothing.
@@ -357,6 +465,22 @@ final class AccountController
             Guard::must();
             $set = ['name' => trim((string) ($_POST['name'] ?? '')), 'phone' => trim((string) ($_POST['phone'] ?? ''))];
             $new = (string) ($_POST['pass'] ?? '');
+            $mail = strtolower(trim((string) ($_POST['email'] ?? '')));
+            if ($mail !== '' && $mail !== strtolower((string) $u['email'])) {
+                if (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
+                    Guard::flash('bad', 'That email does not look right.');
+                    self::go('/account/settings');
+                }
+                if (!Auth::attempt((string) $u['email'], (string) ($_POST['current'] ?? ''))) {
+                    Guard::flash('bad', 'Type your current password to change your email.');
+                    self::go('/account/settings');
+                }
+                if (Db::val('SELECT 1 FROM users WHERE email = ? AND id <> ?', [$mail, Auth::id()])) {
+                    Guard::flash('bad', 'Another account already uses that email.');
+                    self::go('/account/settings');
+                }
+                $set['email'] = $mail;
+            }
             if ($new !== '') {
                 if (strlen($new) < 8) {
                     Guard::flash('bad', 'A new password needs at least 8 characters.');

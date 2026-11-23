@@ -38,11 +38,12 @@ final class MarketController
             return;
         }
         View::render('market/show', [
-            'title' => $l['title'] . ' — ' . $l['city'],
+            'title' => $l['title'] . ((string) $l['city'] !== '' ? ' — ' . $l['city'] : '') . (!empty($l['seller']) ? ' · ' . $l['seller'] : ''),
             'desc'  => mb_substr(trim((string) $l['about']) ?: (string) $l['title'], 0, 180),
             'tab'   => 'market',
             'css'   => ['market'],
             'l'     => $l,
+            'ogImage' => Share::url('l', (string) $l['slug'], implode('|', [$l['photos'], $l['title'], $l['price'], $l['on_ask'], $l['seller'] ?? '', $l['seller_ok'] ?? ''])),
             'more'  => Listing::search(['kind' => (string) $l['kind']], 4),
         ]);
     }

@@ -5,17 +5,17 @@
 			<div class="post-solo">
 				<article class="post <?= e(talk_colour((string) $t['bg'])) ?>">
 					<span class="post__topic"><?= e(Talk::topic((string) $t['topic'])) ?></span>
-					<p class="post__text<?= mb_strlen((string) $t['body']) > 150 ? ' post__text--long' : '' ?>"><?= nl2br(e((string) $t['body'])) ?></p>
+					<div class="post__body"><p class="post__text<?= mb_strlen((string) $t['body']) > 150 ? ' post__text--long' : '' ?>"><?= nl2br(e((string) $t['body'])) ?></p><span class="post__mark"><i aria-hidden="true">&amp;</i><?= e(Share::host()) ?></span></div>
 					<span class="post__meta"><?= e($t['pen_name'] ?: 'Someone') ?> · <?= e(ago((string) $t['created_at'])) ?></span>
 				</article>
 			</div>
 			<div class="actions">
 				<form method="post" action="<?= e(App::url('/community/' . $t['id'] . '/like')) ?>" class="act">
 					<?= Guard::field() ?>
-					<button class="cbtn cbtn--lg<?= $liked ? ' is-on' : '' ?>" type="submit" aria-label="Like" aria-pressed="<?= $liked ? 'true' : 'false' ?>"><?= icon('heart') ?></button><span class="count"><?= (int) $t['likes'] ?></span>
+					<button class="cbtn cbtn--lg<?= $liked ? ' is-on' : '' ?>" type="submit" aria-label="Love this post" aria-pressed="<?= $liked ? 'true' : 'false' ?>"><?= icon('heart') ?><span class="act__n"><?= (int) $t['likes'] ?></span></button><span class="act__l">Love</span>
 				</form>
-				<div class="act"><a class="cbtn cbtn--lg" href="#reply" aria-label="Reply"><?= icon('reply') ?></a><span class="count"><?= (int) $t['replies'] ?></span></div>
-				<div class="act"><button class="cbtn cbtn--lg" type="button" data-share aria-label="Share"><?= icon('share') ?></button><span class="count">Share</span></div>
+				<div class="act"><a class="cbtn cbtn--lg" href="#reply" aria-label="Write a reply"><?= icon('reply') ?><span class="act__n"><?= (int) $t['replies'] ?></span></a><span class="act__l">Reply</span></div>
+				<div class="act"><button class="cbtn cbtn--lg" type="button" data-share aria-label="Share this post"><?= icon('share') ?></button><span class="act__l">Share</span></div>
 			</div>
 		</div>
 		<div class="thread__replies">

@@ -50,10 +50,18 @@ $max  = max(1, (int) ($rows[0]['buzz'] ?? 1));
 		<?php endif; ?>
 	<?php endif; ?>
 
-	<section class="sec">
-		<div class="sec-head"><span class="eyebrow">The rules</span><h2>How a page earns buzz</h2><p>Each of these, done by a real guest, moves a page up. A page only earns from the features its plan has.</p></div>
-		<div class="mosaic coins">
-			<?php foreach (RankingsController::COINS as $c): ?><div class="tile tile--glyph"><?= icon('s-spark') ?><span><?= e($c) ?></span></div><?php endforeach; ?>
+	<section class="sec" id="coins">
+		<div class="sec-head"><span class="eyebrow">The rules</span><h2>How a page earns buzz</h2><p>Every coin comes from something a real guest did. The same action earns more on a higher plan, and some actions only exist on the higher plans.</p></div>
+		<div class="tbl-wrap coins-tbl">
+			<table class="tbl">
+				<thead><tr><th scope="col">When a guest&hellip;</th><?php foreach (Buzz::PLANS as $pl): ?><th scope="col" class="r"><?= e(Site::tier($pl)) ?></th><?php endforeach; ?></tr></thead>
+				<tbody>
+					<?php foreach (Buzz::ACTS as [$label, $coins]): ?>
+						<tr><th scope="row"><?= e($label) ?></th><?php foreach ($coins as $i => $c): ?><td class="r<?= $i === 3 ? ' coins-tbl__top' : '' ?>"><?= $c > 0 ? '<b>' . $c . '</b>' : '<span class="sub" aria-label="Not on this plan">&mdash;</span>' ?></td><?php endforeach; ?></tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
 		</div>
+		<p class="center sub gap-t-sm">Coins per guest action. A visit counts once per guest; refreshing the page does not add more. <a class="linkish" href="<?= e(App::url('/pricing')) ?>">Compare the plans</a></p>
 	</section>
 </div>

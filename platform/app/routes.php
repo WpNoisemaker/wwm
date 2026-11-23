@@ -9,22 +9,32 @@
 // --- The public site --------------------------------------------------------------------------
 $r->get('/',                    [SiteController::class, 'home']);
 $r->get('/weddings',            [WeddingController::class, 'index']);
+$r->get('/weddings/{place:[a-z-]+}', [WeddingController::class, 'place']);   // each country's own listing
 $r->any('/w/{slug}',            [WeddingController::class, 'show']);   // GET shows it; POST is the pass-code form on a private page
 $r->post('/w/{slug}/rsvp',      [WeddingController::class, 'rsvp']);
 $r->post('/w/{slug}/note',      [WeddingController::class, 'note']);
+$r->post('/w/{slug}/share',     [WeddingController::class, 'share']);
+$r->post('/w/{slug}/quiz',      [WeddingController::class, 'quiz']);
 $r->get('/rankings',            [RankingsController::class, 'index']);
 $r->get('/vendors',             [VendorController::class, 'index']);
 $r->get('/vendors/{slug}',      [VendorController::class, 'show']);
 $r->get('/market',              [MarketController::class, 'index']);
 $r->get('/market/{slug}',       [MarketController::class, 'show']);
 $r->get('/blog',                [BlogController::class, 'index']);
+$r->get('/blog/feed.xml',       [BlogController::class, 'feed']);
+$r->get('/blog/{section:guides|news|features}', [BlogController::class, 'section']);
 $r->get('/blog/{slug}',         [BlogController::class, 'show']);
+$r->get('/sitemap.xml',         [SiteController::class, 'sitemap']);
+$r->get('/robots.txt',          [SiteController::class, 'robots']);
 $r->get('/search',              [SearchController::class, 'index']);
 $r->get('/pricing',             [PageController::class, 'pricing']);
 $r->get('/about',               [PageController::class, 'about']);
 $r->get('/help',                [PageController::class, 'help']);
 $r->get('/terms',               [PageController::class, 'terms']);
 $r->get('/privacy',             [PageController::class, 'privacy']);
+$r->get('/refunds',             [PageController::class, 'refunds']);
+$r->get('/community-guidelines', [PageController::class, 'guidelines']);
+$r->get('/cookies',             [PageController::class, 'cookies']);
 
 // --- The anonymous community ------------------------------------------------------------------
 $r->get('/community',           [CommunityController::class, 'index']);
@@ -48,6 +58,8 @@ $r->any('/account/page',        [AccountController::class, 'page']);
 $r->any('/account/programs',    [AccountController::class, 'programs']);
 $r->any('/account/squad',       [AccountController::class, 'squad']);
 $r->any('/account/registry',    [AccountController::class, 'registry']);
+$r->any('/account/quiz',        [AccountController::class, 'quiz']);
+$r->any('/account/shop',        [AccountController::class, 'shop']);   // a marketplace seller's profile and listings
 $r->get('/account/guests',      [AccountController::class, 'guests']);
 $r->post('/account/guests/{id:\d+}', [AccountController::class, 'guestUpdate']);
 $r->get('/account/money',       [AccountController::class, 'money']);
@@ -65,9 +77,13 @@ $r->post('/hq/test-mail',       [HqController::class, 'testMail']);
 $r->post('/hq/demo/add',        [HqController::class, 'demoAdd']);
 $r->post('/hq/demo/remove',     [HqController::class, 'demoRemove']);
 $r->post('/hq/packs/{key}',     [HqController::class, 'packAdd']);
+$r->get('/hq/blog',             [HqController::class, 'blog']);
+$r->any('/hq/blog/new',         [HqController::class, 'blogEdit']);
+$r->any('/hq/blog/{id:\d+}',    [HqController::class, 'blogEdit']);
 
 // --- The app: install, offline, and the design gallery -------------------------------------
 $r->get('/templates',           [SiteController::class, 'templates']);
 $r->get('/manifest.webmanifest', [SiteController::class, 'manifest']);
 $r->get('/sw.js',               [SiteController::class, 'sw']);
 $r->get('/offline',             [SiteController::class, 'offline']);
+$r->get('/og/{kind:[a-z]}/{key:[A-Za-z0-9_%-]+}.jpg', [SiteController::class, 'og']);   // link-preview pictures

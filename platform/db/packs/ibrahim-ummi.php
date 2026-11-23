@@ -60,14 +60,6 @@ return [
                     ['3:30 PM', 'Farewell & Duas', 'We close the day with heartfelt goodbyes, gratitude and prayers for the journey ahead.'],
                 ],
             ],
-            'quiz' => [
-                ['Who introduced the couple to each other?', ['A mutual friend', 'Their parents', 'A colleague', 'They met at a wedding'], 0],
-                ['Where did they watch the sunset on their storybook date?', ['Charcoal', 'Succoth Gardens', 'Indomie Cafe', 'Diamond Arena'], 1],
-                ['What did they use for the first time at Indomie Cafe?', ['A tripod', 'Chopsticks', 'A film camera', 'A shared plate'], 1],
-                ['Which event took place in the hall that will host the reception?', ['Muslim Tech Expo', 'A book fair', 'Google DevFest', 'A graduation'], 2],
-                ['What time does the Wolimah begin?', ['9:00 AM', '10:00 AM', '11:00 AM', '1:30 PM'], 2],
-                ['Which city hosts the celebration?', ['Ilorin', 'Abuja', 'Lagos', 'Kano'], 0],
-            ],
         ],
     ],
     'programs' => [
