@@ -54,10 +54,7 @@ $here = '/vendors/' . $v['slug'];
 		<div class="sec-head"><span class="eyebrow">On the marketplace</span><h2>What <?= e($v['name']) ?> offers</h2></div>
 		<div class="rail">
 			<?php foreach ($sells as $m): ?>
-				<a class="card" href="<?= e(App::url('/market/' . $m['slug'])) ?>">
-					<?= sq(first_photo((string) $m['photos']), (string) $m['title']) ?>
-					<span class="card__cap"><span class="card__t"><?= e($m['title']) ?></span><span class="card__s"><?= (int) $m['on_ask'] ? 'Price on request' : money(short_money((int) $m['price'])) . ((string) $m['price_unit'] !== '' ? ' ' . e($m['price_unit']) : '') ?><?= (string) $m['city'] !== '' ? ' · ' . e($m['city']) : '' ?></span></span>
-				</a>
+				<?= View::partial('market/_card', ['l' => $m, 'who' => false]) ?>
 			<?php endforeach; ?>
 		</div>
 	</section>

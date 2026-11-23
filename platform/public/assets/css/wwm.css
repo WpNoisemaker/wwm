@@ -2418,3 +2418,29 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .wv .row-item__t { white-space: normal; overflow: visible; }
 .wv .row-item__s { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .wv > .pill--sm { padding: 0 14px; }
+
+/* ---------- marketplace card: the seller on top, every photo swipeable, then title and price ---------- */
+.lcard__who { display: grid; grid-template-columns: 30px minmax(0, 1fr); align-items: center; gap: 8px; margin: 0 2px 8px; color: inherit; }
+.lcard__av { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; overflow: hidden; background: var(--tile-on); font-size: 13px; box-shadow: 0 0 0 1.5px var(--glass-line); }
+.lcard__av img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lcard__id { display: grid; min-width: 0; line-height: 1.2; text-align: left; }
+.lcard__id b { display: flex; align-items: center; gap: 4px; min-width: 0; font-size: 13px; font-weight: 500; }
+.lcard__id b { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.lcard__id b .ico { flex: none; width: 12px; height: 12px; }
+.lcard__id small { font-size: 11.5px; color: var(--ink-3); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.lcard__track { display: flex; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.lcard__track::-webkit-scrollbar { display: none; }
+.lcard__slide { flex: 0 0 100%; height: 100%; scroll-snap-align: start; scroll-snap-stop: always; }
+.lcard__slide img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.lcard__n { position: absolute; top: 12px; right: 14px; padding: 3px 9px; border-radius: 999px; background: rgba(20, 28, 38, .42); color: #fff; font-size: 11px; font-variant-numeric: tabular-nums; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); pointer-events: none; }
+.lcard__dots { position: absolute; left: 50%; bottom: 42px; transform: translateX(-50%); display: flex; gap: 4px; pointer-events: none; }
+.lcard__dots i { width: 5px; height: 5px; border-radius: 3px; background: rgba(255, 255, 255, .55); transition: width .2s var(--ease), background .2s; }
+.lcard__dots i.is-on { width: 13px; background: #fff; }
+.lcard__go { position: absolute; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: rgba(20, 28, 38, .45); color: #fff; opacity: 0; transition: opacity .2s; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); cursor: pointer; }
+.lcard__go .ico { width: 14px; height: 14px; }
+.lcard__go--prev { left: 10px; }
+.lcard__go--next { right: 10px; }
+.lcard__media:hover .lcard__go, .lcard__go:focus-visible { opacity: 1; }
+@media (hover: none) { .lcard__go { display: none; } }
+@media (prefers-reduced-motion: reduce) { .lcard__dots i { transition: none; } }
+.listing__who { grid-template-columns: 40px minmax(0, 1fr); margin: 0 4px 12px; } .listing__who .lcard__av { width: 40px; height: 40px; } .listing__who .lcard__id b { font-size: 15px; } .listing__who .lcard__id small { font-size: 12.5px; }

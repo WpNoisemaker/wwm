@@ -7,7 +7,9 @@ final class Listing
     /** Who sells it: their business name, profile address and whether HQ has verified them. */
     private const SELLER = "(SELECT v.name FROM vendors v WHERE v.user_id = l.partner_id ORDER BY v.verified DESC, v.id LIMIT 1) seller,
         (SELECT v.slug FROM vendors v WHERE v.user_id = l.partner_id ORDER BY v.verified DESC, v.id LIMIT 1) seller_slug,
-        (SELECT MAX(v.verified) FROM vendors v WHERE v.user_id = l.partner_id) seller_ok";
+        (SELECT MAX(v.verified) FROM vendors v WHERE v.user_id = l.partner_id) seller_ok,
+        (SELECT v.logo FROM vendors v WHERE v.user_id = l.partner_id ORDER BY v.verified DESC, v.id LIMIT 1) seller_logo,
+        (SELECT v.city FROM vendors v WHERE v.user_id = l.partner_id ORDER BY v.verified DESC, v.id LIMIT 1) seller_city";
 
     /** A listing shows only while its seller is in good standing (not paused or removed after reports). */
     private const SELLER_OK = "NOT EXISTS (SELECT 1 FROM vendors sv WHERE sv.user_id = l.partner_id AND sv.status <> 'active')";

@@ -455,6 +455,22 @@
 		if (id) { id.value = b.dataset.vreview; } if (t) { t.textContent = 'Rate ' + b.dataset.vname; }
 	});
 
+	/* ---------- marketplace cards: swipe through a listing's photos, or use the arrows ---------- */
+	d.querySelectorAll('[data-cgal]').forEach(function (g) {
+		var tr = g.querySelector('[data-cgal-track]'), dots = [].slice.call(g.querySelectorAll('.lcard__dots i')), n = g.querySelector('[data-cgal-n]'),
+			prev = g.querySelector('[data-cgal-go="-1"]'), next = g.querySelector('[data-cgal-go="1"]'), total = tr.children.length, tm;
+		function at() { return Math.round(tr.scrollLeft / Math.max(1, tr.clientWidth)); }
+		function mark() {
+			var k = at(); dots.forEach(function (x, j) { x.classList.toggle('is-on', j === k); });
+			if (n) { n.textContent = (k + 1) + '/' + total; } if (prev) { prev.hidden = k === 0; } if (next) { next.hidden = k === total - 1; }
+		}
+		tr.addEventListener('scroll', function () { clearTimeout(tm); tm = setTimeout(mark, 50); }, { passive: true });
+		g.addEventListener('click', function (e) {
+			var b = e.target.closest('[data-cgal-go]'); if (!b) { return; }
+			e.preventDefault(); tr.scrollTo({ left: tr.clientWidth * Math.max(0, Math.min(total - 1, at() + Number(b.dataset.cgalGo))), behavior: 'smooth' });
+		});
+	});
+
 	/* ---------- copy and share ---------- */
 	d.addEventListener('click', function (e) {
 		var sh = e.target.closest('[data-share]');

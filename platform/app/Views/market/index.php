@@ -44,10 +44,7 @@ $price = static fn (array $l): string => (int) $l['on_ask'] ? 'Price on request'
 	<?php else: ?>
 		<div class="cards gap-t">
 			<?php foreach ($rows as $l): ?>
-				<a class="card" href="<?= e(App::url('/market/' . $l['slug'])) ?>">
-					<span class="sq"><?= photo(first_photo((string) $l['photos']), (string) $l['title']) ?><span class="sq__tag"><?= e(Market::catName((string) $l['kind'])) ?></span><?php $pc = count(Listing::photos($l)); if ($pc > 1): ?><span class="sq__count"><?= icon('camera') ?><?= $pc ?></span><?php endif; ?></span>
-					<span class="card__cap"><span class="card__t"><?= e($l['title']) ?></span><span class="card__s"><?= $price($l) ?><?php if (!empty($l['seller'])): ?> · <?= e((string) $l['seller']) ?><?php if ((int) $l['seller_ok']): ?> <?= icon('s-shield', 0, 'card__ok') ?><?php endif; ?><?php elseif ((string) $l['city'] !== ''): ?> · <?= e($l['city']) ?><?php endif; ?></span></span>
-				</a>
+				<?= View::partial('market/_card', ['l' => $l]) ?>
 			<?php endforeach; ?>
 		</div>
 		<?= pager($page, $pages, $f) ?>

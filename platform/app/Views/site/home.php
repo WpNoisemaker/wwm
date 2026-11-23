@@ -215,10 +215,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 	</div>
 	<div class="rail reveal">
 		<?php foreach (array_slice($listings, 0, 4) as $l): ?>
-			<a class="card" href="<?= e(App::url('/market/' . $l['slug'])) ?>">
-				<?= sq(first_photo((string) $l['photos']), (string) $l['title']) ?>
-				<span class="card__cap"><span class="card__t"><?= e($l['title']) ?></span><span class="card__s"><?= (int) $l['on_ask'] ? 'Price on request' : money(short_money((int) $l['price'])) . ' ' . e((string) $l['price_unit']) ?><?= !empty($l['seller']) ? ' · ' . e((string) $l['seller']) : ((string) $l['city'] !== '' ? ' · ' . e($l['city']) : '') ?></span></span>
-			</a>
+			<?= View::partial('market/_card', ['l' => $l]) ?>
 		<?php endforeach; ?>
 	</div>
 	<p class="sec-more reveal"><a class="pill pill--glass pill--sm" href="<?= e(App::url('/market')) ?>">Open the marketplace <?= icon('arrow') ?></a></p>

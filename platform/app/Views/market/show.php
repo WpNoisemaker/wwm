@@ -13,6 +13,12 @@ $here = '/market/' . $l['slug'];
 <div class="page wrap">
 	<div class="listing">
 		<div class="listing__media">
+			<?php if (!empty($l['seller'])): ?>
+				<a class="lcard__who listing__who" href="<?= e(App::url('/vendors/' . $l['seller_slug'])) ?>">
+					<span class="lcard__av"><?php if (!empty($l['seller_logo'])): ?><?= photo((string) $l['seller_logo'], '') ?><?php else: ?><?= e(mb_strtoupper(mb_substr((string) $l['seller'], 0, 1))) ?><?php endif; ?></span>
+					<span class="lcard__id"><b><?= e((string) $l['seller']) ?><?php if ((int) $l['seller_ok']): ?><?= icon('s-shield', 0, 'card__ok') ?><span class="sr"> (verified)</span><?php endif; ?></b><small><?= e(trim(Market::catName((string) $l['kind']) . ' · ' . ($l['seller_city'] ?: $l['city']), ' ·')) ?></small></span>
+				</a>
+			<?php endif; ?>
 			<?php if ($photos): ?>
 				<div class="lgal" data-lgal>
 					<div class="lgal__track" data-lgal-track tabindex="0" aria-label="Photos of <?= e($l['title']) ?>. Swipe for more.">
@@ -91,10 +97,7 @@ $here = '/market/' . $l['slug'];
 		<div class="sec-head"><span class="eyebrow">Also in <?= e(Market::catName((string) $l['kind'])) ?></span><h2>More like this</h2></div>
 		<div class="rail">
 			<?php foreach (array_slice($others, 0, 4) as $m): ?>
-				<a class="card" href="<?= e(App::url('/market/' . $m['slug'])) ?>">
-					<?= sq(first_photo((string) $m['photos']), (string) $m['title']) ?>
-					<span class="card__cap"><span class="card__t"><?= e($m['title']) ?></span><span class="card__s"><?= (int) $m['on_ask'] ? 'Price on request' : money(short_money((int) $m['price'])) ?><?= !empty($m['seller']) ? ' · ' . e((string) $m['seller']) : ((string) $m['city'] !== '' ? ' · ' . e($m['city']) : '') ?></span></span>
-				</a>
+				<?= View::partial('market/_card', ['l' => $m]) ?>
 			<?php endforeach; ?>
 		</div>
 	</section>
