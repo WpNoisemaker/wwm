@@ -4,7 +4,7 @@
  * − / + in the day reference; "s-" icons are the small solid glyphs from the night reference.
  */
 function icon(string $n, int $s = 0, string $cls = ''): string {
-    static $line = ['arrow', 'auto', 'back', 'bag', 'bell', 'book', 'bookmark', 'calendar', 'camera', 'chart', 'chat', 'check', 'chev-down', 'chev-up', 'clock', 'close', 'copy', 'download', 'eye', 'filter', 'flag', 'gear', 'gift', 'globe', 'grid', 'heart', 'home', 'image', 'info', 'link', 'live', 'lock', 'mail', 'map', 'menu', 'minus', 'moon', 'more', 'music', 'next', 'out', 'pen', 'people', 'phone', 'pin', 'play', 'plus', 'qr', 'reply', 'ring', 'search', 'share', 'shield', 'sliders', 'spark', 'star', 'store', 'sun', 'ticket', 'trash', 'trophy', 'up', 'user', 'wallet'];
+    static $line = ['arrow', 'auto', 'back', 'bag', 'bell', 'book', 'bookmark', 'calendar', 'camera', 'chart', 'chat', 'check', 'chev-down', 'chev-up', 'clock', 'close', 'copy', 'download', 'eye', 'filter', 'flag', 'gear', 'gift', 'globe', 'grid', 'heart', 'home', 'image', 'info', 'link', 'live', 'lock', 'mail', 'map', 'menu', 'mic', 'minus', 'moon', 'more', 'music', 'next', 'out', 'pause', 'pen', 'people', 'phone', 'pin', 'play', 'plus', 'qr', 'reply', 'ring', 'search', 'share', 'shield', 'sliders', 'spark', 'star', 'stop', 'store', 'sun', 'ticket', 'trash', 'trophy', 'up', 'user', 'wallet', 'work'];
     static $solid = ['bag', 'book', 'bulb', 'calendar', 'camera', 'chat', 'crown', 'eye', 'gift', 'globe', 'heart', 'live', 'lock', 'music', 'pin', 'power', 'qr', 'ring', 'shield', 'spark', 'square', 'store', 'users', 'wallet', 'warning'];
     static $alias = ['rings' => 'ring', 'cash' => 'wallet', 'talk' => 'chat', 'cal' => 'calendar', 'cam' => 'camera', 'x' => 'close'];
     $isSolid = str_starts_with($n, 's-');

@@ -79,7 +79,7 @@ final class Wedding
             'programs' => (int) Db::val('SELECT COUNT(*) FROM programs WHERE wedding_id=?', [$id], 0),
             'squad'    => (int) Db::val('SELECT COUNT(*) FROM squad WHERE wedding_id=?', [$id], 0),
             'photos'   => (int) Db::val("SELECT COUNT(*) FROM wall WHERE wedding_id=? AND kind='photo' AND status='live'", [$id], 0),
-            'notes'    => (int) Db::val("SELECT COUNT(*) FROM wall WHERE wedding_id=? AND kind='note' AND status='live'", [$id], 0),
+            'notes'    => (int) Db::val("SELECT COUNT(*) FROM wall WHERE wedding_id=? AND kind IN ('note','voice') AND status='live'", [$id], 0),
         ];
     }
 
@@ -391,6 +391,7 @@ final class Wedding
         'spray'    => 'premium',
         'live'     => 'premium',
         'music'    => 'premium',  // a song playing softly in the background
+        'voice'    => 'premium',  // guests leave voice notes on the wall
         'grand'    => 'premium',  // the larger type scale and wider layout
         'monogram' => 'society',
         'gold'     => 'society',
@@ -502,7 +503,7 @@ final class Wedding
     public static function notes(int $id, int $n = 30): array
     {
         return Db::all(
-            "SELECT * FROM wall WHERE wedding_id = ? AND kind = 'note' AND status = 'live'
+            "SELECT * FROM wall WHERE wedding_id = ? AND kind IN ('note','voice') AND status = 'live'
              ORDER BY created_at DESC, id DESC LIMIT ?",
             [$id, $n]
         );
@@ -534,7 +535,7 @@ final class Wedding
             'gifts'  => (int) ($m['n'] ?? 0),
             'raised' => (int) ($m['raised'] ?? 0),
             'target' => (int) ($m['target'] ?? 0),
-            'notes'  => (int) Db::val("SELECT COUNT(*) FROM wall WHERE wedding_id=? AND kind='note' AND status='live'", [$id], 0),
+            'notes'  => (int) Db::val("SELECT COUNT(*) FROM wall WHERE wedding_id=? AND kind IN ('note','voice') AND status='live'", [$id], 0),
             'photos' => (int) Db::val("SELECT COUNT(*) FROM wall WHERE wedding_id=? AND kind='photo' AND status='live'", [$id], 0),
         ];
     }
@@ -628,7 +629,7 @@ final class Wedding
         'photos'    => ['Guest photos', 'Every photo guests add', 'pro'],
         'quiz'      => ['Who knows them best?', 'A quiz about each of you, with leaderboards', 'pro'],
         'vendors'   => ['Our vendors', 'The vendors you booked', 'free'],
-        'wall'      => ['Wall of love', 'Wishes and notes from guests', 'free'],
+        'wall'      => ['Wall of love', 'Wishes from guests, in words or voice notes', 'free'],
     ];
 
     /**

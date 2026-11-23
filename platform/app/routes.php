@@ -14,6 +14,7 @@ $r->get('/weddings/{place:[a-z-]+}', [WeddingController::class, 'place']);   // 
 $r->any('/w/{slug}',            [WeddingController::class, 'show']);   // GET shows it; POST is the pass-code form on a private page
 $r->post('/w/{slug}/rsvp',      [WeddingController::class, 'rsvp']);
 $r->post('/w/{slug}/note',      [WeddingController::class, 'note']);
+$r->post('/w/{slug}/photo',     [WeddingController::class, 'photo']);
 $r->post('/w/{slug}/share',     [WeddingController::class, 'share']);
 $r->post('/w/{slug}/quiz',      [WeddingController::class, 'quiz']);
 $r->post('/w/{slug}/remind',    [WeddingController::class, 'remind']);   // email me about the livestream
@@ -61,6 +62,7 @@ $r->any('/account/new',         [AccountController::class, 'create']);
 $r->any('/account/page',        [AccountController::class, 'page']);
 $r->any('/account/programs',    [AccountController::class, 'programs']);
 $r->any('/account/squad',       [AccountController::class, 'squad']);
+$r->any('/account/story',       [AccountController::class, 'story']);
 $r->any('/account/registry',    [AccountController::class, 'registry']);
 $r->any('/account/quiz',        [AccountController::class, 'quiz']);
 $r->any('/account/sections',    [AccountController::class, 'sections']);

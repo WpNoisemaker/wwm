@@ -89,7 +89,8 @@ final class Pack
                 Db::insert('programs', $row + ['wedding_id' => $wid, 'sort' => $k]);
             }
             foreach ($p['squad'] as $k => [$side, $name, $role, $words, $ig]) {
-                Db::insert('squad', ['wedding_id' => $wid, 'side' => $side, 'name' => $name, 'role' => $role, 'words' => $words, 'instagram' => $ig, 'status' => 'joined', 'sort' => $k]);
+                Db::insert('squad', ['wedding_id' => $wid, 'side' => $side, 'name' => $name, 'role' => $role, 'instagram' => $ig,
+                    'social' => $ig !== '' ? 'https://instagram.com/' . ltrim($ig, '@') : '', 'status' => 'joined', 'sort' => $k] + self::squadFacts($words));
             }
             foreach ($p['gifts'] as $k => [$title, $note, $kind, $target]) {
                 Db::insert('gifts', ['wedding_id' => $wid, 'title' => $title, 'note' => $note, 'kind' => $kind, 'target' => $target, 'raised' => 0, 'sort' => $k]);
@@ -153,5 +154,27 @@ final class Pack
             }
         }
         return $added > 0 ? 'added' : 'exists';
+    }
+
+    /**
+     * A squad line written as “Nickname” · What they do · Hobbies, split into the card's own fields.
+     * A line in any other shape stays as it is, as the line about them.
+     *
+     * @return array{words:string,work:string,hobby:string}
+     */
+    public static function squadFacts(string $line): array
+    {
+        $parts = array_map('trim', explode(' · ', $line));
+        if (count($parts) < 2) {
+            return ['words' => $line, 'work' => '', 'hobby' => ''];
+        }
+        $nick = '';
+        if (preg_match('/^“([^”]+)”$/u', $parts[0], $m)) {
+            $nick = $m[1];
+            array_shift($parts);
+        }
+        $hobby = (string) array_pop($parts);
+        $work = implode(' · ', $parts);
+        return ['words' => $nick !== '' ? 'Fondly called “' . $nick . '”' : '', 'work' => $work, 'hobby' => $hobby];
     }
 }

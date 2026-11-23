@@ -170,6 +170,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 			<ul>
 				<li><?= icon('check') ?><?= t('home.item.ten-premium-designs', 'Ten Premium designs') ?></li>
 				<li><?= icon('check') ?><?= t('home.item.background-music-on-your-page', 'Background music on your page') ?></li>
+				<li><?= icon('check') ?><?= t('home.item.voice-notes-on-your-wall', 'Voice notes on your wall of love') ?></li>
 				<li><?= icon('check') ?><?= t('home.item.livestream-on-your-page', 'Livestream on your page') ?></li>
 				<li><?= icon('check') ?><?= t('home.item.spraying-from-the-seat', 'Spraying from the seat') ?></li>
 				<li><?= icon('check') ?><?= t('home.item.no-charge-on-gifts-or', 'No charge on gifts or spraying') ?></li>

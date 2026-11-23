@@ -1956,3 +1956,60 @@ html, body { overflow-x: hidden; max-width: 100%; }
 	.bunting__flags svg { height: 14.67px; }
 }
 @media (min-width: 960px) { .bunting { height: 84px; margin-top: -10px; } .bunting__flags li, .bunting__flags svg { width: 30px; } .bunting__flags li { margin-left: -15px; } .bunting__flags svg { height: 20px; } }
+
+/* ---------- wall of love: voice notes; photos have their own form ---------- */
+.voice-rec { display: grid; gap: 6px; }
+.voice-rec__go { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 18px; border-radius: 18px; border: 1px dashed var(--glass-line); background: var(--field); color: var(--ink-2); font: inherit; font-size: 14px; cursor: pointer; transition: background .2s, color .2s; }
+.voice-rec__go:hover { background: var(--btn-hover); color: var(--ink); }
+.voice-rec__go .ico { width: 18px; height: 18px; }
+.voice-rec__go.is-rec { border-style: solid; border-color: rgba(255, 92, 92, .6); color: var(--ink); background: rgba(255, 92, 92, .12); }
+.voice-rec__go.is-rec .ico { color: #FF6B6B; animation: recpulse 1.1s ease-in-out infinite; }
+.voice-rec__t { font-variant-numeric: tabular-nums; color: var(--ink-2); }
+@keyframes recpulse { 50% { opacity: .35; } }
+.voice-rec__file { position: relative; justify-self: center; font-size: 12.5px; color: var(--ink-3); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.voice-rec__file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+.voice-rec__file.is-only { justify-self: stretch; display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 18px; border: 1px dashed var(--glass-line); background: var(--field); text-decoration: none; font-size: 14px; color: var(--ink-2); }
+.voice { display: flex; align-items: center; gap: 10px; }
+.voice--draft { padding: 6px 6px 6px 6px; border-radius: 22px; background: var(--field); border: 1px solid var(--glass-line); }
+.voice__play { width: 40px; height: 40px; flex: none; background: var(--pill); color: var(--pill-ink); }
+.voice__play .ico { width: 15px; height: 15px; }
+.voice__bar { position: relative; flex: 1; border-radius: 4px; background: var(--tile-on); overflow: hidden;
+	-webkit-mask: repeating-linear-gradient(90deg, #000 0 3px, transparent 3px 5px); mask: repeating-linear-gradient(90deg, #000 0 3px, transparent 3px 5px); height: 18px; }
+.voice__bar i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--ink); transition: width .25s linear; }
+.voice__t { flex: none; min-width: 34px; font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; text-align: right; }
+.voice__t .ico { width: 14px; height: 14px; }
+.voice__x { width: 36px; height: 36px; flex: none; }
+.wish .voice { margin-bottom: 8px; }
+.wish--voice p { margin-top: 4px; }
+.wish .voice__t { display: inline-flex; justify-content: flex-end; margin: 0; }
+.voice-up { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 13px; color: var(--ink-3); padding: 2px 4px; }
+.voice-up .ico { width: 16px; height: 16px; }
+.photo-add { display: grid; gap: 8px; max-width: 620px; margin: 18px auto 0; }
+.photo-add__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) auto; gap: 8px; }
+@media (max-width: 559px) { .photo-add__row { grid-template-columns: minmax(0, 1fr) auto; } .photo-add__row input[name="body"] { grid-column: 1 / -1; grid-row: 2; } }
+
+/* ---------- the diary card editor ---------- */
+.diary-edit { display: grid; gap: 12px; border: 0; margin: 0; min-width: 0; }
+.diary-edit__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.diary-edit__n { font-size: 13px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-3); }
+.diary-edit__acts { display: flex; gap: 6px; }
+.diary-edit__count.is-over { color: #FF8A8A; }
+.diary-edit__pic { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.diary-edit__pic .check { min-height: 42px; font-size: 14px; }
+.diary-edit__thumb { width: 64px; flex: none; }
+/* ---------- the squad editor ---------- */
+.squad-edit { display: grid; gap: 14px; }
+.squad-edit__pic { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.squad-edit__pic .squad__pic, .squad-edit__pic .squad__av { width: 64px; height: 64px; margin: 0; flex: none; }
+.squad-edit__off { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-3); }
+.photo-pick--sm { min-height: 44px; padding: 0 14px; border-radius: 14px; font-size: 13px; }
+@media (min-width: 760px) { .squad-edit { grid-template-columns: 110px 1fr; align-items: start; } .squad-edit__pic { flex-direction: column; align-items: stretch; } .squad-edit__pic .squad__pic, .squad-edit__pic .squad__av { width: 110px; height: 110px; } }
+/* ---------- the squad cards on the page ---------- */
+.squad__facts { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 5px; }
+.squad__facts li { font-size: 12.5px; line-height: 1.4; color: var(--ink-2); overflow-wrap: anywhere; }
+.squad__facts .ico { display: inline-block; width: 13px; height: 13px; margin-right: 5px; vertical-align: -2px; opacity: .7; }
+.squad__social { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 7px 12px; border-radius: 999px; background: var(--btn); font-size: 12.5px; color: var(--ink); text-decoration: none; max-width: 100%; }
+.squad__social:hover { background: var(--btn-hover); }
+.squad__social .ico { width: 13px; height: 13px; flex: none; }
+.squad__social span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (min-width: 760px) { .squad { grid-template-columns: repeat(auto-fit, minmax(200px, 270px)); justify-content: center; } }

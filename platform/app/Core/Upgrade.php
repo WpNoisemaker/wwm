@@ -8,7 +8,7 @@ declare(strict_types=1);
  */
 final class Upgrade
 {
-    private const STEPS = ['couple-photos-1', 'ibrahim-ummi-photos-1'];
+    private const STEPS = ['couple-photos-1', 'ibrahim-ummi-photos-1', 'wall-voice-squad-1', 'squad-profiles-1'];
 
     public static function run(): void
     {
@@ -22,6 +22,8 @@ final class Upgrade
                 match ($step) {
                     'couple-photos-1'      => self::couplePhotos(),
                     'ibrahim-ummi-photos-1' => self::ibrahimUmmi(),
+                    'wall-voice-squad-1'   => self::wallVoiceSquad(),
+                    'squad-profiles-1'     => self::squadProfiles(),
                 };
             } catch (Throwable $e) {
                 error_log('[wwm] upgrade ' . $step . ': ' . $e->getMessage());
@@ -71,5 +73,39 @@ final class Upgrade
         }
         $set['design'] = json_encode($d, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         Db::update('weddings', $set, 'id = ?', [$w['id']]);
+    }
+
+    /**
+     * Voice notes on the wall (and no photos there: photos have their own place), and the squad's
+     * profiles: what they do, a hobby, their relationship status and one social link.
+     */
+    private static function wallVoiceSquad(): void
+    {
+        if (!Db::val("SHOW COLUMNS FROM wall LIKE 'audio'")) {
+            Db::run("ALTER TABLE wall MODIFY kind ENUM('note','photo','voice') NOT NULL DEFAULT 'note',
+                     ADD COLUMN audio VARCHAR(255) NOT NULL DEFAULT '' AFTER image");
+        }
+        if (!Db::val("SHOW COLUMNS FROM squad LIKE 'social'")) {
+            Db::run("ALTER TABLE squad
+                     ADD COLUMN work VARCHAR(160) NOT NULL DEFAULT '' AFTER words,
+                     ADD COLUMN hobby VARCHAR(160) NOT NULL DEFAULT '' AFTER work,
+                     ADD COLUMN relationship VARCHAR(40) NOT NULL DEFAULT '' AFTER hobby,
+                     ADD COLUMN social VARCHAR(255) NOT NULL DEFAULT '' AFTER relationship");
+            // Their old Instagram handle becomes the one social link.
+            Db::run("UPDATE squad SET social = CONCAT('https://instagram.com/', TRIM(LEADING '@' FROM instagram)) WHERE instagram <> '' AND social = ''");
+        }
+    }
+
+    /** Squad lines written as “Nick” · Work · Hobbies become the card's own fields, where nothing is filled in yet. */
+    private static function squadProfiles(): void
+    {
+        foreach (Db::all("SELECT id, words FROM squad WHERE work = '' AND hobby = '' AND words LIKE '% · %'") as $r) {
+            Db::update('squad', Pack::squadFacts((string) $r['words']), 'id = ?', [$r['id']]);
+        }
+        if (Db::val("SHOW TABLES LIKE 'demo_rows'")) {
+            foreach (Db::all("SELECT s.id FROM squad s JOIN demo_rows d ON d.tbl = 'squad' AND d.row_id = s.id WHERE s.work = '' ORDER BY s.id") as $i => $r) {
+                Db::update('squad', Demo::squadProfile($i), 'id = ?', [$r['id']]);
+            }
+        }
     }
 }

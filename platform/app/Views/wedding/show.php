@@ -166,20 +166,33 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	<?php if ($squad): ?>
 	<section class="sec wrap" id="squad">
 		<div class="w-head reveal"><span class="eyebrow"><?= count($squad) ?> people holding it together</span><h2>The squad</h2></div>
-		<?php $sides = array_unique(array_map(static fn ($s) => (string) $s['side'], $squad)); if (count($sides) > 1): ?>
-			<div class="chips chips--center reveal" data-choose="#squad-list">
-				<button class="chip is-on" type="button" data-f="">Everyone</button>
-				<button class="chip" type="button" data-f="bride">Bride&rsquo;s side</button>
-				<button class="chip" type="button" data-f="groom">Groom&rsquo;s side</button>
+		<?php
+		$tagsOf = static fn (array $s): string => (string) $s['side'] === 'both' ? 'bride groom' : (string) $s['side'];
+		$hasB = (bool) array_filter($squad, static fn ($s) => (string) $s['side'] !== 'groom');
+		$hasG = (bool) array_filter($squad, static fn ($s) => (string) $s['side'] !== 'bride');
+		$tabs = $hasB && $hasG;
+		$rel = AccountController::RELATIONSHIP;
+		?>
+		<?php if ($tabs): ?>
+			<div class="chips chips--center reveal" data-choose="#squad-list" role="tablist" aria-label="The squad">
+				<button class="chip is-on" type="button" data-f="bride" role="tab" aria-pressed="true">Bridesmaids</button>
+				<button class="chip" type="button" data-f="groom" role="tab" aria-pressed="false">Groomsmen</button>
 			</div>
 		<?php endif; ?>
 		<div class="squad reveal" id="squad-list">
-			<?php foreach ($squad as $s): ?>
-				<div class="squad__item" data-tags="<?= e($s['side']) ?>">
-					<?php if ((string) $s['photo'] !== ''): ?><?= sq((string) $s['photo'], (string) $s['name'], 'squad__pic') ?><?php else: ?><span class="squad__av" aria-hidden="true"><?= e(mb_strtoupper(mb_substr((string) $s['name'], 0, 1))) ?></span><?php endif; ?>
+			<?php foreach ($squad as $s): $tags = $tagsOf($s); [$net, $handle] = social_label((string) ($s['social'] ?? '')); ?>
+				<div class="squad__item" data-tags="<?= e($tags) ?>"<?= $tabs && !str_contains($tags, 'bride') ? ' hidden' : '' ?>>
+					<?php if ((string) $s['photo'] !== ''): ?><?= sq((string) $s['photo'], (string) $s['name'], 'squad__pic') ?><?php else: ?><span class="squad__av" aria-hidden="true"><?= e(mb_strtoupper(mb_substr(trim((string) $s['name']), 0, 1))) ?></span><?php endif; ?>
 					<span class="squad__name"><?= e($s['name']) ?></span>
-					<span class="squad__role"><?= e($s['role']) ?></span>
+					<?php if (trim((string) $s['role']) !== ''): ?><span class="squad__role"><?= e($s['role']) ?></span><?php endif; ?>
+					<?php $facts = array_filter([['work', (string) ($s['work'] ?? '')], ['star', (string) ($s['hobby'] ?? '')], ['heart', $rel[(string) ($s['relationship'] ?? '')] ?? '']], static fn ($f) => trim($f[1]) !== '' && $f[1] !== $rel['']); ?>
+					<?php if ($facts): ?>
+						<ul class="squad__facts">
+							<?php foreach ($facts as [$ic, $txt]): ?><li><?= icon($ic) ?><span><?= e($txt) ?></span></li><?php endforeach; ?>
+						</ul>
+					<?php endif; ?>
 					<?php if (trim((string) $s['words']) !== ''): ?><span class="squad__words"><?= e($s['words']) ?></span><?php endif; ?>
+					<?php if ($net !== ''): ?><a class="squad__social" href="<?= e((string) $s['social']) ?>" target="_blank" rel="noopener nofollow ugc" aria-label="<?= e($s['name']) ?> on <?= e($net) ?>"><?= icon('link') ?><span><?= e($handle !== '' ? $handle : $net) ?></span></a><?php endif; ?>
 				</div>
 			<?php endforeach; ?>
 		</div>
@@ -258,7 +271,17 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 				<?php foreach (array_slice($photos, 0, 12) as $ph): ?><?= sq((string) $ph['image'], (string) $ph['body']) ?><?php endforeach; ?>
 			</div>
 		<?php endif; ?>
-		<p class="center gap-t-sm reveal"><a class="pill pill--glass" href="#wall" data-photo-add><?= icon('camera') ?>Add your photo</a></p>
+		<form class="photo-add reveal" method="post" action="<?= e(App::url('/w/' . $slug . '/photo')) ?>" enctype="multipart/form-data">
+			<?= Guard::field() ?>
+			<label class="photo-pick"><input type="file" name="photo" accept="image/jpeg,image/png,image/webp" required data-photo-input><?= icon('camera') ?><span data-photo-name>Add your photo from the day</span></label>
+			<div class="photo-add__row">
+				<label class="sr" for="p-name">Your name</label>
+				<input class="input" id="p-name" name="name" required placeholder="Your name" autocomplete="name">
+				<label class="sr" for="p-body">Caption</label>
+				<input class="input" id="p-body" name="body" maxlength="300" placeholder="A caption, if you like">
+				<button class="cbtn wish-compose__go" type="submit" aria-label="Add your photo"><?= icon('arrow') ?></button>
+			</div>
+		</form>
 	</section>
 	<?php endif; ?>
 	<?php $blocks['photos'] = ob_get_clean(); ?>
@@ -382,13 +405,24 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	<?php ob_start(); ?>
 	<section class="sec wrap w-wall" id="wall">
 		<div class="w-head reveal"><span class="eyebrow"><?= (int) $tally['notes'] ? (int) $tally['notes'] . ' wishes so far' : 'Be the first' ?></span><h2>Wall of love</h2></div>
-		<?php $canPhoto = Wedding::has($w, 'gallery'); ?>
-		<form class="wish-compose reveal" method="post" action="<?= e(App::url('/w/' . $slug . '/note')) ?>"<?= $canPhoto ? ' enctype="multipart/form-data"' : '' ?>>
+		<?php $canVoice = Wedding::has($w, 'voice'); ?>
+		<form class="wish-compose reveal" method="post" action="<?= e(App::url('/w/' . $slug . '/note')) ?>"<?= $canVoice ? ' enctype="multipart/form-data" data-voice-form' : '' ?>>
 			<?= Guard::field() ?>
 			<label class="sr" for="n-body">Your wish</label>
-			<textarea class="input" id="n-body" name="body" rows="3" maxlength="1000"<?= $canPhoto ? '' : ' required' ?> placeholder="<?= $canPhoto ? 'Write something they will keep, or add a photo…' : 'Write something they will keep…' ?>"></textarea>
-			<?php if ($canPhoto): ?>
-				<label class="photo-pick"><input type="file" name="photo" accept="image/jpeg,image/png,image/webp" data-photo-input><?= icon('camera') ?><span data-photo-name>Add a photo from the day</span></label>
+			<textarea class="input" id="n-body" name="body" rows="3" maxlength="1000"<?= $canVoice ? '' : ' required' ?> placeholder="<?= $canVoice ? 'Write something they will keep, or leave a voice note…' : 'Write something they will keep…' ?>"></textarea>
+			<?php if ($canVoice): ?>
+				<div class="voice-rec" data-voice-rec>
+					<button class="voice-rec__go" type="button" data-voice-start><?= icon('mic') ?><span data-voice-label>Record a voice note</span><span class="voice-rec__t" data-voice-time hidden>0:00</span></button>
+					<div class="voice voice--draft" data-voice-draft hidden>
+						<button class="cbtn voice__play" type="button" data-vplay aria-label="Play your voice note"><?= icon('play') ?></button>
+						<span class="voice__bar"><i data-vbar></i></span><span class="voice__t" data-vt>0:00</span>
+						<audio preload="metadata" data-vaudio></audio>
+						<button class="cbtn voice__x" type="button" data-voice-clear aria-label="Remove the voice note"><?= icon('close') ?></button>
+					</div>
+					<label class="voice-rec__file" data-voice-pick><input type="file" name="voice" accept="audio/*" data-voice-file><span>or upload a recording</span></label>
+				</div>
+			<?php elseif ($mine): ?>
+				<p class="voice-up"><?= icon('mic') ?><span>Guests can leave voice notes on Premium and High Society pages.</span><?= up_tag('premium', 'Voice notes on your wall') ?></p>
 			<?php endif; ?>
 			<div class="wish-compose__row">
 				<label class="sr" for="n-name">Your name</label>
@@ -399,7 +433,17 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		<?php if ($notes): ?>
 			<div class="wishes reveal">
 				<?php foreach ($notes as $n): ?>
-					<div class="wish"><p><?= e((string) $n['body']) ?></p><span><?= e((string) $n['name']) ?> · <?= e(ago((string) $n['created_at'])) ?></span></div>
+					<div class="wish<?= (string) $n['kind'] === 'voice' ? ' wish--voice' : '' ?>">
+						<?php if ((string) $n['kind'] === 'voice' && (string) ($n['audio'] ?? '') !== ''): ?>
+							<div class="voice" data-voice-note>
+								<button class="cbtn voice__play" type="button" data-vplay aria-label="Play the voice note from <?= e((string) $n['name']) ?>"><?= icon('play') ?></button>
+								<span class="voice__bar"><i data-vbar></i></span><span class="voice__t" data-vt><?= icon('mic') ?></span>
+								<audio preload="none" data-vaudio src="<?= e(App::url('assets/' . (string) $n['audio'])) ?>"></audio>
+							</div>
+						<?php endif; ?>
+						<?php if (trim((string) $n['body']) !== ''): ?><p><?= e((string) $n['body']) ?></p><?php endif; ?>
+						<span><?= e((string) $n['name']) ?> · <?= e(ago((string) $n['created_at'])) ?></span>
+					</div>
 				<?php endforeach; ?>
 			</div>
 		<?php endif; ?>

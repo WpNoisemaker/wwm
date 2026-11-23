@@ -42,5 +42,5 @@
 		<h2><?= t('site.heading.weddings-in', 'Weddings in') ?></h2>
 		<?php foreach (Wedding::PLACES as $slug => $pl): ?><a href="<?= e(App::url('/weddings/' . $slug)) ?>"><?= e(ucfirst(preg_replace('/^the /', '', explode(' and ', $pl[1])[0]))) ?></a><?php endforeach; ?>
 	</nav>
-	<div class="site-foot__base"><span>&copy; <?= date('Y') ?> Wedding Websites &amp; More</span><span>Made in Lagos</span></div>
+	<div class="site-foot__base"><span>&copy; <?= date('Y') ?> Wedding Websites &amp; More</span><span><?= t('footer.made-in', 'Made in Abuja') ?></span></div>
 </footer>

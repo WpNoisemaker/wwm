@@ -273,6 +273,10 @@ final class WeddingController
     }
 
     /** A love note on the wall. */
+    /**
+     * The wall of love: words, never pictures. On Premium and High Society pages a guest can leave a
+     * voice note instead of (or as well as) writing.
+     */
     public function note(string $slug): void
     {
         Guard::must();
@@ -285,41 +289,77 @@ final class WeddingController
             self::back($slug, 'wall');
         }
 
-        $name = trim((string) ($_POST['name'] ?? ''));
-        $body = trim((string) ($_POST['body'] ?? ''));
-        // Guests on a Pro page and up can add a photo with their note.
-        $image = null;
-        $held = null;
-        if (Wedding::has($w, 'gallery') && !empty($_FILES['photo']['name'])) {
-            // The full-size original goes to the wedding's Google Drive folder; the page keeps small copies.
-            $held = Drive::hold($_FILES['photo'], (int) $w['id']);
-            $image = Images::store($_FILES['photo'], 'wall/' . (int) $w['id']);
-            if ($image === null) {
-                Guard::flash('bad', 'That photo could not be used. Try a JPEG or PNG under 12 MB.');
+        $name  = trim((string) ($_POST['name'] ?? ''));
+        $body  = trim((string) ($_POST['body'] ?? ''));
+        $audio = '';
+        if (Wedding::has($w, 'voice') && !empty($_FILES['voice']['name']) && $name !== '') {
+            $err = '';
+            $audio = Voice::store($_FILES['voice'], (int) $w['id'], $err);
+            if ($audio === '') {
+                Guard::flash('bad', $err);
                 self::back($slug, 'wall');
             }
         }
-        if ($name === '' || ($body === '' && $image === null)) {
-            Guard::flash('bad', 'A note needs your name and a few words.');
+        if ($name === '' || ($body === '' && $audio === '')) {
+            Guard::flash('bad', Wedding::has($w, 'voice') ? 'A note needs your name, and a few words or a voice note.' : 'A note needs your name and a few words.');
             self::back($slug, 'wall');
         }
 
-        $wallId = (int) Db::insert('wall', [
+        Db::insert('wall', [
             'wedding_id' => $w['id'],
-            'kind'       => $image !== null ? 'photo' : 'note',
+            'kind'       => $audio !== '' ? 'voice' : 'note',
             'name'       => mb_substr($name, 0, 160),
             'body'       => mb_substr($body, 0, 1000),
-            'image'      => $image ?? '',
+            'audio'      => $audio,
             'status'     => 'live',
         ]);
-        if ($image !== null && $held !== null) {
-            Drive::queue($w, $wallId, $held, $name);
-        } elseif ($held !== null) {
-            @unlink($held['path']);
+        Buzz::add($w, 'note');
+        Guard::flash('ok', $audio !== '' ? 'Your voice note is on their wall.' : 'Your note is on their wall.');
+        self::back($slug, 'wall');
+    }
+
+    /** A guest's photo for the gallery (Pro and up). The full-size original goes to the wedding's Drive folder. */
+    public function photo(string $slug): void
+    {
+        Guard::must();
+        $w = Wedding::bySlug($slug);
+        if (!$w || !Wedding::has($w, 'gallery')) {
+            self::notFound();
         }
-        Buzz::add($w, $image !== null ? 'photo' : 'note');
-        Guard::flash('ok', $image !== null ? 'Your photo is in their gallery.' : 'Your note is on their wall.');
-        self::back($slug, $image !== null ? 'photos' : 'wall');
+        if (Guard::tooMany('photo', 10, 20)) {
+            Guard::flash('bad', 'Give it a minute before adding another photo.');
+            self::back($slug, 'photos');
+        }
+        $name = trim((string) ($_POST['name'] ?? ''));
+        $body = trim((string) ($_POST['body'] ?? ''));
+        if ($name === '' || empty($_FILES['photo']['name'])) {
+            Guard::flash('bad', 'Pick a photo and add your name.');
+            self::back($slug, 'photos');
+        }
+        // The page keeps small copies; the full-size original is held for Drive.
+        $held  = Drive::hold($_FILES['photo'], (int) $w['id']);
+        $image = Images::store($_FILES['photo'], 'wall/' . (int) $w['id']);
+        if ($image === null) {
+            if ($held !== null) {
+                @unlink($held['path']);
+            }
+            Guard::flash('bad', 'That photo could not be used. Try a JPEG or PNG under 12 MB.');
+            self::back($slug, 'photos');
+        }
+        $wallId = (int) Db::insert('wall', [
+            'wedding_id' => $w['id'],
+            'kind'       => 'photo',
+            'name'       => mb_substr($name, 0, 160),
+            'body'       => mb_substr($body, 0, 300),
+            'image'      => $image,
+            'status'     => 'live',
+        ]);
+        if ($held !== null) {
+            Drive::queue($w, $wallId, $held, $name);
+        }
+        Buzz::add($w, 'photo');
+        Guard::flash('ok', 'Your photo is in their gallery.');
+        self::back($slug, 'photos');
     }
 
     /**

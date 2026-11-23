@@ -218,7 +218,7 @@ final class Demo
                 self::put('squad', [
                     'wedding_id' => $wid, 'side' => $side, 'name' => $person(), 'role' => $role,
                     'words' => $squadWords[$k], 'status' => 'joined', 'sort' => $k,
-                ]);
+                ] + self::squadProfile($i * 4 + $k));
             }
 
             // Gifts, each backed by real payment rows so "raised" is the sum of something, not a number.
@@ -431,5 +431,17 @@ final class Demo
         Db::run('DROP TABLE demo_rows');
 
         return $counts;
+    }
+
+    /** What a demo squad member does, a hobby and a relationship status, varied from one to the next. */
+    public static function squadProfile(int $i): array
+    {
+        $work = ['Pharmacist', 'Software engineer', 'Architect', 'Banker', 'Doctor', 'Fashion designer', 'Lawyer', 'Teacher', 'Photographer',
+                 'Product designer', 'Nurse', 'Chef', 'Civil engineer', 'Content creator', 'Accountant', 'Event planner', 'Data analyst'];
+        $hobby = ['Afrobeats and long drives', 'Football on Saturdays', 'Baking and thrift shopping', 'Owambe dance floors', 'Reading and podcasts',
+                  'Travel and street food', 'Gym and grilling', 'Photography', 'Board games and karaoke', 'Netball and poetry', 'Cooking jollof for everyone',
+                  'Chess and sneakers', 'Gele tying, unofficially', 'Swimming and spa days'];
+        $rel = ['single', 'taken', 'married', 'engaged', 'single', '', 'married', 'taken'];
+        return ['work' => $work[($i * 7) % count($work)], 'hobby' => $hobby[($i * 5) % count($hobby)], 'relationship' => $rel[$i % count($rel)]];
     }
 }

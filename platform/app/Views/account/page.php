@@ -12,7 +12,7 @@ $isPremium = Wedding::rank((string) $w['plan']) >= Wedding::rank('premium');
 				<label class="field"><span>Their first name</span><input class="input" name="b" value="<?= e($w['partner_b']) ?>" required></label>
 				<label class="field"><span>Hashtag</span><input class="input" name="hashtag" value="<?= e($w['hashtag']) ?>" placeholder="#IbrahimMeetsUmmi"></label>
 				<label class="field"><span>One line for the top of the page</span><input class="input" name="tagline" value="<?= e($w['tagline']) ?>" placeholder="Come and celebrate with us"></label>
-				<label class="field span-2"><span>Your story</span><textarea class="input" name="story" rows="6" placeholder="How you met, in your own words."><?= e($w['story']) ?></textarea></label>
+				<label class="field span-2"><span>Your story</span><textarea class="input" name="story" rows="6" placeholder="How you met, in your own words."><?= e($w['story']) ?></textarea><span class="help">Or tell it as diary cards, one moment each, with photos: <a class="linkish" href="<?= e(App::url('/account/story')) ?>">write your diary</a>.</span></label>
 			</div>
 		</section>
 		<section class="glass glass--plain glass--tight acct-card">

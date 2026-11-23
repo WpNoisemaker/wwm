@@ -179,3 +179,28 @@ function tbody(string $key, string $default): string
 {
     return Content::get($key, $default);
 }
+
+/**
+ * A social profile link as [network, @handle], for the squad cards. Unknown sites show their own
+ * name; anything that is not a web address shows nothing.
+ *
+ * @return array{0:string,1:string}
+ */
+function social_label(string $url): array
+{
+    $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+    if ($host === '' || !preg_match('~^https?://~i', $url)) {
+        return ['', ''];
+    }
+    $host = preg_replace('/^(www|m|mobile)\./', '', $host);
+    $nets = ['instagram.com' => 'Instagram', 'tiktok.com' => 'TikTok', 'x.com' => 'X', 'twitter.com' => 'X', 'facebook.com' => 'Facebook',
+             'linkedin.com' => 'LinkedIn', 'snapchat.com' => 'Snapchat', 'youtube.com' => 'YouTube', 'threads.net' => 'Threads', 'pinterest.com' => 'Pinterest'];
+    $net = $nets[$host] ?? $host;
+    $path = trim((string) parse_url($url, PHP_URL_PATH), '/');
+    $first = explode('/', $path)[0] ?? '';
+    $handle = '';
+    if (isset($nets[$host]) && $host !== 'linkedin.com' && $host !== 'facebook.com' && preg_match('/^@?([A-Za-z0-9._]{1,30})$/', $first, $m)) {
+        $handle = '@' . $m[1];
+    }
+    return [$net, $handle];
+}

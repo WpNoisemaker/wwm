@@ -3,7 +3,7 @@
 $plans = [
 	['free', 'Free', 0, 'Everything you need to get your page live today.', ['Invitation &amp; event details', 'Your love story', 'RSVP &amp; wall of love', 'Cash &amp; gift registry', 'Vendor list &amp; reviews'], 'Black &amp; white. Free forever.', 'Start free'],
 	['pro', 'Pro', $pro, 'Your colours, your squad, guest photos and entry passes. No ads.', ['Everything in Free, in colour', 'Bridesmaids &amp; groomsmen', 'Guest photo gallery', 'Entry passes &amp; check-in', 'Verified badge, no ads'], 'Once per wedding, or in 3 instalments.', 'Go Pro'],
-	['premium', 'Premium', $premium, 'Every feature and any of the ten Premium designs.', ['Ten Premium designs', 'Background music on your page', 'Livestream on your page', 'Spraying from the seat', '200 printed table QR cards', 'No charge on gifts or spraying'], 'Once per wedding, or in 3 instalments.', 'Go Premium'],
+	['premium', 'Premium', $premium, 'Every feature and any of the ten Premium designs.', ['Ten Premium designs', 'Background music on your page', 'Voice notes on your wall of love', 'Livestream on your page', 'Spraying from the seat', '200 printed table QR cards', 'No charge on gifts or spraying'], 'Once per wedding, or in 3 instalments.', 'Go Premium'],
 	['society', 'High Society', null, 'Full event branding beyond your website.', ['Everything in Premium, background music included', 'A page design made only for you', 'Monogram, invitations &amp; signage', 'Livestream coverage by our crew', 'Your own event manager'], 'Priced for your wedding.', 'Get a quote'],
 ];
 ?>

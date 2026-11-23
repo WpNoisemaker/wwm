@@ -328,7 +328,8 @@
 
 	/* ---------- forms: one tap, one submission, a visible "working" state ---------- */
 	d.addEventListener('submit', function (e) {
-		var f = e.target; if (f.dataset.busy === '1') { e.preventDefault(); return; }
+		var f = e.target; if (e.defaultPrevented) { return; }   // another check stopped it: nothing is being sent
+		if (f.dataset.busy === '1') { e.preventDefault(); return; }
 		if (f.hasAttribute('data-confirm') && !confirm(f.getAttribute('data-confirm'))) { e.preventDefault(); return; }
 		f.dataset.busy = '1';
 		var b = e.submitter || f.querySelector('[type=submit]'); if (b && b.classList.contains('pill')) { b.classList.add('is-busy'); }
@@ -625,5 +626,122 @@
 			r.closest('.quiz__opts').querySelectorAll('label').forEach(function (l) { l.classList.toggle('is-on', l.contains(r)); });
 			buzz();
 		});
+	}
+
+	/* ---------- voice notes on the wall: record in the browser, play like a message ---------- */
+	function mmss(t) { t = Math.max(0, Math.round(t || 0)); return Math.floor(t / 60) + ':' + ('0' + t % 60).slice(-2); }
+	function ico(n) { return '<svg class="ico" aria-hidden="true"><use href="#i-' + n + '"/></svg>'; }
+	var vNow = null;   // the note playing now, so starting one stops the other
+	d.addEventListener('click', function (e) {
+		var b = e.target.closest('[data-vplay]'); if (!b) { return; }
+		var box = b.closest('.voice'), a = box && box.querySelector('[data-vaudio]'); if (!a || !a.src) { return; }
+		if (vNow && vNow !== a) { vNow.pause(); }
+		if (a.paused) { a.play().catch(function () { toast('That voice note will not play here.'); }); } else { a.pause(); }
+	});
+	function vWire(a) {
+		if (a._wired) { return; } a._wired = true;
+		var box = a.closest('.voice'), btn = box.querySelector('[data-vplay]'), bar = box.querySelector('[data-vbar]'), t = box.querySelector('[data-vt]');
+		function len() { return isFinite(a.duration) ? a.duration : (a._len || 0); }
+		a.addEventListener('play', function () { vNow = a; box.classList.add('is-on'); btn.innerHTML = ico('pause'); });
+		a.addEventListener('pause', function () { box.classList.remove('is-on'); btn.innerHTML = ico('play'); });
+		a.addEventListener('ended', function () { bar.style.width = '0%'; t.textContent = mmss(len()); });
+		a.addEventListener('loadedmetadata', function () { if (isFinite(a.duration)) { t.textContent = mmss(a.duration); } });
+		a.addEventListener('timeupdate', function () { var L = len(); if (L) { bar.style.width = Math.min(100, a.currentTime / L * 100) + '%'; } t.textContent = mmss(a.currentTime); });
+	}
+	d.querySelectorAll('[data-vaudio]').forEach(vWire);
+
+	var vForm = d.querySelector('[data-voice-form]');
+	if (vForm) {
+		var vGo = vForm.querySelector('[data-voice-start]'), vLab = vForm.querySelector('[data-voice-label]'), vTime = vForm.querySelector('[data-voice-time]'),
+			vDraft = vForm.querySelector('[data-voice-draft]'), vAud = vDraft.querySelector('[data-vaudio]'), vFile = vForm.querySelector('[data-voice-file]'),
+			vPick = vForm.querySelector('[data-voice-pick]'), vRec = null, vChunks = [], vT0 = 0, vTick = 0, vUrl = '', MAXS = 90;
+		vWire(vAud);
+		var canRec = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && W.MediaRecorder && W.DataTransfer);
+		if (!canRec) { vGo.hidden = true; vPick.querySelector('span').textContent = 'Add a voice note'; vPick.classList.add('is-only'); }
+		function vShow(file, secs) {
+			if (vUrl) { URL.revokeObjectURL(vUrl); }
+			vUrl = URL.createObjectURL(file); vAud.src = vUrl; vAud._len = secs || 0;
+			vDraft.querySelector('[data-vt]').textContent = secs ? mmss(secs) : '0:00';
+			vDraft.hidden = false; vGo.hidden = true; vPick.hidden = true;
+		}
+		function vReset() {
+			if (vUrl) { URL.revokeObjectURL(vUrl); vUrl = ''; }
+			vAud.pause(); vAud.removeAttribute('src'); vFile.value = '';
+			vDraft.hidden = true; vGo.hidden = !canRec; vPick.hidden = false;
+		}
+		function vStop() { if (vRec && vRec.state !== 'inactive') { vRec.stop(); } }
+		vGo.addEventListener('click', function () {
+			if (vRec && vRec.state === 'recording') { vStop(); return; }
+			navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+				var type = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm', 'audio/ogg;codecs=opus'].filter(function (t) { return MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t); })[0] || '';
+				vRec = new MediaRecorder(stream, type ? { mimeType: type, audioBitsPerSecond: 48000 } : undefined); vChunks = [];
+				vRec.ondataavailable = function (ev) { if (ev.data && ev.data.size) { vChunks.push(ev.data); } };
+				vRec.onstop = function () {
+					clearInterval(vTick); stream.getTracks().forEach(function (tr) { tr.stop(); });
+					vGo.classList.remove('is-rec'); vLab.textContent = 'Record a voice note'; vTime.hidden = true;
+					var secs = (Date.now() - vT0) / 1000; if (secs < 1 || !vChunks.length) { return; }
+					var mt = (vRec.mimeType || type || 'audio/webm').split(';')[0], ext = mt.indexOf('mp4') > -1 ? 'm4a' : (mt.indexOf('ogg') > -1 ? 'ogg' : 'webm');
+					var file = new File(vChunks, 'voice-note.' + ext, { type: mt });
+					var dt = new DataTransfer(); dt.items.add(file); vFile.files = dt.files;
+					vShow(file, secs);
+				};
+				vRec.start(250); vT0 = Date.now(); buzz();
+				vGo.classList.add('is-rec'); vLab.textContent = 'Recording · tap to stop'; vTime.hidden = false; vTime.textContent = '0:00';
+				vTick = setInterval(function () { var s = (Date.now() - vT0) / 1000; vTime.textContent = mmss(s); if (s >= MAXS) { vStop(); } }, 250);
+			}).catch(function () { toast('Allow the microphone to record, or upload a recording instead.'); });
+		});
+		vFile.addEventListener('change', function () {
+			var f = vFile.files && vFile.files[0]; if (!f) { return; }
+			if (f.size > 4 * 1024 * 1024) { toast('That recording is too long. Keep it under a minute and a half.'); vFile.value = ''; return; }
+			vShow(f, 0);
+		});
+		vForm.querySelector('[data-voice-clear]').addEventListener('click', vReset);
+		vForm.addEventListener('submit', function (e) {
+			if (vRec && vRec.state === 'recording') { e.preventDefault(); vStop(); toast('Recording stopped. Listen back, then post.'); return; }
+			var body = vForm.querySelector('textarea[name="body"]');
+			if (body && !body.value.trim() && !(vFile.files && vFile.files.length)) { e.preventDefault(); body.focus(); toast('Write a few words or record a voice note.'); }
+		});
+	}
+
+	/* ---------- "Our story" diary cards: count the words, add, remove and order the cards ---------- */
+	function wordsLeft(t) {
+		var max = +t.getAttribute('data-words'), n = (t.value.trim().match(/\S+/g) || []).length, out = t.parentNode.querySelector('[data-words-left]');
+		if (out) { out.textContent = n ? n + ' of ' + max + ' words' : max + ' words at most'; out.classList.toggle('is-over', n > max); }
+		return n <= max;
+	}
+	d.addEventListener('input', function (e) { if (e.target.matches && e.target.matches('textarea[data-words]')) { wordsLeft(e.target); } });
+	d.querySelectorAll('textarea[data-words]').forEach(wordsLeft);
+	var diary = d.querySelector('[data-diary]');
+	if (diary) {
+		var dList = diary.querySelector('[data-diary-list]'), dAdd = diary.querySelector('[data-diary-add]'), dBlank = diary.querySelector('[data-diary-blank]'),
+			dMax = +dList.getAttribute('data-max') || 8, dNext = 100;
+		function dCards() { return [].slice.call(dList.querySelectorAll('[data-diary-card]')); }
+		function dSync() {
+			var c = dCards();
+			c.forEach(function (x, i) { x.querySelector('[data-diary-n]').textContent = 'Card ' + (i + 1); });
+			dAdd.hidden = c.length >= dMax;
+		}
+		dAdd.addEventListener('click', function () {
+			if (dCards().length >= dMax) { return; }
+			var k = dNext++, html = dBlank.innerHTML.replace(/\[99\]/g, '[' + k + ']');
+			var tmp = d.createElement('div'); tmp.innerHTML = html; var card = tmp.firstElementChild;
+			dList.appendChild(card); dSync(); card.querySelector('input').focus(); buzz();
+		});
+		dList.addEventListener('click', function (e) {
+			var b = e.target.closest('[data-diary-up],[data-diary-down],[data-diary-del]'); if (!b) { return; }
+			var card = b.closest('[data-diary-card]');
+			if (b.hasAttribute('data-diary-del')) {
+				var filled = [].some.call(card.querySelectorAll('input[type=text],input:not([type]),textarea'), function (x) { return x.value.trim() !== ''; });
+				if (filled && !confirm('Remove this card?')) { return; }
+				card.remove();
+			} else if (b.hasAttribute('data-diary-up') && card.previousElementSibling) { dList.insertBefore(card, card.previousElementSibling); }
+			else if (b.hasAttribute('data-diary-down') && card.nextElementSibling) { dList.insertBefore(card.nextElementSibling, card); }
+			dSync(); buzz(); b.focus();
+		});
+		diary.addEventListener('submit', function (e) {
+			var bad = [].filter.call(diary.querySelectorAll('textarea[data-words]'), function (t) { return !wordsLeft(t); })[0];
+			if (bad) { e.preventDefault(); bad.focus(); toast('Keep each card to ' + bad.getAttribute('data-words') + ' words.'); }
+		});
+		dSync();
 	}
 })();

@@ -13,7 +13,7 @@ if ($ctx === 'shop' && !$hasShop) { $ctx = 'wedding'; }
 $tabs = $ctx === 'shop'
 	? [['shop', 'Listings', '/account/shop', 'bag'], ['shop-profile', 'Business profile', '/account/shop/profile', 'store'], ['settings', 'Account', '/account/settings', 'gear']]
 	: (!empty($w) || $hasWed
-		? [['overview', 'Overview', '/account', 'grid'], ['page', 'Page', '/account/page', 'pen'], ['sections', 'Sections', '/account/sections', 'sliders'], ['programs', 'Programs', '/account/programs', 'calendar'],
+		? [['overview', 'Overview', '/account', 'grid'], ['page', 'Page', '/account/page', 'pen'], ['story', 'Story', '/account/story', 'book'], ['sections', 'Sections', '/account/sections', 'sliders'], ['programs', 'Programs', '/account/programs', 'calendar'],
 		   ['squad', 'Squad', '/account/squad', 'people'], ['registry', 'Registry', '/account/registry', 'gift'], ['quiz', 'Quiz', '/account/quiz', 'star'], ['guests', 'Guests', '/account/guests', 'user'],
 		   ['money', 'Money', '/account/money', 'wallet'], ['settings', 'Account', '/account/settings', 'gear']]
 		: []);

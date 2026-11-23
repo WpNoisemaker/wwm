@@ -236,20 +236,139 @@ final class AccountController
         $this->show('programs', ['title' => 'Programs', 'w' => $w, 'rows' => Wedding::programs((int) $w['id'])]);
     }
 
+    /** Relationship statuses a squad member can show, in the words the card uses. */
+    public const RELATIONSHIP = ['' => 'Not saying', 'single' => 'Single', 'taken' => 'Taken', 'engaged' => 'Engaged', 'married' => 'Married'];
+
     public function squad(): void
     {
         $w = $this->need();
         if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             Guard::must();
-            $this->rowAction('squad', (int) $w['id'], [
-                'side'  => in_array($_POST['side'] ?? '', ['bride', 'groom', 'both'], true) ? (string) $_POST['side'] : 'both',
-                'name'  => trim((string) ($_POST['name'] ?? '')),
-                'role'  => trim((string) ($_POST['role'] ?? '')),
-                'words' => trim((string) ($_POST['words'] ?? '')),
-            ], 'name');
+            $fields = [
+                'side'         => in_array($_POST['side'] ?? '', ['bride', 'groom', 'both'], true) ? (string) $_POST['side'] : 'both',
+                'name'         => mb_substr(trim((string) ($_POST['name'] ?? '')), 0, 160),
+                'role'         => mb_substr(trim((string) ($_POST['role'] ?? '')), 0, 120),
+                'words'        => mb_substr(trim((string) ($_POST['words'] ?? '')), 0, 240),
+                'work'         => mb_substr(trim((string) ($_POST['work'] ?? '')), 0, 160),
+                'hobby'        => mb_substr(trim((string) ($_POST['hobby'] ?? '')), 0, 160),
+                'relationship' => isset(self::RELATIONSHIP[$_POST['relationship'] ?? '']) ? (string) $_POST['relationship'] : '',
+                'social'       => self::socialLink((string) ($_POST['social'] ?? '')),
+            ];
+            if (!empty($_FILES['photo']['name']) && ($_POST['do'] ?? '') !== 'delete') {
+                $img = Images::store($_FILES['photo'], 'squad/' . (int) $w['id']);
+                if ($img === null) {
+                    Guard::flash('bad', 'That photo could not be used. Try a JPEG or PNG under 12 MB.');
+                    self::go('/account/squad');
+                }
+                $fields['photo'] = $img;
+            } elseif (!empty($_POST['photo_off'])) {
+                $fields['photo'] = '';
+            }
+            $this->rowAction('squad', (int) $w['id'], $fields, 'name');
             self::go('/account/squad');
         }
         $this->show('squad', ['title' => 'The squad', 'w' => $w, 'rows' => Db::all('SELECT * FROM squad WHERE wedding_id = ? ORDER BY sort, id', [$w['id']])]);
+    }
+
+    /** One social link: a full address, or an @handle (taken as Instagram). Anything else is dropped. */
+    public static function socialLink(string $v): string
+    {
+        $v = trim($v);
+        if ($v === '') {
+            return '';
+        }
+        if (preg_match('/^@?([A-Za-z0-9._]{1,30})$/', $v, $m) && !str_contains($v, '.com')) {
+            return 'https://instagram.com/' . $m[1];
+        }
+        if (!preg_match('~^https?://~i', $v)) {
+            $v = 'https://' . $v;
+        }
+        $host = (string) parse_url($v, PHP_URL_HOST);
+        return filter_var($v, FILTER_VALIDATE_URL) && str_contains($host, '.') ? mb_substr($v, 0, 255) : '';
+    }
+
+    /**
+     * "Our story" as diary cards the couple write themselves: a few words each, a photo if they like,
+     * in the order they choose. When there are cards they take the place of the single story.
+     */
+    public const DIARY_MAX = 8;
+    public const DIARY_WORDS = 80;
+
+    public function story(): void
+    {
+        $w = $this->need();
+        $d = Wedding::design($w);
+        $old = is_array($d['chapters'] ?? null) ? array_values($d['chapters']) : [];
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+            Guard::must();
+            $cards = [];
+            $cut = [];
+            $files = self::fileList('photo');
+            $signs = self::signs($w);
+            foreach ((array) ($_POST['cards'] ?? []) as $k => $c) {
+                if (!is_array($c) || count($cards) >= self::DIARY_MAX) {
+                    continue;
+                }
+                $when  = mb_substr(trim((string) ($c['when'] ?? '')), 0, 60);
+                $title = mb_substr(trim((string) ($c['title'] ?? '')), 0, 80);
+                $text  = trim(preg_replace("/[ \t]+/", ' ', str_replace("\r", '', (string) ($c['text'] ?? ''))));
+                if ($title === '' && $text === '') {
+                    continue;   // a blank card is simply left out
+                }
+                $words = preg_split('/\s+/u', $text, -1, PREG_SPLIT_NO_EMPTY);
+                if (count($words) > self::DIARY_WORDS) {
+                    $text = implode(' ', array_slice($words, 0, self::DIARY_WORDS)) . '…';
+                    $cut[] = $title !== '' ? $title : 'one card';
+                }
+                $sign = (string) ($c['sign'] ?? '');
+                $sign = in_array($sign, $signs, true) ? $sign : '';
+                // The photo: a new one, the one it had, or none.
+                $img = (string) ($c['img'] ?? '');
+                if ($img !== '' && !in_array($img, array_column($old, 4), true)) {
+                    $img = '';   // only a photo this page already had can be kept
+                }
+                if (!empty($c['img_off'])) {
+                    $img = '';
+                }
+                if (isset($files[$k]) && ($files[$k]['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+                    $new = Images::store($files[$k], 'diary/' . (int) $w['id']);
+                    if ($new === null) {
+                        Guard::flash('bad', 'One photo could not be used. Try a JPEG or PNG under 12 MB.');
+                    } else {
+                        $img = $new;
+                    }
+                }
+                $cards[] = [$when, $title !== '' ? $title : 'Our story', $text, $sign, $img];
+            }
+            $d['chapters'] = $cards;
+            Db::update('weddings', ['design' => json_encode($d, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)], 'id = ?', [$w['id']]);
+            Guard::flash('ok', ($cards ? 'Saved. Your story shows as ' . count($cards) . ' diary card' . (count($cards) === 1 ? '' : 's') . '.' : 'Saved. With no cards, your page shows the story you wrote on the Page tab.')
+                . ($cut ? ' Cards are ' . self::DIARY_WORDS . ' words at most, so “' . $cut[0] . '”' . (count($cut) > 1 ? ' and ' . (count($cut) - 1) . ' more were' : ' was') . ' shortened.' : ''));
+            self::go('/account/story');
+        }
+        $this->show('story', ['title' => 'Our story', 'w' => $w, 'cards' => $old, 'signs' => self::signs($w)]);
+    }
+
+    /** Who can sign a card. */
+    private static function signs(array $w): array
+    {
+        $a = trim((string) $w['partner_a']);
+        $b = trim((string) $w['partner_b']);
+        return array_values(array_filter([$a, $b, $a !== '' && $b !== '' ? $a . ' & ' . $b : '']));
+    }
+
+    /** $_FILES['name'][key] as one file array per key. */
+    private static function fileList(string $name): array
+    {
+        $f = $_FILES[$name] ?? null;
+        if (!is_array($f) || !is_array($f['name'] ?? null)) {
+            return [];
+        }
+        $out = [];
+        foreach (array_keys($f['name']) as $k) {
+            $out[$k] = ['name' => $f['name'][$k], 'type' => $f['type'][$k], 'tmp_name' => $f['tmp_name'][$k], 'error' => $f['error'][$k], 'size' => $f['size'][$k]];
+        }
+        return $out;
     }
 
     public function registry(): void

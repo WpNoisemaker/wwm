@@ -63,7 +63,7 @@
 	<p>The Wedding Websites &amp; More name, logo, designs, templates and software are ours. You may use them only as part of using the service.</p>
 
 	<h2>13. Changes and ending</h2>
-	<p>We may update these terms; the date at the top shows when. If a change matters to you, we will tell you on the site or by email before it applies. You can close your account at any time by writing to us. These terms are governed by the laws of the Federal Republic of Nigeria, and the courts of Lagos State have jurisdiction, unless the law where you live gives you the right to bring a claim there.</p>
+	<p>We may update these terms; the date at the top shows when. If a change matters to you, we will tell you on the site or by email before it applies. You can close your account at any time by writing to us. These terms are governed by the laws of the Federal Republic of Nigeria, and the courts of the Federal Capital Territory, Abuja, have jurisdiction, unless the law where you live gives you the right to bring a claim there.</p>
 
 	<h2>14. Contact</h2>
 	<p>Questions about these terms: <a href="mailto:<?= e($mail) ?>"><?= e($mail) ?></a>.</p>
