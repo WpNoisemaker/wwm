@@ -83,9 +83,6 @@ $url     = App::url('/w/' . $w['slug']);
 			<?php if (!$public): ?>
 				<p class="note"><?= icon('lock') ?><span>Your page is private, so nobody can find it yet. <a href="<?= e(App::url('/account/page#visibility')) ?>">Make it public</a> when you are ready.</span></p>
 			<?php endif; ?>
-			<?php if (Wedding::has($w, 'gallery')): $df = Drive::folder((int) $w['id']); ?>
-				<p class="note"><?= icon('image') ?><span><?php if ($df): ?>Every photo your guests add is saved, full size, to your Google Drive folder: <a href="<?= e((string) $df['link']) ?>" target="_blank" rel="noopener"><?= e((string) $df['name']) ?></a>. Ask us to share it with your Google account.<?php else: ?>Your guests' photos are kept safe and go, full size, to your own Google Drive folder as soon as we set it up for you.<?php endif; ?></span></p>
-			<?php endif; ?>
 			<?php if ($next): $u = Wedding::until($next['when']); ?>
 				<div class="tile next-up"><span class="k">Next up</span><span class="v"><?= e($next['label']) ?></span><span class="sub">in <?= (int) $u['d'] ?> day<?= (int) $u['d'] === 1 ? '' : 's' ?><?= $next['venue'] ? ' · ' . e($next['venue']) : '' ?></span></div>
 			<?php endif; ?>

@@ -29,6 +29,25 @@ session_set_cookie_params([
 ]);
 session_start();
 
+/*
+ * A file upload sent from the page's script (so it can show a progress bar) asks for the
+ * redirect back as a header instead. The page then goes there itself, keeping any #section, and
+ * the "Saved" message waits for that page instead of being used up by the upload request.
+ */
+if (($_SERVER['HTTP_X_WWM_UPLOAD'] ?? '') === '1') {
+    header_register_callback(static function (): void {
+        foreach (headers_list() as $h) {
+            if (stripos($h, 'Location:') === 0) {
+                header_remove('Location');
+                http_response_code(200);
+                header('X-WWM-Go: ' . trim(substr($h, 9)));
+                header('Cache-Control: no-store');
+                return;
+            }
+        }
+    });
+}
+
 /**
  * Anything that escapes a controller lands here. Without this an uncaught error still returned
  * HTTP 200 with a stack trace in the body — which is both a lie to the browser and a leak of the

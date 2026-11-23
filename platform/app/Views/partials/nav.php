@@ -4,7 +4,7 @@ return [
 	['ring',   'Weddings',   '/weddings',  'weddings'],
 	['chart',  'Buzz Chart', '/rankings',  'rankings'],
 	['store',  'Vendors',    '/vendors',   'vendors'],
-	['bag',    'Market',     '/market',    'market'],
+	['bag',    'Marketplace',     '/market',    'market'],
 	['chat',   'Anonymous Community',  '/community', 'community'],
 	['book',   'Blog',       '/blog',      'blog'],
 	['wallet', 'Pricing',    '/pricing',   'pricing'],

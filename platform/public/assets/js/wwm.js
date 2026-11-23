@@ -346,8 +346,59 @@
 		if (f.hasAttribute('data-confirm') && !confirm(f.getAttribute('data-confirm'))) { e.preventDefault(); return; }
 		f.dataset.busy = '1';
 		var b = e.submitter || f.querySelector('[type=submit]'); if (b && b.classList.contains('pill')) { b.classList.add('is-busy'); }
+		if (upload(f, e, b)) { return; }
 		setTimeout(function () { f.dataset.busy = '0'; if (b) { b.classList.remove('is-busy'); } }, 8000);
 	});
+
+	/* A form carrying photos, a logo or a voice note: send it here so a bar can show how far along it is. */
+	function upload(f, e, b) {
+		if ((f.method || '').toLowerCase() !== 'post' || !W.XMLHttpRequest || f.hasAttribute('data-plain')) { return false; }
+		var bytes = 0;
+		[].forEach.call(f.querySelectorAll('input[type=file]'), function (i) { [].forEach.call(i.files || [], function (x) { bytes += x.size; }); });
+		if (!bytes) { return false; }
+		e.preventDefault();
+		var fd; try { fd = new FormData(f, e.submitter || undefined); } catch (er) { fd = new FormData(f); if (e.submitter && e.submitter.name) { fd.append(e.submitter.name, e.submitter.value); } }
+		var bar = f.querySelector('.upbar');
+		if (!bar) {
+			bar = d.createElement('div'); bar.className = 'upbar'; bar.setAttribute('role', 'progressbar'); bar.setAttribute('aria-valuemin', '0'); bar.setAttribute('aria-valuemax', '100'); bar.setAttribute('aria-label', 'Upload progress');
+			bar.innerHTML = '<span class="upbar__track"><span class="upbar__fill"></span></span><span class="upbar__t" aria-hidden="true"></span><span class="sr" aria-live="polite"></span>';
+			f.appendChild(bar);
+		}
+		var fill = bar.querySelector('.upbar__fill'), txt = bar.querySelector('.upbar__t'), live = bar.querySelector('.sr'), said = -1;
+		function show(p, words) {
+			fill.style.width = p + '%'; bar.setAttribute('aria-valuenow', String(p));
+			txt.textContent = words || ('Uploading ' + p + '%');
+			var step = words ? 9 : Math.floor(p / 25);   // a screen reader hears every quarter, not every percent
+			if (step !== said) { said = step; live.textContent = txt.textContent; }
+		}
+		function done(msg) {
+			f.dataset.busy = '0'; if (b) { b.classList.remove('is-busy'); }
+			bar.remove(); if (msg) { toast(msg); }
+		}
+		show(0);
+		var x = new XMLHttpRequest();
+		x.open('POST', f.getAttribute('action') || location.href);
+		x.setRequestHeader('X-WWM-Upload', '1');
+		x.upload.onprogress = function (ev) { if (ev.lengthComputable) { var p = Math.min(99, Math.round(ev.loaded / ev.total * 100)); show(p, p >= 99 ? 'Saving…' : ''); } };
+		x.upload.onload = function () { show(100, 'Saving…'); };
+		x.onerror = function () { done('The upload stopped. Check your connection and try again.'); };
+		x.onload = function () {
+			var go = x.getResponseHeader('X-WWM-Go');
+			if (go) {
+				var u = new URL(go, location.href);
+				if (u.pathname + u.search === location.pathname + location.search) { history.replaceState(null, '', u.href); location.reload(); }
+				else { location.href = u.href; }
+				return;
+			}
+			if (x.status === 413) { done('That file is too big. Try a smaller one.'); return; }
+			var t = x.responseText || '';
+			if (x.status >= 400 && t.length < 400 && t.indexOf('<') === -1) { done(t || 'That did not upload. Try again.'); return; }
+			if (/<html/i.test(t)) { d.open(); d.write(t); d.close(); return; }
+			done(x.status >= 400 ? 'That did not upload. Try again.' : '');
+		};
+		x.send(fd);
+		return true;
+	}
 	addEventListener('pageshow', function () { d.querySelectorAll('form[data-busy="1"]').forEach(function (f) { f.dataset.busy = '0'; }); d.querySelectorAll('.is-busy').forEach(function (b) { b.classList.remove('is-busy'); }); });
 
 	/* ---------- copy and share ---------- */

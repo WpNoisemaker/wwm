@@ -90,8 +90,9 @@ $ogDesc  = $ogDesc ?? ($desc ?? 'Wedding pages for African couples: invite, RSVP
 			<a class="cbtn" href="<?= e($home) ?>" aria-label="Wedding Websites &amp; More, home"><span class="logo">&amp;</span></a>
 		<?php endif; ?>
 		<p class="appbar__title<?= mb_strlen($appTitle) > 16 ? ' appbar__title--long' : '' ?>"><?= e($appTitle) ?></p>
-		<?= $action ?? '<button class="cbtn" type="button" data-theme-toggle aria-label="Switch between day and night">' . icon('moon') . '</button>' ?>
+		<?= $action ?? '<a class="cbtn" href="#menu" data-open="menu" aria-label="Menu" aria-haspopup="dialog">' . icon('menu') . '</a>' ?>
 	</header>
+	<?= View::partial('partials/menu', ['tab' => $tab]) ?>
 <?php endif; ?>
 <main id="main"<?= !empty($mainClass) ? ' class="' . e($mainClass) . '"' : '' ?>><?= $content ?></main>
 <?php if (!$bare && !$wed): ?>
