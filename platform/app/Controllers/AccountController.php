@@ -174,7 +174,7 @@ final class AccountController
             'next'  => Wedding::nextMoment($w, Wedding::programs($id)),
             'todo'  => [
                 ['Your story',   '/account/page',     trim((string) $w['story']) !== ''],
-                ['Programs',     '/account/programs', count(Wedding::programs($id)) > 0],
+                ['Programme',     '/account/programs', count(Wedding::programs($id)) > 0],
                 ['The squad',    '/account/squad',    (int) Db::val('SELECT COUNT(*) FROM squad WHERE wedding_id = ?', [$id], 0) > 0],
                 ['Registry',     '/account/registry', count(Wedding::gifts($id)) > 0],
                 ['Make it public', '/account/page',   (string) $w['visibility'] === 'public'],
@@ -342,7 +342,7 @@ final class AccountController
             ], 'title');
             self::go('/account/programs');
         }
-        $this->show('programs', ['title' => 'Programs', 'w' => $w, 'rows' => Wedding::programs((int) $w['id'])]);
+        $this->show('programs', ['title' => 'Programme', 'w' => $w, 'rows' => Wedding::programs((int) $w['id'])]);
     }
 
     /** Relationship statuses a squad member can show, in the words the card uses. */

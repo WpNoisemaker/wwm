@@ -1,4 +1,4 @@
-<?= View::partial('account/_head', ['h' => 'Programs', 'w' => $w, 'sub' => 'Introduction, traditional, nikkah, church, reception', 'now' => 'programs']) ?>
+<?= View::partial('account/_head', ['h' => 'Programme', 'w' => $w, 'sub' => 'Introduction, traditional, nikkah, church, reception', 'now' => 'programs']) ?>
 	<div class="acct-list">
 		<?php foreach ($rows as $r): ?>
 			<form method="post" class="form glass glass--plain glass--tight acct-card">
