@@ -1935,27 +1935,27 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .post-solo .post.is-gone-r { transform: translateX(120%) rotate(10deg); opacity: 0; }
 .post-solo .post.is-dragging { transition: none; cursor: grabbing; }
 
-/* ---------- wedding bunting: African flags across the top of the front page ---------- */
+/* ---------- wedding bunting: flags on a string drifting right to left, without end ---------- */
 .hero--brand { position: relative; }
-.bunting { position: relative; height: 74px; margin: -6px calc(-1 * var(--gutter)) 6px; pointer-events: none; overflow: hidden; }
-.bunting__line { position: absolute; inset: 0 0 auto; width: 100%; height: 60px; overflow: visible; }
-.bunting__line path { fill: none; stroke: var(--ink-3); stroke-width: 1.2; vector-effect: non-scaling-stroke; opacity: .7; }
-.bunting__flags { list-style: none; margin: 0; padding: 0; }
-.bunting__flags li { position: absolute; left: var(--x); top: calc(var(--y) * 1px); width: 26px; margin-left: -13px; transform-origin: 50% 0;
-	animation: flagsway var(--s) ease-in-out var(--d) infinite alternate; }
-.bunting__flags li::before { content: ""; position: absolute; left: 50%; top: -4px; width: 1px; height: 5px; background: var(--ink-3); opacity: .7; }
-.bunting__flags svg { display: block; width: 26px; height: 17.33px; border-radius: 2px; box-shadow: 0 0 0 .6px rgba(255, 255, 255, .35), 0 6px 10px -6px rgba(0, 0, 0, .55); }
+.bunting { position: relative; height: 70px; margin: -6px calc(-1 * var(--gutter)) 6px; pointer-events: none; overflow: hidden;
+	-webkit-mask: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); mask: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
+.bunting__track { display: flex; width: max-content; animation: buntdrift 150s linear infinite; will-change: transform; }
+.bunting__flags { display: flex; list-style: none; margin: 0; padding: 0; }
+.bunting__flags li { position: relative; flex: none; width: 58px; height: 66px; }
+/* the string: a shallow sag from one peg to the next */
+.bunting__flags li::before { content: ""; position: absolute; left: 0; right: 0; top: 4px; height: 14px; border-bottom: 1.2px solid var(--ink-3); border-radius: 0 0 50% 50% / 0 0 100% 100%; opacity: .7; }
+.bunting__flags img { position: absolute; left: 50%; top: 17px; width: 30px; height: 20px; margin-left: -15px; object-fit: cover; border-radius: 2px; transform-origin: 50% 0;
+	box-shadow: 0 0 0 .6px rgba(255, 255, 255, .35), 0 6px 10px -6px rgba(0, 0, 0, .55); animation: flagsway var(--s) ease-in-out var(--d) infinite alternate; }
 @keyframes flagsway { from { transform: rotate(-7deg) skewY(-2deg); } to { transform: rotate(7deg) skewY(2deg); } }
-@media (prefers-reduced-motion: reduce) { .bunting__flags li { animation: none; } }
-/* a phone holds eight, so they never crowd */
+@keyframes buntdrift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .bunting__track, .bunting__flags img { animation: none; } }
 @media (max-width: 639px) {
-	.bunting { height: 62px; }
-	.bunting__flags li:nth-child(3n) { display: none; }
-	.bunting__flags li, .bunting__flags svg { width: 22px; }
-	.bunting__flags li { margin-left: -11px; }
-	.bunting__flags svg { height: 14.67px; }
+	.bunting { height: 58px; }
+	.bunting__flags li { width: 46px; height: 56px; }
+	.bunting__flags li::before { height: 11px; }
+	.bunting__flags img { top: 14px; width: 24px; height: 16px; margin-left: -12px; }
 }
-@media (min-width: 960px) { .bunting { height: 84px; margin-top: -10px; } .bunting__flags li, .bunting__flags svg { width: 30px; } .bunting__flags li { margin-left: -15px; } .bunting__flags svg { height: 20px; } }
+@media (min-width: 960px) { .bunting { height: 80px; margin-top: -10px; } .bunting__flags li { width: 66px; } .bunting__flags img { width: 33px; height: 22px; margin-left: -16.5px; } }
 
 /* ---------- wall of love: voice notes; photos have their own form ---------- */
 .voice-rec { display: grid; gap: 6px; }
