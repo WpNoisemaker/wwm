@@ -211,7 +211,7 @@ final class WeddingController
             'locked'   => $mine ? Wedding::locked($w) : [],
             'sponsors' => Wedding::has($w, 'quiet') || !Promo::slotOn('sponsors') ? [] : Wedding::sponsors(2),
             'vendors'  => Wedding::vendors($w),
-            'pass'     => $_SESSION['passes'][(string) $w['slug']] ?? null,
+            'pass'     => self::myReply($w),
         ]);
     }
 
@@ -228,36 +228,126 @@ final class WeddingController
             self::back($slug, 'rsvp');
         }
 
-        $name = trim((string) ($_POST['name'] ?? ''));
-        $party = max(1, min(20, (int) ($_POST['party'] ?? 1)));
+        $name   = trim((string) ($_POST['name'] ?? ''));
+        $email  = trim((string) ($_POST['email'] ?? ''));
+        $party  = max(1, min(20, (int) ($_POST['party'] ?? 1)));
         $coming = in_array($_POST['coming'] ?? '', ['yes', 'no', 'maybe'], true) ? (string) $_POST['coming'] : 'yes';
+        $going  = $coming !== 'no';
         if ($name === '') {
             Guard::flash('bad', 'Please put your name so they know who replied.');
             self::back($slug, 'rsvp');
         }
+        if ($going && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            Guard::flash('bad', 'Please put your email. Your access code is sent there when they approve your RSVP.');
+            self::back($slug, 'rsvp');
+        }
+        if ($email !== '' && Db::val("SELECT 1 FROM guests WHERE wedding_id = ? AND email = ? AND status <> 'declined'", [$w['id'], $email])) {
+            Guard::flash('bad', 'Someone already replied with this email. If you need to change your reply, contact ' . Wedding::names($w) . '.');
+            self::back($slug, 'rsvp');
+        }
+        // A photo of the guest's face, so whoever is at the gate can see the code belongs to them.
+        $face = '';
+        if ($going) {
+            $face = isset($_FILES['face']) ? (string) Rsvp::storeFace($_FILES['face']) : '';
+            if ($face === '') {
+                Guard::flash('bad', 'Please add a photo of your face, with the camera or from your phone. It is checked against your code at the entrance.');
+                self::back($slug, 'rsvp');
+            }
+        }
 
-        $pass = Wedding::rank((string) $w['plan']) >= Wedding::rank('pro') && $coming !== 'no' ? strtoupper(bin2hex(random_bytes(3))) : null;
-        Db::insert('guests', [
+        $id = (int) Db::insert('guests', [
             'wedding_id' => $w['id'],
-            'name'       => $name,
-            'phone'      => trim((string) ($_POST['phone'] ?? '')),
-            'email'      => trim((string) ($_POST['email'] ?? '')),
+            'name'       => mb_substr($name, 0, 160),
+            'phone'      => mb_substr(trim((string) ($_POST['phone'] ?? '')), 0, 40),
+            'email'      => mb_substr($email, 0, 190),
             'party'      => $party,
             'coming'     => $coming,
-            'note'       => trim((string) ($_POST['note'] ?? '')),
-            // A pass code only means something once the page can check people in.
-            'pass_code'  => $pass,
+            // The couple approves everyone who is coming. "Can't make it" needs nothing from them.
+            'status'     => $going ? 'pending' : 'approved',
+            'note'       => mb_substr(trim((string) ($_POST['note'] ?? '')), 0, 1000),
+            'photo'      => $face,
         ]);
-        // The guest's entry pass is shown on the page straight away, and stays on this phone.
-        if ($pass !== null) {
-            $_SESSION['passes'][(string) $w['slug']] = ['code' => $pass, 'name' => $name, 'party' => $party];
-        }
-        Buzz::add($w, 'rsvp');
+        // This phone remembers the reply, so the page can show "waiting" and later the pass itself.
+        $_SESSION['rsvp'][(string) $w['slug']] = $id;
+        unset($_SESSION['passes'][(string) $w['slug']]);
 
-        Guard::flash('ok', $coming === 'no'
-            ? 'Thank you for letting them know.'
-            : 'You are on the list. They will be glad you are coming.');
+        Guard::flash('ok', $going
+            ? 'Thank you. ' . Wedding::names($w) . ' will check your RSVP. When they approve it, your access code is emailed to ' . $email . '.'
+            : 'Thank you for letting them know.');
         self::back($slug, 'rsvp');
+    }
+
+    /** The reply this phone sent: still waiting, approved (with its pass), or nothing. */
+    private static function myReply(array $w): ?array
+    {
+        $id = (int) ($_SESSION['rsvp'][(string) $w['slug']] ?? 0);
+        if ($id) {
+            $g = Db::one('SELECT id, name, party, coming, status, pass_code FROM guests WHERE id = ? AND wedding_id = ?', [$id, $w['id']]);
+            if ($g && $g['coming'] !== 'no' && $g['status'] !== 'declined') {
+                return $g['status'] === 'approved'
+                    ? ($g['pass_code'] ? ['code' => $g['pass_code'], 'name' => $g['name'], 'party' => $g['party']] : null)
+                    : ['waiting' => true, 'name' => $g['name']];
+            }
+            return null;
+        }
+        return $_SESSION['passes'][(string) $w['slug']] ?? null;
+    }
+
+    /**
+     * A guest's pass, from the link in their approval email: the code, their party and the face they
+     * sent. The couple (or our team) opening it at the gate also gets a button to check them in.
+     */
+    public function pass(string $slug, string $code): void
+    {
+        $w = Wedding::bySlug($slug);
+        if (!$w) {
+            self::notFound();
+        }
+        $g = Db::one("SELECT * FROM guests WHERE wedding_id = ? AND pass_code = ? AND status = 'approved'", [$w['id'], Rsvp::clean($code)]);
+        if (!$g) {
+            http_response_code(404);
+        }
+        header('X-Robots-Tag: noindex');
+        header('Cache-Control: private, no-store');
+        View::render('wedding/pass', [
+            'title'  => $g ? 'Entry pass · ' . Wedding::names($w) : 'Pass not found',
+            'w'      => $w,
+            'g'      => $g,
+            'code'   => Rsvp::clean($code),
+            'door'   => Rsvp::isCouple((int) $w['id']),
+        ]);
+    }
+
+    /** The couple (or our team) at the gate: this pass is used now. */
+    public function checkIn(string $slug, string $code): void
+    {
+        Guard::must();
+        $w = Wedding::bySlug($slug);
+        if (!$w || !Rsvp::isCouple((int) $w['id'])) {
+            self::notFound();
+        }
+        $c = Rsvp::clean($code);
+        $n = Db::run("UPDATE guests SET checked_in = NOW() WHERE wedding_id = ? AND pass_code = ? AND status = 'approved' AND checked_in IS NULL", [$w['id'], $c]);
+        Guard::flash($n ? 'ok' : 'bad', $n ? 'Checked in.' : 'This pass was already used, or it is not on the list.');
+        header('Location: ' . App::url('/w/' . $slug . '/pass/' . $c));
+        exit;
+    }
+
+    /** A guest's face, for the couple, our team or whoever holds that guest's code. Never cached publicly. */
+    public function face(string $id): void
+    {
+        $g = Db::one('SELECT id, wedding_id, pass_code, photo FROM guests WHERE id = ?', [(int) $id]);
+        $file = $g && $g['photo'] !== '' ? Rsvp::faceDir() . '/' . basename((string) $g['photo']) : '';
+        if (!$g || !is_file($file) || !Rsvp::canSee($g, (string) ($_GET['c'] ?? ''))) {
+            http_response_code(404);
+            exit;
+        }
+        header('Content-Type: image/jpeg');
+        header('Content-Length: ' . filesize($file));
+        header('Cache-Control: private, max-age=600');
+        header('X-Robots-Tag: noindex');
+        readfile($file);
+        exit;
     }
 
     /** The share button was used. Counted once per visitor per page; answers with no page. */

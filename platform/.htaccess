@@ -3,7 +3,7 @@
 #
 # This file is what lets you upload the WHOLE folder into a domain's document root without having
 # to change the document root. Everything the web is allowed to see lives in public/; the rules
-# below send each request there, and refuse app/, db/ and config/ outright.
+# below send each request there, and refuse app/, db/, config/ and storage/ outright.
 #
 # If you CAN point the document root straight at public/ (cPanel > Domains > the pencil icon),
 # that is one rewrite fewer on every request — but install.php lives outside public/, so run the
@@ -16,7 +16,7 @@ Options -Indexes
 	RewriteEngine On
 
 	# Never serve code, settings or the schema, whatever the URL looks like.
-	RewriteRule ^(app|db|config)(/|$) - [F,L]
+	RewriteRule ^(app|db|config|storage)(/|$) - [F,L]
 
 	# The one-time installer sits outside public/, so it is served from here until it is deleted.
 	RewriteRule ^install\.php$ - [L]

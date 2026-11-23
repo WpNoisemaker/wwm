@@ -9,3 +9,6 @@ platform/dist/
 # What visitors upload, and the share pictures made from it. Never part of the code.
 platform/public/assets/uploads/
 platform/storage/drive/
+
+# Guests' face photos for entry passes, and photos waiting to go to storage. People's data, not code.
+platform/storage/

@@ -57,7 +57,8 @@ final class Wedding
     public static function dash(int $id): array
     {
         $g = Db::one(
-            "SELECT COUNT(*) total, SUM(coming='yes') cyes, SUM(coming='no') cno, SUM(party) heads
+            "SELECT SUM(status='approved') total, SUM(status='approved' AND coming='yes') cyes, SUM(status='approved' AND coming='no') cno,
+                    SUM(CASE WHEN status='approved' AND coming<>'no' THEN party ELSE 0 END) heads, SUM(status='pending') pend
              FROM guests WHERE wedding_id=?",
             [$id]
         ) ?: [];
@@ -72,6 +73,7 @@ final class Wedding
             'coming'   => (int) ($g['cyes'] ?? 0),
             'declined' => (int) ($g['cno'] ?? 0),
             'heads'    => (int) ($g['heads'] ?? 0),
+            'pending'  => (int) ($g['pend'] ?? 0),
             'raised'   => (int) ($m['raised'] ?? 0),
             'week'     => (int) ($m['week'] ?? 0),
             'target'   => (int) Db::val('SELECT COALESCE(SUM(target),0) FROM gifts WHERE wedding_id=?', [$id], 0),
@@ -280,7 +282,7 @@ final class Wedding
         $args[] = max(0, $offset);
         return Db::all(
             "SELECT w.*,
-                    (SELECT COUNT(*) FROM guests g WHERE g.wedding_id = w.id AND g.coming = 'yes') guests,
+                    (SELECT COUNT(*) FROM guests g WHERE g.wedding_id = w.id AND g.coming = 'yes' AND g.status = 'approved') guests,
                     (SELECT COUNT(*) FROM wall x WHERE x.wedding_id = w.id AND x.status = 'live') notes
              FROM weddings w WHERE $where ORDER BY $order LIMIT ? OFFSET ?",
             $args
@@ -524,7 +526,7 @@ final class Wedding
     {
         $g = Db::one(
             "SELECT COUNT(*) n, COALESCE(SUM(party), 0) heads FROM guests
-             WHERE wedding_id = ? AND coming = 'yes'",
+             WHERE wedding_id = ? AND coming = 'yes' AND status = 'approved'",
             [$id]
         ) ?: [];
         $m = Db::one('SELECT COUNT(*) n, COALESCE(SUM(raised),0) raised, COALESCE(SUM(target),0) target

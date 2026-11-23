@@ -54,12 +54,21 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 
 <article class="wed wed--<?= e($key) ?>" data-hero="<?= e($hero) ?>">
 	<div class="wrap"><?= flashes() ?></div>
-	<?php if (!empty($pass)): ?>
+	<?php if (!empty($pass['waiting'])): ?>
+		<section class="wrap pass-wrap">
+			<div class="pass glass">
+				<span class="eyebrow">Your RSVP · <?= e($names) ?></span>
+				<p class="pass__name"><?= e($pass['name']) ?></p>
+				<p class="pass__when"><?= icon('clock') ?> Waiting for <?= e($names) ?> to approve it</p>
+				<p class="after-pill">When they do, your access code is emailed to you and shows here.</p>
+			</div>
+		</section>
+	<?php elseif (!empty($pass)): ?>
 		<section class="wrap pass-wrap">
 			<div class="pass glass">
 				<span class="eyebrow">Your entry pass · <?= e($names) ?></span>
 				<p class="pass__name"><?= e($pass['name']) ?><?= (int) $pass['party'] > 1 ? ' + ' . ((int) $pass['party'] - 1) : '' ?></p>
-				<p class="pass__code" aria-label="Pass code <?= e(implode(' ', str_split($pass['code']))) ?>"><?php foreach (str_split((string) $pass['code']) as $ch): ?><span><?= e($ch) ?></span><?php endforeach; ?></p>
+				<p class="pass__code" aria-label="Pass code <?= e(implode(' ', str_split($pass['code']))) ?>"><?php foreach (str_split(Rsvp::pretty((string) $pass['code'])) as $ch): ?><span<?= $ch === '-' ? ' class="pass__dash"' : '' ?>><?= e($ch) ?></span><?php endforeach; ?></p>
 				<p class="pass__when"><?= e(Wedding::when($w)) ?><?= ($where = Wedding::where($w)) !== '' ? ' · ' . e($where) : '' ?></p>
 				<p class="after-pill">Show this at the gate. Take a screenshot so you have it without signal.</p>
 			</div>
@@ -552,7 +561,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		<a class="cbtn cbtn--sm" href="#" data-close aria-label="Close"><?= icon('close') ?></a>
 		<h2 id="rsvp-t">Your RSVP</h2><span></span>
 	</div>
-	<form class="form" method="post" action="<?= e(App::url('/w/' . $slug . '/rsvp')) ?>">
+	<form class="form" method="post" action="<?= e(App::url('/w/' . $slug . '/rsvp')) ?>" enctype="multipart/form-data" data-rsvp-form>
 		<?= Guard::field() ?>
 		<input type="hidden" name="party" id="r-party" value="<?= $key === 'classic' && $isFree ? 1 : 2 ?>">
 		<div class="radios" role="radiogroup" aria-label="Are you coming?">
@@ -565,11 +574,26 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 			<div class="counter__mid"><?= dots($key === 'classic' && $isFree ? '1' : '2', 'dotnum--md', true) ?><span class="counter__unit" data-unit="Guest|Guests"><?= $key === 'classic' && $isFree ? 'Guest' : 'Guests' ?></span></div>
 			<button class="cbtn" type="button" data-inc aria-label="One more"><?= icon('plus') ?></button>
 		</div>
-		<label class="field"><span>Your name</span><input class="input" name="name" required autocomplete="name"></label>
-		<label class="field"><span>Phone, so they can reach you (optional)</span><input class="input" name="phone" inputmode="tel" autocomplete="tel"></label>
-		<label class="field"><span>A word for them (optional)</span><input class="input" name="note" placeholder="Congratulations!"></label>
+		<label class="field"><span>Your name</span><input class="input" name="name" required autocomplete="name" maxlength="160"></label>
+		<label class="field" data-rsvp-going><span>Your email. Your access code is sent here</span><input class="input" name="email" type="email" required autocomplete="email" inputmode="email" maxlength="190"></label>
+		<div class="face" data-face data-rsvp-going>
+			<p class="face__k" id="face-k">A photo of your face</p>
+			<div class="face__view" aria-hidden="true">
+				<video class="face__cam" playsinline muted hidden></video>
+				<img class="face__img" alt="" hidden>
+				<span class="face__ph"><?= icon('user') ?></span>
+			</div>
+			<div class="face__acts" role="group" aria-labelledby="face-k">
+				<button class="pill pill--sm pill--glass" type="button" data-face-cam><?= icon('camera') ?>Take a selfie</button>
+				<label class="pill pill--sm pill--glass face__up"><?= icon('image') ?>Upload a photo<input class="sr" type="file" name="face" accept="image/jpeg,image/png,image/webp" data-face-file></label>
+			</div>
+			<button class="pill pill--sm" type="button" data-face-snap hidden>Take the photo</button>
+			<p class="help center" data-face-say>It is checked against your code at the entrance. Only <?= e($names) ?> see it.</p>
+		</div>
+		<label class="field"><span>Phone, so they can reach you (optional)</span><input class="input" name="phone" inputmode="tel" autocomplete="tel" maxlength="40"></label>
+		<label class="field"><span>A word for them (optional)</span><input class="input" name="note" placeholder="Congratulations!" maxlength="1000"></label>
 		<button class="pill pill--block" type="submit">Send RSVP</button>
-		<p class="after-pill">No account needed. Only <?= e($names) ?> see your reply.</p>
+		<p class="after-pill">No account needed. <?= e($names) ?> approve every RSVP, then we email you your access code.</p>
 	</form>
 </div>
 

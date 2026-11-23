@@ -141,17 +141,23 @@ CREATE TABLE guests (
   phone       VARCHAR(40)  NOT NULL DEFAULT '',
   party       SMALLINT     NOT NULL DEFAULT 1,
   coming      ENUM('yes','no','maybe') NOT NULL DEFAULT 'yes',
+  -- Replies wait for the couple; older rows and "can't make it" replies count as approved.
+  status      ENUM('pending','approved','declined') NOT NULL DEFAULT 'approved',
   programs    JSON         NULL,
   note        TEXT         NULL,
+  photo       VARCHAR(60)  NOT NULL DEFAULT '',
   -- NULL rather than '' so a unique index can hold many guests who have no pass yet;
   -- MySQL allows repeated NULLs in a unique key but not repeated empty strings.
   pass_code   VARCHAR(40)  NULL DEFAULT NULL,
   checked_in  DATETIME     NULL,
+  decided_at  DATETIME     NULL,
+  mailed_at   DATETIME     NULL,
   table_no    VARCHAR(20)  NOT NULL DEFAULT '',
   created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY uq_pass (pass_code),
   KEY ix_wed (wedding_id, created_at),
+  KEY ix_status (wedding_id, status),
   KEY ix_coming (wedding_id, coming),
   CONSTRAINT fk_guest_wed FOREIGN KEY (wedding_id) REFERENCES weddings (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

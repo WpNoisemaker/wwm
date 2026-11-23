@@ -36,7 +36,9 @@ final class Mailer
         }
 
         $html = self::html($subject, $body, $o);
-        $text = str_replace("\n", "\r\n", str_replace("\r\n", "\n", $body));
+        // The plain-text copy has no code block: the code goes in as a line of its own.
+        $plain = str_replace('[[wwm-code]]', !empty($o['code']) ? ($o['code_label'] ?? 'Your access code') . ': ' . $o['code'] : '', $body);
+        $text = str_replace("\n", "\r\n", str_replace("\r\n", "\n", $plain));
         $b = 'wwm-' . bin2hex(random_bytes(12));
         $sender = '=?UTF-8?B?' . base64_encode($name) . '?= <' . $from . '>';
         $headers = [

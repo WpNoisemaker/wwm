@@ -736,16 +736,16 @@ final class AccountController
             $sql .= " AND CONCAT_WS(' ', name, phone, email) LIKE ?";
             $arg[] = '%' . str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $q) . '%';
         }
-        $rows = Db::all($sql . ' ORDER BY created_at DESC, id DESC', $arg);
+        $rows = Db::all($sql . " AND status <> 'pending' ORDER BY created_at DESC, id DESC", $arg);
 
         if (($_GET['csv'] ?? '') === '1') {
             header('Content-Type: text/csv; charset=utf-8');
             header('Content-Disposition: attachment; filename="guests-' . $w['slug'] . '.csv"');
             $out = fopen('php://output', 'w');
-            fputcsv($out, ['Name', 'Phone', 'Email', 'Party', 'Coming', 'Pass', 'Table', 'Note', 'Replied']);
+            fputcsv($out, ['Name', 'Phone', 'Email', 'Party', 'Coming', 'Approved', 'Pass', 'Checked in', 'Table', 'Note', 'Replied']);
             foreach ($rows as $g) {
-                fputcsv($out, [$g['name'], $g['phone'], $g['email'], $g['party'], $g['coming'],
-                               $g['pass_code'], $g['table_no'], $g['note'], $g['created_at']]);
+                fputcsv($out, [$g['name'], $g['phone'], $g['email'], $g['party'], $g['coming'], $g['status'] === 'approved' ? 'yes' : 'no',
+                               $g['pass_code'], $g['checked_in'], $g['table_no'], $g['note'], $g['created_at']]);
             }
             exit;
         }
@@ -754,12 +754,13 @@ final class AccountController
             'title' => 'Guests & RSVPs',
             'w'     => $w,
             'rows'  => $rows,
+            'wait'  => Rsvp::pending((int) $w['id']),
             'q'     => $q,
             'sum'   => Db::one(
                 "SELECT COUNT(*) total,
                         SUM(coming='yes') yes, SUM(coming='no') no, SUM(coming='maybe') maybe,
                         COALESCE(SUM(CASE WHEN coming='yes' THEN party ELSE 0 END),0) heads
-                 FROM guests WHERE wedding_id = ?",
+                 FROM guests WHERE wedding_id = ? AND status = 'approved'",
                 [$w['id']]
             ) ?? [],
         ]);
@@ -774,6 +775,41 @@ final class AccountController
                    'id = ? AND wedding_id = ?', [(int) $id, $w['id']]);
         Guard::flash('ok', 'Updated.');
         self::go('/account/guests');
+    }
+
+    /** Approve or decline one RSVP. Approving emails the guest their access code. */
+    public function guestDecide(string $id): void
+    {
+        Guard::must();
+        $w = $this->need();
+        $ok = ($_POST['do'] ?? '') === 'approve' ? Rsvp::approve($w, (int) $id) : Rsvp::decline($w, (int) $id);
+        Guard::flash($ok ? 'ok' : 'bad', $ok ? (($_POST['do'] ?? '') === 'approve' ? 'Approved. We emailed them their access code.' : 'Declined. They will not get a code.') : 'That reply was already dealt with.');
+        self::go('/account/guests#waiting');
+    }
+
+    public function guestApproveAll(): void
+    {
+        Guard::must();
+        $w = $this->need();
+        $n = 0;
+        foreach (Rsvp::pending((int) $w['id']) as $g) {
+            $n += Rsvp::approve($w, (int) $g['id']) ? 1 : 0;
+        }
+        Guard::flash('ok', $n === 1 ? 'Approved 1 guest and emailed their code.' : "Approved {$n} guests and emailed their codes.");
+        self::go('/account/guests#waiting');
+    }
+
+    /** At the gate: type a code and see whose it is, with their face. */
+    public function guestDoor(): void
+    {
+        Guard::must();
+        $w = $this->need();
+        $c = Rsvp::clean((string) ($_POST['code'] ?? ''));
+        if ($c === '' || !Db::val("SELECT 1 FROM guests WHERE wedding_id = ? AND pass_code = ? AND status = 'approved'", [$w['id'], $c])) {
+            Guard::flash('bad', 'No approved guest has that code. Check it and try again.');
+            self::go('/account/guests#door');
+        }
+        self::go('/w/' . $w['slug'] . '/pass/' . $c);
     }
 
     /* -------------------------------------------------------------------------- Money -------- */

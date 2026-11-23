@@ -16,6 +16,51 @@ final class Images
      */
     public static function store(array $file, string $dir): ?string
     {
+        $src = self::open($file);
+        if (!$src) {
+            return null;
+        }
+        $base = App::root() . '/public/assets/uploads/' . trim($dir, '/');
+        if (!is_dir($base) && !@mkdir($base, 0755, true)) {
+            imagedestroy($src);
+            return null;
+        }
+        $stem = bin2hex(random_bytes(8));
+        self::write($src, $base . '/' . $stem, 1600);
+        self::write($src, $base . '/' . $stem . '-640', 640);
+        imagedestroy($src);
+        return 'uploads/' . trim($dir, '/') . '/' . $stem . '.jpg';
+    }
+
+    /**
+     * A private photo (a guest's face for their entry pass): one 640px JPEG in a folder outside the
+     * website, so it is only ever shown through a page that checks who is asking. Returns the file name.
+     */
+    public static function storeAt(array $file, string $absDir): ?string
+    {
+        $src = self::open($file);
+        if (!$src) {
+            return null;
+        }
+        if (!is_dir($absDir) && !@mkdir($absDir, 0750, true)) {
+            imagedestroy($src);
+            return null;
+        }
+        $stem = bin2hex(random_bytes(12));
+        $w = imagesx($src);
+        $h = imagesy($src);
+        $k = min(1, 640 / max($w, $h));
+        $dst = imagecreatetruecolor(max(1, (int) round($w * $k)), max(1, (int) round($h * $k)));
+        imagecopyresampled($dst, $src, 0, 0, 0, 0, imagesx($dst), imagesy($dst), $w, $h);
+        imagejpeg($dst, $absDir . '/' . $stem . '.jpg', 82);
+        imagedestroy($dst);
+        imagedestroy($src);
+        return $stem . '.jpg';
+    }
+
+    /** Open an uploaded JPEG, PNG or WebP as a picture, the right way up. Anything else: null. */
+    private static function open(array $file): ?GdImage
+    {
         if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_file((string) $file['tmp_name'])) {
             return null;
         }
@@ -43,16 +88,7 @@ final class Images
                 if ($r) { imagedestroy($src); $src = $r; }
             }
         }
-        $base = App::root() . '/public/assets/uploads/' . trim($dir, '/');
-        if (!is_dir($base) && !@mkdir($base, 0755, true)) {
-            imagedestroy($src);
-            return null;
-        }
-        $stem = bin2hex(random_bytes(8));
-        self::write($src, $base . '/' . $stem, 1600);
-        self::write($src, $base . '/' . $stem . '-640', 640);
-        imagedestroy($src);
-        return 'uploads/' . trim($dir, '/') . '/' . $stem . '.jpg';
+        return $src;
     }
 
     /** One size, as JPEG and (where the server can) WebP. */

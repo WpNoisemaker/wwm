@@ -2376,3 +2376,31 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .cdash__help summary .ico { transition: transform .25s var(--ease); }
 .cdash__help[open] summary .ico { transform: rotate(180deg); }
 @media (min-width: 700px) { .cdash__stats { grid-template-columns: repeat(4, minmax(0, 1fr)); } .cdash__acts { max-width: 460px; } }
+
+/* ---------- RSVP face photo, waiting list, door and the guest pass ---------- */
+.face { display: grid; justify-items: center; gap: 12px; padding: 16px; border-radius: 24px; background: var(--tile); border: 1px solid var(--tile-line); }
+.face__k { font-size: 13px; color: var(--ink-2); }
+.face__view { position: relative; width: 148px; height: 148px; border-radius: 50%; overflow: hidden; background: var(--field); border: 1px dashed var(--tile-line); display: grid; place-items: center; }
+.face.has-face .face__view { border-style: solid; border-color: var(--glass-line); }
+.face__cam, .face__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.face__cam { transform: scaleX(-1); }
+.face__ph .ico { width: 40px; height: 40px; stroke-width: 1; color: var(--ink-3); }
+.face__acts { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.face__acts .ico, .face [data-face-snap] .ico { width: 16px; height: 16px; }
+.face__up { cursor: pointer; }
+.face__up:focus-within { outline: 2px solid var(--ink); outline-offset: 2px; }
+.face .help { margin: 0; }
+.rsvp-wait { grid-template-columns: auto 1fr; align-items: start; }
+.rsvp-wait__face { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; background: var(--tile); flex: none; }
+.rsvp-wait__acts { grid-column: 1 / -1; display: flex; gap: 8px; justify-content: flex-end; }
+@media (min-width: 700px) { .rsvp-wait { grid-template-columns: auto 1fr auto; align-items: center; } .rsvp-wait__acts { grid-column: auto; } }
+.door__row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.door__row .input { text-transform: uppercase; letter-spacing: .12em; font-variant-numeric: tabular-nums; }
+.pass-page { padding-top: 12px; padding-bottom: 32px; }
+.pass__face { display: block; width: 120px; height: 120px; margin: 14px auto 4px; border-radius: 50%; object-fit: cover; border: 1px solid var(--glass-line); }
+.pass__party { color: var(--ink-2); font-size: 14px; }
+.pass__code .pass__dash { width: 14px; background: none; }
+.pass__in { display: inline-flex; gap: 6px; align-items: center; margin: 6px auto 0; }
+.pass__door { display: grid; gap: 10px; margin-top: 18px; }
+.pass__when .ico { width: 14px; height: 14px; vertical-align: -2px; }
+.pass-page .pass > .pill--block { margin-top: 14px; }

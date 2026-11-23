@@ -14,7 +14,7 @@ final class RankingsController
         }
         $args[] = 50;
         $rows = Db::all(
-            "SELECT w.*, (SELECT COUNT(*) FROM guests g WHERE g.wedding_id = w.id AND g.coming='yes') guests
+            "SELECT w.*, (SELECT COUNT(*) FROM guests g WHERE g.wedding_id = w.id AND g.coming='yes' AND g.status='approved') guests
              FROM weddings w WHERE $where ORDER BY buzz DESC, views DESC, id LIMIT ?",
             $args
         );

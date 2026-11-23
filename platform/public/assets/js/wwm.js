@@ -401,6 +401,53 @@
 	}
 	addEventListener('pageshow', function () { d.querySelectorAll('form[data-busy="1"]').forEach(function (f) { f.dataset.busy = '0'; }); d.querySelectorAll('.is-busy').forEach(function (b) { b.classList.remove('is-busy'); }); });
 
+	/* ---------- RSVP: a selfie or a photo of the guest's face, checked against their code at the gate ---------- */
+	d.querySelectorAll('[data-rsvp-form]').forEach(function (f) {
+		var face = f.querySelector('[data-face]'); if (!face) { return; }
+		var cam = face.querySelector('.face__cam'), img = face.querySelector('.face__img'), ph = face.querySelector('.face__ph'),
+			file = face.querySelector('[data-face-file]'), snap = face.querySelector('[data-face-snap]'), go = face.querySelector('[data-face-cam]'),
+			say = face.querySelector('[data-face-say]'), stream = null, url = '';
+		function stop() { if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; } cam.hidden = true; snap.hidden = true; if (img.hidden) { ph.hidden = false; } }
+		function show(blob, words) { if (url) { URL.revokeObjectURL(url); } url = URL.createObjectURL(blob); img.src = url; img.hidden = false; ph.hidden = true; face.classList.add('has-face'); say.textContent = words; }
+		function picker() { file.setAttribute('capture', 'user'); file.click(); setTimeout(function () { file.removeAttribute('capture'); }, 1500); }
+		file.addEventListener('change', function () { stop(); if (file.files && file.files[0]) { show(file.files[0], 'Photo added. You can take another or upload a different one.'); } });
+		go.addEventListener('click', function () {
+			if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { picker(); return; }
+			navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 720 } }, audio: false }).then(function (st) {
+				stream = st; cam.srcObject = st; cam.hidden = false; img.hidden = true; ph.hidden = true; snap.hidden = false;
+				cam.play().catch(function () {}); say.textContent = 'Fit your face in the circle, then take the photo.'; snap.focus();
+			}).catch(function () { say.textContent = 'The camera did not open. Choose or take a photo instead.'; picker(); });
+		});
+		snap.addEventListener('click', function () {
+			var vw = cam.videoWidth, vh = cam.videoHeight, sz = Math.min(vw, vh); if (!sz) { return; }
+			var c = d.createElement('canvas'); c.width = c.height = 640;
+			c.getContext('2d').drawImage(cam, (vw - sz) / 2, (vh - sz) / 2, sz, sz, 0, 0, 640, 640);
+			c.toBlob(function (b) {
+				if (!b) { return; }
+				try { var dt = new DataTransfer(); dt.items.add(new File([b], 'selfie.jpg', { type: 'image/jpeg' })); file.files = dt.files; }
+				catch (er) { toast('This browser cannot keep the selfie. Upload a photo instead.'); return; }
+				stop(); show(b, 'Photo taken. You can take another if you like.'); go.focus();
+			}, 'image/jpeg', 0.88);
+		});
+		// "Can't make it" needs no email and no photo.
+		function going() {
+			var no = (f.querySelector('input[name=coming]:checked') || {}).value === 'no';
+			f.querySelectorAll('[data-rsvp-going]').forEach(function (el) { el.hidden = no; });
+			var em = f.querySelector('input[name=email]'); if (em) { em.required = !no; }
+			if (no) { stop(); }
+			return !no;
+		}
+		f.addEventListener('change', function (e) { if (e.target.name === 'coming') { going(); } });
+		going();
+		f.addEventListener('submit', function (e) {
+			if (going() && !(file.files && file.files.length)) { e.preventDefault(); toast('Add a photo of your face first: take a selfie or upload one.'); go.focus(); }
+			else { stop(); }
+		});
+		// Closing the sheet turns the camera off.
+		d.addEventListener('click', function (e) { if (stream && (e.target.closest('[data-close]') || e.target.classList.contains('scrim'))) { stop(); } });
+		d.addEventListener('keydown', function (e) { if (e.key === 'Escape') { stop(); } });
+	});
+
 	/* ---------- copy and share ---------- */
 	d.addEventListener('click', function (e) {
 		var sh = e.target.closest('[data-share]');

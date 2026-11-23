@@ -8,7 +8,7 @@ declare(strict_types=1);
  */
 final class Upgrade
 {
-    private const STEPS = ['couple-photos-1', 'ibrahim-ummi-photos-1', 'wall-voice-squad-1', 'squad-profiles-1', 'market-2', 'talk-threads-1', 'demo-sprays-1', 'seller-premium-1', 'bachs-1', 'shortlets-1', 'settle-1'];
+    private const STEPS = ['couple-photos-1', 'ibrahim-ummi-photos-1', 'wall-voice-squad-1', 'squad-profiles-1', 'market-2', 'talk-threads-1', 'demo-sprays-1', 'seller-premium-1', 'bachs-1', 'shortlets-1', 'settle-1', 'rsvp-approve-1'];
 
     public static function run(): void
     {
@@ -30,6 +30,7 @@ final class Upgrade
                     'shortlets-1'          => Db::run("UPDATE categories SET name = 'Shortlets & vacation rentals', about = 'Shortlet apartments, villas and family houses near the venue' WHERE slug = 'stay' AND name = 'Stays'"),
                     'bachs-1'              => Db::val("SHOW COLUMNS FROM weddings LIKE 'va_number'") ?: Db::run("ALTER TABLE weddings ADD COLUMN va_account VARCHAR(80) NOT NULL DEFAULT '', ADD COLUMN va_number VARCHAR(20) NOT NULL DEFAULT '', ADD COLUMN va_bank VARCHAR(120) NOT NULL DEFAULT '', ADD COLUMN va_name VARCHAR(160) NOT NULL DEFAULT '', ADD COLUMN va_status VARCHAR(20) NOT NULL DEFAULT '', ADD COLUMN va_error VARCHAR(255) NOT NULL DEFAULT ''"),
                     'seller-premium-1'     => Db::val("SHOW COLUMNS FROM vendors LIKE 'premium'") ?: Db::run('ALTER TABLE vendors ADD COLUMN premium TINYINT(1) NOT NULL DEFAULT 0 AFTER projects, ADD COLUMN brand JSON NULL AFTER premium'),
+                    'rsvp-approve-1'       => Db::val("SHOW COLUMNS FROM guests LIKE 'status'") ?: Db::run("ALTER TABLE guests ADD COLUMN status ENUM('pending','approved','declined') NOT NULL DEFAULT 'approved' AFTER coming, ADD COLUMN photo VARCHAR(60) NOT NULL DEFAULT '' AFTER note, ADD COLUMN decided_at DATETIME NULL AFTER checked_in, ADD COLUMN mailed_at DATETIME NULL AFTER decided_at, ADD KEY ix_status (wedding_id, status)"),
                     'talk-threads-1'       => Db::val("SHOW COLUMNS FROM talk_replies LIKE 'parent_id'") ?: Db::run('ALTER TABLE talk_replies ADD COLUMN parent_id INT UNSIGNED NULL AFTER talk_id'),
                 };
             } catch (Throwable $e) {

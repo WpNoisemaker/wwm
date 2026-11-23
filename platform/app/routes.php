@@ -13,6 +13,9 @@ $r->get('/weddings/near',       [WeddingController::class, 'near']);    // weddi
 $r->get('/weddings/{place:[a-z-]+}', [WeddingController::class, 'place']);   // each country's own listing
 $r->any('/w/{slug}',            [WeddingController::class, 'show']);   // GET shows it; POST is the pass-code form on a private page
 $r->post('/w/{slug}/rsvp',      [WeddingController::class, 'rsvp']);
+$r->get('/w/{slug}/pass/{code:[A-Za-z0-9-]+}',       [WeddingController::class, 'pass']);
+$r->post('/w/{slug}/pass/{code:[A-Za-z0-9-]+}/in',   [WeddingController::class, 'checkIn']);
+$r->get('/face/{id:\d+}',      [WeddingController::class, 'face']);
 $r->post('/w/{slug}/note',      [WeddingController::class, 'note']);
 $r->post('/w/{slug}/photo',     [WeddingController::class, 'photo']);
 $r->get('/w/{slug}/sprays',     [WeddingController::class, 'sprays']);
@@ -88,6 +91,9 @@ $r->any('/account/shop',        [AccountController::class, 'shop']);   // a mark
 $r->get('/account/shop/profile', [AccountController::class, 'shopProfile']);
 $r->get('/account/guests',      [AccountController::class, 'guests']);
 $r->post('/account/guests/{id:\d+}', [AccountController::class, 'guestUpdate']);
+$r->post('/account/guests/{id:\d+}/decide', [AccountController::class, 'guestDecide']);
+$r->post('/account/guests/approve-all', [AccountController::class, 'guestApproveAll']);
+$r->post('/account/guests/door', [AccountController::class, 'guestDoor']);
 $r->get('/account/money',       [AccountController::class, 'money']);
 $r->post('/account/payout',     [AccountController::class, 'payout']);
 $r->post('/account/verify/resend', [AccountController::class, 'resendVerify']);

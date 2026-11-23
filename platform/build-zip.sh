@@ -21,6 +21,7 @@ rsync -a \
 	--exclude 'config/config.php' \
 	--exclude 'public/assets/uploads/*' \
 	--exclude 'storage/drive' \
+	--exclude 'storage/faces' \
 	--exclude '*.log' \
 	--exclude '.DS_Store' \
 	--exclude '._*' \
