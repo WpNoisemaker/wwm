@@ -54,7 +54,7 @@
 				<label class="field"><span>Say something back</span><textarea class="input" name="body" rows="3" required maxlength="1500"></textarea></label>
 				<label class="field"><span>Pen name: anything you like</span><input class="input" name="pen_name" maxlength="40" placeholder="Someone" autocomplete="off"></label>
 				<button class="pill pill--block" type="submit">Reply</button>
-				<p class="after-pill">No account needed. Only your pen name appears.</p>
+				<p class="after-pill">You do not need an account, and only your pen name appears.</p>
 			</form>
 		</div>
 	</div>

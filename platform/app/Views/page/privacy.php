@@ -16,17 +16,17 @@
 	<ul>
 		<li><b>Your account:</b> your name, email, phone number if you add it, and your password, which we only ever store as a scrambled hash.</li>
 		<li><b>Your wedding page:</b> everything you add to it: names, dates, venues, your story, photos, programmes, squad, registry, quizzes and design choices.</li>
-		<li><b>Guests:</b> when someone RSVPs, the name, phone number, party size and note they give, and their entry pass. When they leave a note, a photo or a quiz score, the name they type.</li>
+		<li><b>Guests:</b> when someone RSVPs, we collect the name, phone number, party size and note they give, and their entry pass. When they leave a note, a photo or a quiz score, we collect the name they type.</li>
 		<li><b>Payments:</b> the amount, currency, the name and message the payer gives, and the reference from our payment partner. Card and bank details go straight to the payment partner; we never see or store them.</li>
 		<li><b>Sellers:</b> the business details and listings you publish, and the payout account you give us.</li>
-		<li><b>The community:</b> the post or reply and the pen name you choose. No account, email or real name is asked for. To stop spam we briefly keep a scrambled form of your network address, then delete it.</li>
+		<li><b>The community:</b> the post or reply and the pen name you choose. We do not ask for an account, an email address or a real name. To stop spam, we briefly keep a scrambled form of your network address, then delete it.</li>
 		<li><b>Technical data:</b> basic logs (pages requested, time, browser) kept to run and protect the service.</li>
 	</ul>
 
 	<h2>Why we use it</h2>
 	<ul>
 		<li>To run the service you asked for: your page, RSVPs, gifts, payouts, bookings and the community.</li>
-		<li>To keep it safe: preventing fraud, spam and abuse, and enforcing our terms.</li>
+		<li>To keep it safe, by preventing fraud, spam and abuse and by enforcing our terms.</li>
 		<li>To tell you what you need to know: confirmations, receipts, RSVP alerts and important changes.</li>
 		<li>To meet legal duties, such as tax and anti-fraud records.</li>
 	</ul>
@@ -36,10 +36,10 @@
 	<p>A public wedding page can be seen by anyone with the link, appears in the directory and on its country&rsquo;s page, is ranked on the Buzz Chart and shows a preview when the link is shared. Guest notes, photos and quiz names on a public page are public too. A private page is shown only to the couple and to people with its pass code. Guest phone numbers and RSVP notes are only ever shown to the couple.</p>
 
 	<h2>Who else sees it</h2>
-	<p>Only the providers we need to run the service: our hosting company, our email provider, and our payment partners, each bound to protect it and use it only for us. We share data with authorities only when the law requires it.</p>
+	<p>We share it only with the providers we need to run the service: our hosting company, our email provider and our payment partners, each of which is bound to protect it and use it only for us. We share data with authorities only when the law requires it.</p>
 
 	<h2>How long we keep it</h2>
-	<p>Paid pages are kept for as long as the service runs, as the couple&rsquo;s keepsake. Free pages may be removed at any time (see our <a href="<?= e(App::url('/terms')) ?>">terms</a>), and their content goes with them. Payment records are kept for as long as the law requires. Close your account and we delete your personal data, except what we must keep by law.</p>
+	<p>Paid pages are kept for as long as the service runs, as the couple&rsquo;s keepsake. Free pages may be removed at any time (see our <a href="<?= e(App::url('/terms')) ?>">terms</a>), and their content goes with them. Payment records are kept for as long as the law requires. If you close your account, we delete your personal data, except what we must keep by law.</p>
 
 	<h2>Your rights</h2>
 	<p>You can ask to see the personal data we hold about you, correct it, delete it, object to how we use it, or receive a copy. Guests can ask the couple, or us, to remove their RSVP, note or photo. Write to <a href="mailto:<?= e($mail) ?>"><?= e($mail) ?></a> and we will reply within 30 days. You can also complain to the Nigeria Data Protection Commission, or to your own country&rsquo;s regulator.</p>
@@ -54,5 +54,5 @@
 	<p>We use a small number of cookies to keep you signed in and remember your choices. Our <a href="<?= e(App::url('/cookies')) ?>">cookie policy</a> lists every one.</p>
 
 	<h2>Changes and contact</h2>
-	<p>We will update this page when anything changes; the date at the top shows when. Questions: <a href="mailto:<?= e($mail) ?>"><?= e($mail) ?></a>.</p>
+	<p>We will update this page when anything changes; the date at the top shows when. If you have any questions, write to <a href="mailto:<?= e($mail) ?>"><?= e($mail) ?></a>.</p>
 </article>

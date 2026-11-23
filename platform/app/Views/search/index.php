@@ -10,7 +10,7 @@
 		<input class="input" type="search" name="q" value="<?= e($q) ?>"<?= $q === '' ? ' autofocus' : '' ?> placeholder="A couple, a vendor, a city, an apartment" aria-label="Search the site">
 	</form>
 	<?php if ($q === ''): ?>
-		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('search') ?></span><p>Couples and hashtags, vendors and their trades, or anything on the marketplace.</p></div>
+		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('search') ?></span><p>Search for couples and hashtags, vendors and their trades, or anything on the marketplace.</p></div>
 	<?php elseif ($total === 0): ?>
 		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('search') ?></span><p>Nothing matched that. Try a shorter word, or a city.</p></div>
 	<?php else: ?>

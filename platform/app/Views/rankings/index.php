@@ -19,7 +19,7 @@ $max  = max(1, (int) ($rows[0]['buzz'] ?? 1));
 	</nav>
 
 	<?php if (!$rows): ?>
-		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('chart') ?></span><p><?= t('rankings.text.the-chart-is-empty-here', 'No pages here yet. Pages show up once guests visit, reply and give.') ?></p></div>
+		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('chart') ?></span><p><?= t('rankings.text.the-chart-is-empty-here', 'There are no pages here yet. Pages appear once guests visit, reply and give.') ?></p></div>
 	<?php else: ?>
 		<div class="podium gap-t">
 			<?php foreach ($top as $i => $w): ?>
@@ -62,6 +62,6 @@ $max  = max(1, (int) ($rows[0]['buzz'] ?? 1));
 				</tbody>
 			</table>
 		</div>
-		<p class="center sub gap-t-sm">Coins per guest action. A visit counts once per guest; refreshing the page does not add more. <a class="linkish" href="<?= e(App::url('/pricing')) ?>"><?= t('rankings.button.compare-the-plans', 'Compare the plans') ?></a></p>
+		<p class="center sub gap-t-sm">These are the coins earned for each guest action. A visit counts once per guest; refreshing the page does not add more. <a class="linkish" href="<?= e(App::url('/pricing')) ?>"><?= t('rankings.button.compare-the-plans', 'Compare the plans') ?></a></p>
 	</section>
 </div>

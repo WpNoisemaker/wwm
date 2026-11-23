@@ -17,7 +17,7 @@ $here = '/vendors/' . $v['slug'];
 			<span class="eyebrow"><?= e($v['category'] ?: 'Vendor') ?><?= $v['city'] ? ' · ' . e($v['city']) : '' ?></span>
 			<h1 class="profile__h"><?= e($v['name']) ?> <?php if ((int) $v['verified'] && !$paused): ?><span class="badge badge--solid"><?= icon('check') ?>Verified</span><?php endif; ?></h1>
 			<?php if ($paused): ?>
-				<p class="note"><?= icon('lock') ?><span>This seller is paused while we check their business. Their listings come back if it all checks out.</span></p>
+				<p class="note"><?= icon('lock') ?><span>This seller is paused while we check their business. Their listings will return if everything checks out.</span></p>
 			<?php else: ?>
 				<div class="mosaic profile__facts">
 					<div class="tile tile--w2"><span class="k">Rating</span><span class="v"><?= (float) $v['rating'] > 0 ? e(number_format((float) $v['rating'], 1)) . ' <small>of 5</small>' : 'New' ?></span></div>

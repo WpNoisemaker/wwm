@@ -24,13 +24,13 @@
 	<h2>When plans change</h2>
 	<ul>
 		<li><b>The wedding is postponed:</b> your page and plan stay yours. Change the date and carry on.</li>
-		<li><b>The wedding is cancelled, or you stop using the page:</b> no refund. You can make the page private at any time.</li>
+		<li><b>The wedding is cancelled, or you stop using the page:</b> there is no refund. You can make the page private at any time.</li>
 		<li><b>Instalments:</b> instalments already paid are not refunded. If later instalments are not paid, the page returns to the plan that has been paid for.</li>
-		<li><b>A page removed for breaking our terms:</b> no refund.</li>
+		<li><b>A page removed for breaking our terms:</b> there is no refund.</li>
 	</ul>
 
 	<h2>Gifts and spraying</h2>
-	<p>Cash gifts and sprays are gifts from guests to the couple. Once sent they are not refunded or reversed by us. A guest who made a mistake should speak to the couple.</p>
+	<p>Cash gifts and sprays are gifts from guests to the couple. Once sent, they are not refunded or reversed by us. A guest who made a mistake should speak to the couple.</p>
 
 	<h2>Marketplace bookings</h2>
 	<p>We do not take payments for shortlets, rides, honeymoons, aso-ebi or any other listing: you pay the seller directly, so we cannot refund them. Any cancellation or refund is between the buyer and the seller, on the terms in the seller&rsquo;s listing.</p>

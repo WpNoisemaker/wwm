@@ -5,7 +5,7 @@
 	<?php if (!$rows): ?>
 		<div class="glass glass--plain empty gap-t">
 			<span class="cbtn"><?= icon('chat') ?></span>
-			<p>No messages yet. Find a shortlet, a ride or your aso-ebi on the marketplace and message the seller from the listing.</p>
+			<p>You have no messages yet. Find a shortlet, a ride or your aso-ebi on the marketplace and message the seller from the listing.</p>
 			<a class="pill" href="<?= e(App::url('/market')) ?>">Go to the marketplace</a>
 		</div>
 	<?php else: ?>

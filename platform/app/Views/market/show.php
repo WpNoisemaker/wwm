@@ -74,10 +74,10 @@ $here = '/market/' . $l['slug'];
 					<form method="post" action="<?= e(App::url($here . '/message')) ?>" class="form">
 						<?= Guard::field() ?>
 						<label class="sr" for="chat-body">Your message</label>
-						<textarea class="input" id="chat-body" name="body" rows="3" maxlength="4000" required placeholder="Hello! Is this free on 14 December? We are 8 guests."></textarea>
+						<textarea class="input" id="chat-body" name="body" rows="3" maxlength="4000" required placeholder="Hello! Is this free on 14 December? There are 8 of us."></textarea>
 						<button class="pill pill--block" type="submit"><?= icon('chat') ?>Send</button>
 					</form>
-					<p class="help">They answer in your Messages, and we email you when they do. They can send you an invoice or a payment link there.</p>
+					<p class="help">Their replies arrive in your Messages, and we email you when they reply. They can send you an invoice or a payment link there.</p>
 				<?php endif; ?>
 			</section>
 

@@ -18,7 +18,7 @@ $compact = $compact ?? false;
 		</select>
 	</label>
 	<noscript><button class="pill pill--sm" type="submit">Show</button></noscript>
-	<p class="fx__note" data-fx-note<?= $cur === 'NGN' ? ' hidden' : '' ?>>A guide at today&rsquo;s rate; plans are priced in naira.</p>
+	<p class="fx__note" data-fx-note<?= $cur === 'NGN' ? ' hidden' : '' ?>>This is a guide at today&rsquo;s rate; plans are priced in naira.</p>
 </form>
 <?php return; endif; ?>
 <div class="fx" id="currency" data-fx="<?= e(Fx::forScript()) ?>">
@@ -28,5 +28,5 @@ $compact = $compact ?? false;
 			<a class="chip<?= $k === $cur ? ' is-on' : '' ?>" href="?cur=<?= e($k) ?>#currency" data-cur="<?= e($k) ?>" title="<?= e($name) ?>"<?= $k === $cur ? ' aria-current="true"' : '' ?>><span class="fx__sign"><?= e(trim(cur_sign($k))) ?></span> <?= e($labels[$k]) ?></a>
 		<?php endforeach; ?>
 	</nav>
-	<p class="fx__note" data-fx-note<?= $cur === 'NGN' ? ' hidden' : '' ?>>Plans are priced in naira. Other currencies are a guide at today&rsquo;s rate.</p>
+	<p class="fx__note" data-fx-note<?= $cur === 'NGN' ? ' hidden' : '' ?>>Plans are priced in naira. Prices in other currencies are a guide at today&rsquo;s rate.</p>
 </div>

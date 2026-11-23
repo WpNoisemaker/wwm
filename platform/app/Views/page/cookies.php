@@ -9,13 +9,13 @@
 	<span class="eyebrow">Last updated 23 November 2026</span>
 	<h1 class="prose__h">Cookie policy</h1>
 	<?= View::partial('page/_policies', ['now' => 'cookies']) ?>
-	<p>We keep this short because we use very few. There are no advertising or cross-site tracking cookies on Wedding Websites &amp; More.</p>
+	<p>We keep this short because we use very few cookies. There are no advertising or cross-site tracking cookies on Wedding Websites &amp; More.</p>
 	<h2>Cookies we set</h2>
 	<ul>
-		<li><b>Session cookie:</b> keeps the site working between pages: protecting forms from forgery, showing you messages after you send something, and remembering an RSVP pass you were just given. Ends when you close the browser.</li>
-		<li><b>wwm:</b> keeps you signed in, if you have an account. Removed when you sign out.</li>
-		<li><b>wwm-cur:</b> the currency you chose for prices. Kept for a year.</li>
-		<li><b>wpass&hellip;:</b> lets you back into a private wedding page you unlocked with its pass code. Kept for 30 days.</li>
+		<li><b>Session cookie:</b> keeps the site working between pages by protecting forms from forgery, showing you messages after you send something and remembering an RSVP pass you were just given. It ends when you close your browser.</li>
+		<li><b>wwm:</b> keeps you signed in, if you have an account. It is removed when you sign out.</li>
+		<li><b>wwm-cur:</b> the currency you chose for prices. It is kept for a year.</li>
+		<li><b>wpass&hellip;:</b> lets you back into a private wedding page you unlocked with its pass code. It is kept for 30 days.</li>
 	</ul>
 	<h2>Things your browser keeps</h2>
 	<ul>

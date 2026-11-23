@@ -31,7 +31,7 @@ $og    = $ogImage ?? img_url(timg('site.image.share', 'brand/og.jpg'));
 $origin = (string) preg_replace('#^(https?://[^/]+).*$#', '$1', (string) App::config('url'));
 $canon  = $canonical ?? ($origin . strtok((string) ($_SERVER['REQUEST_URI'] ?? '/'), '?'));
 $ogTitle = $ogTitle ?? ($title ?? 'Wedding Websites & More');
-$ogDesc  = $ogDesc ?? ($desc ?? 'Wedding pages for African couples: invite, RSVP, gifts, spraying and livestream in one link.');
+$ogDesc  = $ogDesc ?? ($desc ?? 'Wedding pages for African couples, with the invitation, RSVP, gifts, spraying and livestream on one link.');
 ?>
 <!doctype html>
 <html lang="en"<?= $htmlAttr ?>>

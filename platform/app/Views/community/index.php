@@ -11,7 +11,7 @@ $topicUrl = static fn (string $t, string $s): string => App::url('/community?' .
 	<header class="page-head">
 		<span class="eyebrow"><?= t('community.eyebrow.no-account-any-pen-name', 'Anonymous Community') ?></span>
 		<h1><?= t('community.title.say-it-here-instead', 'Ask, share and get advice, without your name') ?></h1>
-		<p class="lede"><?= t('community.intro.love-family-money-faith-inlaws', 'A safe place to voice your concerns and ask questions about your relationship, your wedding, marriage and family life. You do not need an account. Only the pen name you choose is shown, and nobody can see who you are.') ?></p>
+		<p class="lede"><?= t('community.intro.love-family-money-faith-inlaws', 'This is a safe place to voice your concerns and ask questions about your relationship, your wedding, marriage and family life. You do not need an account. Only the pen name you choose is shown, and nobody can see who you are.') ?></p>
 	</header>
 	<div class="wrap-narrow-flash"><?= flashes() ?></div>
 
@@ -27,7 +27,7 @@ $topicUrl = static fn (string $t, string $s): string => App::url('/community?' .
 	</nav>
 
 	<?php if (!$rows): ?>
-		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('chat') ?></span><p><?= t('community.text.nothing-here-yet-be-the', 'Nothing here yet. Be the first to say it.') ?></p><button class="pill" type="button" data-open="compose">Write a post</button></div>
+		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('chat') ?></span><p><?= t('community.text.nothing-here-yet-be-the', 'Nothing has been posted here yet. Be the first to say something.') ?></p><button class="pill" type="button" data-open="compose">Write a post</button></div>
 	<?php else: ?>
 	<div class="talk gap-t">
 		<div class="talk__main">
@@ -52,7 +52,7 @@ $topicUrl = static fn (string $t, string $s): string => App::url('/community?' .
 				<div class="act"><button class="cbtn cbtn--lg" type="button" data-deck-go="1" aria-label="Next post"><?= icon('next') ?></button><span class="act__l">Next</span></div>
 			</div>
 			<button class="pill pill--block gap-t-sm" type="button" data-open="compose">Write a post</button>
-			<p class="after-pill"><?= t('community.text.no-account-needed-only-your', 'No account needed. Only your pen name appears.') ?></p>
+			<p class="after-pill"><?= t('community.text.no-account-needed-only-your', 'You do not need an account, and only your pen name appears.') ?></p>
 		</div>
 		<aside class="talk__side">
 			<div class="block-head"><h2 class="h2"><?= $sort === 'new' ? 'Just posted' : 'Most felt' ?></h2></div>

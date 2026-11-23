@@ -14,7 +14,7 @@ $back = $back ?? ('/vendors/' . $v['slug']);
 		<form method="post" action="<?= e(App::url('/vendors/' . $v['slug'] . '/report')) ?>" class="form report__form">
 			<?= Guard::field() ?><input type="hidden" name="back" value="<?= e($back) ?>"><?php if (!empty($listing)): ?><input type="hidden" name="listing_id" value="<?= (int) $listing ?>"><?php endif; ?>
 			<label class="field"><span>What is wrong?</span><select class="input" name="reason"><?php foreach (Market::REASONS as $k => $t): ?><option value="<?= e($k) ?>"><?= e($t) ?></option><?php endforeach; ?></select></label>
-			<label class="field"><span>Tell us what happened</span><textarea class="input" name="body" rows="3" maxlength="2000" placeholder="Dates, amounts, what they said. It stays between you and us."></textarea></label>
+			<label class="field"><span>Tell us what happened</span><textarea class="input" name="body" rows="3" maxlength="2000" placeholder="Include dates, amounts and what they said. This stays between you and us."></textarea></label>
 			<button class="pill pill--sm pill--danger" type="submit">Send the report</button>
 		</form>
 	<?php endif; ?>

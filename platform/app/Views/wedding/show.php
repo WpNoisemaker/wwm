@@ -60,7 +60,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 				<span class="eyebrow">Your RSVP · <?= e($names) ?></span>
 				<p class="pass__name"><?= e($pass['name']) ?></p>
 				<p class="pass__when"><?= icon('clock') ?> Waiting for <?= e($names) ?> to approve it</p>
-				<p class="after-pill">When they do, your access code is emailed to you and shows here.</p>
+				<p class="after-pill">When they do, we will email you your access code, and it will also show here.</p>
 			</div>
 		</section>
 	<?php elseif (!empty($pass)): ?>
@@ -70,7 +70,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 				<p class="pass__name"><?= e($pass['name']) ?><?= (int) $pass['party'] > 1 ? ' + ' . ((int) $pass['party'] - 1) : '' ?></p>
 				<p class="pass__code" aria-label="Pass code <?= e(implode(' ', str_split($pass['code']))) ?>"><?php foreach (str_split(Rsvp::pretty((string) $pass['code'])) as $ch): ?><span<?= $ch === '-' ? ' class="pass__dash"' : '' ?>><?= e($ch) ?></span><?php endforeach; ?></p>
 				<p class="pass__when"><?= e(Wedding::when($w)) ?><?= ($where = Wedding::where($w)) !== '' ? ' · ' . e($where) : '' ?></p>
-				<p class="after-pill">Show this at the gate. Take a screenshot so you have it without signal.</p>
+				<p class="after-pill">Show this at the gate. Take a screenshot so you have it even without a signal.</p>
 			</div>
 		</section>
 	<?php endif; ?>
@@ -105,7 +105,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 			</div>
 		</section>
 	<?php elseif (!empty($w['wed_date']) && strtotime((string) $w['wed_date']) < time()): ?>
-		<section class="wrap w-cd-wrap"><p class="w-married"><?= icon('s-heart') ?> Married <?= e(Wedding::short($w)) ?>. Thank you for celebrating with them.</p></section>
+		<section class="wrap w-cd-wrap"><p class="w-married"><?= icon('s-heart') ?> Married on <?= e(Wedding::short($w)) ?>. Thank you for celebrating with them.</p></section>
 	<?php endif; ?>
 	<?php $blocks['countdown'] = ob_get_clean(); ?>
 
@@ -322,7 +322,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		<div class="w-head reveal">
 			<span class="eyebrow">Who knows them best?</span>
 			<h2>The quiz</h2>
-			<p class="sub">Pick the one you know. Answer what their family and friends should know, and see where you land on their leaderboard.</p>
+			<p class="sub">Pick the person you know. Answer questions about them that their family and friends should get right, and see where you land on their leaderboard.</p>
 		</div>
 		<?php if (count($qSides) > 1): ?>
 			<div class="quiz-pick reveal" role="tablist" aria-label="Whose quiz">
@@ -381,7 +381,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 							<?php endforeach; ?>
 						</ol>
 					<?php else: ?>
-						<p class="board__empty">Nobody yet. Be the first name on <?= e($nm) ?>&rsquo;s board.</p>
+						<p class="board__empty">Nobody has played yet. Be the first name on <?= e($nm) ?>&rsquo;s board.</p>
 					<?php endif; ?>
 				</div>
 			</div>
@@ -412,7 +412,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	<?php ob_start(); ?>
 	<?php if ($vendors): ?>
 	<section class="sec wrap" id="vendors">
-		<div class="w-head reveal"><span class="eyebrow">Booked by <?= e($names) ?></span><h2>The people behind our day</h2><p class="w-sub">Were you at the wedding? Rate a vendor and say how they did. No account needed.</p></div>
+		<div class="w-head reveal"><span class="eyebrow">Booked by <?= e($names) ?></span><h2>The people behind our day</h2><p class="w-sub">Were you at the wedding? Rate a vendor and say how they did. You do not need an account.</p></div>
 		<div class="rows narrow reveal" style="width:min(100%,720px)">
 			<?php foreach ($vendors as $v): ?>
 				<div class="row-item wv">
@@ -521,7 +521,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		<p><?= e(Wedding::when($w)) ?></p>
 		<?php if (!empty($dz['sign'])): ?><p class="wed-foot__sign"><?= e($dz['sign']) ?></p><?php endif; ?>
 		<?php if ($isFree): ?>
-			<p class="sub"><?= e($design['name']) ?> design · Made on <a href="<?= e(App::url('/')) ?>">Wedding Websites &amp; More</a> · <a href="<?= e(App::url('/join')) ?>">Make yours free</a></p>
+			<p class="sub"><?= e($design['name']) ?> design · Made on <a href="<?= e(App::url('/')) ?>">Wedding Websites &amp; More</a> · <a href="<?= e(App::url('/join')) ?>">Make yours for free</a></p>
 		<?php else: ?>
 			<p class="sub"><?= e($design['name']) ?> design · Made on <a href="<?= e(App::url('/')) ?>">Wedding Websites &amp; More</a></p>
 			<a class="pill pill--glass wed-foot__cta" href="<?= e(App::url('/pricing#premium')) ?>">Make your own Premium wedding page, designed your way</a>
@@ -551,7 +551,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		<p class="glass__q"><?= Reminder::link($w) !== '' ? 'We will email you fifteen minutes before ' . e($names) . ' go live.' : 'We will email you the moment ' . e($names) . ' add the livestream link, and again fifteen minutes before it starts.' ?></p>
 		<label class="field"><span>Your email</span><input class="input" type="email" name="email" required autocomplete="email" inputmode="email" placeholder="you@example.com"></label>
 		<button class="pill pill--block" type="submit"><?= icon('bell') ?>Remind me</button>
-		<p class="after-pill">Two emails at most, each with a link to stop them. We never use it for anything else.</p>
+		<p class="after-pill">We send two emails at most, each with a link to stop them, and we never use your email for anything else.</p>
 		<?php if ((string) $w['visibility'] === 'public'): ?><a class="pill pill--glass pill--block" href="<?= e(App::url('/w/' . $slug . '/live.ics')) ?>" data-no-prefetch><?= icon('calendar') ?>Or add it to your calendar</a><?php endif; ?>
 	</form>
 </div>
@@ -577,7 +577,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 			<button class="cbtn" type="button" data-inc aria-label="One more"><?= icon('plus') ?></button>
 		</div>
 		<label class="field"><span>Your name</span><input class="input" name="name" required autocomplete="name" maxlength="160"></label>
-		<label class="field" data-rsvp-going><span>Your email. Your access code is sent here</span><input class="input" name="email" type="email" required autocomplete="email" inputmode="email" maxlength="190"></label>
+		<label class="field" data-rsvp-going><span>Your email, where we will send your access code</span><input class="input" name="email" type="email" required autocomplete="email" inputmode="email" maxlength="190"></label>
 		<div class="face" data-face data-rsvp-going>
 			<p class="face__k" id="face-k">A photo of your face</p>
 			<div class="face__view" aria-hidden="true">
@@ -595,7 +595,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		<label class="field"><span>Phone, so they can reach you (optional)</span><input class="input" name="phone" inputmode="tel" autocomplete="tel" maxlength="40"></label>
 		<label class="field"><span>A word for them (optional)</span><input class="input" name="note" placeholder="Congratulations!" maxlength="1000"></label>
 		<button class="pill pill--block" type="submit">Send RSVP</button>
-		<p class="after-pill">No account needed. <?= e($names) ?> approve every RSVP, then we email you your access code.</p>
+		<p class="after-pill">You do not need an account. <?= e($names) ?> approve every RSVP, and then we email you your access code.</p>
 	</form>
 </div>
 
@@ -615,7 +615,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		<label class="field"><span>Your name</span><input class="input" name="name" required maxlength="160" autocomplete="name"></label>
 		<label class="field"><span>How did they do?</span><textarea class="input" name="body" rows="3" required minlength="10" maxlength="2000" placeholder="The jollof was the talk of the night, and everyone was served on time."></textarea></label>
 		<button class="pill pill--block" type="submit">Post my review</button>
-		<p class="after-pill">It shows on their profile as from a guest at <?= e($names) ?>&rsquo;s wedding.</p>
+		<p class="after-pill">It appears on their profile as a review from a guest at <?= e($names) ?>&rsquo;s wedding.</p>
 	</form>
 </div>
 <?php endif; ?>
@@ -644,7 +644,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 			<div data-step="2" hidden>
 				<h3 class="give__k give__h" tabindex="-1" data-focus-step="2">Transfer exactly</h3>
 				<div class="give__row"><p class="give__amt" data-g="amount-html"></p><button class="pill pill--sm pill--glass give__copy" type="button" data-g-copy="amount" aria-label="Copy the amount" data-copied="Amount copied"><?= icon('copy') ?>Copy</button></div>
-				<p class="give__hint"><?= icon('info') ?><span>Include the <b data-g="kobo"></b> kobo. It is how we know this transfer is yours.</span></p>
+				<p class="give__hint"><?= icon('info') ?><span>Include the <b data-g="kobo"></b> kobo. That is how we know this transfer is yours.</span></p>
 				<dl class="give__acct">
 					<div class="give__row"><div><dt class="give__k">Account number</dt><dd class="give__num" data-g="number"></dd></div><button class="pill pill--sm pill--glass give__copy" type="button" data-g-copy="number" aria-label="Copy the account number" data-copied="Account number copied"><?= icon('copy') ?>Copy</button></div>
 					<div><dt class="give__k">Bank</dt><dd data-g="bank"></dd></div>
@@ -661,9 +661,9 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 			</div>
 		</form>
 	<?php elseif ($mine): ?>
-		<p class="note"><?= icon('info') ?><span>Get your account number in <a class="linkish" href="<?= e(App::url('/account/money#bank')) ?>">Money</a> and guests can send gifts and spray by bank transfer.</span></p>
+		<p class="note"><?= icon('info') ?><span>Get your account number in <a class="linkish" href="<?= e(App::url('/account/money#bank')) ?>">Money</a> so that guests can send gifts and spray you by bank transfer.</span></p>
 	<?php else: ?>
-		<p class="note"><?= icon('info') ?><span>Bank transfers for <?= e($names) ?> switch on soon.</span></p>
+		<p class="note"><?= icon('info') ?><span>Bank transfers for <?= e($names) ?> will be switched on soon.</span></p>
 	<?php endif; ?>
 </div>
 

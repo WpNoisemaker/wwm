@@ -74,7 +74,7 @@ $curSelect = static function (): string {
 					<button class="pill pill--block" type="submit">Send the link</button>
 				</form>
 			</details>
-			<p class="help">Use your own payment page (Paystack, Flutterwave, your bank). The customer pays you directly; we never hold the money.</p>
+			<p class="help">Use your own payment page (Paystack, Flutterwave or your bank). The customer pays you directly; we never hold the money.</p>
 		</div>
 		<?php endif; ?>
 	</div>
