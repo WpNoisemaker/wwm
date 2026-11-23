@@ -70,7 +70,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 			['s-live', t('home.tile.live', 'Livestream'), t('home.tileline.live', 'Stream the ceremony on your page for family who cannot be there.'), '/pricing'],
 			['s-crown', t('home.tile.chart', 'The Buzz Chart'), t('home.tileline.chart', 'A weekly ranking of wedding pages, based on RSVPs, wishes and shares.'), '/rankings'],
 			['s-store', t('home.tile.vendors', 'Vendors'), t('home.tileline.vendors', 'Photographers, planners, caterers and gele artists, with reviews from couples.'), '/vendors'],
-			['s-bag', t('home.tile.market', 'Marketplace'), t('home.tileline.market', 'Book aso-ebi, stays, rides and honeymoons. You message the seller and pay them directly.'), '/market'],
+			['s-bag', t('home.tile.market', 'Marketplace'), t('home.tileline.market', 'Book aso-ebi, shortlets, rides and honeymoons. You message the seller and pay them directly.'), '/market'],
 			['s-chat', t('home.tile.community', 'Anonymous Community'), t('home.tileline.community', 'Ask questions and share worries about relationships, weddings, marriage and family, under any pen name.'), '/community'],
 		] as [$i, $tt, $sub, $href]): ?>
 			<a class="tile tile--w2" href="<?= e(App::url($href)) ?>"><?= icon($i) ?><span class="v"><?= $tt ?></span><span class="k"><?= $sub ?></span></a>
@@ -211,7 +211,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 <section class="sec wrap" id="market">
 	<div class="sec-head reveal">
 		<span class="eyebrow"><?= t('home.eyebrow.marketplace', 'Marketplace') ?></span>
-		<h2><?= t('home.heading.asoebi-stays-rides', 'Aso-ebi, stays & rides') ?></h2>
+		<h2><?= t('home.heading.asoebi-stays-rides', 'Aso-ebi, shortlets & rides') ?></h2>
 	</div>
 	<div class="rail reveal">
 		<?php foreach (array_slice($listings, 0, 4) as $l): ?>

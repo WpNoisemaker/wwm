@@ -11,7 +11,7 @@
 			]],
 			['For guests', [
 				['Do I need an account to RSVP?', 'No. Open the page, fill in your name and how many are coming, and send it. No app, no sign-up.'],
-				['How do I send a gift from abroad?', 'The registry takes card payments from anywhere. Pick a fund or a gift and pay — the couple sees it immediately.'],
+				['How do I send a gift?', 'By bank transfer. Open the gift or tap Spray, enter your name, and the page shows the couple’s account number and the exact amount to send. It confirms on the page as soon as the money arrives.'],
 				['I lost the link to a wedding page.', 'Search for the couple or their hashtag on the Weddings page. If the page is private you will need the code from the couple.'],
 			]],
             ['For vendors and sellers', [

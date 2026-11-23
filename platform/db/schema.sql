@@ -84,6 +84,13 @@ CREATE TABLE weddings (
   design      JSON         NULL,
   features    JSON         NULL,
   currency    CHAR(3)      NOT NULL DEFAULT 'NGN',
+  -- The couple's own bank account for gifts and spraying (Bachs Connect): account, number, bank, name.
+  va_account  VARCHAR(80)  NOT NULL DEFAULT '',
+  va_number   VARCHAR(20)  NOT NULL DEFAULT '',
+  va_bank     VARCHAR(120) NOT NULL DEFAULT '',
+  va_name     VARCHAR(160) NOT NULL DEFAULT '',
+  va_status   VARCHAR(20)  NOT NULL DEFAULT '',
+  va_error    VARCHAR(255) NOT NULL DEFAULT '',
   visibility  ENUM('public','unlisted','private') NOT NULL DEFAULT 'public',
   pass_code   VARCHAR(40)  NOT NULL DEFAULT '',
   buzz        INT          NOT NULL DEFAULT 0,

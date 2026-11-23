@@ -522,4 +522,64 @@ final class WeddingController
             'list'  => View::partial('wedding/sprayers', ['rows' => $sp['rows'], 'cur' => (string) $w['currency']]),
         ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
+
+    /**
+     * A guest is about to spray or give by bank transfer: the couple's account number and the exact
+     * amount to send. The page then waits for the transfer (given()).
+     */
+    public function give(string $slug): void
+    {
+        Guard::must();
+        $w = Wedding::bySlug($slug);
+        $json = static function (array $d, int $c = 200): never {
+            http_response_code($c);
+            header('Content-Type: application/json; charset=utf-8');
+            header('Cache-Control: no-store');
+            echo json_encode($d, JSON_UNESCAPED_UNICODE);
+            exit;
+        };
+        if (!$w || (string) $w['va_number'] === '' || !Bachs::on()) {
+            $json(['ok' => false, 'msg' => 'Transfers are not switched on for this page yet.'], 400);
+        }
+        if (Guard::tooMany('give', 20, 10)) {
+            $json(['ok' => false, 'msg' => 'Give it a minute, then try again.'], 429);
+        }
+        $kind = ($_POST['kind'] ?? '') === 'spray' && Wedding::has($w, 'spray') ? 'spray' : 'gift';
+        $gift = (int) ($_POST['gift_id'] ?? 0);
+        $gift = $gift && Db::val('SELECT 1 FROM gifts WHERE id = ? AND wedding_id = ?', [$gift, $w['id']]) ? $gift : null;
+        $name = trim((string) ($_POST['name'] ?? ''));
+        $amount = max(0, (int) preg_replace('/\D/', '', (string) ($_POST['amount'] ?? '0')));
+        if ($name === '') {
+            $json(['ok' => false, 'msg' => $kind === 'spray' ? 'Add your name, so the couple sees who sprayed.' : 'Add your name, so the couple knows who it is from.'], 400);
+        }
+        $naira = Transfers::toNaira($amount, (string) $w['currency']);
+        if ($naira < 100) {
+            $json(['ok' => false, 'msg' => 'Choose an amount first.'], 400);
+        }
+        $t = Transfers::start($w, $kind, $gift, $name, trim((string) ($_POST['message'] ?? '')), $naira);
+        $json([
+            'ok' => true, 'code' => $t['code'],
+            'amount' => '₦' . number_format(intdiv((int) $t['amount_kobo'], 100)) . '.' . str_pad((string) ((int) $t['amount_kobo'] % 100), 2, '0', STR_PAD_LEFT),
+            'amount_plain' => number_format((int) $t['amount_kobo'] / 100, 2, '.', ''),
+            'number' => (string) $w['va_number'], 'bank' => (string) $w['va_bank'], 'name' => (string) $w['va_name'],
+            'poll' => App::url('/w/' . $w['slug'] . '/give/' . $t['code']),
+        ]);
+    }
+
+    /** Has the guest's transfer arrived? The page asks every few seconds. */
+    public function given(string $slug, string $code): void
+    {
+        $t = Transfers::get($code);
+        $w = $t ? Db::one('SELECT slug, currency FROM weddings WHERE id = ?', [$t['wedding_id']]) : null;
+        header('Content-Type: application/json; charset=utf-8');
+        header('Cache-Control: no-store');
+        if (!$t || !$w || $w['slug'] !== $slug) {
+            http_response_code(404);
+            echo '{"status":"unknown"}';
+            return;
+        }
+        $paid = $t['status'] === 'paid' ? Db::one('SELECT amount, currency FROM payments WHERE id = ?', [$t['payment_id']]) : null;
+        echo json_encode(['status' => $t['status'], 'kind' => $t['kind'], 'name' => $t['name'],
+            'amount' => $paid ? strip_tags(money(number_format((int) $paid['amount']), (string) $paid['currency'])) : ''], JSON_UNESCAPED_UNICODE);
+    }
 }

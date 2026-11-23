@@ -8,7 +8,21 @@
 	<p class="sub gap-t-sm"><?= $fee > 0 ? 'Your plan carries a ' . e(rtrim(rtrim(number_format($fee, 1), '0'), '.')) . '% service fee on cash gifts, which guests can choose to cover. Premium carries none.' : 'Your plan carries no service fee on gifts or spraying.' ?></p>
 	<div class="split-2 gap-t">
 		<div>
-			<div class="block-head"><h2 class="h2">Gifts in</h2></div>
+			<div class="glass glass--plain glass--tight bank-card" id="bank">
+				<h2 class="h3">Your account for gifts and spraying</h2>
+				<?php if ((string) $w['va_number'] !== ''): ?>
+					<p class="bank-card__n" data-copy="<?= e($w['va_number']) ?>"><?= e($w['va_number']) ?> <?= icon('copy') ?></p>
+					<p class="help"><?= e($w['va_bank']) ?> · <?= e($w['va_name']) ?></p>
+					<p class="help">Guests send gifts and spray by transfer to this account. Each one shows on your page as soon as it arrives.</p>
+				<?php elseif (Bachs::on()): ?>
+					<p class="help">Get your own account number. Guests transfer to it, and every gift and spray shows on your page as soon as it lands.</p>
+					<form method="post" action="<?= e(App::url('/account/bank')) ?>"><?= Guard::field() ?><button class="pill" type="submit">Get my account number</button></form>
+					<?php if ((string) $w['va_error'] !== ''): ?><p class="help">Last try: <?= e($w['va_error']) ?></p><?php endif; ?>
+				<?php else: ?>
+					<p class="help">Bank transfers switch on soon. We will give you your own account number for gifts and spraying.</p>
+				<?php endif; ?>
+			</div>
+			<div class="block-head gap-t"><h2 class="h2">Gifts in</h2></div>
 			<?php if (!$payments): ?><p class="sub">Nothing yet.</p><?php else: ?>
 				<div class="rows">
 					<?php foreach ($payments as $p): ?>

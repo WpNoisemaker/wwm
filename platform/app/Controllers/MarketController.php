@@ -15,8 +15,8 @@ final class MarketController
         $total = Listing::count($f);
 
         View::render('market/index', [
-            'title'  => 'Stays, rides, honeymoons & aso-ebi',
-            'desc'   => 'Stays, rides, honeymoons, aso-ebi and services for your wedding, from sellers you can message, review and report.',
+            'title'  => 'Shortlets, vacation rentals, rides, honeymoons & aso-ebi',
+            'desc'   => 'Shortlets and vacation rentals, rides, honeymoons, aso-ebi and services for your wedding, from sellers you can message, review and report.',
             'tab'    => 'market',
             'css'    => ['market'],
             'rows'   => Listing::search($f, $per, ($page - 1) * $per),
@@ -125,7 +125,7 @@ final class MarketController
         }
         View::render('market/sell', [
             'title' => 'Sell to couples on Wedding Websites & More',
-            'desc'  => 'List your stays, rides, honeymoons, aso-ebi and wedding services where couples plan their day. Customers message you, you send your own invoice or payment link.',
+            'desc'  => 'List your shortlets, vacation rentals, rides, honeymoons, aso-ebi and wedding services where couples plan their day. Customers message you, you send your own invoice or payment link.',
             'tab'   => 'market',
             'appTitle' => 'Sell with us',
             'cats'  => $cats,

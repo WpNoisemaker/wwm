@@ -24,6 +24,12 @@
 			<h2 class="h3 gap-t-sm">Email confirmation</h2>
 			<label class="check"><span>Ask new sign-ups to confirm their email</span><input type="checkbox" name="email_verify" value="1" <?= $verify['on'] ? 'checked' : '' ?>></label>
 			<p class="help">Off until you decide. When it is on, anyone who signs up from that moment must follow a link before making their page public or asking for a payout. Existing accounts are never asked.<?php if ($verify['on'] && $verify['since'] !== ''): ?> On since <?= e(date('j M Y, g:ia', (int) strtotime($verify['since']))) ?>.<?php endif; ?></p>
+			<h2 class="h3 gap-t-sm">Bachs: bank transfers</h2>
+			<p class="help">Each couple gets their own account number for gifts and spraying. Guests transfer, and the page shows it the moment it lands. <?= Bachs::on() ? '<b>Connected' . (str_starts_with(Bachs::key(), 'sk_live_') ? ' (live)' : ' (sandbox)') . '.</b>' : '<b>Not connected.</b>' ?></p>
+			<label class="field"><span>Secret key (sk_sandbox_… or sk_live_…)<?= Bachs::on() ? ' · saved; type to replace' : '' ?></span><input class="input" name="bachs_key" type="password" autocomplete="new-password"></label>
+			<label class="field"><span>Webhook signing secret (whsec_…)<?= Site::setting('bachs_whsec') !== '' ? ' · saved; type to replace' : '' ?></span><input class="input" name="bachs_whsec" type="password" autocomplete="new-password"></label>
+			<label class="field"><span>Connected-account header</span><select class="input" name="bachs_acct_header"><?php foreach (['X-Connected-Account-ID', 'X-Account-Id'] as $hh): ?><option<?= Site::setting('bachs_acct_header', 'X-Connected-Account-ID') === $hh ? ' selected' : '' ?>><?= $hh ?></option><?php endforeach; ?></select></label>
+			<p class="help">In Bachs, add a webhook for <b>collection.succeeded</b> to <code><?= e(App::url('/webhooks/bachs')) ?></code>. Card payments stay off for now.</p>
 			<h2 class="h3 gap-t-sm">Ads</h2>
 			<p class="help">Turn ads on or off, choose where they show and change every ad in <a class="linkish" href="<?= e(App::url('/hq/ads')) ?>">Ads</a>.</p>
 			<button class="pill pill--block" type="submit">Save</button>

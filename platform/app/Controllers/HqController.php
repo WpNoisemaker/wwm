@@ -78,7 +78,7 @@ final class HqController
         $this->gate('settings');
         if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             Guard::must();
-            foreach (['pro_price', 'premium_price', 'seller_premium_price', 'fee_gift', 'email', 'whatsapp'] as $k) {
+            foreach (['pro_price', 'premium_price', 'seller_premium_price', 'fee_gift', 'email', 'whatsapp', 'bachs_acct_header'] as $k) {
                 if (array_key_exists($k, $_POST)) {
                     Db::run('INSERT INTO settings (k, v) VALUES (?, ?) ON DUPLICATE KEY UPDATE v = VALUES(v)',
                             [$k, trim((string) $_POST[$k])]);
@@ -94,6 +94,12 @@ final class HqController
                     }
                 }
                 Db::run('INSERT INTO settings (k, v) VALUES (?, ?) ON DUPLICATE KEY UPDATE v = VALUES(v)', ['fx_rates', json_encode($fx)]);
+            }
+            // Bachs keys: kept unless a new one is typed (the boxes never show the saved value).
+            foreach (['bachs_key', 'bachs_whsec'] as $k) {
+                if (trim((string) ($_POST[$k] ?? '')) !== '') {
+                    Db::run('INSERT INTO settings (k, v) VALUES (?, ?) ON DUPLICATE KEY UPDATE v = VALUES(v)', [$k, trim((string) $_POST[$k])]);
+                }
             }
             // A ticked box is present in the POST, an unticked one is simply absent.
             Verify::set(isset($_POST['email_verify']));
@@ -805,6 +811,18 @@ final class HqController
             $_SESSION['acct_ctx'] = 'wedding';
         }
         header('Location: ' . App::url('/account/page'));
+        exit;
+    }
+
+    /** Give a couple their account number from HQ. */
+    public function bank(string $id): void
+    {
+        $this->gate('weddings');
+        Guard::must();
+        $w = Db::one('SELECT * FROM weddings WHERE id = ?', [(int) $id]);
+        $err = $w ? Bachs::assign($w) : 'No such page.';
+        Guard::flash($err === '' ? 'ok' : 'bad', $err === '' ? 'Account number assigned.' : $err);
+        header('Location: ' . App::url('/hq/weddings#w' . (int) $id));
         exit;
     }
 

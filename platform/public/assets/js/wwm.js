@@ -953,6 +953,7 @@
 		if ('IntersectionObserver' in W) { new IntersectionObserver(function (es) { seen = es[0].isIntersecting; if (seen) { check(); } }).observe(box); } else { seen = true; }
 		setInterval(check, 7000);
 		d.addEventListener('visibilitychange', check);
+		d.addEventListener('wwm:given', function () { seen = true; box.setAttribute('data-sig', ''); check(); });
 	});
 
 	/* ---------- a Premium seller's invoice look: the preview follows the choices ---------- */
@@ -971,5 +972,44 @@
 			};
 			c.addEventListener('input', go); c.addEventListener('change', go);
 		});
+	}
+
+	/* ---------- gifts and spraying by bank transfer: the details, then wait for it to land ---------- */
+	var gf = d.querySelector('[data-give-form]');
+	if (gf) {
+		var gStep = function (n) { gf.querySelectorAll('[data-step]').forEach(function (s) { s.hidden = s.getAttribute('data-step') !== String(n); }); var sh = gf.closest('.sheet'); if (sh) { sh.classList.toggle('is-paying', n > 1); } };
+		var gSet = function (k, v) { gf.querySelectorAll('[data-g="' + k + '"]').forEach(function (el) { el.textContent = v; if (el.hasAttribute('data-copy-val')) { el.setAttribute('data-copy', v.replace(/[₦,]/g, '')); } }); };
+		var gPoll = 0;
+		var rain = function () {
+			if (W.matchMedia && W.matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
+			var box = d.createElement('div'); box.className = 'money-rain'; box.setAttribute('aria-hidden', 'true');
+			for (var i = 0; i < 26; i++) { var n = d.createElement('span'); n.textContent = '₦'; n.style.left = Math.random() * 100 + '%'; n.style.animationDelay = (Math.random() * 1.2) + 's'; n.style.fontSize = (18 + Math.random() * 22) + 'px'; box.appendChild(n); }
+			d.body.appendChild(box); setTimeout(function () { box.remove(); }, 4200);
+		};
+		gf.addEventListener('submit', function (e) {
+			e.preventDefault();
+			var fd = new FormData(gf); var amt = d.getElementById('g-amount'); fd.append('amount', amt ? amt.value : '0');
+			var btn = gf.querySelector('[data-step="1"] button'); btn.classList.add('is-busy'); btn.disabled = true;
+			fetch(gf.action, { method: 'POST', body: fd, credentials: 'same-origin', headers: { Accept: 'application/json' } })
+				.then(function (r) { return r.json(); })
+				.then(function (j) {
+					if (!j.ok) { toast(j.msg || 'That did not work. Try again.'); return; }
+					gSet('amount', j.amount); gSet('number', j.number); gSet('bank', j.bank); gSet('name', j.name); gSet('code', j.code);
+					gStep(2); buzz();
+					clearInterval(gPoll);
+					gPoll = setInterval(function () {
+						fetch(j.poll, { credentials: 'same-origin', headers: { Accept: 'application/json' } }).then(function (r) { return r.json(); }).then(function (s) {
+							if (s.status !== 'paid') { return; }
+							clearInterval(gPoll);
+							gSet('done', (s.kind === 'spray' ? 'You sprayed ' : 'Your gift of ') + s.amount + (s.kind === 'spray' ? '. You are on the list.' : ' is with the couple. Thank you.'));
+							gStep(3); rain(); buzz();
+							d.dispatchEvent(new CustomEvent('wwm:given'));
+						}).catch(function () {});
+					}, 4000);
+				})
+				.catch(function () { toast('That did not work. Check your connection.'); })
+				.then(function () { btn.classList.remove('is-busy'); btn.disabled = false; });
+		});
+		gf.addEventListener('click', function (e) { if (e.target.closest('[data-close]')) { gStep(1); gf.reset(); } });
 	}
 })();

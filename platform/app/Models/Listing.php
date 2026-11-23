@@ -63,7 +63,7 @@ final class Listing
     /** A plain-English name for a kind, so the page never shows a database value. */
     public static function kindName(string $k): string
     {
-        return ['stay' => 'Stay', 'ride' => 'Ride', 'honeymoon' => 'Honeymoon', 'service' => 'Service', 'asoebi' => 'Aso-ebi', 'home' => 'Home organising', 'rental' => 'Rental'][$k] ?? ucfirst(str_replace('-', ' ', $k));
+        return ['stay' => 'Shortlet', 'ride' => 'Ride', 'honeymoon' => 'Honeymoon', 'service' => 'Service', 'asoebi' => 'Aso-ebi', 'home' => 'Home organising', 'rental' => 'Rental'][$k] ?? ucfirst(str_replace('-', ' ', $k));
     }
 
     /** All of a listing's photos, in order. */

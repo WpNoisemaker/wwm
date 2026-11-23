@@ -17,6 +17,16 @@ final class AccountController
         return Db::one('SELECT * FROM weddings WHERE owner_id = ? ORDER BY id LIMIT 1', [Auth::id()]);
     }
 
+    /** The couple asks for their own account number for gifts and spraying. */
+    public function bank(): void
+    {
+        Guard::must();
+        $w = $this->need();
+        $err = Bachs::assign($w);
+        Guard::flash($err === '' ? 'ok' : 'bad', $err === '' ? 'Your account number is ready. Guests can now send gifts and spray by bank transfer.' : $err);
+        self::go('/account/money');
+    }
+
     /** A change request to our team (Premium and High Society): words, and up to three photos. */
     public function request(): void
     {

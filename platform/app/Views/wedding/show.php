@@ -211,7 +211,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 					<?php foreach ($gifts as $g):
 						$target = (int) $g['target']; $raised = (int) $g['raised'];
 						$pct = $target > 0 ? min(100, (int) round($raised / $target * 100)) : 0; ?>
-						<button class="gift" type="button" data-open="give" data-give="<?= e($g['title']) ?>">
+						<button class="gift" type="button" data-open="give" data-give="<?= e($g['title']) ?>" data-gift-id="<?= (int) $g['id'] ?>">
 							<?= (string) $g['image'] !== '' ? sq((string) $g['image'], '') : '<span class="sq gift__ico">' . icon((string) $g['kind'] === 'item' ? 'gift' : ((string) $g['kind'] === 'fund' ? 'spark' : 'wallet')) . '</span>' ?>
 							<span class="gift__body">
 								<span class="gift__t"><?= e($g['title']) ?></span>
@@ -584,11 +584,36 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		<button class="cbtn" type="button" data-inc aria-label="More"><?= icon('plus') ?></button>
 	</div>
 	<input type="hidden" id="g-amount" value="<?= $curStart ?>">
-	<?php if ($canGive): ?>
-		<button class="pill pill--block" type="button">Continue to pay</button>
+	<?php if ((string) $w['va_number'] !== '' && Bachs::on()): ?>
+		<form class="form give" data-give-form action="<?= e(App::url('/w/' . $slug . '/give')) ?>">
+			<?= Guard::field() ?><input type="hidden" name="kind" value="gift"><input type="hidden" name="gift_id" value="">
+			<div data-step="1">
+				<label class="field"><span>Your name (it shows on the page)</span><input class="input" name="name" required maxlength="160" autocomplete="name"></label>
+				<label class="field"><span>A note (optional)</span><input class="input" name="message" maxlength="500"></label>
+				<button class="pill pill--block" type="submit">Get the account details</button>
+				<p class="after-pill">You pay by bank transfer, from any Nigerian bank app.</p>
+			</div>
+			<div data-step="2" hidden>
+				<p class="give__k">Transfer exactly</p>
+				<p class="give__amt" data-copy-val data-g="amount"></p>
+				<div class="give__acct">
+					<div><span class="give__k">Account number</span><b class="give__num" data-copy-val data-g="number"></b></div>
+					<div><span class="give__k">Bank</span><b data-g="bank"></b></div>
+					<div><span class="give__k">Account name</span><b data-g="name"></b></div>
+				</div>
+				<p class="help">Send the exact amount, kobo included, so we know it is yours. If your bank asks for a description, write <b data-g="code"></b>.</p>
+				<p class="give__wait"><span class="give__dot" aria-hidden="true"></span>Waiting for your transfer. Keep this page open.</p>
+			</div>
+			<div data-step="3" hidden class="give__done">
+				<p class="give__big" aria-live="polite">Received!</p>
+				<p data-g="done"></p>
+				<button class="pill pill--block" type="button" data-close>Done</button>
+			</div>
+		</form>
+	<?php elseif ($mine): ?>
+		<p class="note"><?= icon('info') ?><span>Get your account number in <a class="linkish" href="<?= e(App::url('/account/money#bank')) ?>">Money</a> and guests can send gifts and spray by bank transfer.</span></p>
 	<?php else: ?>
-		<p class="note"><?= icon('info') ?><span>Paying online switches on once this site&rsquo;s payment account is connected. Until then, ask <?= e($names) ?> how they would like to receive gifts.</span></p>
-		<button class="pill pill--block" type="button" disabled>Paying online is not on yet</button>
+		<p class="note"><?= icon('info') ?><span>Bank transfers for <?= e($names) ?> switch on soon.</span></p>
 	<?php endif; ?>
 </div>
 
@@ -596,5 +621,6 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	document.addEventListener('click', function (e) {
 		var b = e.target.closest('[data-give]'); if (!b) { return; }
 		var t = document.querySelector('[data-give-title]'); if (t) { t.textContent = b.getAttribute('data-give') === 'Spray' ? 'Spray the couple' : b.getAttribute('data-give'); }
+		var f = document.querySelector('[data-give-form]'); if (f) { f.kind.value = b.getAttribute('data-give') === 'Spray' ? 'spray' : 'gift'; f.gift_id.value = b.getAttribute('data-gift-id') || ''; }
 	});
 </script>

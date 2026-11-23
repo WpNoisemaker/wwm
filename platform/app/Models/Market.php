@@ -24,7 +24,7 @@ final class Market
 
     /** The categories the site starts with. HQ adds more and opens or closes them. */
     private const START = [
-        ['stay', 'Stays', 'Apartments, villas and family houses near the venue'],
+        ['stay', 'Shortlets & vacation rentals', 'Shortlet apartments, villas and family houses near the venue'],
         ['ride', 'Rides', 'Bridal cars, convoys, coaches and airport pick-ups'],
         ['honeymoon', 'Honeymoons', 'Flights, hotels and honeymoon packages'],
         ['asoebi', 'Aso-ebi', 'Lace, aso-oke, ankara and gele for the couple and guests'],

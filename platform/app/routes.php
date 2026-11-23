@@ -15,7 +15,10 @@ $r->any('/w/{slug}',            [WeddingController::class, 'show']);   // GET sh
 $r->post('/w/{slug}/rsvp',      [WeddingController::class, 'rsvp']);
 $r->post('/w/{slug}/note',      [WeddingController::class, 'note']);
 $r->post('/w/{slug}/photo',     [WeddingController::class, 'photo']);
-$r->get('/w/{slug}/sprays',     [WeddingController::class, 'sprays']);   // live spray total and top sprayers
+$r->get('/w/{slug}/sprays',     [WeddingController::class, 'sprays']);
+$r->post('/w/{slug}/give',      [WeddingController::class, 'give']);     // a gift or spray by bank transfer: the details to send to
+$r->get('/w/{slug}/give/{code}', [WeddingController::class, 'given']);  // has that transfer arrived?
+$r->post('/webhooks/bachs',     static fn () => Bachs::webhook());        // Bachs: a transfer landed   // live spray total and top sprayers
 $r->post('/w/{slug}/share',     [WeddingController::class, 'share']);
 $r->post('/w/{slug}/quiz',      [WeddingController::class, 'quiz']);
 $r->post('/w/{slug}/remind',    [WeddingController::class, 'remind']);   // email me about the livestream
@@ -75,6 +78,7 @@ $r->any('/account/programs',    [AccountController::class, 'programs']);
 $r->any('/account/squad',       [AccountController::class, 'squad']);
 $r->any('/account/story',       [AccountController::class, 'story']);
 $r->post('/account/request',    [AccountController::class, 'request']);
+$r->post('/account/bank',       [AccountController::class, 'bank']);
 $r->any('/account/registry',    [AccountController::class, 'registry']);
 $r->any('/account/quiz',        [AccountController::class, 'quiz']);
 $r->any('/account/sections',    [AccountController::class, 'sections']);
@@ -107,6 +111,7 @@ $r->any('/hq/market',           [HqController::class, 'market']);
 $r->get('/hq/emails',           [HqController::class, 'emails']);
 $r->any('/hq/ads',              [HqController::class, 'ads']);
 $r->any('/hq/requests',         [HqController::class, 'requests']);
+$r->post('/hq/bank/{id:\d+}',   [HqController::class, 'bank']);
 $r->get('/hq/manage/{id:\d+|stop}', [HqController::class, 'manage']);
 $r->get('/hq/edit',             [HqController::class, 'edit']);         // edit mode on or off
 $r->post('/hq/edit/save',       [HqController::class, 'editSave']);     // words changed on the page

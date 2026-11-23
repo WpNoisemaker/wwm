@@ -11,6 +11,13 @@
 					<span class="row-item__end"><span class="badge"><?= e(Site::tier((string) $w['plan'])) ?></span><span class="sub"><?= e($w['visibility']) ?></span></span>
 				</a>
 				<a class="pill pill--sm pill--glass hq-wed__manage" href="<?= e(App::url('/hq/manage/' . (int) $w['id'])) ?>"><?= icon('pen') ?>Manage page</a>
+				<div class="hq-wed__drive">
+					<span class="hq-wed__k"><?= icon('wallet') ?>Account</span>
+					<?php if ((string) $w['va_number'] !== ''): ?><span><?= e($w['va_number']) ?> · <?= e($w['va_bank']) ?></span>
+					<?php else: ?><span class="sub"><?= e($w['va_error'] !== '' ? $w['va_error'] : 'None yet') ?></span>
+						<form method="post" action="<?= e(App::url('/hq/bank/' . (int) $w['id'])) ?>"><?= Guard::field() ?><button class="pill pill--sm" type="submit">Assign account</button></form>
+					<?php endif; ?>
+				</div>
 				<?php if (Wedding::has($w, 'gallery')): ?>
 					<div class="hq-wed__drive">
 						<?php if ($f): ?>

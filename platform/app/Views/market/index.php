@@ -9,14 +9,14 @@ $price = static fn (array $l): string => (int) $l['on_ask'] ? 'Price on request'
 <div class="page wrap">
 	<header class="page-head">
 		<span class="eyebrow"><?= t('market.eyebrow.message-the-sellers', 'Message the sellers, pay them directly') ?></span>
-		<h1><?= t('market.title.asoebi-stays-rides-honeymoons', 'Aso-ebi, stays, rides & honeymoons') ?></h1>
+		<h1><?= t('market.title.asoebi-stays-rides-honeymoons', 'Aso-ebi, shortlets, rides & honeymoons') ?></h1>
 		<p class="lede"><?= e(number_format($total)) ?> listing<?= $total === 1 ? '' : 's' ?><?= $f['city'] !== '' ? ' in ' . e($f['city']) : '' ?></p>
 	</header>
 	<a class="sell-cta glass" href="<?= e(App::url('/sell')) ?>">
 		<span class="sell-cta__ico"><?= icon('s-store') ?></span>
 		<span class="sell-cta__in">
 			<span class="sell-cta__t"><?= t('market.sell.title', 'Sell to couples planning their wedding') ?></span>
-			<span class="sell-cta__s"><?= t('market.sell.text', 'Stays, rides, aso-ebi, honeymoons and services. Customers message you; you send your own invoice or payment link.') ?></span>
+			<span class="sell-cta__s"><?= t('market.sell.text', 'Shortlets, rides, aso-ebi, honeymoons and services. Customers message you; you send your own invoice or payment link.') ?></span>
 		</span>
 		<span class="pill pill--sm sell-cta__go"><?= t('market.sell.button', 'Sell with us') ?></span>
 	</a>
