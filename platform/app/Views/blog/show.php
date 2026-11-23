@@ -58,7 +58,7 @@ $crumbs = ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'ite
 				<span class="story-card__t"><?= e((string) $m['title']) ?></span>
 			</a>
 		<?php endforeach; ?>
-		<?= Promo::html('story', 1) ?>
+		<?= Promo::html('blog', 1) ?>
 	</div>
 </section>
 <?php endif; ?>

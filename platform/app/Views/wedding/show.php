@@ -456,7 +456,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	foreach ($layout['order'] as $bk) {
 		if (in_array($bk, $layout['hidden'], true) || trim($blocks[$bk] ?? '') === '') { continue; }
 		echo $blocks[$bk];
-		if (++$shownN === $adAt) { echo Promo::html('band', (int) $w['id']); }
+		if (++$shownN === $adAt) { echo Promo::html('wedding', (int) $w['id']); }
 	}
 	?>
 

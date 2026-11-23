@@ -258,7 +258,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 			<div class="home-deck reveal">
 				<div class="deck" data-deck data-more="<?= e(App::url('/community')) ?>" tabindex="0" aria-label="Community posts. Swipe to move between them.">
 					<?php foreach (array_slice($talks, 0, 3) as $k => $t): ?>
-						<?php if ($k === 2): ?><?= Promo::html('post', 1) ?><?php endif; ?>
+						<?php if ($k === 2): ?><?= Promo::html('home', 1) ?><?php endif; ?>
 						<article class="post <?= e(talk_colour((string) $t['bg'])) ?>" data-id="<?= (int) $t['id'] ?>" data-href="<?= e(App::url('/community/' . $t['id'])) ?>" data-like="<?= e(App::url('/community/' . $t['id'] . '/like')) ?>" data-likes="<?= (int) $t['likes'] ?>" data-replies="<?= (int) $t['replies'] ?>" data-liked="0">
 							<span class="post__topic"><?= e(Talk::topic((string) $t['topic'])) ?></span>
 							<div class="post__body"><p class="post__text<?= mb_strlen((string) $t['body']) > 140 ? ' post__text--long' : '' ?>"><?= e(mb_strimwidth((string) $t['body'], 0, 240, '…')) ?></p><span class="post__mark"><i aria-hidden="true">&amp;</i><?= e(Share::host()) ?></span></div>

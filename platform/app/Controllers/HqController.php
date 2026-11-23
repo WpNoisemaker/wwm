@@ -97,7 +97,6 @@ final class HqController
             }
             // A ticked box is present in the POST, an unticked one is simply absent.
             Verify::set(isset($_POST['email_verify']));
-            Db::run('INSERT INTO settings (k, v) VALUES (?, ?) ON DUPLICATE KEY UPDATE v = VALUES(v)', ['ads_premium', isset($_POST['ads_premium']) ? '1' : '0']);
             Guard::flash('ok', 'Saved. The pricing page now shows these.');
             header('Location: ' . App::url('/hq/settings'));
             exit;
@@ -697,6 +696,66 @@ final class HqController
         Guard::flash('ok', 'Undone. The page shows what it showed before.');
         header('Location: ' . App::url('/hq/content#live-edits'));
         exit;
+    }
+
+    /** The site's own ads: which slots show them, and every ad's words, picture and link. */
+    public function ads(): void
+    {
+        $this->gate('content');
+        Promo::table();
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+            Guard::must();
+            $do = (string) ($_POST['do'] ?? '');
+            $set = static fn (string $k, string $v) => Db::run('INSERT INTO settings (k, v) VALUES (?, ?) ON DUPLICATE KEY UPDATE v = VALUES(v)', [$k, $v]);
+            if ($do === 'slots') {
+                $set('ads_premium', isset($_POST['on']) ? '1' : '0');
+                $slots = [];
+                foreach (array_keys(Promo::SLOTS) as $k) {
+                    $slots[$k] = isset($_POST['slot'][$k]) ? 1 : 0;
+                }
+                $set('ad_slots', (string) json_encode($slots));
+                Guard::flash('ok', 'Saved. Slots that are off show nothing, and the page closes up around them.');
+            } elseif ($do === 'delete') {
+                Db::run('DELETE FROM ads WHERE id = ?', [(int) ($_POST['id'] ?? 0)]);
+                Guard::flash('ok', 'Ad deleted.');
+            } elseif ($do === 'save') {
+                $id = (int) ($_POST['id'] ?? 0);
+                $t = static fn (string $k, int $n) => mb_substr(trim((string) ($_POST[$k] ?? '')), 0, $n);
+                $link = $t('link', 500);
+                if ($link !== '' && $link[0] !== '/' && !preg_match('~^https://~i', $link)) {
+                    $link = 'https://' . ltrim(preg_replace('~^http://~i', '', $link), '/');
+                }
+                $row = [
+                    'title' => $t('title', 160), 'line' => $t('line', 300), 'button' => $t('button', 60), 'link' => $link,
+                    'show_price' => isset($_POST['show_price']) ? 1 : 0, 'active' => isset($_POST['active']) ? 1 : 0,
+                    'slots' => implode(',', array_values(array_intersect(array_keys(Promo::SLOTS), array_keys((array) ($_POST['slots'] ?? []))))),
+                    'sort' => (int) ($_POST['sort'] ?? 0),
+                ];
+                if (!empty($_FILES['image']['name'])) {
+                    $img = Images::store($_FILES['image'], 'ads');
+                    if ($img === null) {
+                        Guard::flash('bad', 'That picture could not be used. Try a JPEG or PNG under 12 MB.');
+                        header('Location: ' . App::url('/hq/ads'));
+                        exit;
+                    }
+                    $row['image'] = $img;
+                } elseif (!empty($_POST['image_off'])) {
+                    $row['image'] = '';
+                }
+                if ($row['title'] === '') {
+                    Guard::flash('bad', 'An ad needs a headline.');
+                } elseif ($id) {
+                    Db::update('ads', $row, 'id = ?', [$id]);
+                    Guard::flash('ok', 'Ad saved.');
+                } else {
+                    $id = (int) Db::insert('ads', $row);
+                    Guard::flash('ok', 'Ad added.');
+                }
+            }
+            header('Location: ' . App::url('/hq/ads' . (!empty($id) ? '#ad' . $id : '')));
+            exit;
+        }
+        $this->show('ads', ['title' => 'Ads', 'ads' => Db::all('SELECT * FROM ads ORDER BY sort, id'), 'slots' => Promo::slots(), 'on' => Site::setting('ads_premium', '1') !== '0']);
     }
 
     private static function json(array $d, int $code = 200): never

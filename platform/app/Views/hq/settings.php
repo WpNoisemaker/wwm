@@ -23,9 +23,8 @@
 			<h2 class="h3 gap-t-sm">Email confirmation</h2>
 			<label class="check"><span>Ask new sign-ups to confirm their email</span><input type="checkbox" name="email_verify" value="1" <?= $verify['on'] ? 'checked' : '' ?>></label>
 			<p class="help">Off until you decide. When it is on, anyone who signs up from that moment must follow a link before making their page public or asking for a payout. Existing accounts are never asked.<?php if ($verify['on'] && $verify['since'] !== ''): ?> On since <?= e(date('j M Y, g:ia', (int) strtotime($verify['since']))) ?>.<?php endif; ?></p>
-			<h2 class="h3 gap-t-sm">Ads for Premium</h2>
-			<label class="check"><span>Show our own Premium ads in the ad slots</span><input type="checkbox" name="ads_premium" value="1" <?= Site::setting('ads_premium', '1') !== '0' ? 'checked' : '' ?>></label>
-			<p class="help">Free wedding pages (one band after the third section), between the cards of the community deck, among the wedding pages and in the blog. Pro, Premium and High Society pages never carry ads, and people who already have a Premium page are not shown them.</p>
+			<h2 class="h3 gap-t-sm">Ads</h2>
+			<p class="help">Turn ads on or off, choose where they show and change every ad in <a class="linkish" href="<?= e(App::url('/hq/ads')) ?>">Ads</a>.</p>
 			<button class="pill pill--block" type="submit">Save</button>
 		</form>
 		<aside class="acct-list">

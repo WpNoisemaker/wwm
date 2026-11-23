@@ -3,7 +3,7 @@
 $now  = $now ?? '';
 $tabs = array_values(array_filter([
 	['hq', 'Overview', '/hq', 'grid', ''], ['weddings', 'Weddings', '/hq/weddings', 'ring', 'weddings'], ['people', 'People', '/hq/people', 'people', 'people'],
-	['money', 'Money', '/hq/money', 'wallet', 'money'], ['market', 'Marketplace', '/hq/market', 'store', 'market'], ['blog', 'Blog', '/hq/blog', 'book', 'blog'], ['content', 'Site content', '/hq/content', 'pen', 'content'],
+	['money', 'Money', '/hq/money', 'wallet', 'money'], ['market', 'Marketplace', '/hq/market', 'store', 'market'], ['blog', 'Blog', '/hq/blog', 'book', 'blog'], ['content', 'Site content', '/hq/content', 'pen', 'content'], ['ads', 'Ads', '/hq/ads', 'spark', 'content'],
 	['staff', 'Staff', '/hq/staff', 'shield', 'owner'], ['settings', 'Settings', '/hq/settings', 'gear', 'settings'],
 ], static fn ($t) => $t[4] === '' || ($t[4] === 'owner' ? Auth::is('owner') : Staff::can($t[4]))));
 ?>

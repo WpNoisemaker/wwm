@@ -68,7 +68,7 @@ $filtered = $f['q'] !== '' || $f['plan'] !== '' || $f['city'] !== '';
 		<?php $ranks = Wedding::ranks($country); ?>
 		<div class="cards gap-t-sm">
 			<?php foreach ($rows as $ci => $w): ?>
-				<?php if ($ci === 6): ?><?= Promo::html('card', 2) ?><?php endif; ?>
+				<?php if ($ci === 6): ?><?= Promo::html('cards', 2) ?><?php endif; ?>
 				<?= wedding_card($w, trim(Wedding::short($w) . ' · ' . (string) $w['city'], ' ·'), Site::tier((string) $w['plan']), '', $ranks[(int) $w['id']] ?? 0) ?>
 			<?php endforeach; ?>
 		</div>

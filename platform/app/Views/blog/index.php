@@ -42,7 +42,7 @@ $kindLabel = static fn (array $p): string => Blog::KIND[(string) ($p['kind'] ?? 
 	<?php elseif ($rows): ?>
 		<div class="stories gap-t">
 			<?php foreach ($rows as $bi => $po): ?>
-				<?php if ($bi === 3): ?><?= Promo::html('story', 0) ?><?php endif; ?>
+				<?php if ($bi === 3): ?><?= Promo::html('blog', 0) ?><?php endif; ?>
 				<a class="story-card" href="<?= e(App::url('/blog/' . $po['slug'])) ?>">
 					<?= sq((string) $po['cover'], '', 'sq--wide') ?>
 					<span class="eyebrow"><?= e($kindLabel($po)) ?> · <?= Blog::minutes($po) ?> min read</span>

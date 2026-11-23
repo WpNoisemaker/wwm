@@ -103,6 +103,7 @@ $r->get('/hq/drive/callback',   [HqController::class, 'driveCallback']);
 $r->post('/hq/drive/folder/{id:\d+}', [HqController::class, 'driveFolder']);
 $r->any('/hq/market',           [HqController::class, 'market']);
 $r->get('/hq/emails',           [HqController::class, 'emails']);
+$r->any('/hq/ads',              [HqController::class, 'ads']);
 $r->get('/hq/edit',             [HqController::class, 'edit']);         // edit mode on or off
 $r->post('/hq/edit/save',       [HqController::class, 'editSave']);     // words changed on the page
 $r->post('/hq/edit/image',      [HqController::class, 'editImage']);    // a picture replaced on the page

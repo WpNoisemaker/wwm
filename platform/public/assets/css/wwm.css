@@ -2235,3 +2235,4 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .cms-on input[placeholder]:hover, .cms-on textarea[placeholder]:hover { outline: 1px dashed rgba(233, 185, 73, .9); }
 @media print { .cms-go, .cms-bar { display: none !important; } }
 @media (min-width: 960px) { .cms-bar { bottom: 22px; } }
+.promo__edit { display: inline-flex; align-items: center; gap: 6px; margin: 8px auto 0; padding: 6px 12px; border-radius: 999px; background: #E9B949; color: #2B2113; font-size: 12.5px; text-decoration: none; } .promo__edit .ico { width: 13px; height: 13px; } .promo-band .promo__edit { display: flex; width: max-content; }

@@ -209,7 +209,7 @@ final class WeddingController
             'next'     => $next,
             'left'     => $next ? Wedding::until($next['when']) : null,
             'locked'   => $mine ? Wedding::locked($w) : [],
-            'sponsors' => Wedding::has($w, 'quiet')   ? [] : Wedding::sponsors(2),
+            'sponsors' => Wedding::has($w, 'quiet') || !Promo::slotOn('sponsors') ? [] : Wedding::sponsors(2),
             'vendors'  => Wedding::vendors($w),
             'pass'     => $_SESSION['passes'][(string) $w['slug']] ?? null,
         ]);
