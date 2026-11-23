@@ -3,7 +3,7 @@
 	<div class="auth">
 		<div class="glass">
 			<?= flashes() ?>
-			<div class="auth__head"><span class="cbtn cbtn--lg auth__mark"><?= icon('lock') ?></span><h1>A private page</h1><p>This one is not public. If the couple gave you a code, put it in.</p></div>
+			<div class="auth__head"><span class="cbtn cbtn--lg auth__mark"><?= icon('lock') ?></span><h1>A private page</h1><p>This page is not public. If the couple gave you a code, enter it here.</p></div>
 			<form method="post" class="form">
 				<?= Guard::field() ?>
 				<label class="field"><span>Code</span><input class="input input--code" id="code" name="code" required autofocus autocomplete="off" autocapitalize="characters"></label>

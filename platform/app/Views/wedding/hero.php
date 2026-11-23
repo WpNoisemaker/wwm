@@ -38,7 +38,7 @@ ob_start(); ?>
 	</div>
 </div>
 <a class="pill pill--block w-rsvp" href="#rsvp" data-open="rsvp">Send RSVP</a>
-<p class="after-pill">No account needed. It takes a few seconds.</p>
+<p class="after-pill">You do not need an account, and it only takes a few seconds.</p>
 <?php $card = (string) ob_get_clean();
 
 $photoA = sq($cover, $names, '', true, $init);

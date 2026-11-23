@@ -16,7 +16,7 @@ $kindLabel = static fn (array $p): string => Blog::KIND[(string) ($p['kind'] ?? 
 	<header class="page-head">
 		<span class="eyebrow"><?= $s ? 'The blog' : 'Written for our weddings, not borrowed' ?></span>
 		<h1><?= $s ? e($s[1]) : 'Guides, news &amp; interviews' ?></h1>
-		<p class="lede"><?= $s ? e($s[2]) : 'Planning advice for African weddings at home and abroad, what is new on the platform, and the couples and vendors behind the day.' ?></p>
+		<p class="lede"><?= $s ? e($s[2]) : 'We share planning advice for African weddings at home and abroad, news from the platform, and stories of the couples and vendors behind the day.' ?></p>
 	</header>
 	<nav class="seg seg--center seg--plans" aria-label="Sections">
 		<a class="seg__a<?= $section === '' ? ' is-on' : '' ?>" href="<?= e(App::url('/blog')) ?>"<?= $section === '' ? ' aria-current="page"' : '' ?>>Everything</a>
@@ -38,7 +38,7 @@ $kindLabel = static fn (array $p): string => Blog::KIND[(string) ($p['kind'] ?? 
 	<?php endif; ?>
 
 	<?php if (!$rows && !$lead): ?>
-		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('book') ?></span><p><?= $s ? 'Nothing in ' . e($s[1]) . ' yet. The first one is on its way.' : 'Nothing published yet.' ?></p><?php if ($s): ?><a class="pill pill--glass" href="<?= e(App::url('/blog')) ?>">Read everything else</a><?php endif; ?></div>
+		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('book') ?></span><p><?= $s ? 'There is nothing in ' . e($s[1]) . ' yet. The first post is on its way.' : 'Nothing has been published yet.' ?></p><?php if ($s): ?><a class="pill pill--glass" href="<?= e(App::url('/blog')) ?>">Read everything else</a><?php endif; ?></div>
 	<?php elseif ($rows): ?>
 		<div class="stories gap-t">
 			<?php foreach ($rows as $bi => $po): ?>

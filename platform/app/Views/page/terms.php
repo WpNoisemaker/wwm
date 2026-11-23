@@ -16,7 +16,7 @@
 	<p>You must be 18 or older to open an account, make a wedding page, sell on the marketplace or pay for anything. Guests of any age may view a public page with their family.</p>
 
 	<h2>2. Your account</h2>
-	<p>Keep your password to yourself. You are responsible for everything done under your account. Tell us straight away at <a href="mailto:<?= e($mail) ?>"><?= e($mail) ?></a> if you think someone else has got in.</p>
+	<p>Keep your password to yourself. You are responsible for everything done under your account. Tell us straight away at <a href="mailto:<?= e($mail) ?>"><?= e($mail) ?></a> if you think someone else has got into your account.</p>
 
 	<h2>3. Your wedding page</h2>
 	<p>What you put on your page (your story, photos, programmes, registry) stays yours. By publishing it you give us permission to host it, show it to visitors, list it in the directory and on your country&rsquo;s page, rank it on the Buzz Chart and use its name and cover in link previews. You can make your page private at any time; a private page is not listed, ranked or searchable.</p>
@@ -41,7 +41,7 @@
 	<p>Money guests send through your page is processed by our payment partners, held for you, and paid out to the bank or mobile money account you nominate, in the name of the account holder only. Gifts and sprays are gifts from your guests to you; we do not reverse them. We may hold or check a payout where we see signs of fraud, a disputed payment or a breach of these terms.</p>
 
 	<h2>8. The marketplace</h2>
-	<p>Shortlets and vacation rentals, rides, honeymoons, aso-ebi and services are sold by independent sellers. A booking is a contract between you and the seller, on the terms in their listing. A &ldquo;Verified&rdquo; badge means we have checked that the seller is a real, reachable business; it is not a guarantee of their work. Sellers must describe what they sell accurately, honour the prices they quote and treat buyers with respect. We do not hold, take or process payments between buyers and sellers: you pay the seller directly, through the invoice or payment link they send you. We take no responsibility for those payments, for payment fraud or for any problem with them, so be sure who you are paying before you pay. Any cancellation or refund is between you and the seller. If you believe a seller is not genuine, report them from their listing or profile.</p>
+	<p>Shortlets and vacation rentals, rides, honeymoons, aso-ebi and services are sold by independent sellers. A booking is a contract between you and the seller, on the terms in their listing. A &ldquo;Verified&rdquo; badge means we have checked that the seller is a real, reachable business; it is not a guarantee of their work. Sellers must describe what they sell accurately, honour the prices they quote and treat buyers with respect. We do not hold, take or process payments between buyers and sellers: you pay the seller directly, through the invoice or payment link they send you. We take no responsibility for those payments, for payment fraud or for any problem with them, so make sure you know who you are paying before you pay. Any cancellation or refund is between you and the seller. If you believe a seller is not genuine, report them from their listing or profile.</p>
 
 	<h2>9. The Anonymous Community</h2>
 	<p>Anyone can post and reply under a pen name, without an account. Posts must follow our <a href="<?= e(App::url('/community-guidelines')) ?>">community guidelines</a>. We may hold, edit for safety or remove any post or reply, and we may block anyone who misuses it.</p>
@@ -54,7 +54,7 @@
 		<li>Fraud, fake fundraising, fake reviews, or using gifts or payouts to move money that is not a wedding gift.</li>
 		<li>Scraping the site, interfering with it, or trying to get into accounts or data that are not yours.</li>
 	</ul>
-	<p>We may remove content, suspend or close any account or page (paid or free) that breaks these terms, without refund.</p>
+	<p>If any content, account or page (paid or free) breaks these terms, we may remove, suspend or close it, without a refund.</p>
 
 	<h2>11. Our service</h2>
 	<p>We work hard to keep everything running, but the service is provided as it is and as available. We do not promise it will always be uninterrupted or error-free. To the extent the law allows, we are not liable for indirect or consequential loss, and our total liability to you for any claim is limited to what you paid us in the twelve months before it. Nothing here limits liability that cannot be limited by law.</p>
@@ -66,5 +66,5 @@
 	<p>We may update these terms; the date at the top shows when. If a change matters to you, we will tell you on the site or by email before it applies. You can close your account at any time by writing to us. These terms are governed by the laws of the Federal Republic of Nigeria, and the courts of the Federal Capital Territory, Abuja, have jurisdiction, unless the law where you live gives you the right to bring a claim there.</p>
 
 	<h2>14. Contact</h2>
-	<p>Questions about these terms: <a href="mailto:<?= e($mail) ?>"><?= e($mail) ?></a>.</p>
+	<p>If you have any questions about these terms, write to <a href="mailto:<?= e($mail) ?>"><?= e($mail) ?></a>.</p>
 </article>

@@ -59,7 +59,7 @@ $filtered = $f['q'] !== '' || $f['plan'] !== '' || $f['city'] !== '';
 				<p>Nothing in <?= e($in) ?> matches that yet. Try a different spelling, or clear the filters.</p>
 				<a class="pill pill--glass" href="<?= e($base) ?>">Every page in <?= e($in) ?></a>
 			<?php else: ?>
-				<p>No public wedding pages in <?= e($in) ?> yet. Getting married there? Yours can be the first, with gifts in <?= e(Fx::many($cur)) ?>.</p>
+				<p>There are no public wedding pages in <?= e($in) ?> yet. Getting married there? Yours can be the first, with gifts in <?= e(Fx::many($cur)) ?>.</p>
 				<a class="pill" href="<?= e(App::url('/join')) ?>">Create your page</a>
 			<?php endif; ?>
 		</div>
@@ -82,7 +82,7 @@ $filtered = $f['q'] !== '' || $f['plan'] !== '' || $f['city'] !== '';
 		<div class="sec-head sec-head--side reveal">
 			<span class="eyebrow">Booked by couples in <?= e($in) ?></span>
 			<h2>Vendors who work here</h2>
-			<p>Reviewed by the couples who booked them.</p>
+			<p>They are reviewed by the couples who booked them.</p>
 			<a class="pill pill--glass pill--sm" href="<?= e(App::url('/vendors')) ?>">Every vendor <?= icon('arrow') ?></a>
 		</div>
 		<div class="rows reveal">
@@ -103,7 +103,7 @@ $filtered = $f['q'] !== '' || $f['plan'] !== '' || $f['city'] !== '';
 		<div>
 			<span class="eyebrow">Getting married in <?= e($in) ?>?</span>
 			<h2>Your page, your currency</h2>
-			<p class="sub">RSVPs, the programme, a registry and gifts in <?= e(Fx::many($cur)) ?>, and family back home can give and watch from anywhere.</p>
+			<p class="sub">Your page handles RSVPs, the programme, a registry and gifts in <?= e(Fx::many($cur)) ?>, and family back home can give and watch from anywhere.</p>
 		</div>
 		<a class="pill" href="<?= e(App::url('/join')) ?>">Create your page</a>
 	</div>

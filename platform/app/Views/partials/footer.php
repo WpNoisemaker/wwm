@@ -3,7 +3,7 @@
 	<div class="site-foot__grid">
 		<div class="site-foot__brand">
 			<a class="brand" href="<?= e(App::url('/')) ?>"><span class="cbtn"><span class="logo">&amp;</span></span>Wedding Websites &amp; More</a>
-			<p><?= tl('site.text.wedding-pages-for-african-couples', 'Wedding pages for African couples: invite, RSVP, gifts, spraying and livestream in one link, ranked every week.') ?></p>
+			<p><?= tl('site.text.wedding-pages-for-african-couples', 'We make wedding pages for African couples. Your invitation, RSVP, gifts, spraying and livestream sit on one link, and pages are ranked every week.') ?></p>
 			<div class="install" data-install>
 				<span class="cbtn cbtn--sm"><span class="logo" style="font-size:20px">&amp;</span></span>
 				<div><b>Get the app</b><span data-install-hint>Add it to your home screen</span></div>

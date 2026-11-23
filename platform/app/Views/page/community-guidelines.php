@@ -21,7 +21,7 @@
 
 	<h2>Don&rsquo;t</h2>
 	<ul>
-		<li><b>Name or identify anyone.</b> No names, photos, phone numbers, workplaces, addresses or details that point to a real person, including your partner or family.</li>
+		<li><b>Name or identify anyone.</b> That means no names, photos, phone numbers, workplaces, addresses or details that point to a real person, including your partner or family.</li>
 		<li>Harass, threaten, shame or bully anyone.</li>
 		<li>Post hate, slurs or attacks on anyone&rsquo;s tribe, religion, nationality, gender or sexuality.</li>
 		<li>Post sexual content, violence, or anything about a child that is not about their wellbeing.</li>

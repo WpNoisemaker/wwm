@@ -28,14 +28,14 @@ $page  = App::url('/w/' . $w['slug']);
 			<?php endif; ?>
 			<?php if ($door): ?>
 				<div class="pass__door">
-					<p class="help">You are signed in as the couple. Check the face matches the person in front of you.</p>
+					<p class="help">You are signed in as the couple. Check that the face matches the person in front of you.</p>
 					<?php if (!$g['checked_in']): ?>
 						<form method="post" action="<?= e(App::url('/w/' . $w['slug'] . '/pass/' . $g['pass_code'] . '/in')) ?>"><?= Guard::field() ?><button class="pill pill--block" type="submit"><?= icon('check') ?>Check them in</button></form>
 					<?php endif; ?>
 					<a class="pill pill--block pill--glass" href="<?= e(App::url('/door/' . $w['slug'])) ?>">Back to the door list</a>
 				</div>
 			<?php else: ?>
-				<p class="after-pill">Show this at the entrance. Take a screenshot so you have it without signal. Please do not share your code.</p>
+				<p class="after-pill">Show this at the entrance. Take a screenshot so you have it even without a signal. Please do not share your code.</p>
 				<a class="pill pill--glass pill--block" href="<?= e($page) ?>">Programme, venue and dress code</a>
 			<?php endif; ?>
 		</div>

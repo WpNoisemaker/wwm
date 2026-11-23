@@ -9,7 +9,7 @@ $order = ['free', 'pro', 'royal', 'pearl', 'garden', 'noir', 'coral', 'indigo', 
 	<header class="page-head">
 		<span class="eyebrow"><?= t('templates.eyebrow.one-design-system-thirteen-ways', 'Designs') ?></span>
 		<h1><?= t('templates.title.wedding-page-designs', 'Wedding page designs') ?></h1>
-		<p class="lede"><?= t('templates.intro.free-pages-are-classic-in', 'Free pages are Classic in black & white. Pro pages are Classic in your colours. Premium pages choose any design.') ?></p>
+		<p class="lede"><?= t('templates.intro.free-pages-are-classic-in', 'Free pages are Classic in black & white. Pro pages are Classic in your colours. Premium pages can use any design.') ?></p>
 	</header>
 	<div class="designs">
 		<?php foreach ($order as $k): if (!isset($samples[$k])) { continue; } $w = $samples[$k];
@@ -23,7 +23,7 @@ $order = ['free', 'pro', 'royal', 'pearl', 'garden', 'noir', 'coral', 'indigo', 
 				</span>
 				<span class="design__body">
 					<span class="design__name"><?= e($label) ?> <span class="badge<?= $plan === 'Premium' || $plan === 'Custom' ? ' badge--solid' : '' ?>"><?= e($plan) ?></span></span>
-					<span class="design__line"><?= e($k === 'free' ? 'The reference screen in black & white: squircle photos, the frosted RSVP card, the white pill.' : ($k === 'pro' ? 'The same composition in the couple’s own two colours, in the glow, the squircles and the ticks.' : $d['line'])) ?></span>
+					<span class="design__line"><?= e($k === 'free' ? 'The Classic design in black & white, with squircle photos, the frosted RSVP card and the white pill button.' : ($k === 'pro' ? 'The same design in the couple’s own two colours, which show in the glow, the squircles and the ticks.' : $d['line'])) ?></span>
 					<span class="design__on">See it on <?= e(Wedding::names($w)) ?>&rsquo;s page <?= icon('arrow') ?></span>
 				</span>
 			</a>

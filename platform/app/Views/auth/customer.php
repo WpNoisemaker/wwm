@@ -1,7 +1,7 @@
 <?php
 /** A customer account: just enough to message sellers. @var string $to */
 ob_start(); ?>
-<div class="auth__head"><span class="cbtn cbtn--lg auth__mark"><span class="logo">&amp;</span></span><h1>Create a customer account</h1><p>Free. It lets you message sellers on the marketplace, get their invoices and keep your receipts.</p></div>
+<div class="auth__head"><span class="cbtn cbtn--lg auth__mark"><span class="logo">&amp;</span></span><h1>Create a customer account</h1><p>It is free, and it lets you message sellers on the marketplace, get their invoices and keep your receipts.</p></div>
 <form method="post" action="<?= e(App::url('/join/customer')) ?>" class="form">
 	<?= Guard::field() ?><input type="hidden" name="to" value="<?= e($to) ?>">
 	<label class="field"><span>Your name</span><input class="input" name="name" required autocomplete="name" value="<?= e(Guard::old('name')) ?>"></label>

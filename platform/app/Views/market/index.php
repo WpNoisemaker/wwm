@@ -8,7 +8,7 @@ $price = static fn (array $l): string => (int) $l['on_ask'] ? 'Price on request'
 ?>
 <div class="page wrap">
 	<header class="page-head">
-		<span class="eyebrow"><?= t('market.eyebrow.message-the-sellers', 'Message the sellers, pay them directly') ?></span>
+		<span class="eyebrow"><?= t('market.eyebrow.message-the-sellers', 'Message the sellers and pay them directly') ?></span>
 		<h1><?= t('market.title.asoebi-stays-rides-honeymoons', 'Aso-ebi, shortlets, rides & honeymoons') ?></h1>
 		<p class="lede"><?= e(number_format($total)) ?> listing<?= $total === 1 ? '' : 's' ?><?= $f['city'] !== '' ? ' in ' . e($f['city']) : '' ?></p>
 	</header>
@@ -16,7 +16,7 @@ $price = static fn (array $l): string => (int) $l['on_ask'] ? 'Price on request'
 		<span class="sell-cta__ico"><?= icon('s-store') ?></span>
 		<span class="sell-cta__in">
 			<span class="sell-cta__t"><?= t('market.sell.title', 'Sell to couples planning their wedding') ?></span>
-			<span class="sell-cta__s"><?= t('market.sell.text', 'Shortlets, rides, aso-ebi, honeymoons and services. Customers message you; you send your own invoice or payment link.') ?></span>
+			<span class="sell-cta__s"><?= t('market.sell.text', 'List shortlets, rides, aso-ebi, honeymoons and services. Customers message you, and you send your own invoice or payment link.') ?></span>
 		</span>
 		<span class="pill pill--sm sell-cta__go"><?= t('market.sell.button', 'Sell with us') ?></span>
 	</a>
@@ -40,7 +40,7 @@ $price = static fn (array $l): string => (int) $l['on_ask'] ? 'Price on request'
 	<?php endif; ?>
 
 	<?php if (!$rows): ?>
-		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('bag') ?></span><p><?= t('market.text.nothing-listed-for-that-yet', 'Nothing listed for that yet.') ?></p><a class="pill pill--glass" href="<?= e(App::url('/market')) ?>"><?= t('market.button.show-everything', 'Show everything') ?></a></div>
+		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('bag') ?></span><p><?= t('market.text.nothing-listed-for-that-yet', 'Nothing is listed for that yet.') ?></p><a class="pill pill--glass" href="<?= e(App::url('/market')) ?>"><?= t('market.button.show-everything', 'Show everything') ?></a></div>
 	<?php else: ?>
 		<div class="cards gap-t">
 			<?php foreach ($rows as $l): ?>

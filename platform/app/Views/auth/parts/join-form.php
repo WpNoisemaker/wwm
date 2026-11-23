@@ -1,4 +1,4 @@
-<div class="auth__head"><span class="cbtn cbtn--lg auth__mark"><span class="logo">&amp;</span></span><h1>Make your page</h1><p>Free, and it stays free. Two minutes and you have a link to share.</p></div>
+<div class="auth__head"><span class="cbtn cbtn--lg auth__mark"><span class="logo">&amp;</span></span><h1>Make your page</h1><p>It is free, and it stays free. In two minutes you will have a link to share.</p></div>
 <form method="post" action="<?= e(App::url('/join')) ?>" class="form">
 	<?= Guard::field() ?>
 	<div class="form-grid form-grid--2">
@@ -13,6 +13,6 @@
 	<label class="field"><span>Phone (optional)</span><input class="input" id="phone" name="phone" autocomplete="tel" inputmode="tel" value="<?= e(Guard::old('phone')) ?>" placeholder="0803 000 0000"></label>
 	<label class="field"><span>Password, at least 8 characters</span><input class="input" id="pass" name="pass" type="password" required minlength="8" autocomplete="new-password"></label>
 	<button class="pill pill--block" type="submit">Create my page</button>
-	<p class="after-pill">Your page starts private. Nobody sees it until you say so.</p>
+	<p class="after-pill">Your page starts as private. Nobody can see it until you say so.</p>
 	<p class="after-pill">By creating a page you agree to our <a class="linkish" href="<?= e(App::url('/terms')) ?>">terms</a>, <a class="linkish" href="<?= e(App::url('/privacy')) ?>">privacy policy</a> and <a class="linkish" href="<?= e(App::url('/refunds')) ?>">refund policy</a>. Free pages can be removed at any time; paid pages stay live for good.</p>
 </form>

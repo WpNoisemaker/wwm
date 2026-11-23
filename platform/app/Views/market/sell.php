@@ -8,8 +8,8 @@
 		<p class="lede">Couples come here to plan the day and everything around it. List what you offer, answer their messages, and send your own invoice or payment link.</p>
 	</header>
 	<div class="sell-steps">
-		<div class="glass glass--plain sell-step"><span class="sell-step__n">1</span><h2 class="h3">Open your shop</h2><p>Your business name, what you do, a logo and your three best projects.</p></div>
-		<div class="glass glass--plain sell-step"><span class="sell-step__n">2</span><h2 class="h3">List what you sell</h2><p>As many photos as you like, a price or &ldquo;on request&rdquo;, in any open category.</p></div>
+		<div class="glass glass--plain sell-step"><span class="sell-step__n">1</span><h2 class="h3">Open your shop</h2><p>Add your business name, what you do, a logo and your three best projects.</p></div>
+		<div class="glass glass--plain sell-step"><span class="sell-step__n">2</span><h2 class="h3">List what you sell</h2><p>Add as many photos as you like and a price, or &ldquo;on request&rdquo;, in any open category.</p></div>
 		<div class="glass glass--plain sell-step"><span class="sell-step__n">3</span><h2 class="h3">Talk and get paid</h2><p>Customers message you. Send an invoice or a payment link in the chat; they pay you directly.</p></div>
 	</div>
 	<p class="help center gap-t-sm"><?= icon('s-crown') ?> <b>Premium sellers</b> send every invoice, payment link and receipt in their own colours, font and logo<?= ($sp = (int) Site::setting('seller_premium_price', '0')) ? ', for ' . money(number_format($sp)) . ' a month' : '' ?>.</p>
