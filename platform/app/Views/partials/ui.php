@@ -216,3 +216,9 @@ function social_label(string $url): array
     }
     return [$net, $handle];
 }
+
+/** "1 reply", "3 replies": a count with the right form of the word. */
+function plural(int $n, string $one, string $many): string
+{
+    return number_format($n) . ' ' . ($n === 1 ? $one : $many);
+}

@@ -22,7 +22,7 @@ $url     = App::url('/w/' . $w['slug']);
 		<?php endif; ?>
 
 		<div class="cdash__stats">
-			<a class="tile cdash__stat" href="<?= e(App::url('/account/guests')) ?>"><span class="k">Guests coming</span><span class="v"><?= number_format((int) $dash['heads']) ?></span><span class="sub"><?= number_format((int) $dash['guests']) ?> replies</span></a>
+			<a class="tile cdash__stat" href="<?= e(App::url('/account/guests')) ?>"><span class="k">Guests coming</span><span class="v"><?= number_format((int) $dash['heads']) ?></span><span class="sub"><?= plural((int) $dash['guests'], 'reply', 'replies') ?></span></a>
 			<?php $pend = (int) ($dash['pending'] ?? 0); ?>
 			<a class="tile cdash__stat<?= $pend ? ' is-on' : '' ?>" href="<?= e(App::url('/account/guests#waiting')) ?>"><span class="k">Waiting for you</span><span class="v"><?= number_format($pend) ?></span><span class="sub"><?= $pend ? 'RSVPs to approve' : 'All RSVPs checked' ?></span></a>
 			<a class="tile cdash__stat" href="<?= e(App::url('/account/money')) ?>"><span class="k">Gifts received</span><span class="v"><?= money(short_money((int) $tally['raised']), (string) $w['currency']) ?></span><span class="sub"><?= money(short_money((int) $dash['week']), (string) $w['currency']) ?> this week</span></a>

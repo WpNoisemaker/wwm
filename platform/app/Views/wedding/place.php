@@ -90,7 +90,7 @@ $filtered = $f['q'] !== '' || $f['plan'] !== '' || $f['city'] !== '';
 				<a class="row-item" href="<?= e(App::url('/vendors/' . $v['slug'])) ?>">
 					<?= sq((string) $v['logo'], '', 'row-item__pic') ?>
 					<span><span class="row-item__t"><?= e($v['name']) ?><?php if ((int) $v['verified']): ?> <span class="badge"><?= icon('check') ?>Verified</span><?php endif; ?></span><span class="row-item__s"><?= e($v['category'] . ' · ' . $v['city']) ?></span></span>
-					<span class="row-item__end"><?= (float) $v['rating'] > 0 ? e(number_format((float) $v['rating'], 1)) : '' ?><span class="sub"><?= (int) $v['reviews'] ?> reviews</span></span>
+					<span class="row-item__end"><?= (float) $v['rating'] > 0 ? e(number_format((float) $v['rating'], 1)) : '' ?><span class="sub"><?= e(plural((int) $v['reviews'], 'review', 'reviews')) ?></span></span>
 				</a>
 			<?php endforeach; ?>
 		</div>

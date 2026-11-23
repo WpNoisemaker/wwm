@@ -59,7 +59,7 @@ $topicUrl = static fn (string $t, string $s): string => App::url('/community?' .
 			<div class="rows">
 				<?php foreach (array_slice($rows, 0, 6) as $t): ?>
 					<a class="row-item row-item--plain talk__row" href="<?= e(App::url('/community/' . $t['id'])) ?>">
-						<span><span class="talk__dot <?= e(talk_colour((string) $t['bg'])) ?>" aria-hidden="true"></span><span class="row-item__t talk__ex"><?= e(mb_strimwidth((string) $t['body'], 0, 90, '…')) ?></span><span class="row-item__s"><?= e(Talk::topic((string) $t['topic'])) ?> · <?= (int) $t['replies'] ?> replies</span></span>
+						<span><span class="talk__dot <?= e(talk_colour((string) $t['bg'])) ?>" aria-hidden="true"></span><span class="row-item__t talk__ex"><?= e(mb_strimwidth((string) $t['body'], 0, 90, '…')) ?></span><span class="row-item__s"><?= e(Talk::topic((string) $t['topic'])) ?> · <?= e(plural((int) $t['replies'], 'reply', 'replies')) ?></span></span>
 						<span class="row-item__end"><?= (int) $t['likes'] ?><span class="sub">likes</span></span>
 					</a>
 				<?php endforeach; ?>

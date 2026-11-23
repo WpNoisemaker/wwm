@@ -236,7 +236,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 				<a class="row-item" href="<?= e(App::url('/vendors/' . $v['slug'])) ?>">
 					<?= sq((string) $v['logo'], '', 'row-item__pic') ?>
 					<span><span class="row-item__t"><?= e($v['name']) ?><?php if ((int) $v['verified']): ?> <span class="badge"><?= icon('check') ?>Verified</span><?php endif; ?></span><span class="row-item__s"><?= e($v['category'] . ' · ' . $v['city']) ?></span></span>
-					<span class="row-item__end"><?= (float) $v['rating'] > 0 ? e(number_format((float) $v['rating'], 1)) : '' ?><span class="sub"><?= (int) $v['reviews'] ?> reviews</span></span>
+					<span class="row-item__end"><?= (float) $v['rating'] > 0 ? e(number_format((float) $v['rating'], 1)) : '' ?><span class="sub"><?= e(plural((int) $v['reviews'], 'review', 'reviews')) ?></span></span>
 				</a>
 			<?php endforeach; ?>
 		</div>
@@ -262,7 +262,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 						<article class="post <?= e(talk_colour((string) $t['bg'])) ?>" data-id="<?= (int) $t['id'] ?>" data-href="<?= e(App::url('/community/' . $t['id'])) ?>" data-like="<?= e(App::url('/community/' . $t['id'] . '/like')) ?>" data-likes="<?= (int) $t['likes'] ?>" data-replies="<?= (int) $t['replies'] ?>" data-liked="0">
 							<span class="post__topic"><?= e(Talk::topic((string) $t['topic'])) ?></span>
 							<div class="post__body"><p class="post__text<?= mb_strlen((string) $t['body']) > 140 ? ' post__text--long' : '' ?>"><?= e(mb_strimwidth((string) $t['body'], 0, 240, '…')) ?></p><span class="post__mark"><i aria-hidden="true">&amp;</i><?= e(Share::host()) ?></span></div>
-							<span class="post__meta"><?= e($t['pen_name'] ?: 'Someone') ?> · <?= (int) $t['replies'] ?> replies</span>
+							<span class="post__meta"><?= e($t['pen_name'] ?: 'Someone') ?> · <?= e(plural((int) $t['replies'], 'reply', 'replies')) ?></span>
 						</article>
 					<?php endforeach; ?>
 				</div>

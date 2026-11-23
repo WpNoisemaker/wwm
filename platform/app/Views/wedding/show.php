@@ -521,7 +521,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 		<p><?= e(Wedding::when($w)) ?></p>
 		<?php if (!empty($dz['sign'])): ?><p class="wed-foot__sign"><?= e($dz['sign']) ?></p><?php endif; ?>
 		<?php if ($isFree): ?>
-			<p class="sub"><?= e($design['name']) ?> design · Made on <a href="<?= e(App::url('/')) ?>">Wedding Websites &amp; More</a> · <a href="<?= e(App::url('/join')) ?>">Make yours for free</a></p>
+			<p class="sub"><?= e($design['name']) ?> design · Made on <a href="<?= e(App::url('/')) ?>">Wedding Websites &amp; More</a> · <a href="<?= e(App::url('/join')) ?>">Make your own page</a></p>
 		<?php else: ?>
 			<p class="sub"><?= e($design['name']) ?> design · Made on <a href="<?= e(App::url('/')) ?>">Wedding Websites &amp; More</a></p>
 			<a class="pill pill--glass wed-foot__cta" href="<?= e(App::url('/pricing#premium')) ?>">Make your own Premium wedding page, designed your way</a>
