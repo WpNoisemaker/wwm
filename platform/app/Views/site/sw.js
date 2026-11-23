@@ -69,7 +69,7 @@ self.addEventListener('fetch', (e) => {
 			}
 			try {
 				const r = (await e.preloadResponse) || (await fetch(req));
-				if (r && r.ok && r.type === 'basic' && !r.redirected && !PRIVATE.test(url.pathname)) {
+				if (r && r.ok && r.type === 'basic' && !r.redirected && !PRIVATE.test(url.pathname) && !r.headers.get('X-WWM-Edit')) {
 					const copy = r.clone();
 					e.waitUntil(caches.open(C_PAGES).then((c) => c.put(key, copy)).then(() => trim(C_PAGES, 40)));
 				}

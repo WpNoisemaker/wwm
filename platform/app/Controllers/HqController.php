@@ -629,4 +629,81 @@ final class HqController
         }
         $this->show('emails', ['title' => 'Emails', 'samples' => $samples]);
     }
+
+    /* ------------------------------------------------------------------ editing the live site */
+
+    /** Edit mode on or off, then back to the page. */
+    public function edit(): void
+    {
+        $this->gate('content');
+        Guard::boot();
+        $_SESSION['cms_edit'] = empty($_GET['off']);
+        $back = (string) ($_GET['back'] ?? '/');
+        $back = $back !== '' && $back[0] === '/' && !str_starts_with($back, '//') ? $back : '/';
+        header('Location: ' . App::url($back));
+        exit;
+    }
+
+    /** Words changed on a page: a t() key, or that exact text everywhere or on one page. */
+    public function editSave(): void
+    {
+        $this->gate('content');
+        Guard::must();
+        $kind = (string) ($_POST['kind'] ?? '');
+        $value = str_replace("\r", '', (string) ($_POST['value'] ?? ''));
+        if ($kind === 'key') {
+            $key = (string) ($_POST['key'] ?? '');
+            if (!preg_match('/^[a-z0-9_.-]{1,120}$/', $key)) {
+                self::json(['ok' => false, 'msg' => 'That cannot be saved.'], 400);
+            }
+            Content::set($key, trim($value));
+        } elseif ($kind === 'text') {
+            $scope = (string) ($_POST['scope'] ?? '*');
+            $scope = $scope === '*' ? '*' : '/' . ltrim(mb_substr($scope, 0, 180), '/');
+            LiveEdit::saveText((string) ($_POST['original'] ?? ''), $value, $scope);
+        } else {
+            self::json(['ok' => false, 'msg' => 'Nothing to save.'], 400);
+        }
+        self::json(['ok' => true]);
+    }
+
+    /** A picture replaced on a page: the new one is stored in every size and used everywhere. */
+    public function editImage(): void
+    {
+        $this->gate('content');
+        Guard::must();
+        $orig = trim((string) ($_POST['original'] ?? ''));
+        $key = (string) ($_POST['key'] ?? '');
+        if (($orig === '' && $key === '') || empty($_FILES['file']['name'])) {
+            self::json(['ok' => false, 'msg' => 'Choose a picture.'], 400);
+        }
+        $img = Images::store($_FILES['file'], 'site');
+        if ($img === null) {
+            self::json(['ok' => false, 'msg' => 'That picture could not be used. Try a JPEG or PNG under 12 MB.'], 400);
+        }
+        if ($key !== '' && preg_match('/^[a-z0-9_.-]{1,120}$/', $key)) {
+            Content::set($key, $img);
+        } else {
+            LiveEdit::saveImg($orig, $img);
+        }
+        self::json(['ok' => true, 'path' => $img]);
+    }
+
+    public function editUndo(): void
+    {
+        $this->gate('content');
+        Guard::must();
+        LiveEdit::remove((int) ($_POST['id'] ?? 0));
+        Guard::flash('ok', 'Undone. The page shows what it showed before.');
+        header('Location: ' . App::url('/hq/content#live-edits'));
+        exit;
+    }
+
+    private static function json(array $d, int $code = 200): never
+    {
+        http_response_code($code);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($d, JSON_UNESCAPED_UNICODE);
+        exit;
+    }
 }

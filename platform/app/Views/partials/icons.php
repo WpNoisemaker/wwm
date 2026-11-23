@@ -53,6 +53,10 @@ function photo(?string $path, string $alt = '', bool $eager = false, string $siz
     if ($path === '') {
         return '';
     }
+    // A picture HQ has replaced on the live site shows its replacement, everywhere.
+    $orig = $path;
+    $path = LiveEdit::img($path);
+    $cms = LiveEdit::editing() ? ' data-cms-img="' . e($orig) . '"' : '';
     // An attachment WordPress no longer has. Showing nothing lets the colour fallback stand in,
     // which beats a broken-image icon on somebody's wedding page.
     if (str_starts_with($path, 'wp:')) {
@@ -89,16 +93,16 @@ function photo(?string $path, string $alt = '', bool $eager = false, string $siz
             $webp = is_file($disk . $stem . '.webp') && is_file($disk . $stem . '-640.webp')
                 ? '<source type="image/webp" srcset="' . $url($stem . '-640.webp') . ' 640w, ' . $url($stem . '.webp') . ' 1600w" sizes="' . e($sizes) . '">'
                 : '';
-            return '<picture>' . $webp . '<img src="' . $url($path) . '" srcset="' . $url($stem . '-640.jpg') . ' 640w, ' . $url($path) . ' 1600w" sizes="' . e($sizes) . '" alt="' . e($alt) . '"' . $lazy . $fail . '></picture>';
+            return '<picture>' . $webp . '<img src="' . $url($path) . '" srcset="' . $url($stem . '-640.jpg') . ' 640w, ' . $url($path) . ' 1600w" sizes="' . e($sizes) . '" alt="' . e($alt) . '"' . $lazy . $fail . $cms . '></picture>';
         }
         // No fast copies yet: show this one now, and make them once the page has gone out.
         if ($stem !== $path) {
             $file = $disk . $path;
             App::later(static function () use ($file): void { Images::variants($file); });
         }
-        return '<img src="' . $url($path) . '" alt="' . e($alt) . '"' . $lazy . $fail . '>';
+        return '<img src="' . $url($path) . '" alt="' . e($alt) . '"' . $lazy . $fail . $cms . '>';
     }
-    return '<img src="' . e($src) . '" alt="' . e($alt) . '"' . $lazy . $fail . '>';
+    return '<img src="' . e($src) . '" alt="' . e($alt) . '"' . $lazy . $fail . $cms . '>';
 }
 
 /** Listings keep a JSON array of photos; the homepage only ever wants the first. */

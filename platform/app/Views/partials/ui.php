@@ -150,24 +150,36 @@ function up_tag(string $plan, string $feature, string $cls = ''): string
 /** An editable piece of the site's own text (see Content), escaped for the page. */
 function t(string $key, string $default): string
 {
-    return e(Content::get($key, $default));
+    $v = e(Content::get($key, $default));
+    // While an admin edits the live page, the words carry invisible marks naming their key.
+    return LiveEdit::editing() ? LiveEdit::markKey($key, $v) : $v;
 }
 
 /** Editable text that may run to several lines. */
 function tl(string $key, string $default): string
 {
-    return nl2br(e(Content::get($key, $default)));
+    $v = nl2br(e(Content::get($key, $default)));
+    if (LiveEdit::editing()) {
+        LiveEdit::$keys[] = $key;
+        return '<span data-cms-k="' . (count(LiveEdit::$keys) - 1) . '" data-cms-ml="1">' . $v . '</span>';
+    }
+    return $v;
 }
 
 /** An editable picture: the path HQ uploaded, or the default. */
 function timg(string $key, string $default): string
 {
-    return Content::get($key, $default);
+    $v = Content::get($key, $default);
+    if (LiveEdit::editing()) {
+        LiveEdit::$imgKeys[$key] = $v;
+    }
+    return $v;
 }
 
 /** A picture path as a full address, for link previews and backgrounds. */
 function img_url(string $path): string
 {
+    $path = $path !== '' ? LiveEdit::img($path) : $path;
     if ($path === '' || str_starts_with($path, 'http')) {
         return $path;
     }

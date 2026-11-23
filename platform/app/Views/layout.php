@@ -98,6 +98,15 @@ $ogDesc  = $ogDesc ?? ($desc ?? 'Wedding pages for African couples: invite, RSVP
 	<?= View::partial('partials/footer') ?>
 	<?= View::partial('partials/tabs', ['tab' => $tab]) ?>
 <?php endif; ?>
+<?php if (LiveEdit::editing()): ?>
+	<div class="cms-bar" data-cms-bar role="region" aria-label="Editing this page">
+		<span class="cms-bar__t"><?= icon('pen') ?>Editing: click any words or picture</span>
+		<label class="cms-bar__scope"><span class="sr">Where text changes apply</span><select data-cms-scope><option value="*">Change everywhere</option><option value="page">This page only</option></select></label>
+		<a class="pill pill--sm" href="<?= e(App::url('/hq/edit?off=1&back=' . rawurlencode(View::path()))) ?>">Done</a>
+	</div>
+<?php elseif (LiveEdit::allowed() && !$bare): ?>
+	<a class="cms-go" href="<?= e(App::url('/hq/edit?on=1&back=' . rawurlencode(View::path() . (($q = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_QUERY)) !== '' ? '?' . $q : '')))) ?>"><?= icon('pen') ?><span>Edit this page</span></a>
+<?php endif; ?>
 <?php if (Fx::$used): ?><script type="application/json" id="fx-rates" data-cur="<?= e(Fx::pick()) ?>" data-src="<?= e(Fx::$src) ?>"><?= Fx::forScript() ?></script><?php endif; ?>
 <script src="<?= e(App::asset('assets/js/wwm.js')) ?>" defer></script>
 </body>

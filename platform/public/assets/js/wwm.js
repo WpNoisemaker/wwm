@@ -299,7 +299,7 @@
 			var v = Math.abs(dx) / Math.max(1, Date.now() - t0), far = Math.abs(dx) > deck.offsetWidth * .3;
 			if ((far || (v > .45 && Math.abs(dx) > 24)) && dx < 0) { go(1); }
 			else if ((far || (v > .45 && Math.abs(dx) > 24)) && dx > 0) { go(-1); }
-			else { front.style.transform = ''; if (Math.abs(dx) < 6 && e && e.type === 'pointerup' && front.dataset.href && !e.target.closest('a,button')) { location.href = front.dataset.href; } }
+			else { front.style.transform = ''; if (Math.abs(dx) < 6 && e && e.type === 'pointerup' && front.dataset.href && !e.target.closest('a,button') && !root.classList.contains('cms-on')) { location.href = front.dataset.href; } }
 		}
 		addEventListener('pointerup', end); addEventListener('pointercancel', end);
 		deck.addEventListener('keydown', function (e) { if (e.key === 'ArrowRight') { go(1); } if (e.key === 'ArrowLeft') { go(-1); } });
@@ -816,6 +816,122 @@
 				.then(function (j) { say.value = ''; say.style.height = ''; chatAdd(j.html); buzz(); })
 				.catch(function () { toast('That did not send. Check your connection and try again.'); })
 				.then(function () { chatBusy = false; });
+		});
+	}
+
+	/* ---------- editing the live site: click words to change them, click a picture to replace it ---------- */
+	var cmsEl = d.getElementById('cms-data');
+	if (cmsEl) {
+		var cms = {}; try { cms = JSON.parse(cmsEl.textContent || '{}'); } catch (e) {}
+		root.classList.add('cms-on');
+		var MARK = /⁣([​‌]+)([⁤⁡])([\s\S]*?)⁢/g, ANY = /[⁡-⁤​‌]/g;
+		var num = function (b) { return parseInt(b.replace(/​/g, '0').replace(/‌/g, '1'), 2); };
+		var SKIP = 'script, style, textarea, select, option, svg, .sr, .cms-bar, .cms-go, .toast, .post__text, .wish p, .msg__b, .story__text, .diary__card p, .review blockquote, .prose, .squad__words, [data-cms-skip]';
+		// 1. The invisible marks around t() words and changed words become editable pieces.
+		var walk = d.createTreeWalker(d.body, NodeFilter.SHOW_TEXT), nodes = [], n;
+		while ((n = walk.nextNode())) { nodes.push(n); }
+		nodes.forEach(function (t) {
+			var p = t.parentElement; if (!p || p.closest('script, style, textarea')) { return; }
+			var v = t.nodeValue;
+			if (v.indexOf('⁣') > -1) {
+				var frag = d.createDocumentFragment(), last = 0, m; MARK.lastIndex = 0;
+				while ((m = MARK.exec(v))) {
+					if (m.index > last) { frag.appendChild(d.createTextNode(v.slice(last, m.index))); }
+					var sp = d.createElement('span'); sp.textContent = m[3];
+					sp.setAttribute(m[2] === '⁤' ? 'data-cms-k' : 'data-cms-o', String(num(m[1])));
+					frag.appendChild(sp); last = MARK.lastIndex;
+				}
+				if (last < v.length) { frag.appendChild(d.createTextNode(v.slice(last).replace(ANY, ''))); }
+				p.replaceChild(frag, t);
+				return;
+			}
+			// 2. Every other piece of words on the page can be changed too.
+			if (!/\p{L}/u.test(v) || p.closest(SKIP) || p.closest('[data-cms-k],[data-cms-o],[data-cms-t]')) { return; }
+			var w = d.createElement('span'); w.setAttribute('data-cms-t', v.replace(/\s+/g, ' ').trim());
+			p.replaceChild(w, t); w.appendChild(t);
+		});
+		// Marks inside attributes (hints, picture descriptions, the page title) are taken out.
+		d.querySelectorAll('*').forEach(function (el) {
+			[].slice.call(el.attributes).forEach(function (a) {
+				if (a.value.indexOf('⁣') < 0) { return; }
+				var key = null; a.value.replace(MARK, function (x, b, k) { if (k === '⁤') { key = num(b); } return ''; });
+				if (a.name === 'placeholder' && key !== null) { el.setAttribute('data-cms-ph', String(key)); }
+				el.setAttribute(a.name, a.value.replace(MARK, '$3').replace(ANY, ''));
+			});
+		});
+		d.title = d.title.replace(MARK, '$3').replace(ANY, '');
+		var scopeSel = d.querySelector('[data-cms-scope]');
+		var post = function (url, fd) {
+			fd.append('_t', cms.token);
+			return fetch(url, { method: 'POST', body: fd, credentials: 'same-origin', headers: { Accept: 'application/json' } })
+				.then(function (r) { return r.json().catch(function () { return { ok: false }; }); });
+		};
+		var save = function (el, value) {
+			var fd = new FormData();
+			if (el.hasAttribute('data-cms-k')) { fd.append('kind', 'key'); fd.append('key', cms.keys[+el.getAttribute('data-cms-k')]); }
+			else {
+				fd.append('kind', 'text');
+				fd.append('original', el.hasAttribute('data-cms-o') ? (cms.ids[el.getAttribute('data-cms-o')] || '') : el.getAttribute('data-cms-t'));
+				fd.append('scope', scopeSel && scopeSel.value === 'page' ? cms.path : '*');
+			}
+			fd.append('value', value);
+			post(cms.save, fd).then(function (j) { toast(j && j.ok ? 'Saved' : ((j && j.msg) || 'That did not save. Try again.')); });
+		};
+		var editing = null, before = '';
+		var stop = function (keep) {
+			if (!editing) { return; }
+			var el = editing; editing = null;
+			el.removeAttribute('contenteditable'); el.classList.remove('is-cms-on');
+			var now = el.innerText.replace(/ /g, ' ');
+			if (!keep) { el.innerText = before; return; }
+			if (now.trim() !== before.trim()) { save(el, el.hasAttribute('data-cms-ml') ? now : now.replace(/\s+/g, ' ').trim()); }
+		};
+		var TARGET = '[data-cms-k],[data-cms-o],[data-cms-t]';
+		d.addEventListener('click', function (e) {
+			if (e.target.closest('.cms-bar')) { return; }
+			var img = e.target.closest('img[data-cms-img]');
+			var el = e.target.closest(TARGET);
+			if (!el && !img) { return; }
+			e.preventDefault(); e.stopPropagation();
+			if (el) {
+				if (editing === el) { return; }
+				stop(true);
+				editing = el; before = el.innerText;
+				try { el.contentEditable = 'plaintext-only'; } catch (x) { el.contentEditable = 'true'; }
+				if (el.contentEditable !== 'plaintext-only') { el.contentEditable = 'true'; }
+				el.classList.add('is-cms-on'); el.focus();
+				var r = d.createRange(); r.selectNodeContents(el); var sel = W.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+				return;
+			}
+			// A picture: choose a new one.
+			var path = img.getAttribute('data-cms-img'), key = '';
+			Object.keys(cms.imgs || {}).forEach(function (k) { if (cms.imgs[k] === path) { key = k; } });
+			var f = d.createElement('input'); f.type = 'file'; f.accept = 'image/jpeg,image/png,image/webp';
+			f.onchange = function () {
+				if (!f.files[0]) { return; }
+				var fd = new FormData(); fd.append('original', path); fd.append('key', key); fd.append('file', f.files[0]);
+				toast('Uploading the picture…');
+				post(cms.image, fd).then(function (j) { if (j && j.ok) { toast('Picture changed'); setTimeout(function () { location.reload(); }, 500); } else { toast((j && j.msg) || 'That picture could not be used.'); } });
+			};
+			f.click();
+		}, true);
+		d.addEventListener('keydown', function (e) {
+			if (!editing) { return; }
+			if (e.key === 'Escape') { e.preventDefault(); stop(false); }
+			else if (e.key === 'Enter' && !editing.hasAttribute('data-cms-ml') && !e.shiftKey) { e.preventDefault(); stop(true); }
+		}, true);
+		d.addEventListener('focusout', function (e) { if (editing && e.target === editing) { stop(true); } });
+		// Forms do not send while editing; links only open from words that are not editable.
+		d.addEventListener('submit', function (e) { if (!e.target.closest('.cms-bar')) { e.preventDefault(); toast('Forms are switched off while you edit. Press Done to use the page.'); } }, true);
+		// A box's hint text: double-click the box.
+		d.addEventListener('dblclick', function (e) {
+			var i = e.target.closest('input[placeholder], textarea[placeholder]'); if (!i) { return; }
+			var v = prompt('The hint shown in this box:', i.placeholder); if (v === null || v.trim() === i.placeholder.trim()) { return; }
+			var fd = new FormData();
+			if (i.hasAttribute('data-cms-ph')) { fd.append('kind', 'key'); fd.append('key', cms.keys[+i.getAttribute('data-cms-ph')]); }
+			else { fd.append('kind', 'text'); fd.append('original', i.placeholder); fd.append('scope', scopeSel && scopeSel.value === 'page' ? cms.path : '*'); }
+			fd.append('value', v); i.placeholder = v;
+			post(cms.save, fd).then(function (j) { toast(j && j.ok ? 'Saved' : 'That did not save.'); });
 		});
 	}
 })();

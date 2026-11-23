@@ -2217,3 +2217,21 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .hq-reports .tile { margin-top: 8px; padding: 12px 14px; border-radius: 16px; display: grid; gap: 4px; }
 .badge--warn { background: rgba(255, 120, 120, .2); color: #FFB3AE; }
 .mail-frame { width: 100%; height: 720px; border: 0; border-radius: 22px; background: #161B23; }
+
+/* ---------- editing the live site (admins only) ---------- */
+.cms-go { position: fixed; left: 14px; bottom: calc(96px + env(safe-area-inset-bottom)); z-index: 300; display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: #E9B949; color: #2B2113; font-size: 13.5px; font-weight: 500; text-decoration: none; box-shadow: 0 12px 30px -10px rgba(0, 0, 0, .5); }
+.cms-go .ico { width: 15px; height: 15px; }
+@media (min-width: 960px) { .cms-go { bottom: 22px; left: 22px; } }
+.cms-bar { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(96px + env(safe-area-inset-bottom)); z-index: 400; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 12px; width: max-content; max-width: calc(100% - 20px); padding: 8px 10px 8px 16px; border-radius: 24px; background: #E9B949; color: #2B2113; font-size: 13.5px; box-shadow: 0 16px 40px -12px rgba(0, 0, 0, .55); }
+.cms-bar__t { display: inline-flex; align-items: center; gap: 7px; font-weight: 500; }
+.cms-bar__t .ico { width: 15px; height: 15px; }
+.cms-bar select { border: 0; border-radius: 999px; padding: 7px 12px; background: rgba(255, 255, 255, .55); color: #2B2113; font: inherit; }
+.cms-bar .pill { background: #2B2113; color: #F4E2B4; }
+.cms-on [data-cms-k], .cms-on [data-cms-o], .cms-on [data-cms-t] { cursor: text; border-radius: 4px; transition: outline-color .15s, background .15s; outline: 1px dashed transparent; outline-offset: 2px; }
+.cms-on [data-cms-k]:hover, .cms-on [data-cms-o]:hover, .cms-on [data-cms-t]:hover { outline-color: rgba(233, 185, 73, .9); background: rgba(233, 185, 73, .12); }
+.cms-on .is-cms-on { outline: 2px solid #E9B949 !important; background: rgba(233, 185, 73, .16) !important; }
+.cms-on img[data-cms-img] { cursor: copy; }
+.cms-on img[data-cms-img]:hover { outline: 3px solid #E9B949; outline-offset: -3px; }
+.cms-on input[placeholder]:hover, .cms-on textarea[placeholder]:hover { outline: 1px dashed rgba(233, 185, 73, .9); }
+@media print { .cms-go, .cms-bar { display: none !important; } }
+@media (min-width: 960px) { .cms-bar { bottom: 22px; } }

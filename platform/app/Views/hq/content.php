@@ -48,9 +48,30 @@ $urls = ['home' => '/', 'site' => '/', 'weddings' => '/weddings', 'rankings' => 
 				<a class="pill pill--glass pill--block" href="<?= e(App::url($urls[$page] ?? '/')) ?>" target="_blank" rel="noopener">Open the page</a>
 			</div>
 			<div class="form glass glass--plain glass--tight">
+				<h2 class="h3">Edit on the page itself</h2>
+				<p class="help">Open any page of the site and press <b>Edit this page</b> (bottom left). Click any words to change them and any picture to replace it. Double-click a box to change its hint text.</p>
+				<a class="pill pill--block" href="<?= e(App::url('/hq/edit?on=1&back=/')) ?>"><?= icon('pen') ?>Start editing the front page</a>
+			</div>
+			<div class="form glass glass--plain glass--tight">
 				<h2 class="h3">Elsewhere</h2>
 				<p class="help">Blog posts are in <a class="linkish" href="<?= e(App::url('/hq/blog')) ?>">Blog</a>. Prices, exchange rates and Google Drive are in <a class="linkish" href="<?= e(App::url('/hq/settings')) ?>">Settings</a>. Couples, vendors and sellers edit their own pages.</p>
 			</div>
 		</aside>
 	</form>
+	<?php $live = LiveEdit::all(); if ($live): ?>
+	<section class="gap-t" id="live-edits">
+		<h2 class="h3">Changes made on the live pages</h2>
+		<p class="help">Words and pictures changed with Edit this page. Undo one to bring back what was there before.</p>
+		<div class="rows gap-t-sm">
+			<?php foreach ($live as $o): ?>
+				<div class="row-item">
+					<span class="row-item__ico"><?= icon($o['kind'] === 'img' ? 'image' : 'pen') ?></span>
+					<span><span class="row-item__t"><?= $o['kind'] === 'img' ? 'Picture replaced' : '“' . e(mb_strimwidth((string) $o['original'], 0, 70, '…')) . '” → “' . e(mb_strimwidth((string) $o['value'], 0, 70, '…')) . '”' ?></span>
+						<span class="row-item__s"><?= $o['scope'] === '*' ? 'Everywhere' : 'Only on ' . e((string) $o['scope']) ?> · <?= e((string) ($o['name'] ?: 'HQ')) ?> · <?= e(ago((string) $o['updated_at'])) ?></span></span>
+					<form method="post" action="<?= e(App::url('/hq/edit/undo')) ?>" class="row-item__end"><?= Guard::field() ?><input type="hidden" name="id" value="<?= (int) $o['id'] ?>"><button class="pill pill--sm pill--glass" type="submit">Undo</button></form>
+				</div>
+			<?php endforeach; ?>
+		</div>
+	</section>
+	<?php endif; ?>
 </div>

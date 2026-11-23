@@ -12,7 +12,31 @@ final class View
 
     public static function render(string $tpl, array $data = [], ?string $layout = 'layout'): void
     {
-        echo self::capture($tpl, $data, $layout);
+        $html = self::capture($tpl, $data, $layout);
+        if ($layout !== null) {
+            // Words and pictures changed on the live site, and, for an admin editing, the editor.
+            $path = self::path();
+            $html = LiveEdit::apply($html, $path);
+            if (LiveEdit::editing()) {
+                if (!headers_sent()) {
+                    header('Cache-Control: no-store');
+                    header('X-WWM-Edit: 1');
+                }
+                $html = str_replace('</body>', LiveEdit::script($path) . '</body>', $html);
+            }
+        }
+        echo $html;
+    }
+
+    /** This page's address within the site, without the query: the scope of a "this page only" change. */
+    public static function path(): string
+    {
+        $uri = (string) parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        $base = rtrim((string) parse_url((string) App::config('url', ''), PHP_URL_PATH), '/');
+        if ($base !== '' && str_starts_with($uri, $base)) {
+            $uri = substr($uri, strlen($base)) ?: '/';
+        }
+        return '/' . ltrim($uri, '/');
     }
 
     public static function capture(string $tpl, array $data = [], ?string $layout = 'layout'): string
