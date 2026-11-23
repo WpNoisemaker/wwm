@@ -39,6 +39,14 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	<a class="cbtn" href="<?= e(App::url('/')) ?>" aria-label="Made on Wedding Websites &amp; More"><span class="logo">&amp;</span></a>
 	<p class="wed-head__title"><?= e($names) ?></p>
 	<div class="wed-head__tools">
+		<?php $mu = Music::forWedding($w); if ($mu): ?>
+		<div class="music" data-music data-src="<?= e($mu['url']) ?>" data-volume="<?= e((string) ($mu['volume'] / 100)) ?>" data-key="wwm-music-<?= (int) $w['id'] ?>">
+			<button class="music__b" type="button" data-music-toggle aria-pressed="false" aria-label="Play the music<?= $mu['title'] !== '' ? ': ' . e($mu['title']) : '' ?>">
+				<span class="music__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+				<span class="music__t"><?= e($mu['title'] !== '' ? $mu['title'] : 'Music') ?></span>
+			</button>
+		</div>
+		<?php endif; ?>
 		<button class="pill pill--sm wed-head__rsvp" type="button" data-open="rsvp">RSVP</button>
 		<button class="cbtn" type="button" data-share="<?= e($pageUrl) ?>" data-share-ping="<?= e(App::url('/w/' . $slug . '/share')) ?>" aria-label="Share this page"><?= icon('share') ?></button>
 	</div>

@@ -383,6 +383,66 @@
 		var i = d.querySelector('[data-photo-input]'); if (i) { e.preventDefault(); i.closest('form').scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(function () { i.click(); }, 450); }
 	});
 
+	/* ---------- background music: soft, from the first tap, and easy to stop ---------- */
+	var mus = d.querySelector('[data-music]');
+	if (mus) {
+		var mBtn = mus.querySelector('[data-music-toggle]'), audio = null, actx = null, gain = null, mOn = false, mFade = null;
+		var mKey = mus.getAttribute('data-key'), mLevel = Math.min(0.4, Math.max(0.05, +mus.getAttribute('data-volume') || 0.2)), mNo = false;
+		try { mNo = sessionStorage.getItem(mKey) === 'off'; } catch (er) {}
+		var mBuild = function () {
+			audio = new Audio(); audio.src = mus.getAttribute('data-src'); audio.loop = true; audio.preload = 'auto';
+			// Through Web Audio the level holds on iPhones too, which ignore a page's own volume setting.
+			try {
+				var AC = W.AudioContext || W.webkitAudioContext;
+				if (AC) { actx = new AC(); gain = actx.createGain(); gain.gain.value = 0; actx.createMediaElementSource(audio).connect(gain); gain.connect(actx.destination); }
+			} catch (er) { actx = null; gain = null; }
+			if (!gain) { audio.volume = 0; }
+		};
+		var mTo = function (v, secs) {
+			if (gain) { var t = actx.currentTime; gain.gain.cancelScheduledValues(t); gain.gain.setValueAtTime(gain.gain.value, t); gain.gain.linearRampToValueAtTime(v, t + secs); return; }
+			clearInterval(mFade); var v0 = audio.volume, k = 0;
+			mFade = setInterval(function () { k++; audio.volume = Math.max(0, Math.min(1, v0 + (v - v0) * k / 20)); if (k >= 20) { clearInterval(mFade); } }, secs * 50);
+		};
+		var mSet = function (on) {
+			mOn = on; mus.classList.toggle('is-on', on); mBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+			mBtn.setAttribute('aria-label', (on ? 'Pause the music' : 'Play the music'));
+		};
+		var mPlay = function () {
+			if (!audio) { mBuild(); }
+			if (actx && actx.state === 'suspended') { actx.resume(); }
+			var pr = audio.play();
+			var go = function () { mSet(true); mTo(mLevel, 2.5); };
+			if (pr && pr.then) { pr.then(go).catch(function () { mSet(false); }); } else { go(); }
+		};
+		var mPause = function (remember) {
+			if (!audio) { return; }
+			mTo(0, 0.4); setTimeout(function () { if (!mOn) { audio.pause(); } }, 450); mSet(false);
+			if (remember) { mNo = true; try { sessionStorage.setItem(mKey, 'off'); } catch (er) {} }
+		};
+		mBtn.addEventListener('click', function () {
+			if (mOn) { mPause(true); return; }
+			mNo = false; try { sessionStorage.removeItem(mKey); } catch (er) {}
+			mPlay();
+		});
+		// Phones and browsers never play sound before a tap; the first one, anywhere, starts it softly.
+		var mFirst = function (e) {
+			if (e.target && e.target.closest && e.target.closest('[data-music]')) { return; }
+			['pointerup', 'touchend', 'keydown'].forEach(function (ev) { d.removeEventListener(ev, mFirst, true); });
+			if (!mNo && !mOn) { mPlay(); }
+		};
+		['pointerup', 'touchend', 'keydown'].forEach(function (ev) { d.addEventListener(ev, mFirst, true); });
+		// A hidden tab goes quiet, and comes back as it was.
+		var mWas = false;
+		d.addEventListener('visibilitychange', function () {
+			if (!audio) { return; }
+			if (d.hidden) { mWas = mOn; if (mOn) { audio.pause(); mSet(false); } } else if (mWas && !mNo) { mPlay(); }
+		});
+		// Pressing play on the livestream moves focus into its frame: the music stops for it.
+		W.addEventListener('blur', function () {
+			setTimeout(function () { var a = d.activeElement; if (mOn && a && a.tagName === 'IFRAME') { mPause(false); } }, 0);
+		});
+	}
+
 	/* ---------- locked on this plan: the Pro / Premium tag opens the upgrade sheet ---------- */
 	d.addEventListener('click', function (e) {
 		var u = e.target.closest('[data-upgrade]'); if (!u) { return; }

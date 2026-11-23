@@ -81,6 +81,9 @@ self.addEventListener('fetch', (e) => {
 		return;
 	}
 
+	// Songs and videos stream in pieces; the browser fetches those itself, straight from the server.
+	if (req.headers.has('range') || /\.(mp3|m4a|aac|ogg|oga|wav|mp4|webm)$/i.test(url.pathname)) { return; }
+
 	if (url.pathname.startsWith(BASE + 'assets/')) {
 		e.respondWith((async () => {
 			const hit = await caches.match(req);

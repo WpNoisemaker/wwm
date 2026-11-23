@@ -326,6 +326,7 @@ final class Wedding
         'cover'    => 'premium',  // the full-bleed mesh treatment
         'spray'    => 'premium',
         'live'     => 'premium',
+        'music'    => 'premium',  // a song playing softly in the background
         'grand'    => 'premium',  // the larger type scale and wider layout
         'monogram' => 'society',
         'gold'     => 'society',

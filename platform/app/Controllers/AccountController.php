@@ -129,6 +129,38 @@ final class AccountController
                 $at = trim((string) ($_POST['live_at'] ?? ''));
                 $d['live_at'] = preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/', $at) ? $at : '';
             }
+            // Background music, Premium and up: an uploaded song, or one fetched from a link.
+            if (Wedding::has($w, 'music')) {
+                $err = '';
+                $old = (string) ($d['music'] ?? '');
+                $link = trim((string) ($_POST['music_link'] ?? ''));
+                $new = '';
+                if (!empty($_POST['music_off'])) {
+                    Music::remove($old);
+                    $d['music'] = '-';
+                    $d['music_link'] = '';
+                } elseif (!empty($_FILES['music_file']['name'])) {
+                    $new = Music::store($_FILES['music_file'], (int) $w['id'], $err);
+                    $d['music_link'] = '';
+                } elseif ($link !== '' && $link !== (string) ($d['music_link'] ?? '')) {
+                    $new = Music::import($link, (int) $w['id'], $err);
+                    if ($new !== '') {
+                        $d['music_link'] = $link;
+                    }
+                }
+                if ($new !== '') {
+                    if ($old !== $new) {
+                        Music::remove($old);
+                    }
+                    $d['music'] = $new;
+                }
+                $d['music_title'] = mb_substr(trim((string) ($_POST['music_title'] ?? ($d['music_title'] ?? ''))), 0, 80);
+                $vol = (int) ($_POST['music_volume'] ?? 20);
+                $d['music_volume'] = isset(Music::VOLUMES[$vol]) ? $vol : 20;
+                if ($err !== '') {
+                    Guard::flash('bad', 'The song was not added: ' . $err);
+                }
+            }
             // The colour code: up to six named colours, shown under the invite.
             if (Wedding::has($w, 'colours') && isset($_POST['pal_name'])) {
                 $pal = [];

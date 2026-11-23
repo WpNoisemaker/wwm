@@ -48,6 +48,10 @@ Guest photos uploaded to wedding pages are saved in `public/assets/uploads/` as 
 Drive once it is connected (see below); until then they wait in `storage/`, which is never served to
 anyone. Back up `public/assets/uploads/` and `storage/` with the database.
 
+Background music on Premium and High Society pages is saved in `public/assets/uploads/music/`. Songs
+pasted as links are fetched once and kept there too, so they load fast and stay quiet on iPhones.
+The demo Premium and High Society pages play a sample written for this site (`public/assets/audio/`).
+
 ### Background jobs (recommended)
 
 cPanel → **Cron Jobs** → add one, every five minutes:

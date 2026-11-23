@@ -101,7 +101,7 @@ final class SiteController
             App::url('assets/img/brand/favicon.ico'),
             App::url('assets/img/brand/icon-192.png'),
         ];
-        $version = substr(sha1(implode('|', $shell) . '|3'), 0, 10);
+        $version = substr(sha1(implode('|', $shell) . '|' . (string) @filemtime(App::root() . '/app/Views/site/sw.js')), 0, 10);
         header('Content-Type: text/javascript; charset=utf-8');
         header('Cache-Control: no-cache');
         header('Service-Worker-Allowed: ' . $base);

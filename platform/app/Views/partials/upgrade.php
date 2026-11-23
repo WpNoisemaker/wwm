@@ -23,6 +23,7 @@
 		</ul>
 		<ul class="upgrade__list" data-up-list="premium" hidden>
 			<li><?= icon('check') ?>Every Premium design</li>
+			<li><?= icon('check') ?>Background music on your page</li>
 			<li><?= icon('check') ?>Livestream on your page</li>
 			<li><?= icon('check') ?>Spraying from the seat</li>
 			<li><?= icon('check') ?>No charge on gifts or spraying, and everything in Pro</li>

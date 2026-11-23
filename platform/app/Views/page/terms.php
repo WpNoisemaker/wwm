@@ -20,7 +20,7 @@
 
 	<h2>3. Your wedding page</h2>
 	<p>What you put on your page (your story, photos, programmes, registry) stays yours. By publishing it you give us permission to host it, show it to visitors, list it in the directory and on your country&rsquo;s page, rank it on the Buzz Chart and use its name and cover in link previews. You can make your page private at any time; a private page is not listed, ranked or searchable.</p>
-	<p>Only post photos and words you have the right to share, and only share other people&rsquo;s details (guests, your squad) with their agreement.</p>
+	<p>Only post photos, music and words you have the right to share, and only share other people&rsquo;s details (guests, your squad) with their agreement.</p>
 
 	<h2>4. How long your page stays up</h2>
 	<p><b>Free pages.</b> A Free page is offered as it is, at no cost, and we may remove a Free page and its content at any time, with or without notice: for example when it has been inactive for a long time, when the wedding is long past, or when we need to change or end the Free plan. Keep your own copies of anything that matters to you.</p>

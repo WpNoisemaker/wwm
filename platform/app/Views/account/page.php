@@ -3,7 +3,7 @@ $choices = Design::choices($w);
 $isPremium = Wedding::rank((string) $w['plan']) >= Wedding::rank('premium');
 ?>
 <?= View::partial('account/_head', ['h' => 'Your page', 'w' => $w, 'sub' => 'Everything a guest sees', 'now' => 'page']) ?>
-	<form method="post" class="form acct-form">
+	<form method="post" class="form acct-form" enctype="multipart/form-data">
 		<?= Guard::field() ?>
 		<section class="glass glass--plain glass--tight acct-card" id="story">
 			<h2 class="h3">The couple</h2>
@@ -73,6 +73,29 @@ $isPremium = Wedding::rank((string) $w['plan']) >= Wedding::rank('premium');
 			<?php else: ?>
 				<label class="field locked" data-upgrade="premium" data-feature="Livestream on your page"><span>YouTube link for the day</span><input class="input" type="url" placeholder="https://youtube.com/live/…" disabled></label>
 				<p class="help">Family who cannot travel watch the ceremony right on your page.</p>
+			<?php endif; ?>
+		</section>
+		<section class="glass glass--plain glass--tight acct-card" id="music">
+			<div class="lock-row"><h2 class="h3">Background music</h2><?php if (!Wedding::has($w, 'music')): ?><?= up_tag('premium', 'Background music') ?><?php endif; ?></div>
+			<?php if (Wedding::has($w, 'music')): $mu = Music::forWedding($w); ?>
+				<p class="help">A song that plays softly while guests look around your page. It starts on their first tap (phones never play sound before that), and a music button lets anyone pause it.</p>
+				<?php if ($mu): ?>
+					<div class="music-now">
+						<span class="music-now__k"><?= icon('music') ?><?= e($mu['title'] !== '' ? $mu['title'] : 'Your song') ?></span>
+						<audio controls preload="none" src="<?= e($mu['url']) ?>"></audio>
+					</div>
+					<label class="check"><span>Remove the music</span><input type="checkbox" name="music_off" value="1"></label>
+				<?php endif; ?>
+				<div class="form-grid form-grid--2">
+					<label class="field"><span><?= $mu ? 'Replace it with a file' : 'Upload a song' ?></span><input class="input" type="file" name="music_file" accept="audio/mpeg,audio/mp4,audio/aac,audio/ogg,audio/wav,.mp3,.m4a,.aac,.ogg,.wav"></label>
+					<label class="field"><span>Or paste a link to the song</span><input class="input" name="music_link" type="url" inputmode="url" value="<?= e($mu['link'] ?? '') ?>" placeholder="Google Drive, Dropbox or an .mp3 link"></label>
+					<label class="field"><span>What it is called (optional)</span><input class="input" name="music_title" value="<?= e($mu['title'] ?? '') ?>" maxlength="80" placeholder="Our song"></label>
+					<label class="field"><span>How loud</span><select class="input" name="music_volume"><?php foreach (Music::VOLUMES as $v => $label): ?><option value="<?= $v ?>"<?= (int) ($mu['volume'] ?? 20) === $v ? ' selected' : '' ?>><?= e($label) ?></option><?php endforeach; ?></select></label>
+				</div>
+				<p class="help">MP3, M4A, AAC, OGG or WAV, up to 15 MB. Links to Google Drive or Dropbox files work when the file is shared with anyone who has the link. YouTube and streaming apps cannot play in the background. Use music you have the right to share.</p>
+			<?php else: ?>
+				<label class="field locked" data-upgrade="premium" data-feature="Background music"><span>Upload a song</span><input class="input" type="file" disabled></label>
+				<p class="help">Your song playing softly while guests look around your page.</p>
 			<?php endif; ?>
 		</section>
 		<section class="glass glass--plain glass--tight acct-card" id="visibility">

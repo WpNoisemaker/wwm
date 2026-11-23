@@ -1870,3 +1870,31 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .hq-wed__form { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; flex: 1; min-width: 0; }
 .hq-wed__form .input { flex: 1; min-width: 160px; height: 40px; }
 .code-line { display: inline-block; max-width: 100%; overflow-wrap: anywhere; padding: 6px 10px; border-radius: 10px; background: var(--tile-on); font-size: 12.5px; }
+
+/* ---------- background music: a button in the page's header, beside Share ---------- */
+.music { display: flex; }
+.music__b { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 9px; width: 48px; height: 48px; padding: 0; border-radius: 999px; cursor: pointer;
+	border: 1px solid var(--tile-line); background: var(--tile); color: var(--ink); font-size: 13px; transition: background .2s, transform .2s var(--ease); }
+.music__b:active { transform: scale(.95); }
+.music.is-on .music__b { background: var(--tile-on); }
+.music__t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.music__bars { display: inline-flex; align-items: flex-end; gap: 2.5px; height: 16px; flex: none; }
+.music__bars i { width: 3px; height: 4px; border-radius: 2px; background: currentColor; opacity: .7; }
+.music.is-on .music__bars i { opacity: 1; animation: musicbar 1.1s ease-in-out infinite; }
+.music.is-on .music__bars i:nth-child(2) { animation-delay: -.35s; }
+.music.is-on .music__bars i:nth-child(3) { animation-delay: -.7s; }
+.music.is-on .music__bars i:nth-child(4) { animation-delay: -.15s; }
+@keyframes musicbar { 0%, 100% { height: 4px; } 50% { height: 15px; } }
+@media (prefers-reduced-motion: reduce) { .music.is-on .music__bars i { animation: none; height: 11px; } }
+@media (max-width: 959px) { .wed-head:has(.music) { grid-template-columns: 106px minmax(0, 1fr) 106px; } }
+@media (min-width: 960px) {
+	.music__b { width: auto; max-width: 240px; height: 42px; padding: 0 16px 0 14px; }
+	.music__t { position: static; width: auto; height: auto; clip: auto; overflow: hidden; text-overflow: ellipsis; }
+}
+.music-now { display: grid; gap: 8px; margin-bottom: 4px; }
+.music-now__k { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); }
+.music-now audio { width: 100%; height: 40px; }
+/* file pickers look like the rest of the form */
+.input[type="file"] { height: auto; min-height: 52px; padding: 7px 10px; color: var(--ink-3); font-size: 13.5px; line-height: 36px; cursor: pointer; }
+.input[type="file"]::file-selector-button { margin-right: 12px; height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--tile-on); color: var(--ink); font: inherit; font-size: 13.5px; cursor: pointer; }
+.input[type="file"]:disabled { cursor: not-allowed; }
