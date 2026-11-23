@@ -96,6 +96,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 </section>
 <?php endif; ?>
 
+<?php if (Auth::check()): ?>
 <section class="sec wrap" id="designs">
 	<div class="sec-head reveal">
 		<span class="eyebrow"><?= t('home.eyebrow.ten-premium-designs-and-counting', 'Page designs') ?></span>
@@ -112,6 +113,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 	</div>
 	<p class="sec-more reveal"><a class="pill pill--glass pill--sm" href="<?= e(App::url('/templates')) ?>">Compare every design <?= icon('arrow') ?></a></p>
 </section>
+<?php endif; ?>
 
 <?php if (count($countries) > 1): ?>
 <section class="sec wrap" id="world">

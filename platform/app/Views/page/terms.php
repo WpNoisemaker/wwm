@@ -43,7 +43,7 @@
 	<h2>8. The marketplace</h2>
 	<p>Stays, rides, honeymoons, aso-ebi and services are sold by independent sellers. A booking is a contract between you and the seller, on the terms in their listing. A &ldquo;Verified&rdquo; badge means we have checked that the seller is a real, reachable business; it is not a guarantee of their work. Sellers must describe what they sell accurately, honour the prices they quote and treat buyers with respect. We do not hold, take or process payments between buyers and sellers: you pay the seller directly, through the invoice or payment link they send you. We take no responsibility for those payments, for payment fraud or for any problem with them, so be sure who you are paying before you pay. Any cancellation or refund is between you and the seller. If you believe a seller is not genuine, report them from their listing or profile.</p>
 
-	<h2>9. The community</h2>
+	<h2>9. The Anonymous Community</h2>
 	<p>Anyone can post and reply under a pen name, without an account. Posts must follow our <a href="<?= e(App::url('/community-guidelines')) ?>">community guidelines</a>. We may hold, edit for safety or remove any post or reply, and we may block anyone who misuses it.</p>
 
 	<h2>10. What is not allowed</h2>
@@ -60,7 +60,7 @@
 	<p>We work hard to keep everything running, but the service is provided as it is and as available. We do not promise it will always be uninterrupted or error-free. To the extent the law allows, we are not liable for indirect or consequential loss, and our total liability to you for any claim is limited to what you paid us in the twelve months before it. Nothing here limits liability that cannot be limited by law.</p>
 
 	<h2>12. Our name and design</h2>
-	<p>The Wedding Websites &amp; More name, logo, designs, templates and software are ours. You may use them only as part of using the service.</p>
+	<p>The Wedding Websites &amp; More name, logo, designs, templates, text, pictures and software are ours. You may use them only as part of using the service. You may not copy, scrape, download in bulk or reproduce the site, its designs or its code, in whole or in part, by hand or with automated or AI tools, or use them to build a similar service.</p>
 
 	<h2>13. Changes and ending</h2>
 	<p>We may update these terms; the date at the top shows when. If a change matters to you, we will tell you on the site or by email before it applies. You can close your account at any time by writing to us. These terms are governed by the laws of the Federal Republic of Nigeria, and the courts of the Federal Capital Territory, Abuja, have jurisdiction, unless the law where you live gives you the right to bring a claim there.</p>

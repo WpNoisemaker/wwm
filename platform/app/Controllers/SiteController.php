@@ -20,6 +20,8 @@ final class SiteController
     /** Every design, each shown on a real page that wears it. */
     public function templates(): void
     {
+        // The full design gallery is for signed-in people only.
+        Auth::wall();
         View::render('site/templates', [
             'title'    => 'Wedding page designs',
             'desc'     => 'Every wedding page design: Classic for Free and Pro pages, ten Premium designs and custom designs made for one couple.',
@@ -140,7 +142,7 @@ final class SiteController
         $add = static function (string $path, ?string $mod = null, string $freq = 'weekly') use (&$urls): void {
             $urls[] = [App::url($path), $mod, $freq];
         };
-        foreach (['/', '/weddings', '/rankings', '/vendors', '/market', '/sell', '/community', '/blog', '/pricing', '/templates', '/about', '/help',
+        foreach (['/', '/weddings', '/rankings', '/vendors', '/market', '/sell', '/community', '/blog', '/pricing', '/about', '/help',
                   '/terms', '/privacy', '/refunds', '/community-guidelines', '/cookies'] as $pth) {
             $add($pth, null, in_array($pth, ['/', '/weddings', '/rankings', '/community', '/blog'], true) ? 'daily' : 'monthly');
         }
@@ -175,6 +177,6 @@ final class SiteController
     public function robots(): void
     {
         header('Content-Type: text/plain; charset=utf-8');
-        echo "User-agent: *\nDisallow: /account\nDisallow: /hq\nDisallow: /sign-in\nDisallow: /join\nDisallow: /forgot\nDisallow: /reset\nDisallow: /verify\nDisallow: /search\nDisallow: /pay\nAllow: /\n\nSitemap: " . App::url('/sitemap.xml') . "\n";
+        echo "User-agent: *\nDisallow: /account\nDisallow: /hq\nDisallow: /sign-in\nDisallow: /join\nDisallow: /forgot\nDisallow: /reset\nDisallow: /verify\nDisallow: /search\nDisallow: /pay\nDisallow: /templates\nAllow: /\n\n" . implode('', array_map(static fn (string $bot): string => "User-agent: $bot\nDisallow: /\n\n", ['GPTBot', 'ChatGPT-User', 'OAI-SearchBot', 'ClaudeBot', 'Claude-Web', 'anthropic-ai', 'CCBot', 'Google-Extended', 'PerplexityBot', 'Bytespider', 'Applebot-Extended', 'meta-externalagent', 'Diffbot', 'Omgilibot', 'cohere-ai'])) . "Sitemap: " . App::url('/sitemap.xml') . "\n";
     }
 }

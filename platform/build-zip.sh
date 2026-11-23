@@ -29,6 +29,26 @@ rsync -a \
 # The installer writes this; it must not ship with one already in place.
 rm -f "$OUT/$NAME/config/config.php"
 
+# The stylesheet and script that browsers download go out without their explanatory comments
+# (the copies in the repository keep them). Less to download, and much less for anyone to read.
+php -r '
+$css = $argv[1]; $js = $argv[2];
+$c = file_get_contents($css);
+$c = preg_replace("~/\*.*?\*/~s", "", $c);
+$c = preg_replace("~\s*\n\s*~", "\n", $c);
+$c = preg_replace("~\s*([{};])\s*~", "$1", $c);
+file_put_contents($css, trim($c) . "\n");
+$out = []; $inBlock = false;
+foreach (explode("\n", file_get_contents($js)) as $line) {
+	$t = trim($line);
+	if ($inBlock) { if (strpos($t, "*/") !== false) { $inBlock = false; } continue; }
+	if ($t === "" || strpos($t, "//") === 0) { continue; }
+	if (strpos($t, "/*") === 0) { if (strpos($t, "*/") === false) { $inBlock = true; } continue; }
+	$out[] = $t;
+}
+file_put_contents($js, implode("\n", $out) . "\n");
+' "$OUT/$NAME/public/assets/css/wwm.css" "$OUT/$NAME/public/assets/js/wwm.js"
+
 # A writable spot for uploads, in case the host does not create it.
 mkdir -p "$OUT/$NAME/public/assets/uploads"
 cat > "$OUT/$NAME/public/assets/uploads/.htaccess" <<'HTA'
