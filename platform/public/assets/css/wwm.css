@@ -2321,3 +2321,20 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .give__acct dt, .give__acct dd { margin: 0; }
 .give__acct dd { font-size: 16px; }
 .give__big:focus { outline: none; }
+
+/* ---------- wedding pages on wide screens: sections line up whatever is filled in ---------- */
+@media (min-width: 900px) {
+	/* a pair that has only one side (gifts without spraying) sits in the middle, not in the left half */
+	.two:has(> :only-child) { grid-template-columns: minmax(0, 1fr); max-width: 980px; margin-inline: auto; }
+	.two:has(> :only-child) .gifts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	/* spraying: the two cards stand the same height */
+	#spray .two { align-items: stretch; }
+	#spray .two > .reveal { display: flex; flex-direction: column; }
+	#spray .two > .reveal > .glass { flex: 1; }
+	/* programmes and the squad: a part-filled last row is centred, cards keep one width */
+	.sched { display: flex; flex-wrap: wrap; justify-content: center; }
+	.sched > .tile { flex: 0 1 calc((100% - 2 * var(--gap)) / 3); min-width: 280px; }
+	.squad { display: flex; flex-wrap: wrap; justify-content: center; }
+	.squad > .squad__item { flex: 0 1 calc((100% - 3 * var(--gap)) / 4); min-width: 200px; }
+	.w-timeline { max-width: 760px; margin-inline: auto; }
+}
