@@ -9,9 +9,9 @@ $names = ['a' => (string) $w['partner_a'], 'b' => (string) $w['partner_b']];
 ?>
 <?= View::partial('account/_head', ['h' => 'Who knows you best?', 'w' => $w, 'sub' => 'A quiz about each of you', 'now' => 'quiz']) ?>
 	<?php if (!Wedding::has($w, 'squad')): ?>
-		<p class="note"><?= icon('lock') ?><span>The quiz shows on your page from Pro. Write it now and it appears when you upgrade. </span><?= up_tag('pro', 'The quiz') ?></p>
+		<p class="note"><?= icon('lock') ?><span>The quiz shows on your page from the Pro plan upwards. Write it now and it will appear when you upgrade. </span><?= up_tag('pro', 'The quiz') ?></p>
 	<?php endif; ?>
-	<p class="help qe-intro">Ask what family and friends should know about each of you: a nickname, a favourite food, a hometown, a fear, a football club. Leave how you met out of it; this is about who knows each of you best. Guests pick the one they know, answer, and land on that person&rsquo;s leaderboard.</p>
+	<p class="help qe-intro">Ask what family and friends should know about each of you: a nickname, a favourite food, a hometown, a fear, a football club. Leave how you met out of it; this is about who knows each of you best. Guests pick the person they know, answer the questions and land on that person&rsquo;s leaderboard.</p>
 	<form method="post" class="qe-form">
 		<?= Guard::field() ?>
 		<div class="qe-cols">
@@ -34,7 +34,7 @@ $names = ['a' => (string) $w['partner_a'], 'b' => (string) $w['partner_b']];
 							</div>
 						</fieldset>
 					<?php endfor; ?>
-					<p class="help">Tick the right answer. Two answers is enough; four is more fun. Up to <?= Quiz::MAX_QUESTIONS ?> questions. Guests see the answers in the order you write them, so move the right one around.</p>
+					<p class="help">Tick the right answer. Two answers are enough, but four are more fun. You can add up to <?= Quiz::MAX_QUESTIONS ?> questions. Guests see the answers in the order you write them, so vary where the right one goes.</p>
 					<?php if ((int) $players[$side] > 0): ?>
 						<label class="check"><span>Start <?= e($nm) ?>&rsquo;s leaderboard again</span><input type="checkbox" name="restart[<?= $side ?>]" value="1"></label>
 					<?php endif; ?>

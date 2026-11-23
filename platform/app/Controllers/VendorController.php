@@ -88,12 +88,12 @@ final class VendorController
         }
         $body = trim((string) ($_POST['body'] ?? ''));
         if (mb_strlen($body) < 10) {
-            Guard::flash('bad', 'Say a little about how it went: a sentence or two.');
+            Guard::flash('bad', 'Please write a sentence or two about how it went.');
             header($back);
             exit;
         }
         Market::review($v, $me, (int) ($_POST['stars'] ?? 5), $body);
-        Guard::flash('ok', 'Thank you. Your review is on their profile.');
+        Guard::flash('ok', 'Thank you. Your review is now on their profile.');
         header($back);
         exit;
     }

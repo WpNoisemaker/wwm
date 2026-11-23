@@ -1,6 +1,6 @@
 <?php /** What can be sold on the marketplace. Sellers only list in an open category. @var array $rows */ ?>
 <?= View::partial('hq/_head', ['h' => 'Categories', 'now' => 'market', 'sub' => 'What sellers can list']) ?>
-	<p class="help">Sellers can only list in an open category; they cannot make new ones. Close one to stop new listings in it (what is there stays up).</p>
+	<p class="help">Sellers can only list in an open category; they cannot make new ones. Close a category to stop new listings in it; existing listings stay up.</p>
 	<div class="acct-list gap-t-sm">
 		<?php foreach ($rows as $c): ?>
 			<form method="post" class="form glass glass--plain glass--tight acct-card">

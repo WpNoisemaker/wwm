@@ -15,8 +15,8 @@ final class Staff
         'money'    => ['Money & payouts', 'See payments and payout requests'],
         'blog'     => ['Blog', 'Write, edit, schedule and publish posts'],
         'content'  => ['Site text & images', 'Change the words and pictures across the site'],
-        'market'   => ['Marketplace', 'Sellers, their listings and the verified badge'],
-        'settings' => ['Settings', 'Prices, exchange rates, Google Drive and email'],
+        'market'   => ['Marketplace', 'Manage sellers, their listings and the verified badge'],
+        'settings' => ['Settings', 'Change prices, exchange rates, Google Drive and email'],
     ];
 
     /** What a staff member who was added before areas existed can reach: everything but settings. */

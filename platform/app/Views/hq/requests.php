@@ -1,6 +1,6 @@
 <?php /** Change requests from Premium and High Society couples. @var array $rows */ ?>
 <?= View::partial('hq/_head', ['h' => 'Requests', 'now' => 'requests', 'sub' => 'Changes Premium and High Society couples asked us to make']) ?>
-	<p class="help">Open the couple's dashboard with <b>Manage page</b>, make the change, then mark the request done. The couple gets an email.</p>
+	<p class="help">Open the couple's dashboard with <b>Manage page</b>, make the change, then mark the request as done. The couple will get an email.</p>
 	<?php if (!$rows): ?>
 		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('chat') ?></span><p>No requests yet.</p></div>
 	<?php endif; ?>

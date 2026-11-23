@@ -1,6 +1,6 @@
 <?php /** Every email, as it is sent. @var array $samples */ ?>
 <?= View::partial('hq/_head', ['h' => 'Emails', 'now' => 'settings', 'sub' => 'What people receive from the site']) ?>
-	<p class="help">Every email the site sends wears this design: sign-up and password emails, livestream reminders, marketplace chats and invoices, and notes to sellers. Each one also carries the same words as plain text.</p>
+	<p class="help">Every email the site sends uses this design: sign-up and password emails, livestream reminders, marketplace chats and invoices, and notes to sellers. Each one also has a plain-text version with the same words.</p>
 	<div class="acct-list gap-t-sm">
 		<?php foreach ($samples as $k => [$subj]): ?>
 			<div class="glass glass--plain glass--tight acct-card">

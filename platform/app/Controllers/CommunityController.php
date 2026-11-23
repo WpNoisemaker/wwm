@@ -71,7 +71,7 @@ final class CommunityController
         $pen  = trim((string) ($_POST['pen_name'] ?? ''));
         $topic = isset(Talk::TOPICS[$_POST['topic'] ?? '']) ? (string) $_POST['topic'] : 'confess';
         if (mb_strlen($body) < 12) {
-            Guard::flash('bad', 'Say a little more — at least a sentence.');
+            Guard::flash('bad', 'Please write a little more: at least a sentence.');
             self::go('/community');
         }
         Db::insert('talks', [

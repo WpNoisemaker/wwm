@@ -154,7 +154,7 @@ final class Drive
         $j = json_decode($body, true) ?: [];
         if ($st !== 200 || ($j['mimeType'] ?? '') !== 'application/vnd.google-apps.folder') {
             return $st === 404
-                ? 'The platform cannot see that folder.' . (self::full() ? ' Check it is in the connected Google account.' : ' Use "Make a folder", or turn on full Drive access in Settings to use folders you made yourself.')
+                ? 'The platform cannot see that folder.' . (self::full() ? ' Check that it is in the connected Google account.' : ' Use "Make a folder", or turn on full Drive access in Settings to use folders you made yourself.')
                 : 'That link is not a Drive folder.';
         }
         self::assign((int) $w['id'], (string) $j['id'], (string) $j['name'], (string) ($j['webViewLink'] ?? ''));

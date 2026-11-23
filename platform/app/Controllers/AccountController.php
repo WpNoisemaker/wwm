@@ -23,7 +23,7 @@ final class AccountController
         Guard::must();
         $w = $this->need();
         $err = Bachs::assign($w);
-        Guard::flash($err === '' ? 'ok' : 'bad', $err === '' ? 'Your account number is ready. Guests can now send gifts and spray by bank transfer.' : $err);
+        Guard::flash($err === '' ? 'ok' : 'bad', $err === '' ? 'Your account number is ready. Guests can now send gifts and spray money by bank transfer.' : $err);
         self::go('/account/money');
     }
 
@@ -98,7 +98,7 @@ final class AccountController
             }
         }
         Managed::add($w, (int) Auth::id(), $body, $files);
-        Guard::flash('ok', 'Sent to our team. We will make the change and let you know here.');
+        Guard::flash('ok', 'Your request is with our team. We will make the change and let you know here.');
         self::go('/account#managed');
     }
 
@@ -180,7 +180,7 @@ final class AccountController
             $a = trim((string) ($_POST['a'] ?? ''));
             $b = trim((string) ($_POST['b'] ?? ''));
             if ($a === '' || $b === '') {
-                Guard::flash('bad', 'Both first names, please.');
+                Guard::flash('bad', 'Please enter both first names.');
                 self::go('/account/new');
             }
             $base = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($a . '-' . $b)) ?? '', '-') ?: 'wedding';
@@ -194,7 +194,7 @@ final class AccountController
                 'city' => trim((string) ($_POST['city'] ?? '')), 'country' => 'Nigeria',
                 'plan' => 'free', 'visibility' => 'private', 'currency' => 'NGN', 'template' => 'classic',
             ]);
-            Guard::flash('ok', 'Made. Now fill it in.');
+            Guard::flash('ok', 'Your page is ready. Now fill it in.');
             self::go('/account/page');
         }
         $this->show('new', ['title' => 'Make your wedding page']);
@@ -485,7 +485,7 @@ final class AccountController
                 } else {
                     Db::run('INSERT INTO wedding_vendors (wedding_id, vendor_id, role) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE role = VALUES(role)',
                         [$w['id'], $v['id'], mb_substr(trim((string) ($_POST['role'] ?? '')), 0, 80)]);
-                    Guard::flash('ok', $v['name'] . ' is on your page. Your guests can rate them there.');
+                    Guard::flash('ok', $v['name'] . ' is now on your page. Your guests can rate them there.');
                 }
             }
             self::go('/account/vendors');
@@ -554,7 +554,7 @@ final class AccountController
                 }
             }
             $n = count($d['quizzes']['a']) + count($d['quizzes']['b']);
-            Guard::flash('ok', $n ? 'Saved. ' . $n . ' question' . ($n === 1 ? '' : 's') . ' ready for your guests.' : 'Saved. Add a question or two and the quiz appears on your page.');
+            Guard::flash('ok', $n ? 'Saved. ' . $n . ($n === 1 ? ' question is' : ' questions are') . ' ready for your guests.' : 'Saved. Add a question or two and the quiz will appear on your page.');
             self::go('/account/quiz');
         }
         Quiz::table();
@@ -649,7 +649,7 @@ final class AccountController
                 $rid = (int) ($_POST['review_id'] ?? 0);
                 Db::run("UPDATE reviews SET reply = ? WHERE id = ? AND vendor_id = ? AND (reply IS NULL OR reply = '')",
                         [mb_substr(trim((string) ($_POST['reply'] ?? '')), 0, 1000), $rid, $v['id']]);
-                Guard::flash('ok', 'Your reply is on your profile.');
+                Guard::flash('ok', 'Your reply is now on your profile.');
                 self::go('/account/shop/profile#reviews');
             }
             $id = (int) ($_POST['id'] ?? 0);
@@ -674,7 +674,7 @@ final class AccountController
                     self::go('/account/shop');
                 }
                 if (!Market::isOpen($row['kind']) && !($old && (string) $old['kind'] === $row['kind'])) {
-                    Guard::flash('bad', 'Pick one of the open categories. New ones are opened by our team.');
+                    Guard::flash('bad', 'Pick one of the open categories. Only our team can open new ones.');
                     self::go('/account/shop');
                 }
                 if ($v && !Market::active($v)) {
@@ -703,7 +703,7 @@ final class AccountController
                 }
                 $row['photos'] = json_encode(array_slice($photos, 0, 8), JSON_UNESCAPED_SLASHES);
                 if ($failed) {
-                    Guard::flash('bad', $failed . ' photo' . ($failed > 1 ? 's' : '') . ' could not be used. Try JPEG or PNG under 12 MB.');
+                    Guard::flash('bad', $failed . ' photo' . ($failed > 1 ? 's' : '') . ' could not be used. Use JPEG or PNG files under 12 MB.');
                 }
                 if ($old) {
                     Db::update('listings', $row, 'id = ? AND partner_id = ?', [$id, $uid]);
@@ -745,7 +745,7 @@ final class AccountController
             return;
         }
         if (trim((string) ($fields[$required] ?? '')) === '') {
-            Guard::flash('bad', 'It needs a name at least.');
+            Guard::flash('bad', 'It needs at least a name.');
             return;
         }
         if ($id) {
@@ -816,7 +816,7 @@ final class AccountController
         Guard::must();
         $w = $this->need();
         $ok = ($_POST['do'] ?? '') === 'approve' ? Rsvp::approve($w, (int) $id) : Rsvp::decline($w, (int) $id);
-        Guard::flash($ok ? 'ok' : 'bad', $ok ? (($_POST['do'] ?? '') === 'approve' ? 'Approved. We emailed them their access code.' : 'Declined. They will not get a code.') : 'That reply was already dealt with.');
+        Guard::flash($ok ? 'ok' : 'bad', $ok ? (($_POST['do'] ?? '') === 'approve' ? 'Approved. We emailed them their access code.' : 'Declined. They will not get a code.') : 'That reply has already been dealt with.');
         self::go('/account/guests#waiting');
     }
 
@@ -871,14 +871,14 @@ final class AccountController
             self::go('/account/money');
         }
         if (Verify::needed(Auth::user())) {
-            Guard::flash('bad', 'Confirm your email before you ask for a payout. Money goes to a bank account, so we need to know the address on this account is really yours.');
+            Guard::flash('bad', 'Confirm your email before you ask for a payout. Money goes to a bank account, so we need to know that the email address on this account is really yours.');
             self::go('/account/money');
         }
         $amt = max(0, (int) ($_POST['amount'] ?? 0));
         $in  = (int) Db::val("SELECT COALESCE(SUM(amount),0) FROM payments WHERE wedding_id = ? AND status IN ('paid','released')", [$w['id']], 0);
         $out = (int) Db::val("SELECT COALESCE(SUM(amount),0) FROM payouts WHERE user_id = ? AND status <> 'failed'", [Auth::id()], 0);
         if ($amt <= 0 || $amt > $in - $out) {
-            Guard::flash('bad', 'That is more than the balance available.');
+            Guard::flash('bad', 'That is more than the available balance.');
             self::go('/account/money');
         }
         Db::insert('payouts', [
@@ -890,7 +890,7 @@ final class AccountController
             'account'    => trim((string) ($_POST['acct'] ?? '')),
             'account_nm' => trim((string) ($_POST['acct_name'] ?? '')),
         ]);
-        Guard::flash('ok', 'Payout requested. It is reviewed before it goes out.');
+        Guard::flash('ok', 'Your payout has been requested. We review it before it goes out.');
         self::go('/account/money');
     }
 
@@ -901,12 +901,12 @@ final class AccountController
         Auth::wall();
         $u = Auth::user();
         if (!Verify::needed($u)) {
-            Guard::flash('ok', 'Nothing to confirm.');
+            Guard::flash('ok', 'There is nothing to confirm.');
         } elseif (Guard::tooMany('verify', 3, 30)) {
-            Guard::flash('bad', 'We have sent a few already. Check your spam folder, or wait a little before asking again.');
+            Guard::flash('bad', 'We have already sent a few links. Check your spam folder, or wait a little before asking again.');
         } else {
             Verify::send($u);
-            Guard::flash('ok', 'Sent again. Check your inbox, and your spam folder.');
+            Guard::flash('ok', 'We have sent it again. Check your inbox and your spam folder.');
         }
         self::go('/account');
     }
@@ -943,7 +943,7 @@ final class AccountController
                     self::go('/account/settings');
                 }
                 if (!Auth::attempt((string) $u['email'], (string) ($_POST['current'] ?? ''))) {
-                    Guard::flash('bad', 'Your current password did not match.');
+                    Guard::flash('bad', 'That is not your current password.');
                     self::go('/account/settings');
                 }
                 $set['pass'] = password_hash($new, PASSWORD_DEFAULT);

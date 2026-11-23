@@ -169,7 +169,7 @@ final class Bachs
         // Paid out of the couple's own Bachs account only. Without one, nothing is sent: it would
         // otherwise come out of the platform's balance.
         if ((string) ($w['va_account'] ?? '') === '' || (string) ($w['payout_dest'] ?? '') === '') {
-            $err = 'No couple account or bank account to pay to.';
+            $err = 'There is no couple account or bank account to pay into.';
             return '';
         }
         $amount = number_format($kobo / 100, 2, '.', '');

@@ -9,7 +9,7 @@ $state = ['active' => 'Live', 'suspended' => 'Paused, verifying', 'removed' => '
 ?>
 <?= View::partial('hq/_head', ['h' => 'Marketplace', 'now' => 'market', 'sub' => 'Sellers, reports and categories']) ?>
 	<div class="form-actions"><a class="pill pill--sm pill--glass" href="<?= e(App::url('/hq/categories')) ?>"><?= icon('grid') ?>Categories</a></div>
-	<p class="help">From <?= Market::SUSPEND_AT ?> open reports a seller is paused automatically and emailed to verify their business by hand. From <?= Market::REMOVE_AT ?> they are removed from the site. You can reverse either here.</p>
+	<p class="help">Once a seller has <?= Market::SUSPEND_AT ?> open reports, they are paused automatically and emailed to verify their business by hand. At <?= Market::REMOVE_AT ?>, they are removed from the site. You can reverse either step here.</p>
 	<div class="acct-list gap-t-sm">
 		<?php foreach ($sellers as $v): $n = (int) $v['reports']; $st = (string) ($v['status'] ?? 'active'); ?>
 			<div class="glass glass--plain glass--tight hq-seller<?= $n >= Market::SUSPEND_AT ? ' is-hot' : '' ?>" id="s<?= (int) $v['id'] ?>">
@@ -34,7 +34,7 @@ $state = ['active' => 'Live', 'suspended' => 'Paused, verifying', 'removed' => '
 					<?= Guard::field() ?><input type="hidden" name="id" value="<?= (int) $v['id'] ?>">
 					<button class="pill pill--sm<?= Market::premium($v) ? '' : ' pill--glass' ?>" name="do" value="premium"><?= Market::premium($v) ? 'Premium: on' : 'Make Premium' ?></button>
 					<?php if ((int) $v['verified']): ?><button class="pill pill--sm pill--glass" name="do" value="unverify">Unverify</button><?php else: ?><button class="pill pill--sm" name="do" value="verify">Verify</button><?php endif; ?>
-					<?php if ($st === 'active'): ?><button class="pill pill--sm pill--glass" name="do" value="suspend" data-confirm="Pause <?= e((string) $v['name']) ?> and email them to verify?">Pause &amp; ask to verify</button><?php else: ?><button class="pill pill--sm" name="do" value="reinstate">Reinstate</button><?php endif; ?>
+					<?php if ($st === 'active'): ?><button class="pill pill--sm pill--glass" name="do" value="suspend" data-confirm="Pause <?= e((string) $v['name']) ?> and email them to ask them to verify?">Pause &amp; ask to verify</button><?php else: ?><button class="pill pill--sm" name="do" value="reinstate">Reinstate</button><?php endif; ?>
 					<?php if ($n): ?><button class="pill pill--sm pill--glass" name="do" value="clear">Clear reports</button><?php endif; ?>
 					<?php if ($st !== 'removed'): ?><button class="pill pill--sm pill--glass" name="do" value="remove" data-confirm="Remove <?= e((string) $v['name']) ?> from the site?">Remove</button><?php endif; ?>
 					<button class="pill pill--sm pill--danger" name="do" value="delete" data-confirm="Delete <?= e((string) $v['name']) ?> and all their listings for good? This cannot be undone.">Delete</button>

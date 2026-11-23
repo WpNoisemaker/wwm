@@ -47,7 +47,7 @@ final class Guard
     {
         if (!self::ok()) {
             http_response_code(419);
-            exit('Your form expired. Go back, reload the page and try again.');
+            exit('Your form has expired. Go back, reload the page and try again.');
         }
     }
 

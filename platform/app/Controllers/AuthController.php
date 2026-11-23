@@ -58,7 +58,7 @@ final class AuthController
         if ((($_SERVER['REQUEST_METHOD'] ?? '') === 'POST')) {
             Guard::must();
             if (Guard::tooMany('join', 6, 30)) {
-                Guard::flash('bad', 'Too many sign-ups from here just now. Try again shortly.');
+                Guard::flash('bad', 'There have been too many sign-ups from here just now. Try again shortly.');
                 self::go('/join');
             }
             $in = [
@@ -74,7 +74,7 @@ final class AuthController
 
             $bad = [];
             if ($in['name'] === '')                                   { $bad[] = 'your name'; }
-            if (!filter_var($in['email'], FILTER_VALIDATE_EMAIL))     { $bad[] = 'a real email address'; }
+            if (!filter_var($in['email'], FILTER_VALIDATE_EMAIL))     { $bad[] = 'a valid email address'; }
             if (strlen($pass) < 8)                                    { $bad[] = 'a password of at least 8 characters'; }
             if ($in['a'] === '' || $in['b'] === '')                   { $bad[] = 'both of your first names'; }
             if ($bad) {
@@ -86,7 +86,7 @@ final class AuthController
             $u = Auth::register($in['email'], $pass, $in['name'], $in['phone']);
             if (!$u) {
                 Guard::keep($in);
-                Guard::flash('bad', 'There is already an account on that email. Sign in instead.');
+                Guard::flash('bad', 'There is already an account with that email. Sign in instead.');
                 self::go('/sign-in');
             }
 
@@ -111,14 +111,14 @@ final class AuthController
                 // The admin has switched confirmation on. They can still build the page; the link is
                 // what lets it go public.
                 Verify::send($u);
-                Guard::flash('ok', 'Welcome. Your page is made. We have emailed you a link to confirm your address — you will need it before the page can go public.');
+                Guard::flash('ok', 'Welcome. Your page is ready. We have emailed you a link to confirm your address; you will need to follow it before the page can go public.');
             } else {
-                Guard::flash('ok', 'Welcome. Your page is made — fill it in, then make it public when you are ready.');
+                Guard::flash('ok', 'Welcome. Your page is ready. Fill it in, then make it public when you are ready.');
             }
             self::go('/account');
         }
 
-        View::render('auth/join', ['title' => 'Create your free wedding page', 'appTitle' => 'Make your page', 'back' => App::url('/'), 'tab' => 'account']);
+        View::render('auth/join', ['title' => 'Create your wedding page', 'appTitle' => 'Make your page', 'back' => App::url('/'), 'tab' => 'account']);
     }
 
     public function signOut(): void
@@ -200,7 +200,7 @@ final class AuthController
             Db::run('UPDATE tokens SET used_at = NOW() WHERE token = ?', [$token]);
             // A password change ends every other session, which is the point of keeping them in a table.
             Db::run('DELETE FROM sessions WHERE user_id = ?', [$row['user_id']]);
-            Guard::flash('ok', 'Password changed. Sign in with it.');
+            Guard::flash('ok', 'Your password has been changed. Sign in with your new password.');
             self::go('/sign-in');
         }
 
@@ -223,14 +223,14 @@ final class AuthController
         if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             Guard::must();
             if (Guard::tooMany('join', 6, 30)) {
-                Guard::flash('bad', 'Too many sign-ups from here just now. Try again shortly.');
+                Guard::flash('bad', 'There have been too many sign-ups from here just now. Try again shortly.');
                 self::go('/join/customer?to=' . urlencode($to));
             }
             $in = ['name' => trim((string) ($_POST['name'] ?? '')), 'email' => strtolower(trim((string) ($_POST['email'] ?? ''))), 'phone' => trim((string) ($_POST['phone'] ?? ''))];
             $pass = (string) ($_POST['pass'] ?? '');
             $bad = [];
             if ($in['name'] === '')                               { $bad[] = 'your name'; }
-            if (!filter_var($in['email'], FILTER_VALIDATE_EMAIL)) { $bad[] = 'a real email address'; }
+            if (!filter_var($in['email'], FILTER_VALIDATE_EMAIL)) { $bad[] = 'a valid email address'; }
             if (strlen($pass) < 8)                                { $bad[] = 'a password of at least 8 characters'; }
             if ($bad) {
                 Guard::keep($in);
@@ -240,7 +240,7 @@ final class AuthController
             $u = Auth::register($in['email'], $pass, $in['name'], $in['phone']);
             if (!$u) {
                 Guard::keep($in);
-                Guard::flash('bad', 'There is already an account on that email. Sign in instead.');
+                Guard::flash('bad', 'There is already an account with that email. Sign in instead.');
                 self::go('/sign-in?to=' . urlencode($to));
             }
             Guard::dropOld();

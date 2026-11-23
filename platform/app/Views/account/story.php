@@ -48,7 +48,7 @@ $card = static function (int $i, array $c) use ($signs, $words): string {
 <?= View::partial('account/_head', ['h' => 'Our story', 'w' => $w, 'sub' => 'Your story as diary cards, in your own words', 'now' => 'story']) ?>
 	<form method="post" class="form acct-form" enctype="multipart/form-data" data-diary>
 		<?= Guard::field() ?>
-		<p class="note"><?= icon('book') ?><span>Each card is one moment: when it was, a title, up to <?= $words ?> words and a photo if you like. Up to <?= $max ?> cards. When you have cards, they take the place of the single story on your page.</span></p>
+		<p class="note"><?= icon('book') ?><span>Each card is one moment: when it was, a title, up to <?= $words ?> words and a photo if you like. You can add up to <?= $max ?> cards. Once you have cards, they replace the single story on your page.</span></p>
 		<div class="acct-list" data-diary-list data-max="<?= $max ?>">
 			<?php foreach ($cards as $i => $c): ?><?= $card($i, (array) $c) ?><?php endforeach; ?>
 			<?php if (count($cards) < $max): ?><?= $card(count($cards), []) ?><?php endif; ?>

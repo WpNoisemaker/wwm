@@ -76,7 +76,7 @@ final class MarketController
         if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             Guard::must();
             if (Guard::tooMany('join', 6, 30)) {
-                Guard::flash('bad', 'Too many sign-ups from here just now. Try again shortly.');
+                Guard::flash('bad', 'There have been too many sign-ups from here just now. Try again shortly.');
                 self::back();
             }
             $in = [
@@ -93,19 +93,19 @@ final class MarketController
             if (!Market::isOpen($in['cat'])) { $bad[] = 'what you sell'; }
             if (!$me) {
                 if ($in['name'] === '') { $bad[] = 'your name'; }
-                if (!filter_var($in['email'], FILTER_VALIDATE_EMAIL)) { $bad[] = 'a real email address'; }
+                if (!filter_var($in['email'], FILTER_VALIDATE_EMAIL)) { $bad[] = 'a valid email address'; }
                 if (strlen($pass) < 8) { $bad[] = 'a password of at least 8 characters'; }
             }
             if ($bad) {
                 Guard::keep($in);
-                Guard::flash('bad', 'We still need ' . implode(', ', $bad) . '.');
+                Guard::flash('bad', 'We still need ' . preg_replace('/, ([^,]*)$/', ' and $1', implode(', ', $bad)) . '.');
                 self::back();
             }
             if (!$me) {
                 $u = Auth::register($in['email'], $pass, $in['name'], $in['phone']);
                 if (!$u) {
                     Guard::keep($in);
-                    Guard::flash('bad', 'There is already an account on that email. Sign in, then come back to Sell with us.');
+                    Guard::flash('bad', 'There is already an account with that email. Sign in, then come back to Sell with us.');
                     header('Location: ' . App::url('/sign-in?to=' . urlencode('/sell')));
                     exit;
                 }
@@ -119,13 +119,13 @@ final class MarketController
                 'category' => Market::catName($in['cat']), 'city' => $in['city'], 'phone' => $in['phone'],
             ]);
             $_SESSION['acct_ctx'] = 'shop';
-            Guard::flash('ok', 'Welcome to the marketplace. Add a logo and a few words about your business, then your first listing.');
+            Guard::flash('ok', 'Welcome to the marketplace. Add a logo and a few words about your business, then add your first listing.');
             header('Location: ' . App::url('/account/shop/profile'));
             exit;
         }
         View::render('market/sell', [
             'title' => 'Sell to couples on Wedding Websites & More',
-            'desc'  => 'List your shortlets, vacation rentals, rides, honeymoons, aso-ebi and wedding services where couples plan their day. Customers message you, you send your own invoice or payment link.',
+            'desc'  => 'List your shortlets, vacation rentals, rides, honeymoons, aso-ebi and wedding services where couples plan their day. Customers message you, and you send your own invoice or payment link.',
             'tab'   => 'market',
             'appTitle' => 'Sell with us',
             'cats'  => $cats,

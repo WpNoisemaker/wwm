@@ -106,7 +106,7 @@ final class Reminder
             if ((string) $r['link_sent'] !== md5($link)) {
                 Db::run('UPDATE live_reminders SET link_sent = ? WHERE id = ?', [md5($link), $r['rid']]);
                 Mailer::send((string) $r['email'], $names . ': the livestream link is ready',
-                    "The livestream for {$names} is ready" . ($when !== '' ? ", starting {$when}" : '') . ".\n\n"
+                    "The livestream for {$names} is ready" . ($when !== '' ? ". It starts on {$when}" : '') . ".\n\n"
                     . "Watch it on their page:\n{$page}\n\nWe will send one more reminder fifteen minutes before it starts.\n\n"
                     . "Stop these reminders: {$stop}\n\nWedding Websites & More",
                     ['button' => ['Watch the livestream', $page], 'unsub' => $stop, 'why' => 'You asked for a reminder about ' . $names . '’s livestream.']);

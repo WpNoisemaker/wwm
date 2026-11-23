@@ -19,7 +19,7 @@ $projects = $v ? Market::projects($v) : [];
 				<label class="photo-pick span-2"><input type="file" name="logo" accept="image/jpeg,image/png,image/webp" data-photo-input><?= icon('camera') ?><span data-photo-name><?= $v && (string) $v['logo'] !== '' ? 'Change your logo or photo' : 'Add a logo or photo' ?></span></label>
 			</div>
 			<h2 class="h3 gap-t-sm">Your three best projects</h2>
-			<p class="help">They sit at the top of your public profile: a photo, a title and a line about each.</p>
+			<p class="help">They appear at the top of your public profile, each with a photo, a title and a line about it.</p>
 			<?php for ($i = 0; $i < 3; $i++): $pj = $projects[$i] ?? ['', '', '']; ?>
 				<div class="proj-edit">
 					<?php if ($pj[2] !== ''): ?><div class="proj-edit__pic"><?= sq($pj[2], '', '') ?><label class="squad-edit__off"><input type="checkbox" name="proj_off[<?= $i ?>]" value="1"> Remove</label></div><?php endif; ?>
@@ -39,9 +39,9 @@ $projects = $v ? Market::projects($v) : [];
 				<p class="help">Couples find you in Vendors and on every listing you post.</p>
 				<a class="pill pill--glass pill--block" href="<?= e(App::url('/vendors/' . $v['slug'])) ?>">Open it</a>
 			<?php else: ?>
-				<p class="help">Save your profile and it appears in Vendors, with your listings.</p>
+				<p class="help">Save your profile and it will appear in Vendors, with your listings.</p>
 			<?php endif; ?>
-			<p class="help"><?= $v && (int) $v['verified'] ? 'Verified by Wedding Websites &amp; More.' : 'HQ verifies sellers once they have checked the business.' ?></p>
+			<p class="help"><?= $v && (int) $v['verified'] ? 'Verified by Wedding Websites &amp; More.' : 'Our team verifies sellers after checking their business.' ?></p>
 			<?php if ($v): $prem = Market::premium($v); $lk = Market::look($v); if (!$prem) { $lk = array_merge($lk, ['primary' => '#0F5C4D', 'accent' => '#E8B04B', 'font' => 'playfair', 'on' => '#FFFFFF']); }
 				$gf = array_values(array_filter(array_column(Market::FONTS, 2))); $logo = $lk['logo'] !== '' ? $lk['logo'] : (string) $v['logo']; $price = (int) Site::setting('seller_premium_price', '0'); $wa = preg_replace('/\D/', '', Site::setting('whatsapp', '')); ?>
 			<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=<?= e(implode('&family=', $gf)) ?>&display=swap">
@@ -59,7 +59,7 @@ $projects = $v ? Market::projects($v) : [];
 							<label class="field"><span>Main colour</span><input type="color" name="primary" value="<?= e($lk['primary']) ?>" data-inv="primary"></label>
 							<label class="field"><span>Second colour</span><input type="color" name="accent" value="<?= e($lk['accent']) ?>" data-inv="accent"></label>
 							<label class="field span-2"><span>Font</span><select class="input" name="font" data-inv="font"><?php foreach (Market::FONTS as $fk => [$fn, $fc]): ?><option value="<?= e($fk) ?>" data-css="<?= e($fc) ?>"<?= $lk['font'] === $fk ? ' selected' : '' ?>><?= e($fn) ?></option><?php endforeach; ?></select></label>
-							<label class="photo-pick span-2"><input type="file" name="inv_logo" accept="image/jpeg,image/png,image/webp" data-photo-input><?= icon('camera') ?><span data-photo-name>Logo for invoices (empty uses your profile logo)</span></label>
+							<label class="photo-pick span-2"><input type="file" name="inv_logo" accept="image/jpeg,image/png,image/webp" data-photo-input><?= icon('camera') ?><span data-photo-name>Logo for invoices (leave it empty to use your profile logo)</span></label>
 							<?php if ($lk['logo'] !== ''): ?><label class="check span-2"><span>Use my profile logo instead</span><input type="checkbox" name="logo_off" value="1"></label><?php endif; ?>
 						</div>
 						<div class="form-actions"><button class="pill pill--sm" type="submit">Save invoice look</button><button class="pill pill--sm pill--glass" type="submit" name="reset" value="1">Back to our standard look</button></div>

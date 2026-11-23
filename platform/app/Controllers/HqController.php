@@ -103,7 +103,7 @@ final class HqController
             }
             // A ticked box is present in the POST, an unticked one is simply absent.
             Verify::set(isset($_POST['email_verify']));
-            Guard::flash('ok', 'Saved. The pricing page now shows these.');
+            Guard::flash('ok', 'Saved. The pricing page now shows these prices.');
             header('Location: ' . App::url('/hq/settings'));
             exit;
         }
@@ -202,8 +202,8 @@ final class HqController
         Guard::flash(
             $ok ? 'ok' : 'bad',
             $ok
-                ? 'Handed to the mail server for ' . $me['email'] . '. Check the inbox and the spam folder — if it arrives, sending works.'
-                : 'The server refused to send. Leave email confirmation off until that is sorted; ask your host about PHP mail().'
+                ? 'The email was handed to the mail server for ' . $me['email'] . '. Check the inbox and the spam folder; if it arrives, sending works.'
+                : 'The server refused to send the email. Leave email confirmation off until that is sorted; ask your host about PHP mail().'
         );
         header('Location: ' . App::url('/hq/settings'));
         exit;
@@ -348,10 +348,10 @@ final class HqController
                 $link = App::url('/reset/' . $tok);
                 $sent = Mailer::send($email, 'You have been added to the Wedding Websites & More team',
                     "Hello" . ($name !== '' ? ' ' . $name : '') . ",\n\nYou now have staff access to Wedding Websites & More.\n"
-                    . ($new ? "Choose your password here (the link works once, for 7 days):\n\n" : "Sign in as usual, or set a new password here (the link works once, for 7 days):\n\n")
+                    . ($new ? "Choose your password here (the link works once and lasts 7 days):\n\n" : "Sign in as usual, or set a new password here (the link works once and lasts 7 days):\n\n")
                     . $link . "\n\nThen open HQ: " . App::url('/hq') . "\n\n— Wedding Websites & More\n",
                     ['button' => [$new ? 'Choose your password' : 'Set a new password', $link], 'title' => 'Welcome to the team']);
-                Guard::flash('ok', ($new ? 'Added. ' : 'Moved onto staff. ') . ($sent ? 'We emailed them a link to set their password.' : 'Email could not be sent from this server, so send them this link yourself: ' . $link));
+                Guard::flash('ok', ($new ? 'Added. ' : 'They are now on staff. ') . ($sent ? 'We emailed them a link to set their password.' : 'This server could not send the email, so send them this link yourself: ' . $link));
             } elseif ($do === 'save') {
                 $uid = (int) ($_POST['id'] ?? 0);
                 if (Db::val("SELECT 1 FROM users WHERE id = ? AND role = 'staff'", [$uid])) {
@@ -363,7 +363,7 @@ final class HqController
                 if (Db::val("SELECT 1 FROM users WHERE id = ? AND role = 'staff'", [$uid])) {
                     Db::update('users', ['role' => 'member'], 'id = ?', [$uid]);
                     Db::run('DELETE FROM staff_perms WHERE user_id = ?', [$uid]);
-                    Guard::flash('ok', 'Taken off staff. Their account stays, without HQ.');
+                    Guard::flash('ok', 'Removed from staff. Their account stays, but without HQ access.');
                 }
             }
             header('Location: ' . App::url('/hq/staff'));
@@ -420,7 +420,7 @@ final class HqController
                 Content::set($f['key'], $val === $f['default'] ? '' : mb_substr($val, 0, 60000));
                 $changed++;
             }
-            Guard::flash('ok', $changed ? 'Saved. ' . $changed . ' change' . ($changed === 1 ? '' : 's') . ' are live.' : 'Nothing changed.');
+            Guard::flash('ok', $changed ? 'Saved. ' . $changed . ($changed === 1 ? ' change is' : ' changes are') . ' live.' : 'Nothing changed.');
             header('Location: ' . App::url('/hq/content?page=' . $page));
             exit;
         }
@@ -451,11 +451,11 @@ final class HqController
             Guard::flash('ok', Drive::connected() ? 'Saved.' : 'Saved. Now connect your Google account.');
         } elseif ($do === 'disconnect') {
             Drive::disconnect();
-            Guard::flash('ok', 'Google Drive disconnected. Photos wait on the server until it is connected again.');
+            Guard::flash('ok', 'Google Drive is disconnected. Photos will wait on the server until it is connected again.');
         } elseif ($do === 'sync') {
             Drive::retry();
             $n = Drive::sync(60);
-            Guard::flash('ok', $n . ' photo' . ($n === 1 ? '' : 's') . ' sent to Drive. Any still waiting belong to weddings without a folder yet.');
+            Guard::flash('ok', $n . ' photo' . ($n === 1 ? '' : 's') . ' sent to Drive. Any photos still waiting belong to weddings that do not have a folder yet.');
         }
         header('Location: ' . App::url('/hq/settings#drive'));
         exit;
@@ -477,7 +477,7 @@ final class HqController
     {
         $this->gate('settings');
         $err = isset($_GET['error']) ? 'Google said: ' . (string) $_GET['error'] : Drive::finish((string) ($_GET['code'] ?? ''), (string) ($_GET['state'] ?? ''));
-        Guard::flash($err === '' ? 'ok' : 'bad', $err === '' ? 'Google Drive is connected. Give each wedding its folder in Weddings.' : $err);
+        Guard::flash($err === '' ? 'ok' : 'bad', $err === '' ? 'Google Drive is connected. Assign each wedding its folder in Weddings.' : $err);
         header('Location: ' . App::url('/hq/settings#drive'));
         exit;
     }
@@ -496,7 +496,7 @@ final class HqController
             Guard::flash('bad', 'Connect Google Drive in Settings first.');
         } else {
             $err = ($_POST['do'] ?? '') === 'create' ? Drive::create($w) : Drive::attach($w, (string) ($_POST['link'] ?? ''));
-            Guard::flash($err === '' ? 'ok' : 'bad', $err === '' ? Wedding::names($w) . ' now save their guests\' photos to Drive.' : $err);
+            Guard::flash($err === '' ? 'ok' : 'bad', $err === '' ? 'Guest photos for ' . Wedding::names($w) . ' now go to Drive.' : $err);
         }
         header('Location: ' . App::url('/hq/weddings#w' . (int) $w['id']));
         exit;
@@ -537,15 +537,15 @@ final class HqController
                         break;
                     case 'remove':
                         Market::setStatus($v, 'removed');
-                        $msg = $v['name'] . ' is removed from the site.';
+                        $msg = $v['name'] . ' has been removed from the site.';
                         break;
                     case 'premium':
                         Db::update('vendors', ['premium' => (int) Market::premium($v) ? 0 : 1], 'id = ?', [$v['id']]);
-                        $msg = Market::premium($v) ? $v['name'] . ' is no longer a Premium seller.' : $v['name'] . ' is a Premium seller: their invoices can carry their own look.';
+                        $msg = Market::premium($v) ? $v['name'] . ' is no longer a Premium seller.' : $v['name'] . ' is now a Premium seller, so their invoices can carry their own look.';
                         break;
                     case 'clear':
                         Db::run("UPDATE seller_reports SET status = 'cleared' WHERE vendor_id = ?", [$v['id']]);
-                        $msg = 'Reports on ' . $v['name'] . ' are cleared.';
+                        $msg = 'The reports on ' . $v['name'] . ' have been cleared.';
                         break;
                     case 'delete':
                         $msg = self::deleteSeller($v);
@@ -580,7 +580,7 @@ final class HqController
         }
         Db::run('DELETE FROM seller_reports WHERE vendor_id = ?', [$v['id']]);
         Db::run('DELETE FROM vendors WHERE id = ?', [$v['id']]);
-        return $v['name'] . ' is deleted, with their listings.';
+        return $v['name'] . ' and their listings have been deleted.';
     }
 
     /** What can be sold: HQ adds categories and opens or closes them. Sellers only list in open ones. */
@@ -619,17 +619,17 @@ final class HqController
         $this->gate('settings');
         $u = App::url('/');
         $samples = [
-            'chat'   => ['New message from AbujaCarhire', "Hello Ada,\n\nAbujaCarhire wrote:\n\nYes, the Range Rover is free on 14 December. Full day with a driver, ribbons and flowers included. I will send you an invoice with my payment link.\n\nReply here: {$u}account/messages\n\nWe never hold money for sellers. Pay only through the seller's own invoice or link, and be sure who you are paying.",
+            'chat'   => ['New message from AbujaCarhire', "Hello Ada,\n\nAbujaCarhire wrote:\n\nYes, the Range Rover is free on 14 December. Full day with a driver, ribbons and flowers included. I will send you an invoice with my payment link.\n\nReply here: {$u}account/messages\n\nWe never hold money for sellers. Pay only through the seller's own invoice or link, and make sure you know who you are paying.",
                          ['button' => ['Read and reply', $u . 'account/messages'], 'quote' => 'Yes, the Range Rover is free on 14 December. Full day with a driver, ribbons and flowers included. I will send you an invoice with my payment link.', 'why' => 'You get this email because of a chat on the Wedding Websites & More marketplace.']],
-            'live'   => ['Chidi & Amaka: the livestream link is ready', "The livestream for Chidi & Amaka is ready, starting Saturday 19 December, 11:00am.\n\nWatch it on their page:\n{$u}w/chidi-amaka#live\n\nWe will send one more reminder fifteen minutes before it starts.\n\nStop these reminders: {$u}remind/stop/sample",
+            'live'   => ['Chidi & Amaka: the livestream link is ready', "The livestream for Chidi & Amaka is ready. It starts on Saturday 19 December, 11:00am.\n\nWatch it on their page:\n{$u}w/chidi-amaka#live\n\nWe will send one more reminder fifteen minutes before it starts.\n\nStop these reminders: {$u}remind/stop/sample",
                          ['button' => ['Watch the livestream', $u . 'w/chidi-amaka#live'], 'unsub' => $u . 'remind/stop/sample', 'why' => 'You asked for a reminder about Chidi & Amaka’s livestream.']],
             'reset'  => ['Reset your password', "Hello,\n\nSomebody asked to reset the password on your Wedding Websites & More account.\nTo choose a new one, open this link:\n\n{$u}reset/sample\n\nIt works once and expires in 2 hours. If this was not you, ignore this email and nothing will change.",
                          ['button' => ['Choose a new password', $u . 'reset/sample'], 'why' => 'You get this email because someone asked to reset the password on this account.']],
-            'verify' => ['Confirm your email', "Hello Ada,\n\nPlease confirm this is your email address by opening this link:\n\n{$u}verify/sample\n\nIt works once and expires in 3 days. If you did not make an account, ignore this email.",
+            'verify' => ['Confirm your email', "Hello Ada,\n\nPlease confirm that this is your email address by opening this link:\n\n{$u}verify/sample\n\nIt works once and expires in 3 days. If you did not create an account, ignore this email.",
                          ['button' => ['Confirm my email', $u . 'verify/sample'], 'title' => 'Confirm your email, Ada']],
-            'rsvp'   => ['You are on the guest list for Chidi & Amaka’s wedding', "Hello Ada,\n\nChidi & Amaka have approved your RSVP. You are on the guest list for 2 people.\n\n[[wwm-code]]\n\nShow this code at the entrance. It is for you and your party only, so please do not share it.\n\nThe programme, venue and dress code are on their page:\n{$u}w/chidi-amaka/pass/AB7Q4K",
+            'rsvp'   => ['You are on the guest list for Chidi & Amaka’s wedding', "Hello Ada,\n\nChidi & Amaka have approved your RSVP for 2 people. You are on the guest list.\n\n[[wwm-code]]\n\nShow this code at the entrance. It is for you and your party only, so please do not share it.\n\nThe programme, venue and dress code are on their page:\n{$u}w/chidi-amaka/pass/AB7Q4K",
                          ['button' => ['Open your pass', $u . 'w/chidi-amaka/pass/AB7Q4K'], 'code' => 'AB7-Q4K', 'title' => 'You are on the guest list', 'why' => 'You get this email because you replied to Chidi & Amaka’s invitation.']],
-            'paused' => ['Your shop is paused while we verify Your Business', "Hello,\n\nWe have paused Your Business on Wedding Websites & More while we verify the business by hand. Your listings are hidden until then.\n\nTo verify, reply to this email with: your full name, a phone number we can call, your business address, and a photo of a government ID or your CAC certificate. We will look at it and let you know.", []],
+            'paused' => ['Your shop is paused while we verify Your Business', "Hello,\n\nWe have paused Your Business on Wedding Websites & More while we verify the business by hand. Your listings are hidden until then.\n\nTo verify, reply to this email with: your full name, a phone number we can call, your business address, and a photo of a government ID or your CAC certificate. We will review it and let you know.", []],
         ];
         $k = (string) ($_GET['k'] ?? '');
         if (isset($samples[$k])) {
@@ -705,7 +705,7 @@ final class HqController
         $this->gate('content');
         Guard::must();
         LiveEdit::remove((int) ($_POST['id'] ?? 0));
-        Guard::flash('ok', 'Undone. The page shows what it showed before.');
+        Guard::flash('ok', 'Undone. The page now shows what it showed before.');
         header('Location: ' . App::url('/hq/content#live-edits'));
         exit;
     }
@@ -783,11 +783,11 @@ final class HqController
                 Db::update('page_requests', ['status' => 'done', 'reply' => $note, 'done_at' => date('Y-m-d H:i:s')], 'id = ?', [$r['id']]);
                 if (filter_var((string) $r['email'], FILTER_VALIDATE_EMAIL)) {
                     $url = App::url('/w/' . $r['slug']);
-                    App::later(static fn () => Mailer::send((string) $r['email'], 'Your page is updated',
+                    App::later(static fn () => Mailer::send((string) $r['email'], 'Your page has been updated',
                         'Hello ' . ($r['name'] ?: 'there') . ",\n\nWe made the change you asked for:\n\n" . $r['body'] . ($note !== '' ? "\n\nOur note: " . $note : '') . "\n\nSee your page: " . $url,
                         ['button' => ['See your page', $url], 'quote' => (string) $r['body']]));
                 }
-                Guard::flash('ok', 'Marked done. We emailed the couple.');
+                Guard::flash('ok', 'Marked as done. We have emailed the couple.');
             }
             header('Location: ' . App::url('/hq/requests'));
             exit;
@@ -822,7 +822,7 @@ final class HqController
         $this->gate('weddings');
         Guard::must();
         $w = Db::one('SELECT * FROM weddings WHERE id = ?', [(int) $id]);
-        $err = $w ? Bachs::assign($w) : 'No such page.';
+        $err = $w ? Bachs::assign($w) : 'That page does not exist.';
         Guard::flash($err === '' ? 'ok' : 'bad', $err === '' ? 'Account number assigned.' : $err);
         header('Location: ' . App::url('/hq/weddings#w' . (int) $id));
         exit;
@@ -834,7 +834,7 @@ final class HqController
         $this->gate('money');
         Guard::must();
         Settle::retry((int) $id);
-        Guard::flash('ok', 'Trying their payouts again.');
+        Guard::flash('ok', 'We are trying their payouts again.');
         header('Location: ' . App::url('/hq/weddings#w' . (int) $id));
         exit;
     }

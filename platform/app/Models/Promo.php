@@ -21,9 +21,9 @@ final class Promo
 
     private const START = [
         ['Planning your own wedding?', 'Premium gives you ten designs, background music, a livestream and spraying from the seat.'],
-        ['Make your page Premium', 'Your own design, your song playing, voice notes from guests, and our team can set it up for you.'],
+        ['Make your page Premium', 'Your own design, your song playing, voice notes from guests, and our team to set it all up for you.'],
         ['Stream your wedding live', 'Premium streams the ceremony to family abroad and lets them spray you from wherever they are.'],
-        ['Like this page?', 'Yours can do more. Premium adds ten designs, background music, livestream and no ads.'],
+        ['Like this page?', 'Yours can do more. Premium adds ten designs, background music and a livestream, and takes away the ads.'],
     ];
 
     public static function table(): void

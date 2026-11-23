@@ -234,11 +234,11 @@ final class WeddingController
         $coming = in_array($_POST['coming'] ?? '', ['yes', 'no', 'maybe'], true) ? (string) $_POST['coming'] : 'yes';
         $going  = $coming !== 'no';
         if ($name === '') {
-            Guard::flash('bad', 'Please put your name so they know who replied.');
+            Guard::flash('bad', 'Please enter your name so they know who replied.');
             self::back($slug, 'rsvp');
         }
         if ($going && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            Guard::flash('bad', 'Please put your email. Your access code is sent there when they approve your RSVP.');
+            Guard::flash('bad', 'Please enter your email. Your access code will be sent there when they approve your RSVP.');
             self::back($slug, 'rsvp');
         }
         if ($email !== '' && Db::val("SELECT 1 FROM guests WHERE wedding_id = ? AND email = ? AND status <> 'declined'", [$w['id'], $email])) {
@@ -250,7 +250,7 @@ final class WeddingController
         if ($going) {
             $face = isset($_FILES['face']) ? (string) Rsvp::storeFace($_FILES['face']) : '';
             if ($face === '') {
-                Guard::flash('bad', 'Please add a photo of your face, with the camera or from your phone. It is checked against your code at the entrance.');
+                Guard::flash('bad', 'Please add a photo of your face, taken with the camera or chosen from your phone. It is checked against your code at the entrance.');
                 self::back($slug, 'rsvp');
             }
         }
@@ -272,7 +272,7 @@ final class WeddingController
         unset($_SESSION['passes'][(string) $w['slug']]);
 
         Guard::flash('ok', $going
-            ? 'Thank you. ' . Wedding::names($w) . ' will check your RSVP. When they approve it, your access code is emailed to ' . $email . '.'
+            ? 'Thank you. ' . Wedding::names($w) . ' will check your RSVP. When they approve it, your access code will be emailed to ' . $email . '.'
             : 'Thank you for letting them know.');
         self::back($slug, 'rsvp');
     }
@@ -300,9 +300,9 @@ final class WeddingController
         if (!$v) {
             Guard::flash('bad', 'That vendor is not listed on this page.');
         } elseif (!empty($_SESSION['vrev'][$vid]) || Guard::tooMany('vreview', 6, 60)) {
-            Guard::flash('bad', 'You already reviewed ' . $v['name'] . ' from this phone.');
+            Guard::flash('bad', 'You have already reviewed ' . $v['name'] . ' from this phone.');
         } elseif ($name === '' || mb_strlen($body) < 10) {
-            Guard::flash('bad', 'Put your name and say a little about how they did: a sentence or two.');
+            Guard::flash('bad', 'Please add your name and a sentence or two about how they did.');
         } else {
             Db::insert('reviews', [
                 'vendor_id' => $vid, 'user_id' => Auth::id() ?: null, 'wedding_id' => $w['id'], 'guest' => 1,
@@ -311,7 +311,7 @@ final class WeddingController
             ]);
             Market::rate($vid);
             $_SESSION['vrev'][$vid] = 1;
-            Guard::flash('ok', 'Thank you. Your review is on ' . $v['name'] . '’s profile.');
+            Guard::flash('ok', 'Thank you. Your review is now on ' . $v['name'] . '’s profile.');
         }
         self::back($slug, 'vendors');
     }
@@ -367,7 +367,7 @@ final class WeddingController
         }
         $c = Rsvp::clean($code);
         $n = Db::run("UPDATE guests SET checked_in = NOW() WHERE wedding_id = ? AND pass_code = ? AND status = 'approved' AND checked_in IS NULL", [$w['id'], $c]);
-        Guard::flash($n ? 'ok' : 'bad', $n ? 'Checked in.' : 'This pass was already used, or it is not on the list.');
+        Guard::flash($n ? 'ok' : 'bad', $n ? 'Checked in.' : 'This pass has already been used, or it is not on the list.');
         header('Location: ' . App::url('/w/' . $slug . '/pass/' . $c));
         exit;
     }
@@ -537,7 +537,7 @@ final class WeddingController
         $_SESSION['quiz'][(int) $w['id']][$side] = ['score' => $score, 'total' => $total, 'rank' => $rank, 'name' => $name];
         Buzz::add($w, 'quiz');
         $line = $score === $total ? 'Full marks. ' : ($score >= $total - 1 ? 'So close. ' : '');
-        Guard::flash('ok', $line . $score . ' of ' . $total . ' on ' . $who . '’s quiz. You are number ' . $rank . ' on the leaderboard.');
+        Guard::flash('ok', $line . 'You scored ' . $score . ' out of ' . $total . ' on ' . $who . '’s quiz. You are number ' . $rank . ' on the leaderboard.');
         self::back($slug, 'quiz');
     }
 
@@ -566,7 +566,7 @@ final class WeddingController
     public function remindStop(string $token): void
     {
         $r = Reminder::stop($token);
-        Guard::flash('ok', $r ? 'You will not get any more livestream reminders.' : 'Those reminders were already stopped.');
+        Guard::flash('ok', $r ? 'You will not get any more livestream reminders.' : 'Those reminders have already been stopped.');
         header('Location: ' . App::url($r ? '/w/' . $r['slug'] : '/'));
         exit;
     }

@@ -18,7 +18,7 @@ $form = static function (array $a): string {
 			<label class="field"><span>Button</span><input class="input" name="button" maxlength="60" value="<?= e((string) ($a['button'] ?? 'See Premium')) ?>"></label>
 			<label class="field"><span>Link (a page on this site like /pricing#premium, or https://…)</span><input class="input" name="link" maxlength="500" value="<?= e((string) ($a['link'] ?? '/pricing#premium')) ?>"></label>
 			<div class="field span-2"><span>Picture</span>
-				<?php if ((string) ($a['image'] ?? '') !== ''): ?><div class="proj-edit__pic"><?= sq((string) $a['image'], '', '') ?><label class="squad-edit__off"><input type="checkbox" name="image_off" value="1"> Use a Premium page photo instead</label></div><?php else: ?><p class="help">None: a photo from a Premium page is used.</p><?php endif; ?>
+				<?php if ((string) ($a['image'] ?? '') !== ''): ?><div class="proj-edit__pic"><?= sq((string) $a['image'], '', '') ?><label class="squad-edit__off"><input type="checkbox" name="image_off" value="1"> Use a Premium page photo instead</label></div><?php else: ?><p class="help">No picture yet, so a photo from a Premium page is used.</p><?php endif; ?>
 				<label class="photo-pick"><input type="file" name="image" accept="image/jpeg,image/png,image/webp" data-photo-input><?= icon('camera') ?><span data-photo-name>Choose a picture</span></label>
 			</div>
 			<label class="check"><span>Show the Premium price</span><input type="checkbox" name="show_price" value="1"<?= (int) ($a['show_price'] ?? 1) ? ' checked' : '' ?>></label>
@@ -26,7 +26,7 @@ $form = static function (array $a): string {
 			<div class="field span-2"><span>Where it shows</span>
 				<?php foreach (Promo::SLOTS as $k => [$name]): ?><label class="check"><span><?= e($name) ?></span><input type="checkbox" name="slots[<?= e($k) ?>]" value="1"<?= in_array($k, $in, true) ? ' checked' : '' ?>></label><?php endforeach; ?>
 			</div>
-			<label class="field"><span>Order (lower shows first)</span><input class="input" name="sort" inputmode="numeric" value="<?= (int) ($a['sort'] ?? 0) ?>"></label>
+			<label class="field"><span>Order (lower numbers show first)</span><input class="input" name="sort" inputmode="numeric" value="<?= (int) ($a['sort'] ?? 0) ?>"></label>
 		</div>
 		<div class="form-actions"><button class="pill pill--sm" type="submit"><?= $id ? 'Save' : 'Add the ad' ?></button><?php if ($id): ?><button class="pill pill--sm pill--danger" type="submit" name="do" value="delete" formnovalidate data-confirm="Delete this ad?">Delete</button><?php endif; ?></div>
 	</form>

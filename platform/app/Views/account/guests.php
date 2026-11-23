@@ -9,7 +9,7 @@
 			<?php if (count($wait) > 1): ?><form method="post" action="<?= e(App::url('/account/guests/approve-all')) ?>" data-confirm="Approve all <?= count($wait) ?> and email each one their code?"><?= Guard::field() ?><button class="pill pill--sm" type="submit">Approve all</button></form><?php endif; ?>
 		</div>
 		<?php if (!$wait): ?>
-			<p class="help">Nobody is waiting. Every new RSVP shows here first. When you approve it, the guest gets an email with their access code.</p>
+			<p class="help">Nobody is waiting. Every new RSVP appears here first. When you approve it, the guest gets an email with their access code.</p>
 		<?php else: ?>
 			<div class="rows">
 				<?php foreach ($wait as $g): ?>
@@ -47,7 +47,7 @@
 		<a class="pill pill--glass pill--sm" href="<?= e(App::url('/account/guests?csv=1' . ($q !== '' ? '&q=' . urlencode($q) : ''))) ?>" data-no-prefetch><?= icon('download') ?>CSV</a>
 	</div>
 	<?php if (!$rows): ?>
-		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('people') ?></span><p><?= $wait ? 'Nobody approved yet. Approve the replies waiting above.' : 'No replies yet. Share your page link and they will start coming in.' ?></p></div>
+		<div class="glass glass--plain empty gap-t"><span class="cbtn"><?= icon('people') ?></span><p><?= $wait ? 'Nobody has been approved yet. Approve the replies waiting above.' : 'You have no replies yet. Share your page link and they will start coming in.' ?></p></div>
 	<?php else: ?>
 		<div class="rows gap-t">
 			<?php foreach ($rows as $g): ?>

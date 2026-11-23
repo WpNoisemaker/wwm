@@ -14,9 +14,9 @@ $lock = static fn (string $feature): string => ' data-upgrade="pro" data-feature
 		<form method="post" class="form glass glass--plain glass--tight acct-card">
 			<?= Guard::field() ?>
 			<div class="lock-row"><h2 class="h3">The order of your page</h2><?php if (!$can): ?><?= up_tag('pro', 'Moving and hiding sections') ?><?php endif; ?></div>
-			<p class="help"><?= $can ? 'Drag the grip or use the arrows. Tap the eye to hide a section; it keeps everything in it, ready to show again.' : 'Free pages show every section, in this order. With Pro you can move them around and hide the ones you do not need.' ?></p>
+			<p class="help"><?= $can ? 'Drag the grip or use the arrows. Tap the eye to hide a section; everything in it is kept, ready to show again.' : 'Free pages show every section, in this order. With Pro you can move them around and hide the ones you do not need.' ?></p>
 			<ol class="sec-list" data-sec-list<?= $can ? '' : ' data-locked' ?>>
-				<li class="sec-item sec-item--fixed"><span class="sec-item__grip" aria-hidden="true"><?= icon('lock') ?></span><span class="sec-item__body"><span class="sec-item__t">The invite</span><span class="sec-item__s">Your names, date, photos and the RSVP. Always first.</span></span><span></span></li>
+				<li class="sec-item sec-item--fixed"><span class="sec-item__grip" aria-hidden="true"><?= icon('lock') ?></span><span class="sec-item__body"><span class="sec-item__t">The invite</span><span class="sec-item__s">Your names, date, photos and the RSVP. It always comes first.</span></span><span></span></li>
 				<?php foreach ($layout['order'] as $k): [$name, $about, $needs] = Wedding::SECTIONS[$k]; $off = in_array($k, $layout['hidden'], true); $planOk = Wedding::rank((string) $w['plan']) >= Wedding::rank($needs); ?>
 					<li class="sec-item<?= $off ? ' is-off' : '' ?>" data-key="<?= e($k) ?>">
 						<span class="sec-item__grip"<?= $can ? ' aria-hidden="true"' : $lock('Moving sections') . ' role="button" tabindex="0" aria-label="Move ' . e($name) . '"' ?>><?= icon('menu') ?></span>
@@ -34,7 +34,7 @@ $lock = static fn (string $feature): string => ' data-upgrade="pro" data-feature
 						</span>
 					</li>
 				<?php endforeach; ?>
-				<li class="sec-item sec-item--fixed"><span class="sec-item__grip" aria-hidden="true"><?= icon('lock') ?></span><span class="sec-item__body"><span class="sec-item__t">The footer</span><span class="sec-item__s">Your names and date, to close the page. Always last.</span></span><span></span></li>
+				<li class="sec-item sec-item--fixed"><span class="sec-item__grip" aria-hidden="true"><?= icon('lock') ?></span><span class="sec-item__body"><span class="sec-item__t">The footer</span><span class="sec-item__s">Your names and date, to close the page. It always comes last.</span></span><span></span></li>
 			</ol>
 			<?php if ($can): ?>
 				<div class="form-actions gap-t-sm"><button class="pill" type="submit">Save the order</button><a class="pill pill--glass" href="<?= e(App::url('/w/' . $w['slug'])) ?>">View the page</a></div>
@@ -45,8 +45,8 @@ $lock = static fn (string $feature): string => ' data-upgrade="pro" data-feature
 		<aside class="form glass glass--plain glass--tight">
 			<h2 class="h3">Good to know</h2>
 			<p class="help">Your colours of the day sit right under the invite unless you move them, so guests see what to wear first.</p>
-			<p class="help">A hidden section keeps everything in it. Show it again any time.</p>
-			<p class="help">Sections your plan does not include carry a <b>Pro</b> or <b>Premium</b> tag and only appear once you move up.</p>
+			<p class="help">A hidden section keeps everything in it, so you can show it again at any time.</p>
+			<p class="help">Sections your plan does not include carry a <b>Pro</b> or <b>Premium</b> tag and only appear once you upgrade.</p>
 		</aside>
 	</div>
 </div>
