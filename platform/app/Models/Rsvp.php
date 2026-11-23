@@ -107,7 +107,7 @@ final class Rsvp
         if ($code !== '' && !empty($g['pass_code']) && hash_equals((string) $g['pass_code'], self::clean($code))) {
             return true;
         }
-        return self::isCouple((int) $g['wedding_id']);
+        return self::isCouple((int) $g['wedding_id']) || Team::door((int) $g['wedding_id']);
     }
 
     /** The couple signed in (or our team, working on the page). */

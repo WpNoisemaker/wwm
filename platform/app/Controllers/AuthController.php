@@ -246,7 +246,7 @@ final class AuthController
             Guard::dropOld();
             Auth::login($u);
             $_SESSION['acct_ctx'] = 'customer';
-            Guard::flash('ok', 'Your account is ready. Write to the seller below.');
+            Guard::flash('ok', str_starts_with($to, '/team/') ? 'Your account is ready.' : 'Your account is ready. Write to the seller below.');
             self::go($to);
         }
         View::render('auth/customer', ['title' => 'Create a customer account', 'tab' => 'account', 'appTitle' => 'Customer account', 'to' => $to, 'back' => App::url($to)]);

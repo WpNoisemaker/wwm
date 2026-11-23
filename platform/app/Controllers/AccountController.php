@@ -14,6 +14,10 @@ final class AccountController
         if ($id = Managed::managing()) {
             return Db::one('SELECT * FROM weddings WHERE id = ?', [$id]);
         }
+        // A planner the couple invited works on the couple's page, in the parts they were given.
+        if ($id = Team::acting()) {
+            return Db::one('SELECT * FROM weddings WHERE id = ?', [$id]);
+        }
         return Db::one('SELECT * FROM weddings WHERE owner_id = ? ORDER BY id LIMIT 1', [Auth::id()]);
     }
 
@@ -110,8 +114,19 @@ final class AccountController
         $_SESSION['acct_ctx'] = 'wedding';
         $w = $this->mine();
         if (!$w) {
+            // Someone who only helps with other couples' weddings lands on their team page.
+            if (Team::forUser((int) Auth::id())) {
+                header('Location: ' . App::url('/team'));
+                exit;
+            }
             Guard::flash('bad', 'Make your wedding page first.');
             header('Location: ' . App::url('/account/new'));
+            exit;
+        }
+        $path = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+        if (Team::acting() && !Team::allows(substr($path, strlen(rtrim((string) parse_url(App::url('/'), PHP_URL_PATH), '/'))))) {
+            Guard::flash('bad', 'The couple has not given you access to that part of their page.');
+            header('Location: ' . App::url('/account'));
             exit;
         }
         return $w;

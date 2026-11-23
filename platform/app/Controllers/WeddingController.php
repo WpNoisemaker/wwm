@@ -353,7 +353,7 @@ final class WeddingController
             'w'      => $w,
             'g'      => $g,
             'code'   => Rsvp::clean($code),
-            'door'   => Rsvp::isCouple((int) $w['id']),
+            'door'   => Team::door((int) $w['id']),
         ]);
     }
 
@@ -362,7 +362,7 @@ final class WeddingController
     {
         Guard::must();
         $w = Wedding::bySlug($slug);
-        if (!$w || !Rsvp::isCouple((int) $w['id'])) {
+        if (!$w || !Team::door((int) $w['id'])) {
             self::notFound();
         }
         $c = Rsvp::clean($code);

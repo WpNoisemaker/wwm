@@ -20,8 +20,17 @@ $tabs = $ctx === 'shop'
 	: ($ctx === 'customer' ? [$msgTab, ['settings', 'Account', '/account/settings', 'gear']] : (!empty($w) || $hasWed
 		? [['overview', 'Overview', '/account', 'grid'], ['page', 'Page', '/account/page', 'pen'], ['story', 'Story', '/account/story', 'book'], ['sections', 'Sections', '/account/sections', 'sliders'], ['programs', 'Programs', '/account/programs', 'calendar'],
 		   ['squad', 'Squad', '/account/squad', 'people'], ['registry', 'Registry', '/account/registry', 'gift'], ['vendors', 'Vendors', '/account/vendors', 'store'], ['quiz', 'Quiz', '/account/quiz', 'star'], ['guests', 'Guests', '/account/guests', 'user'],
-		   ['money', 'Money', '/account/money', 'wallet']] + ($hasChats ? [12 => $msgTab] : []) + [13 => ['settings', 'Account', '/account/settings', 'gear']]
+		   ['money', 'Money', '/account/money', 'wallet'], ['team', 'Team', '/account/team', 'people']] + ($hasChats ? [13 => $msgTab] : []) + [14 => ['settings', 'Account', '/account/settings', 'gear']]
 		: []));
+// A planner the couple invited sees only the parts of the dashboard they were given.
+$acting = Team::acting();
+if ($acting) {
+	$area  = ['page' => 'page', 'story' => 'page', 'sections' => 'page', 'programs' => 'programs', 'squad' => 'squad', 'registry' => 'registry', 'vendors' => 'vendors', 'quiz' => 'quiz', 'guests' => 'guests', 'money' => 'money'];
+	$perms = Team::perms($acting);
+	$tabs  = array_values(array_filter($tabs, static fn ($t) => $t[0] === 'overview' || in_array($area[$t[0]] ?? '', $perms, true)));
+	$hasShop = false;
+}
+$helps = !$acting && Team::forUser($uid);
 ?>
 <div class="page wrap">
 	<header class="page-head">
@@ -40,6 +49,11 @@ $tabs = $ctx === 'shop'
 				<a href="<?= e(App::url($href)) ?>"<?= $now === $k ? ' class="is-on" aria-current="page"' : '' ?>><?= icon($ic) ?><?= e($label) ?></a>
 			<?php endforeach; ?>
 		</nav>
+	<?php endif; ?>
+	<?php if ($acting && !empty($w)): ?>
+		<p class="note"><?= icon('people') ?><span>You are working on <b><?= e(Wedding::names($w)) ?></b>’s page as their event planner. Your changes save to their page.</span><a class="pill pill--sm pill--glass" href="<?= e(App::url('/team/leave')) ?>">Back to your teams</a></p>
+	<?php elseif ($helps): ?>
+		<p class="note"><?= icon('people') ?><span>You also help with other couples’ weddings.</span><a class="pill pill--sm pill--glass" href="<?= e(App::url('/team')) ?>">Your teams</a></p>
 	<?php endif; ?>
 	<?php if (Managed::managing() && !empty($w)): ?>
 		<p class="note note--bad"><?= icon('shield') ?><span>You are managing <b><?= e(Wedding::names($w)) ?></b>’s page as our team. Changes save to their page.</span><a class="pill pill--sm" href="<?= e(App::url('/hq/manage/stop')) ?>">Stop managing</a></p>

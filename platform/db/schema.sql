@@ -150,6 +150,7 @@ CREATE TABLE guests (
   -- MySQL allows repeated NULLs in a unique key but not repeated empty strings.
   pass_code   VARCHAR(40)  NULL DEFAULT NULL,
   checked_in  DATETIME     NULL,
+  checked_out DATETIME     NULL,
   decided_at  DATETIME     NULL,
   mailed_at   DATETIME     NULL,
   table_no    VARCHAR(20)  NOT NULL DEFAULT '',
@@ -568,4 +569,25 @@ CREATE TABLE wedding_vendors (
   created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (wedding_id, vendor_id),
   KEY ix_vendor (vendor_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- People a couple brings in: a planner (with chosen areas), bouncers (the door list) and vendors
+-- (replies to the reviews guests left them on the page). Invited by email; the link holds the token.
+CREATE TABLE wedding_team (
+  id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  wedding_id  INT UNSIGNED NOT NULL,
+  role        ENUM('planner','bouncer','vendor') NOT NULL,
+  name        VARCHAR(160) NOT NULL DEFAULT '',
+  email       VARCHAR(190) NOT NULL,
+  perms       VARCHAR(255) NOT NULL DEFAULT '',
+  vendor_id   INT UNSIGNED NULL,
+  user_id     INT UNSIGNED NULL,
+  token       CHAR(64)     NULL,
+  status      ENUM('invited','active','removed') NOT NULL DEFAULT 'invited',
+  created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  accepted_at DATETIME     NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_token (token),
+  KEY ix_wed (wedding_id, status),
+  KEY ix_user (user_id, status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

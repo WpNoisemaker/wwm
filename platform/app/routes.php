@@ -87,6 +87,15 @@ $r->post('/account/bank/check', [AccountController::class, 'bankCheck']);
 $r->post('/account/bank/save',  [AccountController::class, 'bankSave']);
 $r->any('/account/registry',    [AccountController::class, 'registry']);
 $r->any('/account/vendors',     [AccountController::class, 'vendors']);
+$r->any('/account/team',        [TeamController::class, 'index']);
+$r->post('/account/team/{id:\d+}', [TeamController::class, 'update']);
+$r->get('/team',                [TeamController::class, 'mine']);
+$r->get('/team/join/{token:[a-f0-9]+}', [TeamController::class, 'join']);
+$r->get('/team/open/{id:\d+}',  [TeamController::class, 'open']);
+$r->get('/team/leave',          [TeamController::class, 'leave']);
+$r->any('/team/{id:\d+}/reviews', [TeamController::class, 'reviews']);
+$r->get('/door/{slug}',         [TeamController::class, 'door']);
+$r->post('/door/{slug}/{id:\d+}/{dir:in|out}', [TeamController::class, 'clock']);
 $r->any('/account/quiz',        [AccountController::class, 'quiz']);
 $r->any('/account/sections',    [AccountController::class, 'sections']);
 $r->any('/account/shop',        [AccountController::class, 'shop']);   // a marketplace seller's listings

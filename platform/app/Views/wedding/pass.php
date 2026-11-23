@@ -32,7 +32,7 @@ $page  = App::url('/w/' . $w['slug']);
 					<?php if (!$g['checked_in']): ?>
 						<form method="post" action="<?= e(App::url('/w/' . $w['slug'] . '/pass/' . $g['pass_code'] . '/in')) ?>"><?= Guard::field() ?><button class="pill pill--block" type="submit"><?= icon('check') ?>Check them in</button></form>
 					<?php endif; ?>
-					<a class="pill pill--block pill--glass" href="<?= e(App::url('/account/guests#door')) ?>">Next guest</a>
+					<a class="pill pill--block pill--glass" href="<?= e(App::url('/door/' . $w['slug'])) ?>">Back to the door list</a>
 				</div>
 			<?php else: ?>
 				<p class="after-pill">Show this at the entrance. Take a screenshot so you have it without signal. Please do not share your code.</p>

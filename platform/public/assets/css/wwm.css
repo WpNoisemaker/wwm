@@ -2444,3 +2444,21 @@ html, body { overflow-x: hidden; max-width: 100%; }
 @media (hover: none) { .lcard__go { display: none; } }
 @media (prefers-reduced-motion: reduce) { .lcard__dots i { transition: none; } }
 .listing__who { grid-template-columns: 40px minmax(0, 1fr); margin: 0 4px 12px; } .listing__who .lcard__av { width: 40px; height: 40px; } .listing__who .lcard__id b { font-size: 15px; } .listing__who .lcard__id small { font-size: 12.5px; }
+
+/* ---------- wedding team: invites, access, the door list ---------- */
+.team-row { display: block; padding: 0; }
+.team-row > summary { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 10px 14px 10px 10px; list-style: none; cursor: pointer; }
+.team-row > summary::-webkit-details-marker { display: none; }
+.team-row .row-item__s { white-space: normal; }
+.team-row[open] .row-item__end .ico { transform: rotate(180deg); }
+.team-row__form { display: grid; gap: 10px; padding: 0 14px 14px; }
+.checks { display: grid; gap: 8px; border: 0; margin: 0; padding: 0; }
+.checks legend { margin-bottom: 6px; }
+.team-mine { grid-template-columns: auto minmax(0, 1fr); }
+.team-mine > .pill { grid-column: 1 / -1; justify-self: end; }
+@media (min-width: 700px) { .team-mine { grid-template-columns: auto minmax(0, 1fr) auto; } .team-mine > .pill { grid-column: auto; } }
+.team-quote { margin: 4px 0; font-size: 15px; line-height: 1.5; }
+.door-row { grid-template-columns: auto minmax(0, 1fr) auto; }
+.door-row__face { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; background: var(--tile); }
+.door-row.is-in { background: color-mix(in srgb, var(--tile-on) 70%, transparent); }
+.door-row .row-item__s { white-space: normal; }

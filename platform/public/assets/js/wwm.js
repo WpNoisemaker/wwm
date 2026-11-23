@@ -471,6 +471,16 @@
 		});
 	});
 
+	/* ---------- inviting to the team: show what fits the chosen role ---------- */
+	d.querySelectorAll('[data-team-form]').forEach(function (f) {
+		function show() {
+			var r = (f.querySelector('input[name=role]:checked') || {}).value || 'planner';
+			f.querySelectorAll('[data-team-for]').forEach(function (el) { el.hidden = el.getAttribute('data-team-for') !== r; el.querySelectorAll('input, select').forEach(function (i) { i.disabled = el.hidden; }); });
+		}
+		f.addEventListener('change', function (e) { if (e.target.name === 'role') { show(); } });
+		show();
+	});
+
 	/* ---------- copy and share ---------- */
 	d.addEventListener('click', function (e) {
 		var sh = e.target.closest('[data-share]');

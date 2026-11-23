@@ -33,7 +33,7 @@
 	</section>
 
 	<section class="gap-t" id="door">
-		<div class="block-head"><h2 class="h2">At the entrance</h2></div>
+		<div class="block-head"><h2 class="h2">At the entrance</h2><a class="pill pill--sm pill--glass" href="<?= e(App::url('/door/' . $w['slug'])) ?>">Open the door list</a></div>
 		<form class="door glass glass--plain glass--tight" method="post" action="<?= e(App::url('/account/guests/door')) ?>">
 			<?= Guard::field() ?>
 			<label class="field"><span>Type the guest's code to see their face and check them in</span>
