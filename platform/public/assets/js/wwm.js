@@ -978,7 +978,10 @@
 	var gf = d.querySelector('[data-give-form]');
 	if (gf) {
 		var gStep = function (n) { gf.querySelectorAll('[data-step]').forEach(function (s) { s.hidden = s.getAttribute('data-step') !== String(n); }); var sh = gf.closest('.sheet'); if (sh) { sh.classList.toggle('is-paying', n > 1); } };
-		var gSet = function (k, v) { gf.querySelectorAll('[data-g="' + k + '"]').forEach(function (el) { el.textContent = v; if (el.hasAttribute('data-copy-val')) { el.setAttribute('data-copy', v.replace(/[₦,]/g, '')); } }); };
+		var gSet = function (k, v) {
+			gf.querySelectorAll('[data-g="' + k + '"]').forEach(function (el) { el.textContent = v; });
+			gf.querySelectorAll('[data-g-copy="' + k + '"]').forEach(function (b) { b.setAttribute('data-copy', v.replace(/[₦,]/g, '')); });
+		};
 		var gPoll = 0;
 		var rain = function () {
 			if (W.matchMedia && W.matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
@@ -995,9 +998,18 @@
 				.then(function (j) {
 					if (!j.ok) { toast(j.msg || 'That did not work. Try again.'); return; }
 					gSet('amount', j.amount); gSet('number', j.number); gSet('bank', j.bank); gSet('name', j.name); gSet('code', j.code);
+					// The amount with its kobo picked out, since the kobo is what matches the transfer to this guest.
+					var parts = j.amount.split('.'), ah = gf.querySelector('[data-g="amount-html"]');
+					ah.textContent = parts[0]; var kb = d.createElement('span'); kb.className = 'give__kobo'; kb.textContent = '.' + (parts[1] || '00'); ah.appendChild(kb);
+					gSet('kobo', parts[1] || '00');
 					gStep(2); buzz();
+					var t0 = Date.now(), again = gf.querySelector('[data-give-again]'); again.hidden = true;
+					gSet('wait', 'Waiting for your transfer. Keep this page open.');
 					clearInterval(gPoll);
 					gPoll = setInterval(function () {
+						var mins = (Date.now() - t0) / 60000;
+						if (mins > 2) { gSet('wait', 'Still waiting. Transfers usually arrive within a minute or two. If you have sent it, it will show here.'); }
+						if (mins > 10) { again.hidden = false; }
 						fetch(j.poll, { credentials: 'same-origin', headers: { Accept: 'application/json' } }).then(function (r) { return r.json(); }).then(function (s) {
 							if (s.status !== 'paid') { return; }
 							clearInterval(gPoll);
@@ -1010,6 +1022,8 @@
 				.catch(function () { toast('That did not work. Check your connection.'); })
 				.then(function () { btn.classList.remove('is-busy'); btn.disabled = false; });
 		});
-		gf.addEventListener('click', function (e) { if (e.target.closest('[data-close]')) { gStep(1); gf.reset(); } });
+		gf.addEventListener('click', function (e) {
+			if (e.target.closest('[data-close]') || e.target.closest('[data-give-again]')) { clearInterval(gPoll); gStep(1); if (e.target.closest('[data-close]')) { gf.reset(); } }
+		});
 	}
 })();
