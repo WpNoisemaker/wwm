@@ -15,6 +15,7 @@ $r->any('/w/{slug}',            [WeddingController::class, 'show']);   // GET sh
 $r->post('/w/{slug}/rsvp',      [WeddingController::class, 'rsvp']);
 $r->post('/w/{slug}/note',      [WeddingController::class, 'note']);
 $r->post('/w/{slug}/photo',     [WeddingController::class, 'photo']);
+$r->get('/w/{slug}/sprays',     [WeddingController::class, 'sprays']);   // live spray total and top sprayers
 $r->post('/w/{slug}/share',     [WeddingController::class, 'share']);
 $r->post('/w/{slug}/quiz',      [WeddingController::class, 'quiz']);
 $r->post('/w/{slug}/remind',    [WeddingController::class, 'remind']);   // email me about the livestream

@@ -8,7 +8,7 @@ declare(strict_types=1);
  */
 final class Upgrade
 {
-    private const STEPS = ['couple-photos-1', 'ibrahim-ummi-photos-1', 'wall-voice-squad-1', 'squad-profiles-1', 'market-2', 'talk-threads-1'];
+    private const STEPS = ['couple-photos-1', 'ibrahim-ummi-photos-1', 'wall-voice-squad-1', 'squad-profiles-1', 'market-2', 'talk-threads-1', 'demo-sprays-1'];
 
     public static function run(): void
     {
@@ -25,6 +25,7 @@ final class Upgrade
                     'wall-voice-squad-1'   => self::wallVoiceSquad(),
                     'squad-profiles-1'     => self::squadProfiles(),
                     'market-2'             => Market::install(),
+                    'demo-sprays-1'        => self::demoSprays(),
                     'talk-threads-1'       => Db::val("SHOW COLUMNS FROM talk_replies LIKE 'parent_id'") ?: Db::run('ALTER TABLE talk_replies ADD COLUMN parent_id INT UNSIGNED NULL AFTER talk_id'),
                 };
             } catch (Throwable $e) {
@@ -108,6 +109,18 @@ final class Upgrade
             foreach (Db::all("SELECT s.id FROM squad s JOIN demo_rows d ON d.tbl = 'squad' AND d.row_id = s.id WHERE s.work = '' ORDER BY s.id") as $i => $r) {
                 Db::update('squad', Demo::squadProfile($i), 'id = ?', [$r['id']]);
             }
+        }
+    }
+
+    /** Demo Premium pages get some spraying, so the top-sprayers list has people on it. */
+    private static function demoSprays(): void
+    {
+        if (!Db::val("SHOW TABLES LIKE 'demo_rows'")) {
+            return;
+        }
+        foreach (Db::all("SELECT w.id, w.slug, w.currency FROM weddings w JOIN demo_rows d ON d.tbl = 'weddings' AND d.row_id = w.id
+                          WHERE w.plan IN ('premium','society') AND NOT EXISTS (SELECT 1 FROM payments p WHERE p.wedding_id = w.id AND p.purpose = 'spray')") as $w) {
+            Demo::sprays((int) $w['id'], (string) $w['currency'], (string) $w['slug']);
         }
     }
 }

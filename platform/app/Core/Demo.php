@@ -246,6 +246,10 @@ final class Demo
                 Db::update('gifts', ['raised' => $sum, 'target' => (int) (ceil($sum * (1.6 + mt_rand(0, 12) / 10) / $round) * $round)], 'id = ?', [$gid]);
             }
 
+            if (in_array($w['plan'], ['premium', 'society'], true)) {
+                self::sprays($wid, Wedding::CURRENCY[$w['country'] ?? 'Nigeria'] ?? 'NGN', (string) $w['key']);
+            }
+
             // Guests: a believable spread of yes, maybe and no, with pass codes where the plan issues them.
             $passes = in_array($w['plan'], self::PASSES_FROM, true);
             for ($g = 0; $g < $w['guests']; $g++) {
@@ -443,5 +447,26 @@ final class Demo
                   'Chess and sneakers', 'Gele tying, unofficially', 'Swimming and spa days'];
         $rel = ['single', 'taken', 'married', 'engaged', 'single', '', 'married', 'taken'];
         return ['work' => $work[($i * 7) % count($work)], 'hobby' => $hobby[($i * 5) % count($hobby)], 'relationship' => $rel[$i % count($rel)]];
+    }
+
+    /** Demo spraying for a Premium page: a handful of guests, some spraying more than once. */
+    public static function sprays(int $wid, string $cur, string $key): void
+    {
+        $c = require App::root() . '/db/demo/content.php';
+        $amounts = self::AMOUNTS[$cur] ?? self::AMOUNTS['NGN'];
+        $people = [];
+        for ($i = 0; $i < 6; $i++) {
+            $people[] = $c['first'][mt_rand(0, count($c['first']) - 1)] . ' ' . $c['last'][mt_rand(0, count($c['last']) - 1)];
+        }
+        for ($k = mt_rand(8, 12); $k > 0; $k--) {
+            $amount = $amounts[mt_rand(0, count($amounts) - 1)];
+            $age = mt_rand(3600, 12 * 86400);
+            $at = date('Y-m-d H:i:s', time() - $age);
+            self::put('payments', [
+                'ref' => 'DEMO-SPR-' . strtoupper(substr($key, 0, 3)) . '-' . bin2hex(random_bytes(3)), 'purpose' => 'spray',
+                'wedding_id' => $wid, 'payer_name' => $people[mt_rand(0, count($people) - 1)], 'amount' => $amount,
+                'currency' => $cur, 'gateway' => 'demo', 'gateway_ref' => 'demo-spray', 'status' => 'paid', 'paid_at' => $at, 'created_at' => $at,
+            ]);
+        }
     }
 }

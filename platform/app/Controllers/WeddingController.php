@@ -503,4 +503,23 @@ final class WeddingController
         View::render('errors/404', ['title' => 'Not found']);
         exit;
     }
+
+    /** The spray total and the top sprayers, for the page to refresh as people spray. */
+    public function sprays(string $slug): void
+    {
+        $w = Wedding::bySlug($slug);
+        $mine = $w && Auth::check() && (int) $w['owner_id'] === Auth::id();
+        if (!$w || !Wedding::has($w, 'spray') || ((string) $w['visibility'] !== 'public' && !$mine && !Wedding::unlocked($w))) {
+            http_response_code(404);
+            exit;
+        }
+        $sp = Wedding::sprayers($w);
+        header('Content-Type: application/json; charset=utf-8');
+        header('Cache-Control: no-store');
+        echo json_encode([
+            'sig'   => $sp['sig'],
+            'total' => money(number_format($sp['total']), (string) $w['currency']),
+            'list'  => View::partial('wedding/sprayers', ['rows' => $sp['rows'], 'cur' => (string) $w['currency']]),
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    }
 }

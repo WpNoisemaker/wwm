@@ -26,8 +26,10 @@ $lock = static fn (string $feature): string => ' data-upgrade="pro" data-feature
 						</span>
 						<span class="sec-item__acts">
 							<input type="hidden" name="order[]" value="<?= e($k) ?>">
+							<?php if ($k !== 'spray'): ?>
 							<button class="cbtn" type="button" data-sec-up aria-label="Move <?= e($name) ?> up"<?= $can ? '' : $lock('Moving sections') ?>><?= icon('chev-up') ?></button>
 							<button class="cbtn" type="button" data-sec-down aria-label="Move <?= e($name) ?> down"<?= $can ? '' : $lock('Moving sections') ?>><?= icon('chev-down') ?></button>
+							<?php endif; ?>
 							<label class="sec-show"<?= $can ? '' : $lock('Hiding sections') ?>><input type="checkbox" name="show[<?= e($k) ?>]" value="1"<?= $off ? '' : ' checked' ?> aria-label="Show <?= e($name) ?>"><span><?= icon('eye') ?></span></label>
 						</span>
 					</li>

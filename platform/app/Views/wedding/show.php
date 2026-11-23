@@ -201,24 +201,9 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	<?php $blocks['squad'] = ob_get_clean(); ?>
 
 	<?php ob_start(); ?>
-	<?php if ($gifts || $premium): ?>
+	<?php if ($gifts): ?>
 	<section class="sec wrap" id="gifts">
 		<div class="two">
-			<?php if ($premium): ?>
-			<div class="reveal" id="spray">
-				<div class="w-head"><span class="eyebrow">From your seat, or from London</span><h2>Spray the couple</h2></div>
-				<div class="glass">
-					<p class="glass__q">How much are you spraying?</p>
-					<div class="counter" data-counter data-min="<?= $curMin ?>" data-max="<?= $curMin * 2000 ?>" data-step="<?= $curMin ?>" data-value="<?= $curStart ?>" data-comma data-input="#g-amount" id="spray-counter">
-						<button class="cbtn cbtn--lg" type="button" data-dec aria-label="Less"><?= icon('minus') ?></button>
-						<div class="counter__mid" aria-live="polite"><?= dots(number_format($curStart), 'dotnum--md', true) ?><span class="counter__unit"><?= e($curName) ?></span></div>
-						<button class="cbtn cbtn--lg" type="button" data-inc aria-label="More"><?= icon('plus') ?></button>
-					</div>
-					<div class="total"><p class="total__k">Sprayed so far</p><p class="total__v"><?= money(number_format((int) Db::val("SELECT COALESCE(SUM(amount),0) FROM payments WHERE wedding_id = ? AND purpose = 'spray' AND status IN ('paid','released')", [$w['id']], 0)), (string) $w['currency']) ?></p></div>
-				</div>
-				<button class="pill pill--block gap-t-sm" type="button" data-open="give" data-give="Spray">Spray them</button>
-			</div>
-			<?php endif; ?>
 			<?php if ($gifts): ?>
 			<div class="reveal">
 				<div class="w-head"><span class="eyebrow">Paid to the couple, with your note</span><h2>Gifts</h2></div>
@@ -261,6 +246,35 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	</section>
 	<?php endif; ?>
 	<?php $blocks['live'] = ob_get_clean(); ?>
+
+	<?php ob_start(); ?>
+	<?php if ($premium): ?>
+	<?php $sp = Wedding::sprayers($w); ?>
+	<section class="sec wrap" id="spray">
+		<div class="w-head reveal"><span class="eyebrow">From your seat, or from anywhere</span><h2>Spray the couple</h2></div>
+		<div class="two">
+			<div class="reveal">
+				<div class="glass">
+					<p class="glass__q">How much are you spraying?</p>
+					<div class="counter" data-counter data-min="<?= $curMin ?>" data-max="<?= $curMin * 2000 ?>" data-step="<?= $curMin ?>" data-value="<?= $curStart ?>" data-comma data-input="#g-amount" id="spray-counter">
+						<button class="cbtn cbtn--lg" type="button" data-dec aria-label="Less"><?= icon('minus') ?></button>
+						<div class="counter__mid" aria-live="polite"><?= dots(number_format($curStart), 'dotnum--md', true) ?><span class="counter__unit"><?= e($curName) ?></span></div>
+						<button class="cbtn cbtn--lg" type="button" data-inc aria-label="More"><?= icon('plus') ?></button>
+					</div>
+					<div class="total"><p class="total__k">Sprayed so far</p><p class="total__v" data-spray-total><?= money(number_format($sp['total']), (string) $w['currency']) ?></p></div>
+				</div>
+				<button class="pill pill--block gap-t-sm" type="button" data-open="give" data-give="Spray">Spray them</button>
+			</div>
+			<div class="reveal">
+				<div class="glass glass--plain sprayers" data-sprayers="<?= e(App::url('/w/' . $slug . '/sprays')) ?>" data-sig="<?= e($sp['sig']) ?>">
+					<p class="glass__q">Top sprayers <span class="sprayers__live" aria-hidden="true">Live</span></p>
+					<div data-spray-list aria-live="polite"><?= View::partial('wedding/sprayers', ['rows' => $sp['rows'], 'cur' => (string) $w['currency']]) ?></div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<?php endif; ?>
+	<?php $blocks['spray'] = ob_get_clean(); ?>
 
 	<?php ob_start(); ?>
 	<?php if (Wedding::has($w, 'gallery')): ?>

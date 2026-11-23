@@ -624,8 +624,9 @@ final class Wedding
         'story'     => ['Your story', 'How it started, or your diary', 'free'],
         'when'      => ['Programmes', 'Every event, its time, place and dress code', 'free'],
         'squad'     => ['The squad', 'Bridesmaids, groomsmen and the people holding it together', 'pro'],
-        'gifts'     => ['Gifts & spraying', 'Your registry, cash gifts and spraying', 'free'],
+        'gifts'     => ['Gifts', 'Your registry and cash gifts', 'free'],
         'live'      => ['Livestream', 'Watch live, for family who cannot travel', 'premium'],
+        'spray'     => ['Spraying', 'Guests spray you online, with a list of who sprayed the most. Always right under the livestream', 'premium'],
         'photos'    => ['Guest photos', 'Every photo guests add', 'pro'],
         'quiz'      => ['Who knows them best?', 'A quiz about each of you, with leaderboards', 'pro'],
         'vendors'   => ['Our vendors', 'The vendors you booked', 'free'],
@@ -644,6 +645,13 @@ final class Wedding
         if (!self::has($w, 'layout')) {
             return ['order' => $all, 'hidden' => []];
         }
+        $pin = static function (array $order): array {
+            // Spraying always sits right under the livestream.
+            $order = array_values(array_diff($order, ['spray']));
+            $at = array_search('live', $order, true);
+            array_splice($order, $at === false ? count($order) : (int) $at + 1, 0, ['spray']);
+            return $order;
+        };
         $saved = self::design($w)['sections'] ?? [];
         $order = array_values(array_unique(array_filter((array) ($saved['order'] ?? []), static fn ($k) => isset(self::SECTIONS[$k]))));
         foreach ($all as $i => $k) {            // a section added later slots in at its default place
@@ -652,7 +660,7 @@ final class Wedding
             }
         }
         $hidden = array_values(array_intersect((array) ($saved['hidden'] ?? []), $all));
-        return ['order' => $order, 'hidden' => $hidden];
+        return ['order' => $pin($order), 'hidden' => $hidden];
     }
 
     /** The vendors the couple booked: the ones this couple has reviewed. */
@@ -722,5 +730,15 @@ final class Wedding
              WHERE verified = 1 ORDER BY rating DESC, reviews DESC LIMIT ?",
             [$n]
         );
+    }
+
+    /** @return array{total:int,rows:array,sig:string} Spraying so far, and the top sprayers (one row per name). */
+    public static function sprayers(array $w, int $n = 10): array
+    {
+        $paid = "wedding_id = ? AND purpose = 'spray' AND status IN ('paid','released')";
+        $total = (int) Db::val("SELECT COALESCE(SUM(amount),0) FROM payments WHERE $paid", [$w['id']], 0);
+        $rows = Db::all("SELECT COALESCE(NULLIF(TRIM(payer_name), ''), 'A guest') who, SUM(amount) total, COUNT(*) n
+                         FROM payments WHERE $paid GROUP BY who ORDER BY total DESC LIMIT " . max(1, $n), [$w['id']]);
+        return ['total' => $total, 'rows' => $rows, 'sig' => md5($total . '|' . json_encode($rows))];
     }
 }

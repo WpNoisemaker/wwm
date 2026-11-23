@@ -934,4 +934,24 @@
 			post(cms.save, fd).then(function (j) { toast(j && j.ok ? 'Saved' : 'That did not save.'); });
 		});
 	}
+
+	/* ---------- spraying: the total and the top sprayers update live while the section is on screen ---------- */
+	d.querySelectorAll('[data-sprayers]').forEach(function (box) {
+		var src = box.getAttribute('data-sprayers'), list = box.querySelector('[data-spray-list]'), total = d.querySelector('[data-spray-total]'), seen = false, busy = false;
+		var before = function () { var m = {}; list.querySelectorAll('[data-who]').forEach(function (r) { m[r.getAttribute('data-who')] = +r.getAttribute('data-amt'); }); return m; };
+		var check = function () {
+			if (!seen || d.hidden || busy) { return; }
+			busy = true;
+			fetch(src, { credentials: 'same-origin', headers: { Accept: 'application/json' } }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+				if (!j || j.sig === box.getAttribute('data-sig')) { return; }
+				var old = before();
+				box.setAttribute('data-sig', j.sig); list.innerHTML = j.list;
+				if (total) { total.innerHTML = j.total; total.classList.remove('is-bump'); void total.offsetWidth; total.classList.add('is-bump'); }
+				list.querySelectorAll('[data-who]').forEach(function (r) { if (old[r.getAttribute('data-who')] !== +r.getAttribute('data-amt')) { r.classList.add('is-new'); } });
+			}).catch(function () {}).then(function () { busy = false; });
+		};
+		if ('IntersectionObserver' in W) { new IntersectionObserver(function (es) { seen = es[0].isIntersecting; if (seen) { check(); } }).observe(box); } else { seen = true; }
+		setInterval(check, 7000);
+		d.addEventListener('visibilitychange', check);
+	});
 })();
