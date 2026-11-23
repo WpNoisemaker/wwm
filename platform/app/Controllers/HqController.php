@@ -826,6 +826,17 @@ final class HqController
         exit;
     }
 
+    /** Try a couple's failed payouts again. */
+    public function settle(string $id): void
+    {
+        $this->gate('money');
+        Guard::must();
+        Settle::retry((int) $id);
+        Guard::flash('ok', 'Trying their payouts again.');
+        header('Location: ' . App::url('/hq/weddings#w' . (int) $id));
+        exit;
+    }
+
     private static function json(array $d, int $code = 200): never
     {
         http_response_code($code);

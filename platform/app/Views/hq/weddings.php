@@ -13,7 +13,8 @@
 				<a class="pill pill--sm pill--glass hq-wed__manage" href="<?= e(App::url('/hq/manage/' . (int) $w['id'])) ?>"><?= icon('pen') ?>Manage page</a>
 				<div class="hq-wed__drive">
 					<span class="hq-wed__k"><?= icon('wallet') ?>Account</span>
-					<?php if ((string) $w['va_number'] !== ''): ?><span><?= e($w['va_number']) ?> · <?= e($w['va_bank']) ?></span>
+					<?php if ((string) $w['va_number'] !== ''): $sf = (int) Db::val("SELECT COUNT(*) FROM settlements WHERE wedding_id = ? AND status = 'failed'", [$w['id']], 0); ?><span><?= e($w['va_number']) ?> · <?= e($w['va_bank']) ?> → <?= (string) $w['payout_dest'] !== '' ? e($w['payout_bank_name']) . ' ••' . e(substr((string) $w['payout_account'], -4)) : 'no bank account yet' ?></span>
+						<?php if ($sf): ?><form method="post" action="<?= e(App::url('/hq/settle/' . (int) $w['id'])) ?>"><?= Guard::field() ?><button class="pill pill--sm pill--danger" type="submit"><?= $sf ?> payout<?= $sf > 1 ? 's' : '' ?> failed: try again</button></form><?php endif; ?>
 					<?php else: ?><span class="sub"><?= e($w['va_error'] !== '' ? $w['va_error'] : 'None yet') ?></span>
 						<form method="post" action="<?= e(App::url('/hq/bank/' . (int) $w['id'])) ?>"><?= Guard::field() ?><button class="pill pill--sm" type="submit">Assign account</button></form>
 					<?php endif; ?>

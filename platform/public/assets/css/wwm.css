@@ -2310,3 +2310,9 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .money-rain span { position: absolute; top: -40px; color: var(--ok); font-weight: 600; text-shadow: 0 2px 6px rgba(0, 0, 0, .25); animation: moneyfall 2.6s linear forwards; }
 @keyframes moneyfall { to { transform: translateY(110vh) rotate(260deg); } }
 .sheet.is-paying .counter--sheet { display: none; }
+.bank-card__to { display: flex; align-items: center; gap: 8px; font-size: 15px; }
+.bank-card__to .ico { width: 16px; height: 16px; color: var(--ok); }
+.bank-card__edit summary { cursor: pointer; font-size: 14px; color: var(--ink-2); }
+.bank-card__edit .form { display: grid; gap: 10px; margin-top: 10px; }
+.bank-card__name { min-height: 20px; font-size: 14px; color: var(--ink-3); }
+.bank-card__name.is-ok { color: var(--ok); }

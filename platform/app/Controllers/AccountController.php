@@ -27,6 +27,57 @@ final class AccountController
         self::go('/account/money');
     }
 
+    /** The name on a bank account, for the couple to confirm before saving it. */
+    public function bankCheck(): void
+    {
+        Guard::must();
+        $w = $this->need();
+        $code = preg_replace('/\D/', '', (string) ($_POST['bank_code'] ?? ''));
+        $num = preg_replace('/\D/', '', (string) ($_POST['account_number'] ?? ''));
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['name' => strlen($num) === 10 && $code !== '' ? Bachs::resolve($code, $num) : ''], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    /** The couple's own bank account: every gift and spray is paid on to it the moment it lands. */
+    public function bankSave(): void
+    {
+        Guard::must();
+        $w = $this->need();
+        if (Managed::managing()) {
+            Guard::flash('bad', 'Only the couple can set where their money goes.');
+            self::go('/account/money#settle');
+        }
+        $code = preg_replace('/\D/', '', (string) ($_POST['bank_code'] ?? ''));
+        $num = preg_replace('/\D/', '', (string) ($_POST['account_number'] ?? ''));
+        $bank = '';
+        foreach (Bachs::banks() as $b) { if ($b['code'] === $code) { $bank = $b['name']; } }
+        if ($bank === '' || strlen($num) !== 10) {
+            Guard::flash('bad', 'Choose your bank and enter your 10-digit account number.');
+            self::go('/account/money#settle');
+        }
+        $name = Bachs::resolve($code, $num);
+        if ($name === '') {
+            Guard::flash('bad', 'Your bank did not recognise that account number. Check it and try again.');
+            self::go('/account/money#settle');
+        }
+        if ((string) $w['va_number'] === '' && ($e = Bachs::assign($w)) !== '') {
+            Guard::flash('bad', $e);
+            self::go('/account/money#settle');
+        }
+        $w = Db::one('SELECT * FROM weddings WHERE id = ?', [$w['id']]);
+        $err = '';
+        $dest = Bachs::destination($w, $code, $bank, $num, $name, $err);
+        if ($dest === '') {
+            Guard::flash('bad', 'Bachs could not save that account: ' . $err);
+            self::go('/account/money#settle');
+        }
+        Db::update('weddings', ['payout_bank_code' => $code, 'payout_bank_name' => $bank, 'payout_account' => $num, 'payout_name' => $name, 'payout_dest' => $dest], 'id = ?', [$w['id']]);
+        Settle::run();   // anything that arrived before this goes out now
+        Guard::flash('ok', 'Saved. Every gift and spray now goes straight to ' . $bank . ' ••' . substr($num, -4) . ' as it arrives.');
+        self::go('/account/money#settle');
+    }
+
     /** A change request to our team (Premium and High Society): words, and up to three photos. */
     public function request(): void
     {

@@ -79,6 +79,8 @@ $r->any('/account/squad',       [AccountController::class, 'squad']);
 $r->any('/account/story',       [AccountController::class, 'story']);
 $r->post('/account/request',    [AccountController::class, 'request']);
 $r->post('/account/bank',       [AccountController::class, 'bank']);
+$r->post('/account/bank/check', [AccountController::class, 'bankCheck']);
+$r->post('/account/bank/save',  [AccountController::class, 'bankSave']);
 $r->any('/account/registry',    [AccountController::class, 'registry']);
 $r->any('/account/quiz',        [AccountController::class, 'quiz']);
 $r->any('/account/sections',    [AccountController::class, 'sections']);
@@ -112,6 +114,7 @@ $r->get('/hq/emails',           [HqController::class, 'emails']);
 $r->any('/hq/ads',              [HqController::class, 'ads']);
 $r->any('/hq/requests',         [HqController::class, 'requests']);
 $r->post('/hq/bank/{id:\d+}',   [HqController::class, 'bank']);
+$r->post('/hq/settle/{id:\d+}', [HqController::class, 'settle']);
 $r->get('/hq/manage/{id:\d+|stop}', [HqController::class, 'manage']);
 $r->get('/hq/edit',             [HqController::class, 'edit']);         // edit mode on or off
 $r->post('/hq/edit/save',       [HqController::class, 'editSave']);     // words changed on the page

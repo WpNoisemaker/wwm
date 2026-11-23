@@ -22,4 +22,5 @@ require $root . '/app/Views/partials/ui.php';
 
 $r = Reminder::run(500);
 $d = Drive::sync(60);
-echo date('c'), " reminders sent: $r, photos sent to Drive: $d\n";
+$s = Settle::run(100);   // instant settlement: anything that could not be paid out straight away
+echo date('c'), " reminders sent: $r, photos sent to Drive: $d, payouts sent: $s\n";

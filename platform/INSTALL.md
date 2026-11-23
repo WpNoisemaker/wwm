@@ -282,6 +282,14 @@ Sign in at `/sign-in`, then:
 - **The marketplace never holds money.** Customers make a free customer account to message a seller; the
   seller sends an invoice (with their own payment link or bank details) or a payment link in the chat, and
   the customer pays them directly. The listing, the chat and every invoice say so plainly.
+- **HQ → Settings → Bachs: bank transfers** — gifts and spraying are paid by bank transfer through Bachs
+  (bachs.io). Paste your Bachs secret key (start with the `sk_sandbox_` one) and, after adding a webhook in
+  Bachs for `collection.succeeded`, `payout.paid` and `payout.failed` to `https://yourdomain/webhooks/bachs`,
+  its signing secret. Each couple gets their own account number (from their Money tab, or HQ → Weddings →
+  Assign account) and adds their own bank account. Every transfer then shows on the page the moment it lands
+  and is paid straight on to the couple's bank: in full on Premium and High Society, less the gift fee on Free
+  and Pro. Payouts Bachs cannot make yet are retried every minute (run `cron.php` every five minutes too);
+  failed ones show in HQ → Weddings with a retry button. Make one sandbox transfer before using the live key.
 - **HQ → Settings → Ads for Premium** — the site's own ads for Premium, on free wedding pages, between the
   community cards, among the wedding pages and in the blog. On by default; Pro and up never carry ads.
 - **HQ → Settings → See what our emails look like** — every email is sent in the branded design, with the

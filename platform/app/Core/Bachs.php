@@ -26,6 +26,10 @@ final class Bachs
 
     public static function base(): string
     {
+        // A different address for testing (set in the database only; HQ never shows it).
+        if (($o = Site::setting('bachs_base', '')) !== '') {
+            return rtrim($o, '/');
+        }
         return str_starts_with(self::key(), 'sk_live_') ? 'https://api.bachs.io' : 'https://sandbox-api.bachs.io';
     }
 
@@ -100,6 +104,91 @@ final class Bachs
         return '';
     }
 
+    /** @return array<int,array{name:string,code:string}> Nigerian banks, from Bachs, kept for a day. */
+    public static function banks(): array
+    {
+        $cached = json_decode(Site::setting('bachs_banks', ''), true);
+        if (is_array($cached) && ($cached['at'] ?? 0) > time() - 86400 && !empty($cached['banks'])) {
+            return $cached['banks'];
+        }
+        $banks = [];
+        [$code, $j] = self::call('GET', '/v1/reference/banks?country=NG');
+        foreach ((array) ($j['banks'] ?? ($j['data']['banks'] ?? [])) as $b) {
+            if (!empty($b['code']) && !empty($b['name'])) { $banks[] = ['name' => (string) $b['name'], 'code' => (string) $b['code']]; }
+        }
+        if (!$banks) {
+            [$code, $j] = self::call('GET', '/v1/payouts/banks?country_code=NG');
+            foreach ((array) ($j['data'] ?? []) as $b) {
+                if (!empty($b['code']) && !empty($b['name'])) { $banks[] = ['name' => (string) $b['name'], 'code' => (string) $b['code']]; }
+            }
+        }
+        if ($banks) {
+            usort($banks, static fn ($a, $b) => strcasecmp($a['name'], $b['name']));
+            Db::run('INSERT INTO settings (k, v) VALUES (?, ?) ON DUPLICATE KEY UPDATE v = VALUES(v)', ['bachs_banks', json_encode(['at' => time(), 'banks' => $banks])]);
+        }
+        return $banks;
+    }
+
+    /** The name on a bank account, or '' when the bank does not know it. */
+    public static function resolve(string $bankCode, string $number): string
+    {
+        [$code, $j] = self::call('POST', '/v1/misc/bank-accounts/resolve', ['bank_code' => $bankCode, 'account_number' => $number]);
+        if (!empty($j['resolved']) && !empty($j['account_name'])) {
+            return (string) $j['account_name'];
+        }
+        [$code, $j] = self::call('POST', '/v1/payouts/resolve-account', ['bank_code' => $bankCode, 'account_number' => $number]);
+        return (string) ($j['data']['account_name'] ?? '');
+    }
+
+    /** Save the couple's own bank account on their Bachs account, as where their money goes. Returns the destination id. */
+    public static function destination(array $w, string $bankCode, string $bankName, string $number, string $name, string &$err): string
+    {
+        // Always on the couple's own Bachs account, never the platform's.
+        if ((string) ($w['va_account'] ?? '') === '') {
+            $err = 'This couple has no Bachs account yet.';
+            return '';
+        }
+        [$code, $j] = self::call('POST', '/v1/payouts/destinations', [
+            'type' => 'bank_account', 'currency' => 'NGN', 'name' => mb_substr($name, 0, 80),
+            'account_number' => $number, 'account_name' => $name, 'bank_code' => $bankCode, 'bank_name' => $bankName,
+        ], (string) $w['va_account']);
+        $id = (string) ($j['id'] ?? ($j['data']['id'] ?? ''));
+        if ($code >= 300 || $id === '') {
+            $err = self::msg($j);
+            return '';
+        }
+        return $id;
+    }
+
+    /**
+     * Pay money out of the couple's Bachs account to their own bank, now. Returns the withdrawal id,
+     * or '' with $err. Tries the withdrawals endpoint first, then the plain payouts one.
+     */
+    public static function withdraw(array $w, int $kobo, string $reference, string $email, string &$err): string
+    {
+        // Paid out of the couple's own Bachs account only. Without one, nothing is sent: it would
+        // otherwise come out of the platform's balance.
+        if ((string) ($w['va_account'] ?? '') === '' || (string) ($w['payout_dest'] ?? '') === '') {
+            $err = 'No couple account or bank account to pay to.';
+            return '';
+        }
+        $amount = number_format($kobo / 100, 2, '.', '');
+        [$code, $j] = self::call('POST', '/v1/payouts/withdrawals', [
+            'from_currency' => 'NGN', 'to_currency' => 'NGN', 'amount' => $amount, 'payment_method' => 'BANK_TRANSFER',
+            'reference' => $reference, 'email' => $email, 'payout_destination_id' => (string) $w['payout_dest'],
+            'description' => 'Wedding gifts: ' . Wedding::names($w), 'metadata' => ['wedding_id' => (int) $w['id']],
+        ], (string) $w['va_account']);
+        if ($code === 404) {
+            [$code, $j] = self::call('POST', '/v1/payouts', ['destination_id' => (string) $w['payout_dest'], 'amount' => $amount, 'currency' => 'NGN', 'reference' => $reference], (string) $w['va_account']);
+        }
+        $id = (string) ($j['withdrawal_id'] ?? ($j['id'] ?? ($j['data']['withdrawal_id'] ?? ($j['data']['id'] ?? ''))));
+        if ($code >= 300 || $id === '') {
+            $err = self::msg($j);
+            return '';
+        }
+        return $id;
+    }
+
     /**
      * Is this webhook really from Bachs? HMAC-SHA256 of "{timestamp}.{raw body}" with the signing
      * secret, sent either as X-Bachs-Signature-V2: t=…,v1=… or as X-Bachs-Signature with
@@ -166,9 +255,15 @@ final class Bachs
             if ($w) {
                 Transfers::receive($w, (int) round((float) $amount * 100), (string) ($bt['sender_name'] ?? ''), (string) ($bt['narration'] ?? ''),
                     (string) ($bt['session_id'] ?? ($d['reference'] ?? $id)));
+                // Straight on to the couple's own bank account.
+                Settle::run(20);
             } else {
                 error_log('[wwm] bachs: transfer to an account we do not know: ' . $number);
             }
+        }
+        if (in_array($ev['type'] ?? '', ['payout.paid', 'payout.failed'], true)) {
+            $d = (array) ($ev['data'] ?? []);
+            Settle::update((string) ($d['withdrawal_id'] ?? ($d['id'] ?? '')), ($ev['type'] ?? '') === 'payout.paid', (string) ($d['rejection_reason'] ?? ($d['reason'] ?? '')));
         }
         http_response_code(200);
         echo 'ok';

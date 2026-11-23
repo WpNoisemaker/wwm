@@ -8,7 +8,7 @@ declare(strict_types=1);
  */
 final class Upgrade
 {
-    private const STEPS = ['couple-photos-1', 'ibrahim-ummi-photos-1', 'wall-voice-squad-1', 'squad-profiles-1', 'market-2', 'talk-threads-1', 'demo-sprays-1', 'seller-premium-1', 'bachs-1', 'shortlets-1'];
+    private const STEPS = ['couple-photos-1', 'ibrahim-ummi-photos-1', 'wall-voice-squad-1', 'squad-profiles-1', 'market-2', 'talk-threads-1', 'demo-sprays-1', 'seller-premium-1', 'bachs-1', 'shortlets-1', 'settle-1'];
 
     public static function run(): void
     {
@@ -26,6 +26,7 @@ final class Upgrade
                     'squad-profiles-1'     => self::squadProfiles(),
                     'market-2'             => Market::install(),
                     'demo-sprays-1'        => self::demoSprays(),
+                    'settle-1'             => Db::val("SHOW COLUMNS FROM weddings LIKE 'payout_dest'") ?: Db::run("ALTER TABLE weddings ADD COLUMN payout_bank_code VARCHAR(20) NOT NULL DEFAULT '', ADD COLUMN payout_bank_name VARCHAR(120) NOT NULL DEFAULT '', ADD COLUMN payout_account VARCHAR(20) NOT NULL DEFAULT '', ADD COLUMN payout_name VARCHAR(160) NOT NULL DEFAULT '', ADD COLUMN payout_dest VARCHAR(80) NOT NULL DEFAULT ''"),
                     'shortlets-1'          => Db::run("UPDATE categories SET name = 'Shortlets & vacation rentals', about = 'Shortlet apartments, villas and family houses near the venue' WHERE slug = 'stay' AND name = 'Stays'"),
                     'bachs-1'              => Db::val("SHOW COLUMNS FROM weddings LIKE 'va_number'") ?: Db::run("ALTER TABLE weddings ADD COLUMN va_account VARCHAR(80) NOT NULL DEFAULT '', ADD COLUMN va_number VARCHAR(20) NOT NULL DEFAULT '', ADD COLUMN va_bank VARCHAR(120) NOT NULL DEFAULT '', ADD COLUMN va_name VARCHAR(160) NOT NULL DEFAULT '', ADD COLUMN va_status VARCHAR(20) NOT NULL DEFAULT '', ADD COLUMN va_error VARCHAR(255) NOT NULL DEFAULT ''"),
                     'seller-premium-1'     => Db::val("SHOW COLUMNS FROM vendors LIKE 'premium'") ?: Db::run('ALTER TABLE vendors ADD COLUMN premium TINYINT(1) NOT NULL DEFAULT 0 AFTER projects, ADD COLUMN brand JSON NULL AFTER premium'),

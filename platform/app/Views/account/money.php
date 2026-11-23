@@ -22,6 +22,37 @@
 					<p class="help">Bank transfers switch on soon. We will give you your own account number for gifts and spraying.</p>
 				<?php endif; ?>
 			</div>
+			<?php if ((string) $w['va_number'] !== '' || Bachs::on()): $settled = Settle::forWedding((int) $w['id'], 8); ?>
+			<div class="glass glass--plain glass--tight bank-card" id="settle">
+				<h2 class="h3">Where your money goes</h2>
+				<?php if ((string) $w['payout_dest'] !== ''): ?>
+					<p class="bank-card__to"><?= icon('check') ?><span><b><?= e($w['payout_bank_name']) ?> ••<?= e(substr((string) $w['payout_account'], -4)) ?></b> · <?= e($w['payout_name']) ?></span></p>
+					<p class="help">Every gift and spray is paid on to this account the moment it arrives<?= in_array((string) $w['plan'], ['premium', 'society'], true) ? ', in full' : ', less our ' . e(Site::setting('fee_gift', '4')) . '% fee' ?>.</p>
+				<?php else: ?>
+					<p class="help">Add your own bank account. Every gift and spray is then paid on to it the moment it arrives<?= in_array((string) $w['plan'], ['premium', 'society'], true) ? ', in full' : '' ?>.</p>
+				<?php endif; ?>
+				<?php if (!Managed::managing()): $banks = Bachs::banks(); ?>
+				<details class="bank-card__edit"<?= (string) $w['payout_dest'] === '' ? ' open' : '' ?>><summary><?= (string) $w['payout_dest'] !== '' ? 'Change the account' : 'Add your bank account' ?></summary>
+					<form method="post" action="<?= e(App::url('/account/bank/save')) ?>" class="form" data-bank-form data-check="<?= e(App::url('/account/bank/check')) ?>">
+						<?= Guard::field() ?>
+						<label class="field"><span>Bank</span><select class="input" name="bank_code" required><option value="">Choose your bank</option><?php foreach ($banks as $b): ?><option value="<?= e($b['code']) ?>"<?= (string) $w['payout_bank_code'] === $b['code'] ? ' selected' : '' ?>><?= e($b['name']) ?></option><?php endforeach; ?></select></label>
+						<label class="field"><span>Account number</span><input class="input" name="account_number" inputmode="numeric" pattern="\d{10}" maxlength="10" required value="<?= e((string) $w['payout_account']) ?>"></label>
+						<p class="bank-card__name" data-bank-name aria-live="polite"></p>
+						<button class="pill pill--block" type="submit">Save my account</button>
+					</form>
+				</details>
+				<?php endif; ?>
+				<?php if ($settled): ?>
+					<div class="rows gap-t-sm">
+						<?php foreach ($settled as $st): $done = $st['status'] === 'paid' || $st['status'] === 'sent'; ?>
+							<div class="row-item"><span class="row-item__ico"><?= icon($st['status'] === 'failed' ? 'info' : ($done ? 'check' : 'clock')) ?></span>
+								<span><span class="row-item__t"><?= money(number_format(intdiv((int) $st['net_kobo'], 100))) ?> <?= $st['status'] === 'paid' ? 'paid to your bank' : ($st['status'] === 'sent' ? 'on its way to your bank' : ($st['status'] === 'failed' ? 'could not be paid out yet' : 'waiting to go out')) ?></span>
+								<span class="row-item__s"><?= e((string) ($st['payer_name'] ?: 'A guest')) ?> · <?= $st['purpose'] === 'spray' ? 'spray' : 'gift' ?><?= (int) $st['fee_kobo'] ? ' · fee ' . money(number_format(intdiv((int) $st['fee_kobo'], 100))) : '' ?> · <?= e(ago((string) $st['created_at'])) ?></span></span></div>
+						<?php endforeach; ?>
+					</div>
+				<?php endif; ?>
+			</div>
+			<?php endif; ?>
 			<div class="block-head gap-t"><h2 class="h2">Gifts in</h2></div>
 			<?php if (!$payments): ?><p class="sub">Nothing yet.</p><?php else: ?>
 				<div class="rows">
@@ -48,6 +79,12 @@
 			<?php endif; ?>
 		</div>
 		<aside>
+			<?php if (Bachs::on()): ?>
+			<div class="form glass glass--plain glass--tight">
+				<h2 class="h3">Payouts</h2>
+				<p class="help">You do not need to ask. Every gift and spray is paid to your own bank account the moment it arrives. Add or change the account under <a class="linkish" href="#settle">Where your money goes</a>.</p>
+			</div>
+			<?php else: ?>
 			<form method="post" action="<?= e(App::url('/account/payout')) ?>" class="form glass glass--tight">
 				<?= Guard::field() ?>
 				<h2 class="h3">Ask for a payout</h2>
@@ -58,6 +95,7 @@
 				<button class="pill pill--block" type="submit"<?= $bal <= 0 ? ' disabled' : '' ?>>Request it</button>
 				<?php if ($bal <= 0): ?><p class="after-pill">Nothing available to pay out yet.</p><?php endif; ?>
 			</form>
+			<?php endif; ?>
 		</aside>
 	</div>
 </div>

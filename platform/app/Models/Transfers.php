@@ -108,6 +108,8 @@ final class Transfers
         if (!empty($intent['gift_id'])) {
             Db::run('UPDATE gifts SET raised = raised + ? WHERE id = ? AND wedding_id = ?', [$amount, $intent['gift_id'], $w['id']]);
         }
+        // Every transfer is settled straight on to the couple's own bank account.
+        Settle::add($w, $pid, $kobo);
         if ($intent) {
             Db::update('transfer_intents', ['status' => 'paid', 'payment_id' => $pid, 'paid_at' => date('Y-m-d H:i:s')], 'id = ?', [$intent['id']]);
         }

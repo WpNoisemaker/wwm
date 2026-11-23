@@ -1026,4 +1026,22 @@
 			if (e.target.closest('[data-close]') || e.target.closest('[data-give-again]')) { clearInterval(gPoll); gStep(1); if (e.target.closest('[data-close]')) { gf.reset(); } }
 		});
 	}
+
+	/* ---------- the couple's bank account: show the name the bank has, before saving ---------- */
+	var bankF = d.querySelector('[data-bank-form]');
+	if (bankF) {
+		var bankOut = bankF.querySelector('[data-bank-name]'), bankT = 0;
+		var bankCheck = function () {
+			var code = bankF.bank_code.value, num = bankF.account_number.value.replace(/\D/g, '');
+			bankOut.textContent = ''; if (!code || num.length !== 10) { return; }
+			bankOut.textContent = 'Checking…';
+			var fd = new FormData(bankF);
+			fetch(bankF.getAttribute('data-check'), { method: 'POST', body: fd, credentials: 'same-origin', headers: { Accept: 'application/json' } })
+				.then(function (r) { return r.json(); })
+				.then(function (j) { bankOut.textContent = j.name ? '✓ ' + j.name : 'Your bank did not recognise that number.'; bankOut.classList.toggle('is-ok', !!j.name); })
+				.catch(function () { bankOut.textContent = ''; });
+		};
+		bankF.addEventListener('input', function () { clearTimeout(bankT); bankT = setTimeout(bankCheck, 350); });
+		bankF.addEventListener('change', bankCheck);
+	}
 })();
