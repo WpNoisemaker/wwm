@@ -10,7 +10,7 @@
 		<?php if (Staff::can('settings')): ?><a class="tile tile--glyph" href="<?= e(App::url('/hq/settings')) ?>"><?= icon('s-spark') ?><span>Settings</span></a><?php endif; ?>
 	</div>
 	<?php if (Auth::is('owner')): foreach (Pack::ALL as $pk => $pn): if (!Pack::present($pk)): ?>
-		<div class="note gap-t"><?= icon('info') ?><span><?= e(Pack::ABOUT[$pk][0] ?? $pn) ?>: not here yet. <a href="<?= e(App::url('/hq/settings#packs')) ?>">Restore in Settings</a>.</span></div>
+		<div class="note gap-t"><?= icon('info') ?><span>Not on this site yet: <?= e(Pack::ABOUT[$pk][0] ?? $pn) ?>. <a href="<?= e(App::url('/hq/settings#packs')) ?>">Restore it in Settings</a>.</span></div>
 	<?php endif; endforeach; endif; ?>
 	<div class="split-2 gap-t">
 		<div>

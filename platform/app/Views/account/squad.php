@@ -41,9 +41,9 @@ $member = static function (array $r) use ($sides): string {
 ?>
 <?= View::partial('account/_head', ['h' => 'The squad', 'w' => $w, 'sub' => 'Your bridesmaids and groomsmen', 'now' => 'squad']) ?>
 	<?php if (!Wedding::has($w, 'squad')): ?>
-		<p class="note"><?= icon('lock') ?><span>The squad shows on your page from Pro. Fill it in now and it appears when you upgrade. </span><?= up_tag('pro', 'The squad') ?></p>
+		<p class="note"><?= icon('lock') ?><span>The squad shows on your page from the Pro plan upwards. Fill it in now and it will appear when you upgrade. </span><?= up_tag('pro', 'The squad') ?></p>
 	<?php endif; ?>
-	<p class="help">No photo? Their card shows the first letter of their name. An @handle is taken as Instagram; for anything else, paste the link.</p>
+	<p class="help">No photo? Their card shows the first letter of their name. An @handle is treated as Instagram; for anything else, paste the link.</p>
 	<div class="acct-list">
 		<?php foreach ($rows as $r): ?><?= $member($r) ?><?php endforeach; ?>
 		<?= $member([]) ?>

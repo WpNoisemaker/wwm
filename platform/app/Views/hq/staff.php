@@ -8,13 +8,13 @@
 			<?php foreach ($rows as $r): ?>
 				<form method="post" class="form glass glass--plain glass--tight acct-card">
 					<?= Guard::field() ?><input type="hidden" name="id" value="<?= (int) $r['id'] ?>">
-					<div class="row row--between"><div><p class="row-item__t"><?= e((string) $r['name']) ?></p><p class="row-item__s"><?= e((string) $r['email']) ?><?= $r['last_seen_at'] ? ' · last in ' . e(ago((string) $r['last_seen_at'])) : ' · not signed in yet' ?></p></div></div>
+					<div class="row row--between"><div><p class="row-item__t"><?= e((string) $r['name']) ?></p><p class="row-item__s"><?= e((string) $r['email']) ?><?= $r['last_seen_at'] ? ' · last signed in ' . e(ago((string) $r['last_seen_at'])) : ' · has not signed in yet' ?></p></div></div>
 					<div class="perm-grid">
 						<?php foreach (Staff::PERMS as $k => [$label, $what]): ?>
 							<label class="check perm"><span><b><?= e($label) ?></b><small><?= e($what) ?></small></span><input type="checkbox" name="perm[<?= e($k) ?>]" value="1"<?= in_array($k, $r['perms'], true) ? ' checked' : '' ?>></label>
 						<?php endforeach; ?>
 					</div>
-					<div class="form-actions"><button class="pill pill--sm" type="submit" name="do" value="save">Save access</button><button class="pill pill--sm pill--danger" type="submit" name="do" value="remove" data-confirm="Take <?= e((string) $r['name']) ?> off staff? Their account stays, without HQ.">Remove from staff</button></div>
+					<div class="form-actions"><button class="pill pill--sm" type="submit" name="do" value="save">Save access</button><button class="pill pill--sm pill--danger" type="submit" name="do" value="remove" data-confirm="Remove <?= e((string) $r['name']) ?> from staff? Their account stays, but without HQ access.">Remove from staff</button></div>
 				</form>
 			<?php endforeach; ?>
 		</div>

@@ -13,13 +13,13 @@
 				<?php if ((string) $w['va_number'] !== ''): ?>
 					<p class="bank-card__n" data-copy="<?= e($w['va_number']) ?>"><?= e($w['va_number']) ?> <?= icon('copy') ?></p>
 					<p class="help"><?= e($w['va_bank']) ?> · <?= e($w['va_name']) ?></p>
-					<p class="help">Guests send gifts and spray by transfer to this account. Each one shows on your page as soon as it arrives.</p>
+					<p class="help">Guests send gifts and spray money to this account by bank transfer. Each one shows on your page as soon as it arrives.</p>
 				<?php elseif (Bachs::on()): ?>
-					<p class="help">Get your own account number. Guests transfer to it, and every gift and spray shows on your page as soon as it lands.</p>
+					<p class="help">Get your own account number. Guests transfer money to it, and every gift and spray shows on your page as soon as it lands.</p>
 					<form method="post" action="<?= e(App::url('/account/bank')) ?>"><?= Guard::field() ?><button class="pill" type="submit">Get my account number</button></form>
-					<?php if ((string) $w['va_error'] !== ''): ?><p class="help">Last try: <?= e($w['va_error']) ?></p><?php endif; ?>
+					<?php if ((string) $w['va_error'] !== ''): ?><p class="help">Last attempt: <?= e($w['va_error']) ?></p><?php endif; ?>
 				<?php else: ?>
-					<p class="help">Bank transfers switch on soon. We will give you your own account number for gifts and spraying.</p>
+					<p class="help">Bank transfers will be switched on soon. We will then give you your own account number for gifts and spraying.</p>
 				<?php endif; ?>
 			</div>
 			<?php if ((string) $w['va_number'] !== '' || Bachs::on()): $settled = Settle::forWedding((int) $w['id'], 8); ?>
@@ -54,7 +54,7 @@
 			</div>
 			<?php endif; ?>
 			<div class="block-head gap-t"><h2 class="h2">Gifts in</h2></div>
-			<?php if (!$payments): ?><p class="sub">Nothing yet.</p><?php else: ?>
+			<?php if (!$payments): ?><p class="sub">No gifts yet.</p><?php else: ?>
 				<div class="rows">
 					<?php foreach ($payments as $p): ?>
 						<div class="row-item">
@@ -66,7 +66,7 @@
 				</div>
 			<?php endif; ?>
 			<div class="block-head gap-t"><h2 class="h2">Payouts</h2></div>
-			<?php if (!$payouts): ?><p class="sub">None requested.</p><?php else: ?>
+			<?php if (!$payouts): ?><p class="sub">You have not requested a payout yet.</p><?php else: ?>
 				<div class="rows">
 					<?php foreach ($payouts as $p): ?>
 						<div class="row-item">
@@ -82,7 +82,7 @@
 			<?php if (Bachs::on()): ?>
 			<div class="form glass glass--plain glass--tight">
 				<h2 class="h3">Payouts</h2>
-				<p class="help">You do not need to ask. Every gift and spray is paid to your own bank account the moment it arrives. Add or change the account under <a class="linkish" href="#settle">Where your money goes</a>.</p>
+				<p class="help">You do not need to ask for one. Every gift and spray is paid to your own bank account the moment it arrives. Add or change the account under <a class="linkish" href="#settle">Where your money goes</a>.</p>
 			</div>
 			<?php else: ?>
 			<form method="post" action="<?= e(App::url('/account/payout')) ?>" class="form glass glass--tight">
@@ -93,7 +93,7 @@
 				<label class="field"><span>Account number</span><input class="input" name="acct" required inputmode="numeric"></label>
 				<label class="field"><span>Account name</span><input class="input" name="acct_name" required></label>
 				<button class="pill pill--block" type="submit"<?= $bal <= 0 ? ' disabled' : '' ?>>Request it</button>
-				<?php if ($bal <= 0): ?><p class="after-pill">Nothing available to pay out yet.</p><?php endif; ?>
+				<?php if ($bal <= 0): ?><p class="after-pill">There is nothing to pay out yet.</p><?php endif; ?>
 			</form>
 			<?php endif; ?>
 		</aside>

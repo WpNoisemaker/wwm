@@ -47,14 +47,14 @@ $url     = App::url('/w/' . $w['slug']);
 					<?php endforeach; ?>
 				</div>
 			<?php else: ?>
-				<p class="help">Story, programme, squad and registry are in. You can change anything from the tabs above at any time.</p>
+				<p class="help">Your story, programme, squad and registry are all in place. You can change anything from the tabs above at any time.</p>
 			<?php endif; ?>
 		</div>
 
 		<?php if (Managed::has($w)): ?>
 		<div class="gap-t" id="managed">
 			<details class="glass glass--plain glass--tight cdash__help"<?= array_filter($requests ?? [], static fn ($r) => $r['status'] !== 'done') ? ' open' : '' ?>>
-				<summary><span><span class="row-item__t">Want us to make the changes?</span><span class="row-item__s">Optional. Your <?= e(Site::tier((string) $w['plan'])) ?> plan includes our team. You can still do everything yourself.</span></span><?= icon('chev-down') ?></summary>
+				<summary><span><span class="row-item__t">Want us to make the changes?</span><span class="row-item__s">This is optional. Your <?= e(Site::tier((string) $w['plan'])) ?> plan includes help from our team, but you can still do everything yourself.</span></span><?= icon('chev-down') ?></summary>
 				<?php if (!Managed::managing()): ?>
 				<form method="post" action="<?= e(App::url('/account/request')) ?>" enctype="multipart/form-data" class="form gap-t-sm">
 					<?= Guard::field() ?>

@@ -228,7 +228,7 @@ final class Market
                 }
                 Mailer::send((string) $u['email'], ($invoiceId ? $who . ' sent you an invoice' : 'New message from ' . $who),
                     "Hello " . ($u['name'] ?: 'there') . ",\n\n" . $who . ($invoiceId ? " sent you an invoice:\n\n" : " wrote:\n\n") . mb_strimwidth($body, 0, 600, '…')
-                    . "\n\nReply here: " . $url . "\n\nWe never hold money for sellers. Pay only through the seller's own invoice or link, and be sure who you are paying.",
+                    . "\n\nReply here: " . $url . "\n\nWe never hold money for sellers. Pay only through the seller's own invoice or link, and make sure you know who you are paying.",
                     ['button' => [$invoiceId ? 'See it in the chat' : 'Read and reply', $url], 'quote' => mb_strimwidth($body, 0, 600, '…'), 'why' => 'You get this email because of a chat on the Wedding Websites & More marketplace.']);
             });
         }
@@ -345,7 +345,7 @@ final class Market
         $name = (string) $v['name'];
         $mail = match ($to) {
             'suspended' => ['Your shop is paused while we verify ' . $name,
-                "Hello,\n\nWe have paused " . $name . " on Wedding Websites & More while we verify the business by hand. Your listings are hidden until then.\n\nTo verify, reply to this email with: your full name, a phone number we can call, your business address, and a photo of a government ID or your CAC certificate. We will look at it and let you know.\n\nThe Wedding Websites & More team"],
+                "Hello,\n\nWe have paused " . $name . " on Wedding Websites & More while we verify the business by hand. Your listings are hidden until then.\n\nTo verify, reply to this email with: your full name, a phone number we can call, your business address, and a photo of a government ID or your CAC certificate. We will review it and let you know.\n\nThe Wedding Websites & More team"],
             'removed' => ['Your shop has been removed', "Hello,\n\n" . $name . " has been removed from Wedding Websites & More. If you believe this is a mistake, reply to this email.\n\nThe Wedding Websites & More team"],
             'active' => ['Your shop is live again', "Hello,\n\n" . $name . " is live again on Wedding Websites & More. Thank you for your patience.\n\nThe Wedding Websites & More team"],
             default => null,

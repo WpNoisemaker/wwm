@@ -13,7 +13,7 @@ $pub = $p && $p['published_at'] ? (int) strtotime((string) $p['published_at']) :
 			<label class="field"><span>The post</span><textarea class="input blog-body" name="body" rows="22" placeholder="Write here. Leave a blank line between paragraphs."><?= e($src) ?></textarea></label>
 			<details class="faq__q blog-help">
 				<summary><span>How to format</span><i class="faq__i" aria-hidden="true"></i></summary>
-				<p>A blank line starts a new paragraph. <code>## Heading</code> and <code>### Smaller heading</code>. <code>&gt; A quote</code>, with <code>— Name</code> on the last line to credit it. <code>- item</code> for a list, <code>1. item</code> for numbers. <code>**bold**</code>, <code>*italic*</code>, <code>[words](https://link)</code>. For an interview, start the question with <code>Q:</code> and the answer with <code>A:</code>.</p>
+				<p>A blank line starts a new paragraph. Use <code>## Heading</code> and <code>### Smaller heading</code> for headings, and <code>&gt; A quote</code> for a quote, with <code>— Name</code> on the last line to credit it. Use <code>- item</code> for a list and <code>1. item</code> for a numbered list. Use <code>**bold**</code>, <code>*italic*</code> and <code>[words](https://link)</code> for bold, italics and links. For an interview, start the question with <code>Q:</code> and the answer with <code>A:</code>.</p>
 			</details>
 			<div class="form-grid form-grid--2">
 				<label class="field"><span>Add a photo to the end</span><input class="input" type="file" name="inline" accept="image/jpeg,image/png,image/webp"></label>
@@ -40,7 +40,7 @@ $pub = $p && $p['published_at'] ? (int) strtotime((string) $p['published_at']) :
 				<h2 class="h3">Cover photo</h2>
 				<?php if ($v('cover') !== ''): ?><?= sq($v('cover'), '', 'sq--wide') ?><label class="check"><span>Remove the cover</span><input type="checkbox" name="no_cover" value="1"></label><?php endif; ?>
 				<label class="field"><span><?= $v('cover') !== '' ? 'Replace it' : 'Upload one' ?></span><input class="input" type="file" name="cover" accept="image/jpeg,image/png,image/webp"></label>
-				<p class="help">Wide photos work best. It is also the picture when the post is shared.</p>
+				<p class="help">Wide photos work best. It is also the picture shown when the post is shared.</p>
 			</div>
 			<div class="form glass glass--plain glass--tight">
 				<h2 class="h3">Search</h2>

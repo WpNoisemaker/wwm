@@ -29,7 +29,7 @@ final class Design
         'keepsake' => ['Keepsake', 'premium', 'Like an album: two prints tilted on the page, held with tape, and small hearts.', 'day', 'dark', 'album', ['#F3EDE3', '#3E5C76']],
         'savannah' => ['Savannah', 'premium', 'The day sky at golden hour: amber into terracotta, a round sun photo and an acacia on the horizon.', 'day', 'light', 'horizon', ['#E8A06A', '#F3CF96']],
         'owambe'   => ['Owambe',   'premium', 'The party: deep emerald, confetti tiles, chunky buttons and everything a little louder.', 'night', 'light', 'party', ['#0B5A47', '#F4B400']],
-        'ivory'    => ['Ivory & Gold', 'custom', 'Made for Ibrahim & Ummi: ivory, beige and champagne gold, an invitation card and a diary of your story.', 'day', 'dark', 'invite', ['#FBF7EF', '#C3A46A']],
+        'ivory'    => ['Ivory & Gold', 'custom', 'Made for Ibrahim & Ummi: ivory, beige and champagne gold, an invitation card and a diary of their story.', 'day', 'dark', 'invite', ['#FBF7EF', '#C3A46A']],
     ];
 
     /** Older names the importer and early demo data used. */

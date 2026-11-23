@@ -114,10 +114,10 @@ final class ChatController
         $bad = [];
         if ($amount <= 0) { $bad[] = 'an amount'; }
         if ($kind === 'link' && $link === '') { $bad[] = 'your payment link (it starts with https://)'; }
-        if ($kind === 'invoice' && $link === '' && $info === '') { $bad[] = 'how to pay you: a payment link, or your bank details'; }
-        if ($kind === 'invoice' && !$lines) { $bad[] = 'at least one line'; }
+        if ($kind === 'invoice' && $link === '' && $info === '') { $bad[] = 'a way to pay you (a payment link or your bank details)'; }
+        if ($kind === 'invoice' && !$lines) { $bad[] = 'at least one line item'; }
         if ($bad) {
-            Guard::flash('bad', 'The ' . ($kind === 'link' ? 'payment link' : 'invoice') . ' needs ' . implode(', and ', $bad) . '.');
+            Guard::flash('bad', 'The ' . ($kind === 'link' ? 'payment link' : 'invoice') . ' needs ' . implode(' and ', $bad) . '.');
             self::go($url);
         }
         $listing = (int) ($_POST['listing_id'] ?? 0);
@@ -155,7 +155,7 @@ final class ChatController
             if (in_array($role, ['partner', 'staff'], true) && (string) $inv['status'] === 'open' && in_array($do, ['paid', 'cancel'], true)) {
                 Db::update('invoices', ['status' => $do === 'paid' ? 'paid' : 'cancelled', 'paid_at' => $do === 'paid' ? date('Y-m-d H:i:s') : null], 'id = ?', [$inv['id']]);
                 Market::send((int) $inv['partner_id'], (int) $inv['user_id'], $role, ($do === 'paid' ? 'Marked as paid: ' : 'Cancelled: ') . ($inv['kind'] === 'link' ? 'payment link' : 'invoice') . ' #' . $inv['code'] . '. ' . ($do === 'paid' ? 'Thank you!' : ''), null, (int) $inv['id']);
-                Guard::flash('ok', $do === 'paid' ? 'Marked as paid. It is a receipt now.' : 'Cancelled.');
+                Guard::flash('ok', $do === 'paid' ? 'Marked as paid. It is now a receipt.' : 'Cancelled.');
             }
             self::go('/pay/' . $inv['code']);
         }
@@ -196,7 +196,7 @@ final class ChatController
             self::go($back);
         }
         Market::send($partnerId, $me, 'user', $body, $listingId);
-        Guard::flash('ok', 'Sent. ' . $seller['name'] . ' will answer here, and we email you when they do.');
+        Guard::flash('ok', 'Sent. ' . $seller['name'] . ' will answer here, and we will email you when they do.');
         self::go('/account/messages/' . $partnerId . '-' . $me . '#end');
     }
 

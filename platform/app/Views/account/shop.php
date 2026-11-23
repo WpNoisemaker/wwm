@@ -24,7 +24,7 @@ $photoManager = static function (array $l): string {
 	if (!$ph) {
 		return '';
 	}
-	$o = '<div class="field span-2"><span>Photos (' . count($ph) . ' of 8): tap the star for the cover</span><div class="ph-grid">';
+	$o = '<div class="field span-2"><span>Photos (' . count($ph) . ' of 8): tap the star to choose the cover</span><div class="ph-grid">';
 	foreach ($ph as $i => $p) {
 		$o .= '<div class="ph-item">' . photo($p, '') . '<label class="ph-item__cover" title="Make this the cover"><input type="radio" name="cover" value="' . e($p) . '"' . ($i === 0 ? ' checked' : '') . '><span>' . icon('star') . '</span></label>'
 			. '<label class="ph-item__drop" title="Remove this photo"><input type="checkbox" name="drop[]" value="' . e($p) . '"><span>' . icon('close') . '</span></label></div>';
@@ -52,7 +52,7 @@ $photoManager = static function (array $l): string {
 						<label class="field span-2"><span>About it</span><textarea class="input" name="about" rows="5"><?= e((string) $l['about']) ?></textarea></label>
 						<label class="field"><span>Status</span><select class="input" name="status"><option value="live"<?= $l['status'] === 'live' ? ' selected' : '' ?>>Live</option><option value="paused"<?= $l['status'] !== 'live' ? ' selected' : '' ?>>Paused</option></select></label>
 						<?= $photoManager($l) ?>
-						<label class="photo-pick span-2"><input type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple data-photo-input><?= icon('camera') ?><span data-photo-name>Add photos (choose several at once)</span></label>
+						<label class="photo-pick span-2"><input type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple data-photo-input><?= icon('camera') ?><span data-photo-name>Add photos (you can choose several at once)</span></label>
 					</div>
 					<div class="form-actions"><button class="pill pill--sm" type="submit">Save</button><button class="pill pill--sm pill--danger" type="submit" name="do" value="delete" data-confirm="Remove this listing from the marketplace?">Remove</button></div>
 				</form>
@@ -77,19 +77,19 @@ $photoManager = static function (array $l): string {
 			<div class="form glass glass--plain glass--tight shop-card">
 				<?php if ($v): ?>
 					<div class="shop-head"><?= sq((string) $v['logo'], '', 'shop-head__pic') ?><div><p class="row-item__t"><?= e((string) $v['name']) ?></p><p class="row-item__s"><?= e(trim((string) $v['category'] . ((string) $v['city'] !== '' ? ' · ' . $v['city'] : ''), ' ·')) ?></p></div></div>
-					<?php if ((int) $v['verified']): ?><p><span class="badge badge--solid"><?= icon('check') ?>Verified seller</span></p><?php else: ?><p class="help">HQ verifies sellers once they have checked the business.</p><?php endif; ?>
+					<?php if ((int) $v['verified']): ?><p><span class="badge badge--solid"><?= icon('check') ?>Verified seller</span></p><?php else: ?><p class="help">Our team verifies sellers after checking their business.</p><?php endif; ?>
 					<p class="help"><?= count($rows) ?> listing<?= count($rows) === 1 ? '' : 's' ?> · <?= count(array_filter($rows, static fn ($r) => $r['status'] === 'live')) ?> live</p>
 					<a class="pill pill--glass pill--block" href="<?= e(App::url('/vendors/' . $v['slug'])) ?>">See your public profile</a>
 					<a class="pill pill--glass pill--block" href="<?= e(App::url('/account/shop/profile')) ?>">Edit your business profile</a>
 				<?php else: ?>
 					<h2 class="h3">Set up your shop</h2>
-					<p class="help">Add your business name, what you do and how couples reach you. Then add your first listing.</p>
+					<p class="help">Add your business name, what you do and how couples can reach you. Then add your first listing.</p>
 					<a class="pill pill--block" href="<?= e(App::url('/account/shop/profile')) ?>">Set up your business profile</a>
 				<?php endif; ?>
 			</div>
 			<?php if ($v && !Market::active($v)): ?><p class="note note--bad"><?= icon('lock') ?><span>Your shop is paused while we verify your business. We emailed you what we need.</span></p><?php endif; ?>
-			<p class="help">You can list in: <?= e(implode(', ', array_column(Market::categories(true), 'name'))) ?>. New categories are opened by our team.</p>
-			<p class="help">Signing in with an @example.com email? Put your own in <a class="linkish" href="<?= e(App::url('/account/settings')) ?>">Account</a>.</p>
+			<p class="help">You can list in these categories: <?= e(implode(', ', array_column(Market::categories(true), 'name'))) ?>. Our team opens new categories.</p>
+			<p class="help">Signing in with an @example.com email? Add your own address under <a class="linkish" href="<?= e(App::url('/account/settings')) ?>">Account</a>.</p>
 		</aside>
 	</div>
 </div>

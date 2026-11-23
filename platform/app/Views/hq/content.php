@@ -16,7 +16,7 @@ $urls = ['home' => '/', 'site' => '/', 'weddings' => '/weddings', 'rankings' => 
 	<form method="post" enctype="multipart/form-data" class="split-2 gap-t-sm">
 		<?= Guard::field() ?>
 		<div class="form glass glass--plain glass--tight">
-			<?php if (!$fields): ?><p class="help">Nothing to edit on this page yet.</p><?php endif; ?>
+			<?php if (!$fields): ?><p class="help">There is nothing to edit on this page yet.</p><?php endif; ?>
 			<?php foreach ($fields as $f): $id = str_replace('.', '__', $f['key']); $cur = Content::get($f['key'], $f['default']); $edited = $cur !== $f['default']; ?>
 				<?php if ($f['type'] === 'timg'): ?>
 					<div class="field cms-img">
@@ -27,7 +27,7 @@ $urls = ['home' => '/', 'site' => '/', 'weddings' => '/weddings', 'rankings' => 
 					</div>
 				<?php elseif ($f['type'] === 'tbody'): ?>
 					<label class="field"><span><?= e(Content::label($f)) ?>: <?= e(ucfirst(str_replace('-', ' ', explode('.', $f['key'])[2] ?? ''))) ?><?= $edited ? ' <b class="cms-edited">changed</b>' : '' ?></span>
-						<textarea class="input blog-body" name="v[<?= e($id) ?>]" rows="10" placeholder="Leave empty to keep the standard page. Write here to replace it whole, in the same format as the blog."><?= e($edited ? $cur : '') ?></textarea></label>
+						<textarea class="input blog-body" name="v[<?= e($id) ?>]" rows="10" placeholder="Leave this empty to keep the standard page. Write here to replace the whole page, using the same format as the blog."><?= e($edited ? $cur : '') ?></textarea></label>
 				<?php else: ?>
 					<label class="field"><span><?= e(Content::label($f)) ?><?= $edited ? ' <b class="cms-edited">changed</b>' : '' ?></span>
 						<?php if ($f['type'] === 'tl' || mb_strlen($f['default']) > 90): ?>
@@ -43,7 +43,7 @@ $urls = ['home' => '/', 'site' => '/', 'weddings' => '/weddings', 'rankings' => 
 		<aside class="acct-list">
 			<div class="form glass glass--plain glass--tight">
 				<h2 class="h3"><?= e(Content::PAGES[$page][0]) ?></h2>
-				<p class="help">Every box is a piece of this page, in the order it appears. Change the words, save, and they are live. Clear a box to go back to the standard text.</p>
+				<p class="help">Each box is a piece of this page, in the order it appears. Change the words and save, and they go live. Clear a box to go back to the standard text.</p>
 				<button class="pill pill--block" type="submit">Save changes</button>
 				<a class="pill pill--glass pill--block" href="<?= e(App::url($urls[$page] ?? '/')) ?>" target="_blank" rel="noopener">Open the page</a>
 			</div>
@@ -61,7 +61,7 @@ $urls = ['home' => '/', 'site' => '/', 'weddings' => '/weddings', 'rankings' => 
 	<?php $live = LiveEdit::all(); if ($live): ?>
 	<section class="gap-t" id="live-edits">
 		<h2 class="h3">Changes made on the live pages</h2>
-		<p class="help">Words and pictures changed with Edit this page. Undo one to bring back what was there before.</p>
+		<p class="help">These are the words and pictures changed with Edit this page. Undo a change to bring back what was there before.</p>
 		<div class="rows gap-t-sm">
 			<?php foreach ($live as $o): ?>
 				<div class="row-item">

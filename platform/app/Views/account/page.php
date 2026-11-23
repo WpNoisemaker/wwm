@@ -12,7 +12,7 @@ $isPremium = Wedding::rank((string) $w['plan']) >= Wedding::rank('premium');
 				<label class="field"><span>Their first name</span><input class="input" name="b" value="<?= e($w['partner_b']) ?>" required></label>
 				<label class="field"><span>Hashtag</span><input class="input" name="hashtag" value="<?= e($w['hashtag']) ?>" placeholder="#IbrahimMeetsUmmi"></label>
 				<label class="field"><span>One line for the top of the page</span><input class="input" name="tagline" value="<?= e($w['tagline']) ?>" placeholder="Come and celebrate with us"></label>
-				<label class="field span-2"><span>Your story</span><textarea class="input" name="story" rows="6" placeholder="How you met, in your own words."><?= e($w['story']) ?></textarea><span class="help">Or tell it as diary cards, one moment each, with photos: <a class="linkish" href="<?= e(App::url('/account/story')) ?>">write your diary</a>.</span></label>
+				<label class="field span-2"><span>Your story</span><textarea class="input" name="story" rows="6" placeholder="How you met, in your own words."><?= e($w['story']) ?></textarea><span class="help">Or tell it as diary cards, one moment per card, with photos: <a class="linkish" href="<?= e(App::url('/account/story')) ?>">write your diary</a>.</span></label>
 			</div>
 		</section>
 		<section class="glass glass--plain glass--tight acct-card">
@@ -33,7 +33,7 @@ $isPremium = Wedding::rank((string) $w['plan']) >= Wedding::rank('premium');
 					<?php foreach ($choices as $k => $label): ?><option value="<?= e($k) ?>"<?= Design::get((string) $w['template'])['key'] === $k ? ' selected' : '' ?>><?= e($label) ?></option><?php endforeach; ?>
 				</select>
 			</label>
-			<p class="help"><?= $isPremium ? 'Your page wears this design.' : 'Free pages are Classic in black &amp; white and Pro pages are Classic in your colours.' ?> <a class="linkish" href="<?= e(App::url('/templates')) ?>">See them all</a></p>
+			<p class="help"><?= $isPremium ? 'Your page uses this design.' : 'Free pages use Classic in black &amp; white, and Pro pages use Classic in your colours.' ?> <a class="linkish" href="<?= e(App::url('/templates')) ?>">See them all</a></p>
 			<?php if (!$isPremium): ?><div class="lock-row gap-t-sm"><span class="help">Ten more designs, from Royal to Savannah</span><?= up_tag('premium', 'Every Premium design') ?></div><?php endif; ?>
 			<?php if (Wedding::has($w, 'colours')): ?>
 				<div class="form-grid form-grid--2 gap-t-sm">
@@ -50,7 +50,7 @@ $isPremium = Wedding::rank((string) $w['plan']) >= Wedding::rank('premium');
 		</section>
 		<section class="glass glass--plain glass--tight acct-card" id="colours">
 			<div class="lock-row"><h2 class="h3">Colours of the day</h2><?php if (!Wedding::has($w, 'colours')): ?><?= up_tag('pro', 'Your colour code') ?><?php endif; ?></div>
-			<p class="help">The colours you would like guests to wear. They show right under your invite.</p>
+			<p class="help">Choose the colours you would like guests to wear. They appear right under your invite.</p>
 			<?php $pal = is_array($d['palette'] ?? null) ? array_values($d['palette']) : []; $canPal = Wedding::has($w, 'colours'); ?>
 			<div class="palette-ed<?= $canPal ? '' : ' locked' ?>"<?= $canPal ? '' : ' data-upgrade="pro" data-feature="Your colour code"' ?>>
 				<?php for ($i = 0; $i < 6; $i++): $row = $pal[$i] ?? null; ?>
@@ -69,16 +69,16 @@ $isPremium = Wedding::rank((string) $w['plan']) >= Wedding::rank('premium');
 					<label class="field"><span>YouTube link for the day</span><input class="input" name="live_url" type="url" inputmode="url" value="<?= e($d['live_url'] ?? '') ?>" placeholder="https://youtube.com/live/…"></label>
 					<label class="field"><span>It starts at (optional)</span><input class="input" name="live_at" type="datetime-local" value="<?= e((string) ($d['live_at'] ?? '')) ?>"></label>
 				</div>
-				<p class="help">Start a YouTube live (or schedule one), paste its link here, and it plays right on your page. Leave the time empty and we use your next event's. <?php $subs = Reminder::count((int) $w['id']); ?><?= $subs ? 'The moment you add it, ' . $subs . ' guest' . ($subs === 1 ? '' : 's') . ' who asked to be reminded get an email.' : 'Guests who tap Remind me get an email the moment you add it.' ?></p>
+				<p class="help">Start a YouTube live stream (or schedule one), paste its link here, and it will play right on your page. If you leave the time empty, we use the time of your next event. <?php $subs = Reminder::count((int) $w['id']); ?><?= $subs ? 'The moment you add it, ' . $subs . ($subs === 1 ? ' guest who asked to be reminded gets' : ' guests who asked to be reminded get') . ' an email.' : 'Guests who tap Remind me get an email the moment you add it.' ?></p>
 			<?php else: ?>
 				<label class="field locked" data-upgrade="premium" data-feature="Livestream on your page"><span>YouTube link for the day</span><input class="input" type="url" placeholder="https://youtube.com/live/…" disabled></label>
-				<p class="help">Family who cannot travel watch the ceremony right on your page.</p>
+				<p class="help">Family who cannot travel can watch the ceremony right on your page.</p>
 			<?php endif; ?>
 		</section>
 		<section class="glass glass--plain glass--tight acct-card" id="music">
 			<div class="lock-row"><h2 class="h3">Background music</h2><?php if (!Wedding::has($w, 'music')): ?><?= up_tag('premium', 'Background music') ?><?php endif; ?></div>
 			<?php if (Wedding::has($w, 'music')): $mu = Music::forWedding($w); ?>
-				<p class="help">A song that plays softly while guests look around your page. It starts on their first tap (phones never play sound before that), and a music button lets anyone pause it.</p>
+				<p class="help">Add a song that plays softly while guests look around your page. It starts on their first tap (phones never play sound before that), and a music button lets anyone pause it.</p>
 				<?php if ($mu): ?>
 					<div class="music-now">
 						<span class="music-now__k"><?= icon('music') ?><?= e($mu['title'] !== '' ? $mu['title'] : 'Your song') ?></span>
@@ -88,14 +88,14 @@ $isPremium = Wedding::rank((string) $w['plan']) >= Wedding::rank('premium');
 				<?php endif; ?>
 				<div class="form-grid form-grid--2">
 					<label class="field"><span><?= $mu ? 'Replace it with a file' : 'Upload a song' ?></span><input class="input" type="file" name="music_file" accept="audio/mpeg,audio/mp4,audio/aac,audio/ogg,audio/wav,.mp3,.m4a,.aac,.ogg,.wav"></label>
-					<label class="field"><span>Or paste a link to the song</span><input class="input" name="music_link" type="url" inputmode="url" value="<?= e($mu['link'] ?? '') ?>" placeholder="Google Drive, Dropbox or an .mp3 link"></label>
+					<label class="field"><span>Or paste a link to the song</span><input class="input" name="music_link" type="url" inputmode="url" value="<?= e($mu['link'] ?? '') ?>" placeholder="A Dropbox or .mp3 link"></label>
 					<label class="field"><span>What it is called (optional)</span><input class="input" name="music_title" value="<?= e($mu['title'] ?? '') ?>" maxlength="80" placeholder="Our song"></label>
 					<label class="field"><span>How loud</span><select class="input" name="music_volume"><?php foreach (Music::VOLUMES as $v => $label): ?><option value="<?= $v ?>"<?= (int) ($mu['volume'] ?? 20) === $v ? ' selected' : '' ?>><?= e($label) ?></option><?php endforeach; ?></select></label>
 				</div>
-				<p class="help">MP3, M4A, AAC, OGG or WAV, up to 15 MB. Links to Google Drive or Dropbox files work when the file is shared with anyone who has the link. YouTube and streaming apps cannot play in the background. Use music you have the right to share.</p>
+				<p class="help">Files can be MP3, M4A, AAC, OGG or WAV, up to 15 MB. Dropbox links work when the file is shared with anyone who has the link. YouTube and streaming apps cannot play in the background. Only use music you have the right to share.</p>
 			<?php else: ?>
 				<label class="field locked" data-upgrade="premium" data-feature="Background music"><span>Upload a song</span><input class="input" type="file" disabled></label>
-				<p class="help">Your song playing softly while guests look around your page.</p>
+				<p class="help">Your song plays softly while guests look around your page.</p>
 			<?php endif; ?>
 		</section>
 		<section class="glass glass--plain glass--tight acct-card" id="visibility">
@@ -104,7 +104,7 @@ $isPremium = Wedding::rank((string) $w['plan']) >= Wedding::rank('premium');
 				<label><input type="radio" name="visibility" value="private" <?= (string) $w['visibility'] !== 'public' ? 'checked' : '' ?>>Private</label>
 				<label><input type="radio" name="visibility" value="public" <?= (string) $w['visibility'] === 'public' ? 'checked' : '' ?>>Public</label>
 			</div>
-			<p class="help">Private: only people with the link and the code. Public: listed, searchable and on the Buzz Chart.</p>
+			<p class="help">Private: only people with the link and the code can see it. Public: your page is listed, searchable and on the Buzz Chart.</p>
 		</section>
 		<div class="form-actions acct-save"><button class="pill" type="submit">Save changes</button><a class="pill pill--glass" href="<?= e(App::url('/w/' . $w['slug'])) ?>">View the page</a></div>
 	</form>

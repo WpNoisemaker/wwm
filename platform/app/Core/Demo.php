@@ -38,7 +38,7 @@ final class Demo
         ["Which month is {n}'s birthday?", ['January', 'March', 'April', 'June', 'August', 'September', 'November', 'December']],
         ["What is {n} most scared of?", ['Cockroaches', 'Flying', 'Dogs', 'Heights', 'Lizards', 'Deep water', 'Their mother']],
         ["What would {n} do on a free Saturday?", ['Sleep until noon', 'Watch football', 'Cook for everyone', 'Go to the market', 'Binge a Nollywood series', 'Go to the gym', 'Visit family']],
-        ["Who does {n} play the most?", ['Burna Boy', 'Wizkid', 'Asake', 'Tems', 'Sauti Sol', 'Sarkodie', 'Davido', 'Simi']],
+        ["Which artist does {n} play the most?", ['Burna Boy', 'Wizkid', 'Asake', 'Tems', 'Sauti Sol', 'Sarkodie', 'Davido', 'Simi']],
     ];
 
     /** Plans from which a guest pass code is issued, matching the real RSVP flow. */

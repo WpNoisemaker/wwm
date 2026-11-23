@@ -59,7 +59,7 @@ final class Music
             return '';
         }
         if ((int) $file['size'] > self::MAX_BYTES) {
-            $err = 'That song is over 15 MB. Try an MP3 of it.';
+            $err = 'That song is over 15 MB. Try an MP3 version of it.';
             return '';
         }
         $ext = self::kind((string) file_get_contents((string) $file['tmp_name'], false, null, 0, 64));
@@ -123,9 +123,9 @@ final class Music
                 continue;
             }
             if ($got > self::MAX_BYTES) {
-                $err = 'That song is over 15 MB. Try an MP3 of it.';
+                $err = 'That song is over 15 MB. Try an MP3 version of it.';
             } elseif ($failed || $st !== 200) {
-                $err = 'That link did not give us the song (' . ($st ?: 'no answer') . '). Check it is shared with anyone who has the link, or upload the song.';
+                $err = 'That link did not give us the song (' . ($st ?: 'no answer') . '). Check that it is shared with anyone who has the link, or upload the song.';
             }
             break;
         }

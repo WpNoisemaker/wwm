@@ -47,10 +47,10 @@ return [
             'invite'   => 'request the honour of your presence at the wedding celebrations of',
             'sign'     => 'With love & gratitude',
             'palette'  => [['Ivory', '#FBF7EF'], ['Beige', '#EEE4D3'], ['Carton', '#A9845A'], ['Gold', '#C3A46A'], ['Champagne', '#E9D4A7']],
-            'live'     => 'We stream the Kamu and the Wedding Dinner in Kano live, right here.',
+            'live'     => 'We will stream the Kamu and the Wedding Dinner in Kano live, right here.',
             'chapters' => [
                 ['The very beginning', 'A friend’s introduction', "A friend was certain we would suit each other. She was right. The first conversation ran late into the night, and by morning we both knew this was a road worth walking.", 'Ummi', ''],
-                ['Sunset, Succoth Gardens', 'Succoth Gardens, Ilorin', "We watched the sun go down and forgot to take pictures. A storybook date, the kind you keep retelling until everybody around you is tired of hearing it.", 'Ibrahim', 'couples/ibrahim-ummi/memory-garden.jpg'],
+                ['Sunset, Succoth Gardens', 'Succoth Gardens, Ilorin', "We watched the sun go down and forgot to take pictures. It was a storybook date, the kind you keep retelling until everybody around you is tired of hearing it.", 'Ibrahim', 'couples/ibrahim-ummi/memory-garden.jpg'],
                 ['The night of closed doors', 'Charcoal, Ilorin', "Three restaurants were closed that evening. We settled for the fourth, laughing the whole way, and it turned out perfect. It usually does with him.", 'Ummi', 'couples/ibrahim-ummi/memory-cafe.jpg'],
                 ['First time with chopsticks', 'Indomie Cafe', "Neither of us could hold them properly. The food was good. The memory was better. We still argue about who dropped more noodles.", 'Ibrahim', ''],
                 ['Two nerds in their element', 'Muslim Tech Expo', "We went together and split up within ten minutes, then found each other at the same stand anyway. That is more or less how we do everything.", '', ''],

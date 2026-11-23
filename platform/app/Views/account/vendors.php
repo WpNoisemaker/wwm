@@ -1,7 +1,7 @@
-<?= View::partial('account/_head', ['h' => 'Your vendors', 'w' => $w, 'sub' => 'Who you booked. Guests can rate them from your page', 'now' => 'vendors']) ?>
+<?= View::partial('account/_head', ['h' => 'Your vendors', 'w' => $w, 'sub' => 'The vendors you booked. Guests can rate them on your page', 'now' => 'vendors']) ?>
 	<div class="acct-list">
 		<?php if (!$rows): ?>
-			<p class="help">Add the caterer, decorator, photographer and anyone else you booked. They show on your page under "The people behind our day", and guests who enjoyed their work can rate them there without an account.</p>
+			<p class="help">Add the caterer, decorator, photographer and anyone else you booked. They appear on your page under "The people behind our day", and guests who enjoyed their work can rate them there without creating an account.</p>
 		<?php else: ?>
 			<div class="rows">
 				<?php foreach ($rows as $v): ?>

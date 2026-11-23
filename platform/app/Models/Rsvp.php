@@ -87,12 +87,12 @@ final class Rsvp
         $hello  = 'Hello' . ($first !== '' ? ' ' . $first : '') . ",\n\n";
         if (!empty($g['pass_code'])) {
             $pass = App::url('/w/' . $w['slug'] . '/pass/' . $g['pass_code']);
-            $body = $hello . "{$names} have approved your RSVP. You are on the guest list for {$people}.\n\n[[wwm-code]]\n\n"
+            $body = $hello . "{$names} have approved your RSVP for {$people}. You are on the guest list.\n\n[[wwm-code]]\n\n"
                   . "Show this code at the entrance. It is for you and your party only, so please do not share it.\n\n"
                   . "The programme, venue and dress code are on their page:\n{$pass}";
             $o = ['button' => ['Open your pass', $pass], 'code' => self::pretty((string) $g['pass_code'])];
         } else {
-            $body = $hello . "{$names} have approved your RSVP. You are on the guest list for {$people}.\n\n"
+            $body = $hello . "{$names} have approved your RSVP for {$people}. You are on the guest list.\n\n"
                   . "The programme, venue and dress code are on their page:\n{$page}";
             $o = ['button' => ['Open their page', $page]];
         }

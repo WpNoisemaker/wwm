@@ -56,13 +56,13 @@ $helps = !$acting && Team::forUser($uid);
 		<p class="note"><?= icon('people') ?><span>You also help with other couples’ weddings.</span><a class="pill pill--sm pill--glass" href="<?= e(App::url('/team')) ?>">Your teams</a></p>
 	<?php endif; ?>
 	<?php if (Managed::managing() && !empty($w)): ?>
-		<p class="note note--bad"><?= icon('shield') ?><span>You are managing <b><?= e(Wedding::names($w)) ?></b>’s page as our team. Changes save to their page.</span><a class="pill pill--sm" href="<?= e(App::url('/hq/manage/stop')) ?>">Stop managing</a></p>
+		<p class="note note--bad"><?= icon('shield') ?><span>You are managing <b><?= e(Wedding::names($w)) ?></b>’s page as a member of our team. Your changes are saved to their page.</span><a class="pill pill--sm" href="<?= e(App::url('/hq/manage/stop')) ?>">Stop managing</a></p>
 	<?php endif; ?>
 	<?= flashes() ?>
 	<?= View::partial('partials/upgrade') ?>
 	<?php if (Verify::needed(Auth::user())): ?>
 		<div class="note note--bad">
-			<?= icon('mail') ?><span><b>Confirm your email.</b> We sent a link to <?= e((string) Auth::user()['email']) ?>. Until you follow it you can build your page, but not make it public or ask for a payout.
+			<?= icon('mail') ?><span><b>Confirm your email.</b> We sent a link to <?= e((string) Auth::user()['email']) ?>. Until you follow it, you can build your page, but you cannot make it public or ask for a payout.
 			<form method="post" action="<?= e(App::url('/account/verify/resend')) ?>" style="display:inline"><?= Guard::field() ?><button class="linkish" type="submit">Send it again</button></form></span>
 		</div>
 	<?php endif; ?>
