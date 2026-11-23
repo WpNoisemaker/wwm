@@ -25,8 +25,8 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 				<span style="--i:<?= $gi ?>" aria-hidden="true"><?= e($g) ?></span>
 			<?php endforeach; ?>
 		</p>
-		<h1 class="hero__title"><?= t('home.title.the-african-weddings-everyone-is', 'Wedding websites for African couples') ?></h1>
-		<p class="lede"><?= t('home.intro.make-a-beautiful-wedding-page', 'Make a website for your wedding: invitation, RSVP, gifts and livestream on one link. Find vendors, book stays and rides, and ask questions in the Anonymous Community. For couples in Africa and abroad.') ?></p>
+		<h1 class="hero__title"><?= t('home.title.hero-2', 'African Weddings Everyone Is Talking About') ?></h1>
+		<p class="lede hero__lede"><?= t('home.intro.hero-2', 'Create a beautiful wedding page for free, get discovered on the Buzz Chart, see vendors trusted and rated by other couples and their guests, shop aso-ebi, find shortlets and vacation rentals, and join an anonymous wedding community where couples can ask questions, share experiences, spill the tea and discuss what they can\'t always say openly. From Lagos to London, Accra to Houston, Nairobi to Dubai, African weddings live here.') ?></p>
 		<form class="searchbox hero__search" method="get" action="<?= e(App::url('/weddings')) ?>" role="search">
 			<?= icon('search') ?>
 			<input class="input" type="search" name="q" placeholder="<?= t('home.search.find-a-couple', 'Find a couple, a city or a hashtag') ?>" aria-label="Search weddings">
