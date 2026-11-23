@@ -2316,3 +2316,8 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .bank-card__edit .form { display: grid; gap: 10px; margin-top: 10px; }
 .bank-card__name { min-height: 20px; font-size: 14px; color: var(--ink-3); }
 .bank-card__name.is-ok { color: var(--ok); }
+.give__h { margin: 0; font-weight: 400; }
+.give__h:focus { outline: none; }
+.give__acct dt, .give__acct dd { margin: 0; }
+.give__acct dd { font-size: 16px; }
+.give__big:focus { outline: none; }

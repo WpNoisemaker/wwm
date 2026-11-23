@@ -208,7 +208,16 @@
 		if (o) { var s = d.getElementById(o.dataset.open); if (s) { e.preventDefault(); openS(s); } return; }
 		if (e.target.closest('[data-close]') || e.target === scrim) { e.preventDefault(); closeS(); }
 	});
-	d.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeS(); } });
+	d.addEventListener('keydown', function (e) {
+		if (e.key === 'Escape') { closeS(); return; }
+		// An open sheet is a dialog: Tab goes round inside it, never to the page behind.
+		if (e.key !== 'Tab' || !openSheet) { return; }
+		var f = [].filter.call(openSheet.querySelectorAll('a[href], button:not([disabled]), input:not([type=hidden]):not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'), function (x) { return x.offsetParent !== null && !x.closest('[hidden]'); });
+		if (!f.length) { return; }
+		var first = f[0], last = f[f.length - 1], a = d.activeElement;
+		if (e.shiftKey && (a === first || !openSheet.contains(a))) { e.preventDefault(); last.focus(); }
+		else if (!e.shiftKey && (a === last || !openSheet.contains(a))) { e.preventDefault(); first.focus(); }
+	});
 	if (location.hash) {
 		var hs = d.getElementById(location.hash.slice(1)), flash = d.querySelector('.note[role]');
 		if (hs && hs.classList.contains('sheet') && !flash) { openS(hs); }
@@ -352,7 +361,7 @@
 			return;
 		}
 		var cp = e.target.closest('[data-copy]');
-		if (cp) { e.preventDefault(); try { navigator.clipboard.writeText(cp.dataset.copy); toast('Copied'); } catch (er) {} }
+		if (cp) { e.preventDefault(); try { navigator.clipboard.writeText(cp.dataset.copy); toast(cp.dataset.copied || 'Copied'); } catch (er) {} }
 		var tt = e.target.closest('[data-toast]'); if (tt) { toast(tt.dataset.toast); }
 	});
 
@@ -977,7 +986,13 @@
 	/* ---------- gifts and spraying by bank transfer: the details, then wait for it to land ---------- */
 	var gf = d.querySelector('[data-give-form]');
 	if (gf) {
-		var gStep = function (n) { gf.querySelectorAll('[data-step]').forEach(function (s) { s.hidden = s.getAttribute('data-step') !== String(n); }); var sh = gf.closest('.sheet'); if (sh) { sh.classList.toggle('is-paying', n > 1); } };
+		var gStep = function (n) {
+			gf.querySelectorAll('[data-step]').forEach(function (s) { s.hidden = s.getAttribute('data-step') !== String(n); });
+			var sh = gf.closest('.sheet'); if (sh) { sh.classList.toggle('is-paying', n > 1); }
+			// Focus goes to what just appeared, so a screen reader reads it and the keyboard carries on from there.
+			var to = n === 1 ? gf.querySelector('input[name=name]') : gf.querySelector('[data-focus-step="' + n + '"]');
+			if (to) { setTimeout(function () { to.focus({ preventScroll: false }); }, 30); }
+		};
 		var gSet = function (k, v) {
 			gf.querySelectorAll('[data-g="' + k + '"]').forEach(function (el) { el.textContent = v; });
 			gf.querySelectorAll('[data-g-copy="' + k + '"]').forEach(function (b) { b.setAttribute('data-copy', v.replace(/[₦,]/g, '')); });
@@ -998,6 +1013,9 @@
 				.then(function (j) {
 					if (!j.ok) { toast(j.msg || 'That did not work. Try again.'); return; }
 					gSet('amount', j.amount); gSet('number', j.number); gSet('bank', j.bank); gSet('name', j.name); gSet('code', j.code);
+					// Read the account number digit by digit, not as one big number.
+					var num = gf.querySelector('[data-g="number"]'); if (num) { num.setAttribute('aria-label', j.number.split('').join(' ')); }
+					gf.querySelector('[data-focus-step="2"]').setAttribute('aria-label', 'Transfer exactly ' + j.amount + ' to account ' + j.number.split('').join(' ') + ', ' + j.bank + ', ' + j.name);
 					// The amount with its kobo picked out, since the kobo is what matches the transfer to this guest.
 					var parts = j.amount.split('.'), ah = gf.querySelector('[data-g="amount-html"]');
 					ah.textContent = parts[0]; var kb = d.createElement('span'); kb.className = 'give__kobo'; kb.textContent = '.' + (parts[1] || '00'); ah.appendChild(kb);
@@ -1014,6 +1032,7 @@
 							if (s.status !== 'paid') { return; }
 							clearInterval(gPoll);
 							gSet('done', (s.kind === 'spray' ? 'You sprayed ' : 'Your gift of ') + s.amount + (s.kind === 'spray' ? '. You are on the list.' : ' is with the couple. Thank you.'));
+							var big = gf.querySelector('[data-focus-step="3"]'); if (big) { big.setAttribute('aria-label', 'Received! ' + gf.querySelector('[data-g="done"]').textContent); }
 							gStep(3); rain(); buzz();
 							d.dispatchEvent(new CustomEvent('wwm:given'));
 						}).catch(function () {});

@@ -594,20 +594,20 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 				<p class="after-pill">You pay by bank transfer, from any Nigerian bank app.</p>
 			</div>
 			<div data-step="2" hidden>
-				<span class="give__k">Transfer exactly</span>
-				<div class="give__row"><p class="give__amt" data-g="amount-html"></p><button class="pill pill--sm pill--glass give__copy" type="button" data-g-copy="amount"><?= icon('copy') ?>Copy</button></div>
+				<h3 class="give__k give__h" tabindex="-1" data-focus-step="2">Transfer exactly</h3>
+				<div class="give__row"><p class="give__amt" data-g="amount-html"></p><button class="pill pill--sm pill--glass give__copy" type="button" data-g-copy="amount" aria-label="Copy the amount" data-copied="Amount copied"><?= icon('copy') ?>Copy</button></div>
 				<p class="give__hint"><?= icon('info') ?><span>Include the <b data-g="kobo"></b> kobo. It is how we know this transfer is yours.</span></p>
-				<div class="give__acct">
-					<div class="give__row"><div><span class="give__k">Account number</span><b class="give__num" data-g="number"></b></div><button class="pill pill--sm pill--glass give__copy" type="button" data-g-copy="number"><?= icon('copy') ?>Copy</button></div>
-					<div><span class="give__k">Bank</span><b data-g="bank"></b></div>
-					<div><span class="give__k">Account name</span><b data-g="name"></b></div>
-				</div>
+				<dl class="give__acct">
+					<div class="give__row"><div><dt class="give__k">Account number</dt><dd class="give__num" data-g="number"></dd></div><button class="pill pill--sm pill--glass give__copy" type="button" data-g-copy="number" aria-label="Copy the account number" data-copied="Account number copied"><?= icon('copy') ?>Copy</button></div>
+					<div><dt class="give__k">Bank</dt><dd data-g="bank"></dd></div>
+					<div><dt class="give__k">Account name</dt><dd data-g="name"></dd></div>
+				</dl>
 				<p class="give__hint give__hint--soft">If your bank asks for a description, write <b data-g="code"></b>.</p>
 				<p class="give__wait" role="status" aria-live="polite"><span class="give__dot" aria-hidden="true"></span><span data-g="wait">Waiting for your transfer. Keep this page open.</span></p>
 				<button class="linkish give__again" type="button" data-give-again hidden>Start again</button>
 			</div>
 			<div data-step="3" hidden class="give__done">
-				<p class="give__big" aria-live="polite">Received!</p>
+				<p class="give__big" tabindex="-1" data-focus-step="3">Received!</p>
 				<p data-g="done"></p>
 				<button class="pill pill--block" type="button" data-close>Done</button>
 			</div>
