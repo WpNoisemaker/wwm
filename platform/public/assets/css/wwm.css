@@ -377,8 +377,8 @@ a.item:active { transform: scale(.98); }
 .post__topic { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); padding: 5px 12px; border-radius: 999px; background: rgba(255, 255, 255, .18); font-size: 11.5px; white-space: nowrap; }
 /* the diagonal see-through watermark, drawn into the card's own background so it always follows the
    rounded corners (an oversized rotated layer relied on clipping that iOS Safari does not always do) */
-.post, .compose { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='150'%3E%3Ctext x='130' y='82' text-anchor='middle' transform='rotate%28-28 130 75%29' font-family='Urbanist%2Csans-serif' font-weight='300' font-size='22' fill='white' fill-opacity='.09'%3EWedding Websites %26amp%3B More%3C/text%3E%3C/svg%3E"); }
-.c-cream, .compose-form:has(input[value="cream"]:checked) .compose { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='150'%3E%3Ctext x='130' y='82' text-anchor='middle' transform='rotate%28-28 130 75%29' font-family='Urbanist%2Csans-serif' font-weight='300' font-size='22' fill='%232E3A46' fill-opacity='.09'%3EWedding Websites %26amp%3B More%3C/text%3E%3C/svg%3E"); }
+.post, .compose { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='150'%3E%3Ctext x='130' y='82' text-anchor='middle' transform='rotate%28-28 130 75%29' font-family='Urbanist%2Csans-serif' font-weight='300' font-size='22' fill='white' fill-opacity='.045'%3EWedding Websites %26amp%3B More%3C/text%3E%3C/svg%3E"); }
+.c-cream, .compose-form:has(input[value="cream"]:checked) .compose { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='150'%3E%3Ctext x='130' y='82' text-anchor='middle' transform='rotate%28-28 130 75%29' font-family='Urbanist%2Csans-serif' font-weight='300' font-size='22' fill='%232E3A46' fill-opacity='.045'%3EWedding Websites %26amp%3B More%3C/text%3E%3C/svg%3E"); }
 .post.is-back { transform: translateY(14px) scale(.94); opacity: .55; }
 .post.is-gone-l { transform: translateX(-120%) rotate(-10deg); opacity: 0; }
 .post.is-gone-r { transform: translateX(120%) rotate(10deg); opacity: 0; }
@@ -1911,3 +1911,48 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .near__where b { color: var(--ink); font-weight: 400; }
 .near__body.is-in { animation: nearin .45s var(--ease); }
 @keyframes nearin { from { opacity: 0; transform: translateY(8px); } }
+
+/* ---------- swiping: a nudge until the visitor has tried it, and swiping inside a post ---------- */
+.post.is-nudge { animation: postnudge 2.6s var(--ease) .3s 1 both; }
+@keyframes postnudge {
+	0%, 100% { transform: none; }
+	22%, 30% { transform: translateX(-44%) rotate(-6deg); }
+	52% { transform: none; }
+	68%, 74% { transform: translateX(-20%) rotate(-3deg); }
+}
+.swipe-cta { position: absolute; left: 50%; bottom: 64px; z-index: 200; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 18px;
+	border-radius: 999px; background: rgba(255, 255, 255, .92); color: #1E242E; font-size: 13.5px; font-weight: 500; white-space: nowrap; pointer-events: none;
+	box-shadow: 0 0 0 0 rgba(255, 255, 255, .55); animation: swipeglow 1.6s ease-out infinite, swipein .4s var(--ease); }
+.swipe-cta .ico { width: 16px; height: 16px; animation: swipehand 1.6s var(--ease) infinite; }
+.swipe-cta.is-out { opacity: 0; transition: opacity .35s; }
+@keyframes swipeglow { 0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, .55); } 70% { box-shadow: 0 0 0 16px rgba(255, 255, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); } }
+@keyframes swipehand { 0%, 100% { transform: translateX(4px); } 50% { transform: translateX(-6px); } }
+@keyframes swipein { from { opacity: 0; transform: translate(-50%, 8px); } }
+@media (prefers-reduced-motion: reduce) { .post.is-nudge, .swipe-cta, .swipe-cta .ico { animation: none; } }
+.post-solo { touch-action: pan-y; }
+.post-solo .post { transition: transform .35s var(--ease), opacity .35s var(--ease); cursor: grab; }
+.post-solo .post.is-gone-l { transform: translateX(-120%) rotate(-10deg); opacity: 0; }
+.post-solo .post.is-gone-r { transform: translateX(120%) rotate(10deg); opacity: 0; }
+.post-solo .post.is-dragging { transition: none; cursor: grabbing; }
+
+/* ---------- wedding bunting: African flags across the top of the front page ---------- */
+.hero--brand { position: relative; }
+.bunting { position: relative; height: 74px; margin: -6px calc(-1 * var(--gutter)) 6px; pointer-events: none; overflow: hidden; }
+.bunting__line { position: absolute; inset: 0 0 auto; width: 100%; height: 60px; overflow: visible; }
+.bunting__line path { fill: none; stroke: var(--ink-3); stroke-width: 1.2; vector-effect: non-scaling-stroke; opacity: .7; }
+.bunting__flags { list-style: none; margin: 0; padding: 0; }
+.bunting__flags li { position: absolute; left: var(--x); top: calc(var(--y) * 1px); width: 26px; margin-left: -13px; transform-origin: 50% 0;
+	animation: flagsway var(--s) ease-in-out var(--d) infinite alternate; }
+.bunting__flags li::before { content: ""; position: absolute; left: 50%; top: -4px; width: 1px; height: 5px; background: var(--ink-3); opacity: .7; }
+.bunting__flags svg { display: block; width: 26px; height: 17.33px; border-radius: 2px; box-shadow: 0 0 0 .6px rgba(255, 255, 255, .35), 0 6px 10px -6px rgba(0, 0, 0, .55); }
+@keyframes flagsway { from { transform: rotate(-7deg) skewY(-2deg); } to { transform: rotate(7deg) skewY(2deg); } }
+@media (prefers-reduced-motion: reduce) { .bunting__flags li { animation: none; } }
+/* a phone holds eight, so they never crowd */
+@media (max-width: 639px) {
+	.bunting { height: 62px; }
+	.bunting__flags li:nth-child(3n) { display: none; }
+	.bunting__flags li, .bunting__flags svg { width: 22px; }
+	.bunting__flags li { margin-left: -11px; }
+	.bunting__flags svg { height: 14.67px; }
+}
+@media (min-width: 960px) { .bunting { height: 84px; margin-top: -10px; } .bunting__flags li, .bunting__flags svg { width: 30px; } .bunting__flags li { margin-left: -15px; } .bunting__flags svg { height: 20px; } }

@@ -56,6 +56,7 @@ final class CommunityController
             'liked'   => (bool) Db::val("SELECT 1 FROM likes WHERE subject = 'talk' AND subject_id = ? AND voter = ?", [(int) $t['id'], self::key()]),
             't'       => $t,
             'replies' => Db::all("SELECT * FROM talk_replies WHERE talk_id = ? AND status = 'live' ORDER BY created_at", [$t['id']]),
+            'nav'     => self::neighbours((int) $t['id']),
         ]);
     }
 
@@ -150,5 +151,21 @@ final class CommunityController
     {
         header('Location: ' . App::url($p));
         exit;
+    }
+
+    /** The posts either side of this one, in the order the feed showed them, for swiping on. */
+    private static function neighbours(int $id): array
+    {
+        $sort = ($_GET['s'] ?? 'top') === 'new' ? 'new' : 'top';
+        $ids = array_map('intval', array_column(Talk::feed('', $sort, 1000), 'id'));
+        $i = array_search($id, $ids, true);
+        if ($i === false || count($ids) < 2) {
+            return ['prev' => '', 'next' => ''];
+        }
+        $url = static fn (int $n): string => App::url('/community/' . $n . ($sort === 'new' ? '?s=new' : ''));
+        return [
+            'prev' => $i > 0 ? $url($ids[$i - 1]) : '',
+            'next' => $url($ids[($i + 1) % count($ids)]),   // after the last, it starts again
+        ];
     }
 }

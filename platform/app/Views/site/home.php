@@ -18,6 +18,7 @@ $free  = $samples['free'] ?? null;
 $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 ?>
 <section class="hero hero--brand wrap" id="start">
+	<?= View::partial('partials/bunting') ?>
 	<div class="hero__head hero__head--show">
 		<p class="greet" aria-label="Congratulations, in nine languages">
 			<?php foreach (['Barka da aure!', 'Ẹ kú ayẹyẹ!', 'Hongera kwa harusi!', 'Ayekoo!', 'Una go last o!', 'Halala!', 'Félicitations!', 'Congratulations!', 'Nnọọ!'] as $gi => $g): ?>

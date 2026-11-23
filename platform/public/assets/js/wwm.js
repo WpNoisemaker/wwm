@@ -225,6 +225,25 @@
 		g.addEventListener('pointerup', up); g.addEventListener('pointercancel', up);
 	});
 
+	/* ---------- a swipe nudge: the first card slides half away and back, until they have swiped once ---------- */
+	var swiped = function () { try { return localStorage.getItem('wwm-swiped') === '1'; } catch (er) { return false; } };
+	var markSwiped = function () { try { localStorage.setItem('wwm-swiped', '1'); } catch (er) {} d.querySelectorAll('.swipe-cta').forEach(function (c) { c.classList.add('is-out'); setTimeout(function () { c.remove(); }, 400); }); };
+	var nudge = function (host, card) {
+		if (swiped() || !card || !('IntersectionObserver' in W) || matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
+		var io = new IntersectionObserver(function (en) {
+			if (!en[0].isIntersecting) { return; }
+			io.disconnect();
+			card.classList.remove('is-nudge'); void card.offsetWidth; card.classList.add('is-nudge');
+			card.addEventListener('animationend', function () { card.classList.remove('is-nudge'); }, { once: true });
+			var cta = d.createElement('span'); cta.className = 'swipe-cta'; cta.setAttribute('aria-hidden', 'true');
+			cta.innerHTML = '<svg class="ico"><use href="#i-back"/></svg>Swipe for the next one';
+			if (getComputedStyle(host).position === 'static') { host.style.position = 'relative'; }
+			host.appendChild(cta);
+			setTimeout(function () { cta.classList.add('is-out'); setTimeout(function () { cta.remove(); }, 400); }, 6000);
+		}, { threshold: 0.6 });
+		io.observe(host);
+	};
+
 	/* ---------- the community deck: swipe to move, buttons to like and save ---------- */
 	d.querySelectorAll('[data-deck]').forEach(function (deck) {
 		var cards = Array.prototype.slice.call(deck.querySelectorAll('.post'));
@@ -250,6 +269,7 @@
 			d.querySelectorAll('[data-count]').forEach(function (n) { n.textContent = fmt(+(front.dataset[n.dataset.count] || 0)); });
 		}
 		function go(dir) {
+			markSwiped();
 			var n = i + dir;
 			// A short deck (the homepage) hands over to the full community after its last post.
 			if (n >= cards.length && deck.dataset.more) {
@@ -303,6 +323,7 @@
 			});
 		}
 		lay();
+		nudge(deck, cards[0]);
 	});
 
 	/* ---------- forms: one tap, one submission, a visible "working" state ---------- */
@@ -382,6 +403,38 @@
 		if (!e.target.closest('[data-photo-add]')) { return; }
 		var i = d.querySelector('[data-photo-input]'); if (i) { e.preventDefault(); i.closest('form').scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(function () { i.click(); }, 450); }
 	});
+
+	/* ---------- inside a post: swipe, or use the arrows, for the next one ---------- */
+	var solo = d.querySelector('[data-post-swipe]');
+	if (solo) {
+		var sCard = solo.querySelector('.post'), sNext = solo.getAttribute('data-next'), sPrev = solo.getAttribute('data-prev'), sx = 0, sy = 0, sdx = 0, sOn = false;
+		var sGo = function (dir) {
+			var to = dir > 0 ? sNext : sPrev;
+			if (!to) { sCard.style.transform = ''; toast(dir > 0 ? 'That was the last post' : 'This is the first post'); return; }
+			markSwiped(); buzz();
+			sCard.classList.remove('is-dragging'); sCard.style.transform = '';
+			sCard.classList.add(dir > 0 ? 'is-gone-l' : 'is-gone-r');
+			setTimeout(function () { location.href = to; }, 240);
+		};
+		sCard.addEventListener('pointerdown', function (e) { if (e.button && e.button !== 0) { return; } sOn = true; sx = e.clientX; sy = e.clientY; sdx = 0; sCard.classList.add('is-dragging'); });
+		sCard.addEventListener('pointermove', function (e) {
+			if (!sOn) { return; }
+			sdx = e.clientX - sx;
+			if (Math.abs(e.clientY - sy) > Math.abs(sdx) && Math.abs(sdx) < 12) { return; }
+			sCard.style.transform = 'translateX(' + sdx + 'px) rotate(' + (sdx / 26) + 'deg)';
+		});
+		var sEnd = function () {
+			if (!sOn) { return; }
+			sOn = false; sCard.classList.remove('is-dragging');
+			if (sdx < -80) { sGo(1); } else if (sdx > 80) { sGo(-1); } else { sCard.style.transform = ''; }
+		};
+		sCard.addEventListener('pointerup', sEnd); sCard.addEventListener('pointercancel', sEnd); sCard.addEventListener('pointerleave', sEnd);
+		d.addEventListener('keydown', function (e) {
+			if (e.target.closest('input, textarea, select, [contenteditable]')) { return; }
+			if (e.key === 'ArrowRight') { sGo(1); } else if (e.key === 'ArrowLeft') { sGo(-1); }
+		});
+		nudge(solo, sCard);
+	}
 
 	/* ---------- weddings near you: only after a tap, or if the visitor allowed it before ---------- */
 	var near = d.querySelector('[data-near]');

@@ -2,7 +2,7 @@
 <div class="page wrap">
 	<div class="thread">
 		<div class="thread__post">
-			<div class="post-solo">
+			<div class="post-solo" data-post-swipe data-next="<?= e($nav['next']) ?>" data-prev="<?= e($nav['prev']) ?>">
 				<article class="post <?= e(talk_colour((string) $t['bg'])) ?>">
 					<span class="post__topic"><?= e(Talk::topic((string) $t['topic'])) ?></span>
 					<div class="post__body"><p class="post__text<?= mb_strlen((string) $t['body']) > 150 ? ' post__text--long' : '' ?>"><?= nl2br(e((string) $t['body'])) ?></p><span class="post__mark"><i aria-hidden="true">&amp;</i><?= e(Share::host()) ?></span></div>
@@ -10,12 +10,14 @@
 				</article>
 			</div>
 			<div class="actions">
+				<div class="act"><?php if ($nav['prev'] !== ''): ?><a class="cbtn cbtn--lg" href="<?= e($nav['prev']) ?>" aria-label="Previous post" data-post-prev><?= icon('back') ?></a><?php else: ?><a class="cbtn cbtn--lg" href="<?= e(App::url('/community')) ?>" aria-label="Back to the community"><?= icon('back') ?></a><?php endif; ?><span class="act__l">Back</span></div>
 				<form method="post" action="<?= e(App::url('/community/' . $t['id'] . '/like')) ?>" class="act">
 					<?= Guard::field() ?>
 					<button class="cbtn cbtn--lg<?= $liked ? ' is-on' : '' ?>" type="submit" aria-label="Love this post" aria-pressed="<?= $liked ? 'true' : 'false' ?>"><?= icon('heart') ?><span class="act__n"><?= (int) $t['likes'] ?></span></button><span class="act__l">Love</span>
 				</form>
 				<div class="act"><a class="cbtn cbtn--lg" href="#reply" aria-label="Write a reply"><?= icon('reply') ?><span class="act__n"><?= (int) $t['replies'] ?></span></a><span class="act__l">Reply</span></div>
 				<div class="act"><button class="cbtn cbtn--lg" type="button" data-share aria-label="Share this post"><?= icon('share') ?></button><span class="act__l">Share</span></div>
+				<?php if ($nav['next'] !== ''): ?><div class="act"><a class="cbtn cbtn--lg" href="<?= e($nav['next']) ?>" aria-label="Next post" data-post-next><?= icon('next') ?></a><span class="act__l">Next</span></div><?php endif; ?>
 			</div>
 		</div>
 		<div class="thread__replies">
