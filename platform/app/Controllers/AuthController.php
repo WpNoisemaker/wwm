@@ -149,7 +149,8 @@ final class AuthController
                     "Hello,\n\nSomebody asked to reset the password on your Wedding Websites & More account.\n"
                     . "To choose a new one, open this link:\n\n" . $url . "\n\n"
                     . "It works once and expires in 2 hours. If this was not you, ignore this email "
-                    . "and nothing will change.\n\n— Wedding Websites & More\n"
+                    . "and nothing will change.\n\n— Wedding Websites & More\n",
+                    ['button' => ['Choose a new password', $url], 'why' => 'You get this email because someone asked to reset the password on this account.']
                 );
                 // In debug the link is also shown on screen, so the flow can be tested on a machine
                 // that cannot send mail. A live site never shows it.

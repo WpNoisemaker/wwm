@@ -102,6 +102,7 @@ $r->get('/hq/drive/connect',    [HqController::class, 'driveConnect']);
 $r->get('/hq/drive/callback',   [HqController::class, 'driveCallback']);
 $r->post('/hq/drive/folder/{id:\d+}', [HqController::class, 'driveFolder']);
 $r->any('/hq/market',           [HqController::class, 'market']);
+$r->get('/hq/emails',           [HqController::class, 'emails']);
 $r->any('/hq/categories',       [HqController::class, 'categories']);
 $r->get('/hq/blog',             [HqController::class, 'blog']);
 $r->any('/hq/blog/new',         [HqController::class, 'blogEdit']);

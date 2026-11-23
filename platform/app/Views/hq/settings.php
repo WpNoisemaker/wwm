@@ -34,6 +34,7 @@
 				<h2 class="h3">Check that email works</h2>
 				<p class="help">Sends a test to <?= e((string) Auth::user()['email']) ?>. If it does not arrive, leave confirmation off.</p>
 				<button class="pill pill--glass pill--block" type="submit">Send me a test email</button>
+				<a class="pill pill--glass pill--block" href="<?= e(App::url('/hq/emails')) ?>"><?= icon('mail') ?>See what our emails look like</a>
 			</form>
 			<div class="form glass glass--plain glass--tight" id="drive">
 				<div class="row row--between"><h2 class="h3">Google Drive for guest photos</h2><?php if (Drive::connected()): ?><span class="badge badge--solid"><?= icon('check') ?>Connected</span><?php endif; ?></div>

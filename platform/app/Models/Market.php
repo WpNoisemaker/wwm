@@ -228,7 +228,8 @@ final class Market
                 }
                 Mailer::send((string) $u['email'], ($invoiceId ? $who . ' sent you an invoice' : 'New message from ' . $who),
                     "Hello " . ($u['name'] ?: 'there') . ",\n\n" . $who . ($invoiceId ? " sent you an invoice:\n\n" : " wrote:\n\n") . mb_strimwidth($body, 0, 600, '…')
-                    . "\n\nReply here: " . $url . "\n\nWe never hold money for sellers. Pay only through the seller's own invoice or link, and be sure who you are paying.");
+                    . "\n\nReply here: " . $url . "\n\nWe never hold money for sellers. Pay only through the seller's own invoice or link, and be sure who you are paying.",
+                    ['button' => [$invoiceId ? 'See it in the chat' : 'Read and reply', $url], 'quote' => mb_strimwidth($body, 0, 600, '…'), 'why' => 'You get this email because of a chat on the Wedding Websites & More marketplace.']);
             });
         }
         return $id;
@@ -350,7 +351,8 @@ final class Market
             default => null,
         };
         if ($mail) {
-            App::later(static fn () => Mailer::send((string) $u['email'], $mail[0], $mail[1]));
+            $btn = $to === 'active' ? ['button' => ['Open your shop', App::url('/account/shop')]] : [];
+            App::later(static fn () => Mailer::send((string) $u['email'], $mail[0], $mail[1], $btn));
         }
     }
 }

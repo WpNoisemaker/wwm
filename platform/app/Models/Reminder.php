@@ -108,7 +108,8 @@ final class Reminder
                 Mailer::send((string) $r['email'], $names . ': the livestream link is ready',
                     "The livestream for {$names} is ready" . ($when !== '' ? ", starting {$when}" : '') . ".\n\n"
                     . "Watch it on their page:\n{$page}\n\nWe will send one more reminder fifteen minutes before it starts.\n\n"
-                    . "Stop these reminders: {$stop}\n\nWedding Websites & More");
+                    . "Stop these reminders: {$stop}\n\nWedding Websites & More",
+                    ['button' => ['Watch the livestream', $page], 'unsub' => $stop, 'why' => 'You asked for a reminder about ' . $names . '’s livestream.']);
                 $sent++;
                 continue;
             }
@@ -116,7 +117,8 @@ final class Reminder
                 Db::run('UPDATE live_reminders SET soon_sent = ? WHERE id = ?', [md5((string) $start), $r['rid']]);
                 Mailer::send((string) $r['email'], $names . ': live in fifteen minutes',
                     "{$names} go live " . (time() >= $start ? 'now' : 'in about fifteen minutes') . ".\n\nWatch here:\n{$page}\n\n"
-                    . "Stop these reminders: {$stop}\n\nWedding Websites & More");
+                    . "Stop these reminders: {$stop}\n\nWedding Websites & More",
+                    ['button' => ['Watch now', $page], 'unsub' => $stop, 'why' => 'You asked for a reminder about ' . $names . '’s livestream.']);
                 $sent++;
             }
         }

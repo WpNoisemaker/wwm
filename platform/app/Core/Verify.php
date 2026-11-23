@@ -59,7 +59,9 @@ final class Verify
             . "Please confirm this is your email address by opening this link:\n\n"
             . App::url('/verify/' . $tok) . "\n\n"
             . "It works once and expires in 3 days. If you did not make an account, ignore this email.\n\n"
-            . "— Wedding Websites & More\n"
+            . "— Wedding Websites & More\n",
+            ['button' => ['Confirm my email', App::url('/verify/' . $tok)], 'title' => 'Confirm your email' . ($first !== '' ? ', ' . $first : ''),
+             'why' => 'You get this email because this address was used to make an account on Wedding Websites & More.']
         );
     }
 

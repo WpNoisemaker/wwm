@@ -191,7 +191,8 @@ final class HqController
         $ok = Mailer::send(
             (string) $me['email'],
             'A test email from your site',
-            "If you can read this, your site can send email.\n\nIt is safe to switch on email confirmation.\n"
+            "If you can read this, your site can send email.\n\nIt is safe to switch on email confirmation.\n",
+            ['button' => ['Open HQ', App::url('/hq/settings')]]
         );
         Guard::flash(
             $ok ? 'ok' : 'bad',
@@ -343,7 +344,8 @@ final class HqController
                 $sent = Mailer::send($email, 'You have been added to the Wedding Websites & More team',
                     "Hello" . ($name !== '' ? ' ' . $name : '') . ",\n\nYou now have staff access to Wedding Websites & More.\n"
                     . ($new ? "Choose your password here (the link works once, for 7 days):\n\n" : "Sign in as usual, or set a new password here (the link works once, for 7 days):\n\n")
-                    . $link . "\n\nThen open HQ: " . App::url('/hq') . "\n\n— Wedding Websites & More\n");
+                    . $link . "\n\nThen open HQ: " . App::url('/hq') . "\n\n— Wedding Websites & More\n",
+                    ['button' => [$new ? 'Choose your password' : 'Set a new password', $link], 'title' => 'Welcome to the team']);
                 Guard::flash('ok', ($new ? 'Added. ' : 'Moved onto staff. ') . ($sent ? 'We emailed them a link to set their password.' : 'Email could not be sent from this server, so send them this link yourself: ' . $link));
             } elseif ($do === 'save') {
                 $uid = (int) ($_POST['id'] ?? 0);
@@ -600,5 +602,31 @@ final class HqController
             exit;
         }
         $this->show('categories', ['title' => 'Categories', 'rows' => Market::categories()]);
+    }
+
+    /** What the site's emails look like, with sample words. ?k= shows one on its own, as sent. */
+    public function emails(): void
+    {
+        $this->gate('settings');
+        $u = App::url('/');
+        $samples = [
+            'chat'   => ['New message from AbujaCarhire', "Hello Ada,\n\nAbujaCarhire wrote:\n\nYes, the Range Rover is free on 14 December. Full day with a driver, ribbons and flowers included. I will send you an invoice with my payment link.\n\nReply here: {$u}account/messages\n\nWe never hold money for sellers. Pay only through the seller's own invoice or link, and be sure who you are paying.",
+                         ['button' => ['Read and reply', $u . 'account/messages'], 'quote' => 'Yes, the Range Rover is free on 14 December. Full day with a driver, ribbons and flowers included. I will send you an invoice with my payment link.', 'why' => 'You get this email because of a chat on the Wedding Websites & More marketplace.']],
+            'live'   => ['Chidi & Amaka: the livestream link is ready', "The livestream for Chidi & Amaka is ready, starting Saturday 19 December, 11:00am.\n\nWatch it on their page:\n{$u}w/chidi-amaka#live\n\nWe will send one more reminder fifteen minutes before it starts.\n\nStop these reminders: {$u}remind/stop/sample",
+                         ['button' => ['Watch the livestream', $u . 'w/chidi-amaka#live'], 'unsub' => $u . 'remind/stop/sample', 'why' => 'You asked for a reminder about Chidi & Amaka’s livestream.']],
+            'reset'  => ['Reset your password', "Hello,\n\nSomebody asked to reset the password on your Wedding Websites & More account.\nTo choose a new one, open this link:\n\n{$u}reset/sample\n\nIt works once and expires in 2 hours. If this was not you, ignore this email and nothing will change.",
+                         ['button' => ['Choose a new password', $u . 'reset/sample'], 'why' => 'You get this email because someone asked to reset the password on this account.']],
+            'verify' => ['Confirm your email', "Hello Ada,\n\nPlease confirm this is your email address by opening this link:\n\n{$u}verify/sample\n\nIt works once and expires in 3 days. If you did not make an account, ignore this email.",
+                         ['button' => ['Confirm my email', $u . 'verify/sample'], 'title' => 'Confirm your email, Ada']],
+            'paused' => ['Your shop is paused while we verify Your Business', "Hello,\n\nWe have paused Your Business on Wedding Websites & More while we verify the business by hand. Your listings are hidden until then.\n\nTo verify, reply to this email with: your full name, a phone number we can call, your business address, and a photo of a government ID or your CAC certificate. We will look at it and let you know.", []],
+        ];
+        $k = (string) ($_GET['k'] ?? '');
+        if (isset($samples[$k])) {
+            [$subj, $body, $o] = $samples[$k];
+            header('Content-Type: text/html; charset=utf-8');
+            echo Mailer::html($subj, $body, $o);
+            return;
+        }
+        $this->show('emails', ['title' => 'Emails', 'samples' => $samples]);
     }
 }
