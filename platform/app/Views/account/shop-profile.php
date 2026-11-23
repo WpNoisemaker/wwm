@@ -42,6 +42,37 @@ $projects = $v ? Market::projects($v) : [];
 				<p class="help">Save your profile and it appears in Vendors, with your listings.</p>
 			<?php endif; ?>
 			<p class="help"><?= $v && (int) $v['verified'] ? 'Verified by Wedding Websites &amp; More.' : 'HQ verifies sellers once they have checked the business.' ?></p>
+			<?php if ($v): $prem = Market::premium($v); $lk = Market::look($v); if (!$prem) { $lk = array_merge($lk, ['primary' => '#0F5C4D', 'accent' => '#E8B04B', 'font' => 'playfair', 'on' => '#FFFFFF']); }
+				$gf = array_values(array_filter(array_column(Market::FONTS, 2))); $logo = $lk['logo'] !== '' ? $lk['logo'] : (string) $v['logo']; $price = (int) Site::setting('seller_premium_price', '0'); $wa = preg_replace('/\D/', '', Site::setting('whatsapp', '')); ?>
+			<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=<?= e(implode('&family=', $gf)) ?>&display=swap">
+			<div class="form glass glass--plain glass--tight inv-look" id="look">
+				<div class="lock-row"><h2 class="h3">Your invoice look</h2><?php if ($prem): ?><span class="promo__tag"><?= icon('s-crown') ?>Premium</span><?php endif; ?></div>
+				<div class="inv-mini" data-inv-mini style="--ip: <?= e($lk['primary']) ?>; --ia: <?= e($lk['accent']) ?>; --io: <?= e($lk['on']) ?>; --if: <?= e(Market::FONTS[$lk['font']][1]) ?>">
+					<div class="inv-mini__band"><?= $logo !== '' ? sq($logo, '', 'inv-mini__logo') : '' ?><b><?= e((string) $v['name']) ?></b><small>Invoice #A1B2C3</small></div>
+					<div class="inv-mini__body"><p><span>Your service</span><b>₦150,000</b></p><p class="inv-mini__total"><span>Total</span><b>₦150,000</b></p><span class="inv-mini__btn">Pay now</span></div>
+				</div>
+				<?php if ($prem): ?>
+					<form method="post" action="<?= e(App::url('/account/shop')) ?>" enctype="multipart/form-data" class="form">
+						<?= Guard::field() ?><input type="hidden" name="do" value="look">
+						<p class="help">Every invoice, payment link and receipt you send in the chat carries this look.</p>
+						<div class="form-grid form-grid--2">
+							<label class="field"><span>Main colour</span><input type="color" name="primary" value="<?= e($lk['primary']) ?>" data-inv="primary"></label>
+							<label class="field"><span>Second colour</span><input type="color" name="accent" value="<?= e($lk['accent']) ?>" data-inv="accent"></label>
+							<label class="field span-2"><span>Font</span><select class="input" name="font" data-inv="font"><?php foreach (Market::FONTS as $fk => [$fn, $fc]): ?><option value="<?= e($fk) ?>" data-css="<?= e($fc) ?>"<?= $lk['font'] === $fk ? ' selected' : '' ?>><?= e($fn) ?></option><?php endforeach; ?></select></label>
+							<label class="photo-pick span-2"><input type="file" name="inv_logo" accept="image/jpeg,image/png,image/webp" data-photo-input><?= icon('camera') ?><span data-photo-name>Logo for invoices (empty uses your profile logo)</span></label>
+							<?php if ($lk['logo'] !== ''): ?><label class="check span-2"><span>Use my profile logo instead</span><input type="checkbox" name="logo_off" value="1"></label><?php endif; ?>
+						</div>
+						<div class="form-actions"><button class="pill pill--sm" type="submit">Save invoice look</button><button class="pill pill--sm pill--glass" type="submit" name="reset" value="1">Back to our standard look</button></div>
+					</form>
+				<?php else: ?>
+					<h3 class="h3">Send invoices in your own colours</h3>
+					<p class="help">Premium sellers choose their colours and font and add their logo. Every invoice, payment link and receipt they send then looks like it came from their own shop.</p>
+					<?php if ($price): ?><p><b><?= money(number_format($price)) ?></b> a month</p><?php endif; ?>
+					<?php if ($wa !== ''): ?><a class="pill pill--block" href="https://wa.me/<?= e($wa) ?>?text=<?= rawurlencode('Hello, I sell on your marketplace as ' . $v['name'] . '. I would like Premium for my invoices.') ?>" target="_blank" rel="noopener"><?= icon('chat') ?>Ask us about Premium</a>
+					<?php else: ?><a class="pill pill--block" href="mailto:<?= e(Site::setting('email', '')) ?>?subject=<?= rawurlencode('Premium for ' . $v['name']) ?>"><?= icon('mail') ?>Ask us about Premium</a><?php endif; ?>
+				<?php endif; ?>
+			</div>
+			<?php endif; ?>
 			<?php if (!empty($reviews)): ?>
 				<h2 class="h3 gap-t-sm" id="reviews">Reviews</h2>
 				<?php foreach ($reviews as $r): ?>

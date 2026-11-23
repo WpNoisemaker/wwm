@@ -32,6 +32,7 @@ $state = ['active' => 'Live', 'suspended' => 'Paused, verifying', 'removed' => '
 				<?php endif; ?>
 				<form method="post" class="form-actions hq-seller__acts">
 					<?= Guard::field() ?><input type="hidden" name="id" value="<?= (int) $v['id'] ?>">
+					<button class="pill pill--sm<?= Market::premium($v) ? '' : ' pill--glass' ?>" name="do" value="premium"><?= Market::premium($v) ? 'Premium: on' : 'Make Premium' ?></button>
 					<?php if ((int) $v['verified']): ?><button class="pill pill--sm pill--glass" name="do" value="unverify">Unverify</button><?php else: ?><button class="pill pill--sm" name="do" value="verify">Verify</button><?php endif; ?>
 					<?php if ($st === 'active'): ?><button class="pill pill--sm pill--glass" name="do" value="suspend" data-confirm="Pause <?= e((string) $v['name']) ?> and email them to verify?">Pause &amp; ask to verify</button><?php else: ?><button class="pill pill--sm" name="do" value="reinstate">Reinstate</button><?php endif; ?>
 					<?php if ($n): ?><button class="pill pill--sm pill--glass" name="do" value="clear">Clear reports</button><?php endif; ?>

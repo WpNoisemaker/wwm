@@ -6,6 +6,7 @@
 			<div class="form-grid form-grid--2">
 				<label class="field"><span>Pro price</span><input class="input" name="pro_price" type="number" min="0" inputmode="numeric" value="<?= e($v['pro_price']) ?>"></label>
 				<label class="field"><span>Premium price</span><input class="input" name="premium_price" type="number" min="0" inputmode="numeric" value="<?= e($v['premium_price']) ?>"></label>
+				<label class="field"><span>Premium seller, per month (own colours, font and logo on invoices). 0 = ask us on WhatsApp</span><input class="input" name="seller_premium_price" type="number" min="0" inputmode="numeric" value="<?= e(Site::setting('seller_premium_price', '0')) ?>"></label>
 			</div>
 			<label class="field"><span>Service fee on cash gifts (%)</span><input class="input" name="fee_gift" type="number" min="0" max="20" step="0.1" value="<?= e($v['fee_gift']) ?>"></label>
 			<p class="help">Applied to Free and Pro pages. Premium and above pay none.</p>

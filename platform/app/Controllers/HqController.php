@@ -78,7 +78,7 @@ final class HqController
         $this->gate('settings');
         if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             Guard::must();
-            foreach (['pro_price', 'premium_price', 'fee_gift', 'email', 'whatsapp'] as $k) {
+            foreach (['pro_price', 'premium_price', 'seller_premium_price', 'fee_gift', 'email', 'whatsapp'] as $k) {
                 if (array_key_exists($k, $_POST)) {
                     Db::run('INSERT INTO settings (k, v) VALUES (?, ?) ON DUPLICATE KEY UPDATE v = VALUES(v)',
                             [$k, trim((string) $_POST[$k])]);
@@ -532,6 +532,10 @@ final class HqController
                     case 'remove':
                         Market::setStatus($v, 'removed');
                         $msg = $v['name'] . ' is removed from the site.';
+                        break;
+                    case 'premium':
+                        Db::update('vendors', ['premium' => (int) Market::premium($v) ? 0 : 1], 'id = ?', [$v['id']]);
+                        $msg = Market::premium($v) ? $v['name'] . ' is no longer a Premium seller.' : $v['name'] . ' is a Premium seller: their invoices can carry their own look.';
                         break;
                     case 'clear':
                         Db::run("UPDATE seller_reports SET status = 'cleared' WHERE vendor_id = ?", [$v['id']]);

@@ -954,4 +954,22 @@
 		setInterval(check, 7000);
 		d.addEventListener('visibilitychange', check);
 	});
+
+	/* ---------- a Premium seller's invoice look: the preview follows the choices ---------- */
+	var invMini = d.querySelector('[data-inv-mini]');
+	if (invMini) {
+		d.querySelectorAll('[data-inv]').forEach(function (c) {
+			var go = function () {
+				var k = c.getAttribute('data-inv');
+				if (k === 'primary') {
+					invMini.style.setProperty('--ip', c.value);
+					var h = c.value.replace('#', ''), r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
+					invMini.style.setProperty('--io', (0.299 * r + 0.587 * g + 0.114 * b) > 160 ? '#1A2030' : '#FFFFFF');
+				}
+				if (k === 'accent') { invMini.style.setProperty('--ia', c.value); }
+				if (k === 'font') { invMini.style.setProperty('--if', c.options[c.selectedIndex].getAttribute('data-css')); }
+			};
+			c.addEventListener('input', go); c.addEventListener('change', go);
+		});
+	}
 })();

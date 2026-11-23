@@ -532,6 +532,25 @@ final class AccountController
                 Guard::flash('ok', 'Your profile is saved.');
                 self::go('/account/shop/profile');
             }
+            if ($do === 'look' && $v) {
+                // A Premium seller's own colours, font and logo on their invoices.
+                if (!Market::premium($v)) {
+                    self::go('/account/shop/profile#look');
+                }
+                $b = Market::look($v);
+                $hex = static fn (string $k, string $d): string => preg_match('/^#[0-9a-f]{6}$/i', (string) ($_POST[$k] ?? '')) ? strtoupper((string) $_POST[$k]) : $d;
+                $b = ['primary' => $hex('primary', $b['primary']), 'accent' => $hex('accent', $b['accent']),
+                      'font' => isset(Market::FONTS[$_POST['font'] ?? '']) ? (string) $_POST['font'] : $b['font'], 'logo' => $b['logo']];
+                if (!empty($_POST['logo_off'])) {
+                    $b['logo'] = '';
+                }
+                if (!empty($_FILES['inv_logo']['name']) && ($img = Images::store($_FILES['inv_logo'], 'sellers/' . $uid))) {
+                    $b['logo'] = $img;
+                }
+                Db::update('vendors', ['brand' => !empty($_POST['reset']) ? null : json_encode($b, JSON_UNESCAPED_SLASHES)], 'id = ?', [$v['id']]);
+                Guard::flash('ok', !empty($_POST['reset']) ? 'Your invoices are back to our standard look.' : 'Saved. Your invoices, payment links and receipts now carry this look.');
+                self::go('/account/shop/profile#look');
+            }
             if ($do === 'reply' && $v) {
                 $rid = (int) ($_POST['review_id'] ?? 0);
                 Db::run("UPDATE reviews SET reply = ? WHERE id = ? AND vendor_id = ? AND (reply IS NULL OR reply = '')",

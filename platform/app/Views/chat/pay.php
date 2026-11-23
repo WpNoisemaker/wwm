@@ -11,10 +11,14 @@ $off = (string) $inv['status'] === 'cancelled';
 $cur = (string) $inv['currency'];
 $host = (string) parse_url((string) $inv['pay_link'], PHP_URL_HOST);
 $label = $paid ? 'Receipt' : ((string) $inv['kind'] === 'link' ? 'Payment link' : 'Invoice');
+// A Premium seller's invoices wear their own colours, font and logo.
+$brand = Market::brand($seller);
 ?>
+<?php if ($brand && $brand['gf'] !== ''): ?><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=<?= e($brand['gf']) ?>&display=swap"><?php endif; ?>
 <div class="page wrap narrow">
 	<?= flashes() ?>
-	<article class="invoice glass">
+	<article class="invoice glass<?= $brand ? ' invoice--brand' : '' ?>"<?= $brand ? ' style="--ip: ' . e($brand['primary']) . '; --ia: ' . e($brand['accent']) . '; --io: ' . e($brand['on']) . '; --if: ' . e($brand['css']) . '"' : '' ?>>
+		<?php if ($brand): ?><div class="invoice__band"><?= $brand['logo'] !== '' ? sq($brand['logo'], '', 'invoice__logo') : '' ?><b><?= e((string) $seller['name']) ?></b></div><?php endif; ?>
 		<header class="invoice__head">
 			<div>
 				<span class="eyebrow"><?= e($label) ?> · #<?= e((string) $inv['code']) ?></span>

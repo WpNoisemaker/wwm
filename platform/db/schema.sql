@@ -262,6 +262,8 @@ CREATE TABLE vendors (
   rating     DECIMAL(3,2) NOT NULL DEFAULT 0,
   reviews    INT UNSIGNED NOT NULL DEFAULT 0,
   projects   JSON         NULL,          -- their three best pieces of work: [title, about, photo]
+  premium    TINYINT(1)   NOT NULL DEFAULT 0,   -- Premium seller: their own look on invoices (HQ switches it on)
+  brand      JSON         NULL,          -- that look: primary, accent, font, logo
   status     VARCHAR(20)  NOT NULL DEFAULT 'active',   -- active, suspended (checking them) or removed
   status_at  DATETIME     NULL,
   wp_id      INT UNSIGNED NULL,

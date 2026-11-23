@@ -8,7 +8,7 @@ declare(strict_types=1);
  */
 final class Upgrade
 {
-    private const STEPS = ['couple-photos-1', 'ibrahim-ummi-photos-1', 'wall-voice-squad-1', 'squad-profiles-1', 'market-2', 'talk-threads-1', 'demo-sprays-1'];
+    private const STEPS = ['couple-photos-1', 'ibrahim-ummi-photos-1', 'wall-voice-squad-1', 'squad-profiles-1', 'market-2', 'talk-threads-1', 'demo-sprays-1', 'seller-premium-1'];
 
     public static function run(): void
     {
@@ -26,6 +26,7 @@ final class Upgrade
                     'squad-profiles-1'     => self::squadProfiles(),
                     'market-2'             => Market::install(),
                     'demo-sprays-1'        => self::demoSprays(),
+                    'seller-premium-1'     => Db::val("SHOW COLUMNS FROM vendors LIKE 'premium'") ?: Db::run('ALTER TABLE vendors ADD COLUMN premium TINYINT(1) NOT NULL DEFAULT 0 AFTER projects, ADD COLUMN brand JSON NULL AFTER premium'),
                     'talk-threads-1'       => Db::val("SHOW COLUMNS FROM talk_replies LIKE 'parent_id'") ?: Db::run('ALTER TABLE talk_replies ADD COLUMN parent_id INT UNSIGNED NULL AFTER talk_id'),
                 };
             } catch (Throwable $e) {

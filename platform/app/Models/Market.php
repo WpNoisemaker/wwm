@@ -355,4 +355,58 @@ final class Market
             App::later(static fn () => Mailer::send((string) $u['email'], $mail[0], $mail[1], $btn));
         }
     }
+
+    /* ------------------------------------------------------------------ Premium sellers */
+
+    /** Fonts a Premium seller can choose for their invoices: key => [name, CSS family, Google Fonts family or '']. */
+    public const FONTS = [
+        'urbanist'   => ['Urbanist (our font)', '"Urbanist", system-ui, sans-serif', ''],
+        'jakarta'    => ['Plus Jakarta Sans', '"Plus Jakarta Sans", system-ui, sans-serif', 'Plus+Jakarta+Sans:wght@400;600'],
+        'jost'       => ['Jost', '"Jost", system-ui, sans-serif', 'Jost:wght@300;400;500;600'],
+        'playfair'   => ['Playfair Display', '"Playfair Display", Georgia, serif', 'Playfair+Display:wght@500;700'],
+        'cormorant'  => ['Cormorant Garamond', '"Cormorant Garamond", Georgia, serif', 'Cormorant+Garamond:wght@500;700'],
+        'cinzel'     => ['Cinzel', '"Cinzel", Georgia, serif', 'Cinzel:wght@500;700'],
+        'dmserif'    => ['DM Serif Display', '"DM Serif Display", Georgia, serif', 'DM+Serif+Display'],
+        'greatvibes' => ['Great Vibes (script)', '"Great Vibes", cursive', 'Great+Vibes'],
+        'marcellus'  => ['Marcellus', '"Marcellus", Georgia, serif', 'Marcellus'],
+        'montserrat' => ['Montserrat', '"Montserrat", system-ui, sans-serif', 'Montserrat:wght@400;600;700'],
+        'lora'       => ['Lora', '"Lora", Georgia, serif', 'Lora:wght@400;600'],
+    ];
+
+    public static function premium(?array $v): bool
+    {
+        return $v !== null && (int) ($v['premium'] ?? 0) === 1;
+    }
+
+    /** A seller's saved invoice look (whether or not it is switched on). */
+    public static function look(array $v): array
+    {
+        $b = json_decode((string) ($v['brand'] ?? ''), true) ?: [];
+        $hex = static fn ($x, string $d): string => is_string($x) && preg_match('/^#[0-9a-f]{6}$/i', $x) ? strtoupper($x) : $d;
+        $font = isset(self::FONTS[$b['font'] ?? '']) ? (string) $b['font'] : 'urbanist';
+        $primary = $hex($b['primary'] ?? null, '#1E242E');
+        return ['primary' => $primary, 'accent' => $hex($b['accent'] ?? null, '#E9B949'), 'font' => $font,
+                'logo' => (string) ($b['logo'] ?? ''), 'on' => self::textOn($primary)];
+    }
+
+    /** The look to dress a seller's invoices in: theirs if they are Premium, otherwise none. */
+    public static function brand(?array $v): ?array
+    {
+        if (!self::premium($v)) {
+            return null;
+        }
+        $b = self::look($v);
+        $b['logo'] = $b['logo'] !== '' ? $b['logo'] : (string) $v['logo'];
+        $b['css'] = self::FONTS[$b['font']][1];
+        $b['gf'] = self::FONTS[$b['font']][2];
+        return $b;
+    }
+
+    /** White on dark colours, ink on light ones. */
+    public static function textOn(string $hex): string
+    {
+        $h = ltrim($hex, '#');
+        [$r, $g, $bb] = [hexdec(substr($h, 0, 2)), hexdec(substr($h, 2, 2)), hexdec(substr($h, 4, 2))];
+        return (0.299 * $r + 0.587 * $g + 0.114 * $bb) > 160 ? '#1A2030' : '#FFFFFF';
+    }
 }
