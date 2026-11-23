@@ -494,4 +494,111 @@ final class HqController
         header('Location: ' . App::url('/hq/weddings#w' . (int) $w['id']));
         exit;
     }
+
+    /* ------------------------------------------------------------------ marketplace */
+
+    /**
+     * Sellers and the reports against them. From five open reports a seller is paused and asked to
+     * verify by hand; from fifteen they are removed. Here HQ clears reports, verifies, pauses,
+     * reinstates, removes or deletes for good.
+     */
+    public function market(): void
+    {
+        $this->gate('market');
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+            Guard::must();
+            $v = Db::one('SELECT * FROM vendors WHERE id = ?', [(int) ($_POST['id'] ?? 0)]);
+            $do = (string) ($_POST['do'] ?? '');
+            if ($v) {
+                $msg = '';
+                switch ($do) {
+                    case 'verify':
+                        Db::update('vendors', ['verified' => 1], 'id = ?', [$v['id']]);
+                        $msg = $v['name'] . ' is verified.';
+                        break;
+                    case 'unverify':
+                        Db::update('vendors', ['verified' => 0], 'id = ?', [$v['id']]);
+                        $msg = $v['name'] . ' is no longer verified.';
+                        break;
+                    case 'suspend':
+                        Market::setStatus($v, 'suspended');
+                        $msg = $v['name'] . ' is paused, and we emailed them to ask for verification.';
+                        break;
+                    case 'reinstate':
+                        Market::setStatus($v, 'active');
+                        $msg = $v['name'] . ' is live again.';
+                        break;
+                    case 'remove':
+                        Market::setStatus($v, 'removed');
+                        $msg = $v['name'] . ' is removed from the site.';
+                        break;
+                    case 'clear':
+                        Db::run("UPDATE seller_reports SET status = 'cleared' WHERE vendor_id = ?", [$v['id']]);
+                        $msg = 'Reports on ' . $v['name'] . ' are cleared.';
+                        break;
+                    case 'delete':
+                        $msg = self::deleteSeller($v);
+                        break;
+                }
+                if ($msg !== '') {
+                    Guard::flash('ok', $msg);
+                }
+            }
+            header('Location: ' . App::url('/hq/market' . ($do === 'delete' ? '' : '#s' . (int) ($v['id'] ?? 0))));
+            exit;
+        }
+        $sellers = Db::all("SELECT v.*, u.email,
+                (SELECT COUNT(*) FROM listings l WHERE l.partner_id = v.user_id) listings,
+                (SELECT COUNT(*) FROM seller_reports r WHERE r.vendor_id = v.id AND r.status = 'open') reports
+            FROM vendors v LEFT JOIN users u ON u.id = v.user_id
+            ORDER BY reports DESC, FIELD(v.status, 'suspended', 'removed', 'active'), v.name");
+        $reports = [];
+        foreach (Db::all("SELECT r.*, u.name, u.email, l.title FROM seller_reports r LEFT JOIN users u ON u.id = r.user_id LEFT JOIN listings l ON l.id = r.listing_id
+                          WHERE r.status = 'open' ORDER BY r.created_at DESC") as $r) {
+            $reports[(int) $r['vendor_id']][] = $r;
+        }
+        $this->show('market', ['title' => 'Marketplace', 'sellers' => $sellers, 'reports' => $reports]);
+    }
+
+    /** A seller gone for good: their shop, listings and reports. Their account stays, as an ordinary one. */
+    private static function deleteSeller(array $v): string
+    {
+        if ($v['user_id']) {
+            Db::run('DELETE FROM listings WHERE partner_id = ?', [$v['user_id']]);
+            Db::run("UPDATE users SET role = 'member' WHERE id = ? AND role = 'partner'", [$v['user_id']]);
+        }
+        Db::run('DELETE FROM seller_reports WHERE vendor_id = ?', [$v['id']]);
+        Db::run('DELETE FROM vendors WHERE id = ?', [$v['id']]);
+        return $v['name'] . ' is deleted, with their listings.';
+    }
+
+    /** What can be sold: HQ adds categories and opens or closes them. Sellers only list in open ones. */
+    public function categories(): void
+    {
+        $this->gate('market');
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+            Guard::must();
+            $do = (string) ($_POST['do'] ?? '');
+            $name = mb_substr(trim((string) ($_POST['name'] ?? '')), 0, 80);
+            $about = mb_substr(trim((string) ($_POST['about'] ?? '')), 0, 255);
+            if ($do === 'add' && $name !== '') {
+                $slug = trim((string) preg_replace('/[^a-z0-9]+/', '-', strtolower((string) (iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $name) ?: $name))), '-') ?: 'category';
+                $slug = substr($slug, 0, 36);
+                for ($n = 2, $base = $slug; Db::val('SELECT 1 FROM categories WHERE slug = ?', [$slug]); $n++) {
+                    $slug = $base . '-' . $n;
+                }
+                Db::insert('categories', ['slug' => $slug, 'name' => $name, 'about' => $about, 'open' => 1, 'sort' => (int) Db::val('SELECT COALESCE(MAX(sort), 0) + 1 FROM categories', [], 0)]);
+                Guard::flash('ok', $name . ' is open. Sellers can list in it now.');
+            } elseif ($do === 'save') {
+                $id = (int) ($_POST['id'] ?? 0);
+                if ($name !== '') {
+                    Db::update('categories', ['name' => $name, 'about' => $about, 'open' => isset($_POST['open']) ? 1 : 0], 'id = ?', [$id]);
+                    Guard::flash('ok', 'Saved.');
+                }
+            }
+            header('Location: ' . App::url('/hq/categories'));
+            exit;
+        }
+        $this->show('categories', ['title' => 'Categories', 'rows' => Market::categories()]);
+    }
 }

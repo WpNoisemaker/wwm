@@ -401,7 +401,8 @@
 	d.addEventListener('change', function (e) {
 		var i = e.target.closest('[data-photo-input]'); if (!i) { return; }
 		var lab = i.closest('.photo-pick'), n = lab && lab.querySelector('[data-photo-name]');
-		if (n) { n.textContent = i.files && i.files[0] ? i.files[0].name : 'Add a photo from the day'; }
+		var nf = i.files ? i.files.length : 0;
+		if (n) { if (!n.dataset.was) { n.dataset.was = n.textContent; } n.textContent = nf > 1 ? nf + ' photos chosen' : (nf ? i.files[0].name : n.dataset.was); }
 		if (lab) { lab.classList.toggle('is-set', !!(i.files && i.files[0])); }
 	});
 	d.addEventListener('click', function (e) {
@@ -766,5 +767,55 @@
 			if (bad) { e.preventDefault(); bad.focus(); toast('Keep each card to ' + bad.getAttribute('data-words') + ' words.'); }
 		});
 		dSync();
+	}
+
+	/* ---------- a listing's photos: swipe, or tap a thumbnail ---------- */
+	d.querySelectorAll('[data-lgal]').forEach(function (g) {
+		var tr = g.querySelector('[data-lgal-track]'), n = g.querySelector('[data-lgal-n]'), th = [].slice.call(g.querySelectorAll('[data-lgal-go]')), total = tr.children.length;
+		function at() { return Math.round(tr.scrollLeft / Math.max(1, tr.clientWidth)); }
+		function mark() { var k = at(); if (n) { n.textContent = (k + 1) + ' / ' + total; } th.forEach(function (b, j) { b.classList.toggle('is-on', j === k); }); }
+		var tm; tr.addEventListener('scroll', function () { clearTimeout(tm); tm = setTimeout(mark, 60); }, { passive: true });
+		th.forEach(function (b) { b.addEventListener('click', function () { tr.scrollTo({ left: tr.clientWidth * +b.getAttribute('data-lgal-go'), behavior: 'smooth' }); }); });
+		tr.addEventListener('keydown', function (e) {
+			if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); tr.scrollTo({ left: tr.clientWidth * Math.max(0, Math.min(total - 1, at() + (e.key === 'ArrowRight' ? 1 : -1))), behavior: 'smooth' }); }
+		});
+	});
+
+	/* ---------- a chat: send without leaving the page, and look for replies every few seconds ---------- */
+	var chatLog = d.querySelector('[data-chat]');
+	if (chatLog) {
+		var chatForm = d.querySelector('[data-chat-form]'), chatUrl = chatLog.getAttribute('data-chat'), chatBusy = false;
+		var chatEnd = function () { chatLog.scrollTop = chatLog.scrollHeight; };
+		var chatAdd = function (html) {
+			if (!html) { return; }
+			var tmp = d.createElement('div'); tmp.innerHTML = html;
+			[].slice.call(tmp.children).forEach(function (m) {
+				if (chatLog.querySelector('[data-id="' + m.getAttribute('data-id') + '"]')) { return; }
+				chatLog.insertBefore(m, chatLog.querySelector('#end'));
+				chatLog.setAttribute('data-last', m.getAttribute('data-id'));
+			});
+			chatEnd();
+		};
+		chatEnd();
+		var chatPoll = function () {
+			if (chatBusy || d.hidden) { return; }
+			fetch(chatUrl + '?after=' + chatLog.getAttribute('data-last'), { credentials: 'same-origin', headers: { Accept: 'application/json' } })
+				.then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { if (j) { chatAdd(j.html); } }).catch(function () {});
+		};
+		setInterval(chatPoll, 6000);
+		d.addEventListener('visibilitychange', function () { if (!d.hidden) { chatPoll(); } });
+		var say = chatForm.querySelector('textarea');
+		say.addEventListener('input', function () { say.style.height = 'auto'; say.style.height = Math.min(160, say.scrollHeight) + 'px'; });
+		say.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey && !('ontouchstart' in W)) { e.preventDefault(); chatForm.requestSubmit(); } });
+		chatForm.addEventListener('submit', function (e) {
+			if (!W.fetch || !say.value.trim()) { return; }
+			e.preventDefault(); chatBusy = true;
+			var fd = new FormData(chatForm); fd.set('after', chatLog.getAttribute('data-last'));
+			fetch(chatUrl, { method: 'POST', body: fd, credentials: 'same-origin', headers: { Accept: 'application/json' } })
+				.then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+				.then(function (j) { say.value = ''; say.style.height = ''; chatAdd(j.html); buzz(); })
+				.catch(function () { toast('That did not send. Check your connection and try again.'); })
+				.then(function () { chatBusy = false; });
+		});
 	}
 })();

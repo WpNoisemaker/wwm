@@ -5,18 +5,23 @@
  */
 $now  = $now ?? '';
 Guard::boot();
-$ctx  = $ctx ?? (in_array($now, ['shop', 'shop-profile'], true) ? 'shop' : ($now === 'settings' ? ($_SESSION['acct_ctx'] ?? 'wedding') : 'wedding'));
+$ctx  = $ctx ?? (in_array($now, ['shop', 'shop-profile'], true) ? 'shop' : (in_array($now, ['settings', 'messages'], true) ? ($_SESSION['acct_ctx'] ?? 'wedding') : 'wedding'));
 $uid  = (int) Auth::id();
 $hasShop = Auth::is('partner') || (bool) Db::val('SELECT 1 FROM vendors WHERE user_id = ?', [$uid]);
 $hasWed  = (bool) Db::val('SELECT 1 FROM weddings WHERE owner_id = ?', [$uid]);
 if ($ctx === 'shop' && !$hasShop) { $ctx = 'wedding'; }
+if ($ctx === 'wedding' && !$hasWed && empty($w) && !$hasShop) { $ctx = 'customer'; }
+// Messages with sellers (or customers), with how many are waiting.
+$unread = Market::unread($uid);
+$hasChats = $unread > 0 || (bool) Db::val('SELECT 1 FROM messages WHERE user_id = ? OR partner_id = ? LIMIT 1', [$uid, $uid]);
+$msgTab = ['messages', 'Messages' . ($unread ? ' (' . $unread . ')' : ''), '/account/messages', 'chat'];
 $tabs = $ctx === 'shop'
-	? [['shop', 'Listings', '/account/shop', 'bag'], ['shop-profile', 'Business profile', '/account/shop/profile', 'store'], ['settings', 'Account', '/account/settings', 'gear']]
-	: (!empty($w) || $hasWed
+	? [['shop', 'Listings', '/account/shop', 'bag'], $msgTab, ['shop-profile', 'Business profile', '/account/shop/profile', 'store'], ['settings', 'Account', '/account/settings', 'gear']]
+	: ($ctx === 'customer' ? [$msgTab, ['settings', 'Account', '/account/settings', 'gear']] : (!empty($w) || $hasWed
 		? [['overview', 'Overview', '/account', 'grid'], ['page', 'Page', '/account/page', 'pen'], ['story', 'Story', '/account/story', 'book'], ['sections', 'Sections', '/account/sections', 'sliders'], ['programs', 'Programs', '/account/programs', 'calendar'],
 		   ['squad', 'Squad', '/account/squad', 'people'], ['registry', 'Registry', '/account/registry', 'gift'], ['quiz', 'Quiz', '/account/quiz', 'star'], ['guests', 'Guests', '/account/guests', 'user'],
-		   ['money', 'Money', '/account/money', 'wallet'], ['settings', 'Account', '/account/settings', 'gear']]
-		: []);
+		   ['money', 'Money', '/account/money', 'wallet']] + ($hasChats ? [12 => $msgTab] : []) + [13 => ['settings', 'Account', '/account/settings', 'gear']]
+		: []));
 ?>
 <div class="page wrap">
 	<header class="page-head">

@@ -8,10 +8,18 @@ $price = static fn (array $l): string => (int) $l['on_ask'] ? 'Price on request'
 ?>
 <div class="page wrap">
 	<header class="page-head">
-		<span class="eyebrow"><?= t('market.eyebrow.your-money-is-held-until', 'Your money is held until the booking happens') ?></span>
+		<span class="eyebrow"><?= t('market.eyebrow.message-the-sellers', 'Message the sellers, pay them directly') ?></span>
 		<h1><?= t('market.title.asoebi-stays-rides-honeymoons', 'Aso-ebi, stays, rides & honeymoons') ?></h1>
 		<p class="lede"><?= e(number_format($total)) ?> listing<?= $total === 1 ? '' : 's' ?><?= $f['city'] !== '' ? ' in ' . e($f['city']) : '' ?></p>
 	</header>
+	<a class="sell-cta glass" href="<?= e(App::url('/sell')) ?>">
+		<span class="sell-cta__ico"><?= icon('s-store') ?></span>
+		<span class="sell-cta__in">
+			<span class="sell-cta__t"><?= t('market.sell.title', 'Sell to couples planning their wedding') ?></span>
+			<span class="sell-cta__s"><?= t('market.sell.text', 'Stays, rides, aso-ebi, honeymoons and services. Customers message you; you send your own invoice or payment link.') ?></span>
+		</span>
+		<span class="pill pill--sm sell-cta__go"><?= t('market.sell.button', 'Sell with us') ?></span>
+	</a>
 	<form class="searchbox narrow" method="get" action="<?= e(App::url('/market')) ?>" role="search">
 		<?= icon('search') ?>
 		<input class="input" type="search" name="q" value="<?= e($f['q']) ?>" placeholder="An apartment, a convoy, a honeymoon" aria-label="Search the marketplace">
@@ -20,7 +28,7 @@ $price = static fn (array $l): string => (int) $l['on_ask'] ? 'Price on request'
 	<nav class="chips chips--center gap-t-sm" aria-label="Kinds">
 		<a class="chip<?= $f['kind'] === '' ? ' is-on' : '' ?>" href="<?= e($q(['kind' => null, 'page' => null])) ?>">Everything</a>
 		<?php foreach ($kinds as $k): ?>
-			<a class="chip<?= $f['kind'] === $k['kind'] ? ' is-on' : '' ?>" href="<?= e($q(['kind' => $f['kind'] === $k['kind'] ? null : $k['kind'], 'page' => null])) ?>"><?= e(Listing::kindName((string) $k['kind'])) ?></a>
+			<a class="chip<?= $f['kind'] === $k['kind'] ? ' is-on' : '' ?>" href="<?= e($q(['kind' => $f['kind'] === $k['kind'] ? null : $k['kind'], 'page' => null])) ?>"><?= e(Market::catName((string) $k['kind'])) ?></a>
 		<?php endforeach; ?>
 	</nav>
 	<?php if ($cities): ?>
@@ -37,7 +45,7 @@ $price = static fn (array $l): string => (int) $l['on_ask'] ? 'Price on request'
 		<div class="cards gap-t">
 			<?php foreach ($rows as $l): ?>
 				<a class="card" href="<?= e(App::url('/market/' . $l['slug'])) ?>">
-					<span class="sq"><?= photo(first_photo((string) $l['photos']), (string) $l['title']) ?><span class="sq__tag"><?= e(Listing::kindName((string) $l['kind'])) ?></span></span>
+					<span class="sq"><?= photo(first_photo((string) $l['photos']), (string) $l['title']) ?><span class="sq__tag"><?= e(Market::catName((string) $l['kind'])) ?></span><?php $pc = count(Listing::photos($l)); if ($pc > 1): ?><span class="sq__count"><?= icon('camera') ?><?= $pc ?></span><?php endif; ?></span>
 					<span class="card__cap"><span class="card__t"><?= e($l['title']) ?></span><span class="card__s"><?= $price($l) ?><?php if (!empty($l['seller'])): ?> · <?= e((string) $l['seller']) ?><?php if ((int) $l['seller_ok']): ?> <?= icon('s-shield', 0, 'card__ok') ?><?php endif; ?><?php elseif ((string) $l['city'] !== ''): ?> · <?= e($l['city']) ?><?php endif; ?></span></span>
 				</a>
 			<?php endforeach; ?>

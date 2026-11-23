@@ -33,7 +33,7 @@
 	<p>Cash gifts and sprays are gifts from guests to the couple. Once sent they are not refunded or reversed by us. A guest who made a mistake should speak to the couple.</p>
 
 	<h2>Marketplace bookings</h2>
-	<p>Payments for stays, rides, honeymoons, aso-ebi and other listings are not refunded by us. Any cancellation or refund for a booking is between the buyer and the seller, on the terms in the seller&rsquo;s listing.</p>
+	<p>We do not take payments for stays, rides, honeymoons, aso-ebi or any other listing: you pay the seller directly, so we cannot refund them. Any cancellation or refund is between the buyer and the seller, on the terms in the seller&rsquo;s listing.</p>
 
 	<h2>Duplicate charges</h2>
 	<p>The one exception: if you are charged twice for the same thing because of a technical error, tell us within 14 days at <a href="mailto:<?= e($mail) ?>"><?= e($mail) ?></a> with the payment reference, and we will reverse the duplicate charge.</p>

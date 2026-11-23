@@ -20,6 +20,7 @@
 			<div><h2><?= t('site.heading.shop', 'Shop') ?></h2><ul>
 				<li><a href="<?= e(App::url('/vendors')) ?>">Vendors</a></li>
 				<li><a href="<?= e(App::url('/market')) ?>">Marketplace</a></li>
+				<li><a href="<?= e(App::url('/sell')) ?>">Sell with us</a></li>
 				<li><a href="<?= e(App::url('/pricing')) ?>">Pricing</a></li>
 			</ul></div>
 			<div><h2><?= t('site.heading.samples', 'Samples') ?></h2><ul>

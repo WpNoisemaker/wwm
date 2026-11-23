@@ -261,6 +261,9 @@ CREATE TABLE vendors (
   verified_until DATE     NULL,
   rating     DECIMAL(3,2) NOT NULL DEFAULT 0,
   reviews    INT UNSIGNED NOT NULL DEFAULT 0,
+  projects   JSON         NULL,          -- their three best pieces of work: [title, about, photo]
+  status     VARCHAR(20)  NOT NULL DEFAULT 'active',   -- active, suspended (checking them) or removed
+  status_at  DATETIME     NULL,
   wp_id      INT UNSIGNED NULL,
   created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
@@ -290,7 +293,7 @@ CREATE TABLE listings (
   partner_id INT UNSIGNED NOT NULL,
   slug       VARCHAR(160) NOT NULL,
   title      VARCHAR(190) NOT NULL,
-  kind       ENUM('stay','ride','honeymoon','service','asoebi','rental','other') NOT NULL DEFAULT 'service',
+  kind       VARCHAR(40)  NOT NULL DEFAULT 'service',   -- a category slug: only HQ opens new ones
   about      MEDIUMTEXT   NULL,
   city       VARCHAR(120) NOT NULL DEFAULT '',
   state      VARCHAR(120) NOT NULL DEFAULT '',
@@ -339,10 +342,63 @@ CREATE TABLE messages (
   listing_id INT UNSIGNED NULL,
   sender     ENUM('user','partner','staff') NOT NULL,
   body       TEXT         NOT NULL,
+  invoice_id INT UNSIGNED NULL,
   read_at    DATETIME     NULL,
   created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   KEY ix_thread (partner_id, user_id, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- What can be sold. HQ adds and opens categories; sellers can only list in an open one.
+CREATE TABLE categories (
+  id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  slug       VARCHAR(40)  NOT NULL,
+  name       VARCHAR(80)  NOT NULL,
+  about      VARCHAR(255) NOT NULL DEFAULT '',
+  open       TINYINT(1)   NOT NULL DEFAULT 1,
+  sort       SMALLINT     NOT NULL DEFAULT 0,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_slug (slug)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- An invoice or a payment link a seller sends in a chat. We never hold the money: the link is the
+-- seller's own, and the customer pays them directly.
+CREATE TABLE invoices (
+  id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  code       VARCHAR(16)  NOT NULL,
+  kind       ENUM('invoice','link') NOT NULL DEFAULT 'invoice',
+  partner_id INT UNSIGNED NOT NULL,
+  user_id    INT UNSIGNED NOT NULL,
+  listing_id INT UNSIGNED NULL,
+  title      VARCHAR(190) NOT NULL DEFAULT '',
+  lines_json TEXT         NULL,
+  amount     BIGINT       NOT NULL DEFAULT 0,
+  currency   CHAR(3)      NOT NULL DEFAULT 'NGN',
+  pay_link   VARCHAR(500) NOT NULL DEFAULT '',
+  pay_info   TEXT         NULL,
+  due_on     DATE         NULL,
+  note       TEXT         NULL,
+  status     ENUM('open','paid','cancelled') NOT NULL DEFAULT 'open',
+  created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  paid_at    DATETIME     NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_code (code),
+  KEY ix_thread (partner_id, user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- A customer's report that a seller may not be genuine. One per customer per seller.
+CREATE TABLE seller_reports (
+  id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  vendor_id  INT UNSIGNED NOT NULL,
+  user_id    INT UNSIGNED NOT NULL,
+  listing_id INT UNSIGNED NULL,
+  reason     VARCHAR(40)  NOT NULL DEFAULT '',
+  body       TEXT         NULL,
+  status     ENUM('open','cleared') NOT NULL DEFAULT 'open',
+  created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_one (vendor_id, user_id),
+  KEY ix_vendor (vendor_id, status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------- The anonymous community

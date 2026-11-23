@@ -65,7 +65,7 @@ return [
         ],
     ],
     'organizedbysheedah' => [
-        'name' => 'Organized by Sheedah', 'category' => 'Home organising', 'city' => '', 'state' => '', 'kind' => 'service', 'ask' => true,
+        'name' => 'Organized by Sheedah', 'category' => 'Home organising', 'city' => '', 'state' => '', 'kind' => 'home', 'ask' => true,
         'about' => 'Professional home organising. We organise apartments, wardrobes and kitchens, and help couples pack up and settle into their new home after the wedding.',
         'logo' => 'photos/planner-phone.jpg', 'hash' => '$2y$10$gLWnUwPXEfWB97hTlic51OQCEBUe8MhrANo.8wOM.J/5jjpefWPbq',
         'listings' => [

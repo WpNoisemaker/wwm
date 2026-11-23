@@ -8,6 +8,13 @@ declare(strict_types=1);
  */
 final class Pack
 {
+    /** Ẹbí Lace & Gele's best work, from the portfolio on the original site: [title, about, photo]. */
+    public const EBI_PROJECTS = [
+        ['Lace aso-ebi with a coral gele', 'Lace and a coral gele, matched to the couple’s colours for the bride’s friends.', 'photos/listing-fan-lady.jpg'],
+        ['Magenta aso-ebi for the bride’s friends', 'Magenta lace for a full bridal train, sorted and labelled for each guest.', 'photos/listing-guests-magenta.jpg'],
+        ['Matching aso-oke for a couple', 'Hand-woven aso-oke for the bride and groom, made to order in their colours.', 'photos/listing-couple-magenta.jpg'],
+    ];
+
     public const ALL = ['ibrahim-ummi' => 'Ibrahim & Ummi', 'market' => 'Marketplace sellers'];
 
     /** What each pack is, in a line, for HQ. */
@@ -135,6 +142,7 @@ final class Pack
                     'user_id' => $uid, 'slug' => Listing::slugFor('vendors', $s['slug'] ?? $s['name']), 'name' => $s['name'],
                     'category' => $s['category'], 'city' => $s['city'], 'state' => $s['state'], 'about' => $s['about'],
                     'logo' => $s['logo'], 'verified' => 1,
+                    'projects' => ($s['slug'] ?? '') === 'ebi-lace-gele' ? json_encode(self::EBI_PROJECTS, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null,
                 ]);
                 foreach ($s['listings'] as $l) {
                     [$title, $unit, $price, $city, $state, $about, $features, $photos] = $l;

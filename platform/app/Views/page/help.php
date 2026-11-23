@@ -15,8 +15,9 @@
 				['I lost the link to a wedding page.', 'Search for the couple or their hashtag on the Weddings page. If the page is private you will need the code from the couple.'],
 			]],
             ['For vendors and sellers', [
-				['How do I get listed?', 'Create an account, then apply from your dashboard. Listing is free. We take a small commission only on payments made through the site.'],
-				['How do reviews work?', 'Couples who booked you can leave a review afterwards. You can reply to any of them, publicly, once.'],
+				['How do I get listed?', 'Tap Sell with us on the marketplace, create your seller account and fill in your business profile, then list in any of the open categories. Listing is free.'],
+				['How do customers pay me?', 'Customers message you from your listing. Agree the details in the chat, then send an invoice with your payment link, or just a payment link. They pay you directly; we never hold the money.'],
+				['How do reviews work?', 'Customers who have talked to you here can leave a review. You can reply to any of them, publicly, once.'],
 			]],
 		] as [$group, $items]): ?>
 			<h2 class="help__g"><?= e($group) ?></h2>

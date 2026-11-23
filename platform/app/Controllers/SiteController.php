@@ -140,7 +140,7 @@ final class SiteController
         $add = static function (string $path, ?string $mod = null, string $freq = 'weekly') use (&$urls): void {
             $urls[] = [App::url($path), $mod, $freq];
         };
-        foreach (['/', '/weddings', '/rankings', '/vendors', '/market', '/community', '/blog', '/pricing', '/templates', '/about', '/help',
+        foreach (['/', '/weddings', '/rankings', '/vendors', '/market', '/sell', '/community', '/blog', '/pricing', '/templates', '/about', '/help',
                   '/terms', '/privacy', '/refunds', '/community-guidelines', '/cookies'] as $pth) {
             $add($pth, null, in_array($pth, ['/', '/weddings', '/rankings', '/community', '/blog'], true) ? 'daily' : 'monthly');
         }
@@ -175,6 +175,6 @@ final class SiteController
     public function robots(): void
     {
         header('Content-Type: text/plain; charset=utf-8');
-        echo "User-agent: *\nDisallow: /account\nDisallow: /hq\nDisallow: /sign-in\nDisallow: /join\nDisallow: /forgot\nDisallow: /reset\nDisallow: /verify\nDisallow: /search\nAllow: /\n\nSitemap: " . App::url('/sitemap.xml') . "\n";
+        echo "User-agent: *\nDisallow: /account\nDisallow: /hq\nDisallow: /sign-in\nDisallow: /join\nDisallow: /forgot\nDisallow: /reset\nDisallow: /verify\nDisallow: /search\nDisallow: /pay\nAllow: /\n\nSitemap: " . App::url('/sitemap.xml') . "\n";
     }
 }

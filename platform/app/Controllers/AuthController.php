@@ -209,6 +209,48 @@ final class AuthController
     /* ---------------------------------------------------------------------------------------- */
 
     /** Only ever redirect inside this site. "//evil.com" is a path to a browser, so it is refused. */
+    /**
+     * A customer account: a name, an email and a password, nothing about a wedding. It is what lets
+     * someone message sellers on the marketplace. They go straight back to where they were.
+     */
+    public function customer(): void
+    {
+        $to = self::safeTo((string) ($_GET['to'] ?? $_POST['to'] ?? '')) ?: '/market';
+        if (Auth::check()) {
+            self::go($to);
+        }
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+            Guard::must();
+            if (Guard::tooMany('join', 6, 30)) {
+                Guard::flash('bad', 'Too many sign-ups from here just now. Try again shortly.');
+                self::go('/join/customer?to=' . urlencode($to));
+            }
+            $in = ['name' => trim((string) ($_POST['name'] ?? '')), 'email' => strtolower(trim((string) ($_POST['email'] ?? ''))), 'phone' => trim((string) ($_POST['phone'] ?? ''))];
+            $pass = (string) ($_POST['pass'] ?? '');
+            $bad = [];
+            if ($in['name'] === '')                               { $bad[] = 'your name'; }
+            if (!filter_var($in['email'], FILTER_VALIDATE_EMAIL)) { $bad[] = 'a real email address'; }
+            if (strlen($pass) < 8)                                { $bad[] = 'a password of at least 8 characters'; }
+            if ($bad) {
+                Guard::keep($in);
+                Guard::flash('bad', 'We still need ' . self::list($bad) . '.');
+                self::go('/join/customer?to=' . urlencode($to));
+            }
+            $u = Auth::register($in['email'], $pass, $in['name'], $in['phone']);
+            if (!$u) {
+                Guard::keep($in);
+                Guard::flash('bad', 'There is already an account on that email. Sign in instead.');
+                self::go('/sign-in?to=' . urlencode($to));
+            }
+            Guard::dropOld();
+            Auth::login($u);
+            $_SESSION['acct_ctx'] = 'customer';
+            Guard::flash('ok', 'Your account is ready. Write to the seller below.');
+            self::go($to);
+        }
+        View::render('auth/customer', ['title' => 'Create a customer account', 'tab' => 'account', 'appTitle' => 'Customer account', 'to' => $to, 'back' => App::url($to)]);
+    }
+
     private static function safeTo(string $to): string
     {
         return ($to !== '' && $to[0] === '/' && !str_starts_with($to, '//')) ? $to : '';

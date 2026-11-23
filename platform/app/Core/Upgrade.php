@@ -8,7 +8,7 @@ declare(strict_types=1);
  */
 final class Upgrade
 {
-    private const STEPS = ['couple-photos-1', 'ibrahim-ummi-photos-1', 'wall-voice-squad-1', 'squad-profiles-1'];
+    private const STEPS = ['couple-photos-1', 'ibrahim-ummi-photos-1', 'wall-voice-squad-1', 'squad-profiles-1', 'market-2'];
 
     public static function run(): void
     {
@@ -24,6 +24,7 @@ final class Upgrade
                     'ibrahim-ummi-photos-1' => self::ibrahimUmmi(),
                     'wall-voice-squad-1'   => self::wallVoiceSquad(),
                     'squad-profiles-1'     => self::squadProfiles(),
+                    'market-2'             => Market::install(),
                 };
             } catch (Throwable $e) {
                 error_log('[wwm] upgrade ' . $step . ': ' . $e->getMessage());

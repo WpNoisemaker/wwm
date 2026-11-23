@@ -53,6 +53,10 @@ final class AccountController
             self::go('/account/shop');
         }
         if (!$w) {
+            // Someone who only talks to sellers lands in their messages.
+            if (($_SESSION['acct_ctx'] ?? '') === 'customer' || Db::val('SELECT 1 FROM messages WHERE user_id = ? LIMIT 1', [Auth::id()])) {
+                self::go('/account/messages');
+            }
             self::go('/account/new');
         }
         $_SESSION['acct_ctx'] = 'wedding';
@@ -464,6 +468,33 @@ final class AccountController
                 if ($row['website'] !== '' && !preg_match('#^https?://#i', $row['website'])) {
                     $row['website'] = 'https://' . $row['website'];
                 }
+                if (!empty($_FILES['logo']['name'])) {
+                    $logo = Images::store($_FILES['logo'], 'sellers/' . $uid);
+                    if ($logo === null) {
+                        Guard::flash('bad', 'That logo could not be used. Try a JPEG or PNG under 12 MB.');
+                        self::go('/account/shop/profile');
+                    }
+                    $row['logo'] = $logo;
+                }
+                // Their three best projects: a title, a line and a photo each.
+                $old = $v ? Market::projects($v) : [];
+                $files = self::fileList('proj_photo');
+                $projects = [];
+                for ($i = 0; $i < 3; $i++) {
+                    $pt = mb_substr(trim((string) ($_POST['proj_title'][$i] ?? '')), 0, 120);
+                    $pa = mb_substr(trim((string) ($_POST['proj_about'][$i] ?? '')), 0, 300);
+                    $pp = !empty($_POST['proj_off'][$i]) ? '' : (string) ($old[$i][2] ?? '');
+                    if (isset($files[$i]) && ($files[$i]['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+                        $img = Images::store($files[$i], 'sellers/' . $uid);
+                        if ($img !== null) {
+                            $pp = $img;
+                        }
+                    }
+                    if ($pp !== '') {
+                        $projects[] = [$pt, $pa, $pp];
+                    }
+                }
+                $row['projects'] = json_encode($projects, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
                 if ($v) {
                     Db::update('vendors', $row, 'id = ?', [$v['id']]);
                 } else {
@@ -471,6 +502,13 @@ final class AccountController
                 }
                 Guard::flash('ok', 'Your profile is saved.');
                 self::go('/account/shop/profile');
+            }
+            if ($do === 'reply' && $v) {
+                $rid = (int) ($_POST['review_id'] ?? 0);
+                Db::run("UPDATE reviews SET reply = ? WHERE id = ? AND vendor_id = ? AND (reply IS NULL OR reply = '')",
+                        [mb_substr(trim((string) ($_POST['reply'] ?? '')), 0, 1000), $rid, $v['id']]);
+                Guard::flash('ok', 'Your reply is on your profile.');
+                self::go('/account/shop/profile#reviews');
             }
             $id = (int) ($_POST['id'] ?? 0);
             if ($do === 'delete' && $id) {
@@ -480,7 +518,7 @@ final class AccountController
             }
             if ($do === 'listing') {
                 $row = [
-                    'title' => $t('title'), 'kind' => isset(Listing::KINDS[$_POST['kind'] ?? '']) ? (string) $_POST['kind'] : 'service',
+                    'title' => $t('title'), 'kind' => (string) ($_POST['kind'] ?? ''),
                     'city' => $t('city', 120), 'price' => max(0, (int) preg_replace('/\D/', '', (string) ($_POST['price'] ?? '0'))),
                     'price_unit' => $t('price_unit', 40), 'on_ask' => isset($_POST['on_ask']) ? 1 : 0, 'about' => $t('about', 6000),
                     'status' => ($_POST['status'] ?? 'live') === 'paused' ? 'paused' : 'live',
@@ -493,22 +531,46 @@ final class AccountController
                 if ($id && !$old) {
                     self::go('/account/shop');
                 }
-                if (!empty($_FILES['photo']['name'])) {
-                    $img = Images::store($_FILES['photo'], 'listings/' . $uid);
-                    if ($img === null) {
-                        Guard::flash('bad', 'That photo could not be used. Try a JPEG or PNG under 12 MB.');
-                        self::go('/account/shop');
+                if (!Market::isOpen($row['kind']) && !($old && (string) $old['kind'] === $row['kind'])) {
+                    Guard::flash('bad', 'Pick one of the open categories. New ones are opened by our team.');
+                    self::go('/account/shop');
+                }
+                if ($v && !Market::active($v)) {
+                    Guard::flash('bad', 'Your shop is paused while we verify your business, so listings cannot change for now.');
+                    self::go('/account/shop');
+                }
+                // Photos: the ones kept (minus any removed), the chosen cover first, then new uploads. Eight at most.
+                $photos = $old ? Listing::photos($old) : [];
+                $drop = array_map('strval', (array) ($_POST['drop'] ?? []));
+                $photos = array_values(array_filter($photos, static fn ($ph) => !in_array($ph, $drop, true)));
+                $cover = (string) ($_POST['cover'] ?? '');
+                if ($cover !== '' && in_array($cover, $photos, true)) {
+                    $photos = array_values(array_unique(array_merge([$cover], $photos)));
+                }
+                $failed = 0;
+                foreach (self::fileList('photos') as $f) {
+                    if (($f['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE || count($photos) >= 8) {
+                        continue;
                     }
-                    $photos = $old ? (json_decode((string) $old['photos'], true) ?: []) : [];
-                    array_unshift($photos, $img);
-                    $row['photos'] = json_encode(array_slice($photos, 0, 6), JSON_UNESCAPED_SLASHES);
+                    $img = Images::store($f, 'listings/' . $uid);
+                    if ($img === null) {
+                        $failed++;
+                    } else {
+                        $photos[] = $img;
+                    }
+                }
+                $row['photos'] = json_encode(array_slice($photos, 0, 8), JSON_UNESCAPED_SLASHES);
+                if ($failed) {
+                    Guard::flash('bad', $failed . ' photo' . ($failed > 1 ? 's' : '') . ' could not be used. Try JPEG or PNG under 12 MB.');
                 }
                 if ($old) {
                     Db::update('listings', $row, 'id = ? AND partner_id = ?', [$id, $uid]);
                 } else {
                     Db::insert('listings', $row + ['partner_id' => $uid, 'slug' => Listing::slugFor('listings', $row['title']), 'photos' => $row['photos'] ?? '[]']);
                 }
-                Guard::flash('ok', $old ? 'Listing saved.' : 'Listing added. It is live on the marketplace.');
+                if (!$failed) {
+                    Guard::flash('ok', $old ? 'Listing saved.' : 'Listing added. It is live on the marketplace.');
+                }
                 self::go('/account/shop');
             }
             self::go('/account/shop');
@@ -517,6 +579,7 @@ final class AccountController
             'title' => $v ? (string) $v['name'] : 'Your shop', 'tab' => 'account', 'appTitle' => !empty($profile) ? 'Business profile' : 'Your shop',
             'back' => !empty($profile) ? App::url('/account/shop') : null,
             'v' => $v, 'rows' => Db::all('SELECT * FROM listings WHERE partner_id = ? ORDER BY id', [$uid]),
+            'reviews' => $v ? Db::all("SELECT * FROM reviews WHERE vendor_id = ? AND status = 'live' ORDER BY created_at DESC LIMIT 30", [$v['id']]) : [],
         ]);
     }
 

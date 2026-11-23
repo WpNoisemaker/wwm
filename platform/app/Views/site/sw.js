@@ -12,7 +12,7 @@ const BASE = '__BASE__';
 const SHELL = __SHELL__;
 const OFFLINE = __OFFLINE__;
 const C_SHELL = 'wwm-shell-' + VERSION, C_ASSETS = 'wwm-assets', C_PAGES = 'wwm-pages', C_PRE = 'wwm-pre';
-const PRIVATE = /\/(account|hq|sign-in|join|forgot|reset|verify|sign-out)(\/|$)/;
+const PRIVATE = /\/(account|hq|sign-in|join|forgot|reset|verify|sign-out|pay)(\/|$)/;
 const fresh = new Map();
 
 self.addEventListener('install', (e) => {
