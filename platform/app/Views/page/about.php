@@ -1,14 +1,14 @@
 <article class="page wrap prose">
 	<h1 class="prose__h"><?= t('about.title.about-us', 'About us') ?></h1>
 	<?php $aboutPic = timg('about.image.top', 'photos/couple-dance.jpg'); ?>
-	<p class="lede"><?= t('about.intro.nigerian-and-african-weddings-are', 'Nigerian and African weddings are among the biggest celebrations on earth. The websites built for them usually are not.') ?></p>
+	<p class="lede"><?= t('about.intro.nigerian-and-african-weddings-are', 'Wedding Websites & More is a company in Abuja. We make wedding websites for African couples, in Nigeria and abroad.') ?></p>
 	<?php if ($aboutPic !== ''): ?><div class="about__pic"><?= sq($aboutPic, 'Wedding Websites & More', 'sq--wide', true) ?></div><?php endif; ?>
-	<p><?= tl('about.text.wedding-websites-more-started-with', 'Wedding Websites & More started with a simple observation: a couple would spend a year planning three ceremonies across two cities, then send guests a blurry invitation on WhatsApp and field the same five questions four hundred times. Where is it. What do I wear. Can I bring someone. How do I send a gift from abroad. Is there parking.') ?></p>
-	<p><?= tl('about.text.one-link-answers-all-of', 'One link answers all of it, and keeps answering at two in the morning while the couple sleeps.') ?></p>
-	<h2><?= t('about.heading.what-we-actually-do', 'What we actually do') ?></h2>
-	<p><?= tl('about.text.every-couple-gets-a-page', 'Every couple gets a page: the programs with their venues and dress codes, RSVPs, a cash and gift registry that family abroad can reach, a wall where guests leave notes, and a gallery of what everyone shot on the day. On the paid tiers there are entry passes with QR codes, spraying from the seat, a livestream and printed table cards.') ?></p>
-	<p><?= tl('about.text.around-that-sits-the-rest', 'Around that sits the rest of it — the Buzz Chart that ranks pages by what guests actually did, a directory of vendors reviewed by couples who booked them, a marketplace for stays, rides, honeymoons and aso-ebi, and an anonymous community for the parts of getting married nobody posts about.') ?></p>
+	<p><?= tl('about.text.wedding-websites-more-started-with', 'Guests ask the same questions before every wedding: where is it, what do I wear, can I bring someone, how do I send a gift from abroad. A wedding page answers all of them on one link.') ?></p>
+	<p><?= tl('about.text.one-link-answers-all-of', 'The couple shares the link once. Guests open it on their phone, with no app and no account.') ?></p>
+	<h2><?= t('about.heading.what-we-actually-do', 'What we do') ?></h2>
+	<p><?= tl('about.text.every-couple-gets-a-page', 'Every couple gets a page with their events, venues and dress codes, RSVP, a cash and gift registry, and a wall where guests leave wishes. Paid plans add entry passes with QR codes, guest photos, spraying, a livestream and printed table cards. On Premium and High Society, our team sets up the page and keeps it updated.') ?></p>
+	<p><?= tl('about.text.around-that-sits-the-rest', 'We also run the Buzz Chart, which ranks wedding pages by guest activity; a list of vendors with reviews from couples; a marketplace for stays, rides, honeymoons and aso-ebi; and the Anonymous Community, where people ask questions about relationships, weddings, marriage and family without their name.') ?></p>
 	<h2><?= t('about.heading.where-we-are', 'Where we are') ?></h2>
-	<p><?= tl('about.text.lagos-abuja-kano-enugu-ibadan', 'Lagos, Abuja, Kano, Enugu, Ibadan, Port Harcourt — and Accra, Nairobi, Johannesburg, London, Houston, Toronto. Wherever the family is.') ?></p>
-	<p><a class="pill" href="<?= e(App::url('/join')) ?>"><?= t('about.button.make-your-page-free', 'Make your page free') ?></a></p>
+	<p><?= tl('about.text.lagos-abuja-kano-enugu-ibadan', 'We are based in Abuja. Couples use the site across Nigeria, Ghana, Kenya, South Africa, the UK, the US, Canada and beyond.') ?></p>
+	<p><a class="pill" href="<?= e(App::url('/join')) ?>"><?= t('about.button.make-your-page-free', 'Create your page') ?></a></p>
 </article>

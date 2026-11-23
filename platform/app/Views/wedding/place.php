@@ -60,7 +60,7 @@ $filtered = $f['q'] !== '' || $f['plan'] !== '' || $f['city'] !== '';
 				<a class="pill pill--glass" href="<?= e($base) ?>">Every page in <?= e($in) ?></a>
 			<?php else: ?>
 				<p>No public wedding pages in <?= e($in) ?> yet. Getting married there? Yours can be the first, with gifts in <?= e(Fx::many($cur)) ?>.</p>
-				<a class="pill" href="<?= e(App::url('/join')) ?>">Make your page free</a>
+				<a class="pill" href="<?= e(App::url('/join')) ?>">Create your page</a>
 			<?php endif; ?>
 		</div>
 	<?php else: ?>
@@ -105,7 +105,7 @@ $filtered = $f['q'] !== '' || $f['plan'] !== '' || $f['city'] !== '';
 			<h2>Your page, your currency</h2>
 			<p class="sub">RSVPs, the programme, a registry and gifts in <?= e(Fx::many($cur)) ?>, and family back home can give and watch from anywhere.</p>
 		</div>
-		<a class="pill" href="<?= e(App::url('/join')) ?>">Make your page free</a>
+		<a class="pill" href="<?= e(App::url('/join')) ?>">Create your page</a>
 	</div>
 </section>
 

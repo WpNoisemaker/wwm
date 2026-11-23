@@ -7,7 +7,7 @@ $q = static function (array $over) use ($f): string {
 ?>
 <div class="page wrap">
 	<header class="page-head">
-		<span class="eyebrow"><?= t('weddings.eyebrow.real-pages-real-guests', 'Real pages, real guests') ?></span>
+		<span class="eyebrow"><?= t('weddings.eyebrow.real-pages-real-guests', 'Browse wedding pages') ?></span>
 		<h1><?= $f['q'] !== '' ? 'Weddings matching “' . e($f['q']) . '”' : 'Wedding pages' ?></h1>
 		<p class="lede"><?= e(number_format($total)) ?><?= $f['plan'] !== '' ? ' ' . e(Site::tier($f['plan'])) : '' ?> page<?= $total === 1 ? '' : 's' ?><?= $f['city'] !== '' ? ' in ' . e($f['city']) : ($f['country'] !== '' ? ' in ' . e($f['country']) : '') ?><?= $f['style'] !== '' ? ' · ' . e($f['style']) : '' ?></p>
 	</header>

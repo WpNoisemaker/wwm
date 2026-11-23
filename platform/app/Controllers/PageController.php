@@ -8,7 +8,7 @@ final class PageController
     {
         View::render('page/pricing', [
             'title'   => 'Pricing',
-            'desc'    => 'Start free. Pro, Premium and High Society are paid once per wedding, never monthly.',
+            'desc'    => 'Plans for your wedding website: Free, Pro, Premium and High Society. Paid once per wedding, never monthly.',
             'tab'     => '',
             'css'     => ['pages'],
             'pro'     => (int) Site::setting('pro_price', '198000'),

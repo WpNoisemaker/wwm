@@ -10,7 +10,7 @@ $plans = [
 <div class="page wrap">
 	<header class="page-head">
 		<span class="eyebrow"><?= t('pricing.eyebrow.paid-once-per-wedding-never', 'Paid once per wedding, never monthly') ?></span>
-		<h1><?= t('pricing.title.start-free-go-premium-for', 'Start free. Go Premium for the full owambe') ?></h1>
+		<h1><?= t('pricing.title.start-free-go-premium-for', 'Plans and prices') ?></h1>
 		<p class="lede"><?= t('pricing.intro.moving-up-later-only-costs', 'Moving up later only costs the difference. Everything you have added carries over, and the new plan’s features switch on the moment you upgrade.') ?></p>
 	</header>
 	<?= View::partial('partials/currency', ['cur' => $cur]) ?>

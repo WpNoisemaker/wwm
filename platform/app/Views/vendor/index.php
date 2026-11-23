@@ -8,7 +8,7 @@ $q = static function (array $o) use ($f): string {
 <div class="page wrap">
 	<header class="page-head">
 		<span class="eyebrow"><?= t('vendors.eyebrow.reviewed-by-couples-who-booked', 'Reviewed by couples who booked them') ?></span>
-		<h1><?= t('vendors.title.the-people-behind-the-day', 'The people behind the day') ?></h1>
+		<h1><?= t('vendors.title.the-people-behind-the-day', 'Wedding vendors') ?></h1>
 		<p class="lede"><?= e(number_format($total)) ?> vendor<?= $total === 1 ? '' : 's' ?><?= $f['city'] !== '' ? ' in ' . e($f['city']) : '' ?></p>
 	</header>
 	<form class="searchbox narrow" method="get" action="<?= e(App::url('/vendors')) ?>" role="search">
