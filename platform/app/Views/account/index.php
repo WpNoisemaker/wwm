@@ -51,18 +51,27 @@ $url     = App::url('/w/' . $w['slug']);
 			<?php endif; ?>
 		</div>
 
-		<?php if (Managed::has($w)): ?>
+		<?php if (Managed::has($w)):
+			// Premium and High Society: ask our team on WhatsApp or by email. The message is written for them,
+			// with the page, the account it belongs to and their permission for us to make the changes.
+			$me    = Auth::user();
+			$plan  = Site::tier((string) $w['plan']);
+			$ask   = "Hello Wedding Websites & More,\n\nPlease make these changes to our wedding page:\n\n[Write what you want added or changed here]\n\n"
+			       . "Wedding page: " . $url . "\nAccount email: " . (string) ($me['email'] ?? '') . "\nPlan: " . $plan . "\n\n"
+			       . "I give Wedding Websites & More express permission to sign in to our account and make these changes to our wedding page on our behalf.\n\n" . Wedding::names($w);
+			$wa    = preg_replace('/\D+/', '', Site::setting('whatsapp', ''));
+			$mail  = Site::setting('email', 'more@' . Share::host());
+			$subj  = 'Changes to our wedding page: ' . Wedding::names($w);
+		?>
 		<div class="gap-t" id="managed">
-			<details class="glass glass--plain glass--tight cdash__help"<?= array_filter($requests ?? [], static fn ($r) => $r['status'] !== 'done') ? ' open' : '' ?>>
-				<summary><span><span class="row-item__t">Want us to make the changes?</span><span class="row-item__s">This is optional. Your <?= e(Site::tier((string) $w['plan'])) ?> plan includes help from our team, but you can still do everything yourself.</span></span><?= icon('chev-down') ?></summary>
-				<?php if (!Managed::managing()): ?>
-				<form method="post" action="<?= e(App::url('/account/request')) ?>" enctype="multipart/form-data" class="form gap-t-sm">
-					<?= Guard::field() ?>
-					<label class="field"><span>What should we add or change?</span><textarea class="input" name="body" rows="3" required maxlength="4000" placeholder="Add the after-party on 20 December, 8pm, at the same venue."></textarea></label>
-					<label class="photo-pick"><input type="file" name="files[]" accept="image/jpeg,image/png,image/webp" multiple data-photo-input><?= icon('camera') ?><span data-photo-name>Add up to 3 photos</span></label>
-					<button class="pill pill--block" type="submit">Send to our team</button>
-				</form>
-				<?php endif; ?>
+			<div class="glass glass--plain glass--tight cdash__help">
+				<span class="row-item__t">Want us to make the changes?</span>
+				<span class="row-item__s">This is optional. Your <?= e($plan) ?> plan includes help from our team, but you can still do everything yourself. Send us what you want changed on WhatsApp or by email. The message is already written: add your changes and send it.</span>
+				<div class="cdash__ask">
+					<?php if ($wa !== ''): ?><a class="pill pill--wa" href="<?= e('https://wa.me/' . $wa . '?text=' . rawurlencode($ask)) ?>" target="_blank" rel="noopener"><?= icon('chat') ?>WhatsApp us</a><?php endif; ?>
+					<a class="pill pill--glass" href="<?= e('mailto:' . $mail . '?subject=' . rawurlencode($subj) . '&body=' . rawurlencode($ask)) ?>"><?= icon('mail') ?>Email us</a>
+				</div>
+				<p class="help">The message includes your page link, your account email and your written permission for our team to make the changes. Never send us your password: our team can open your page without it.</p>
 				<?php if (!empty($requests)): ?>
 					<div class="rows gap-t-sm">
 						<?php foreach ($requests as $rq): ?>
@@ -71,7 +80,7 @@ $url     = App::url('/w/' . $w['slug']);
 						<?php endforeach; ?>
 					</div>
 				<?php endif; ?>
-			</details>
+			</div>
 		</div>
 		<?php endif; ?>
 

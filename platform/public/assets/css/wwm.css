@@ -2528,3 +2528,9 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .promo--band .promo-shot__phone { width: 54%; border-width: 3px; border-radius: 12px; bottom: -14%; }
 .promo--band .promo-shot__phone::before { height: 4px; top: 3px; }
 @media (min-width: 960px) { .promo--band { grid-template-columns: 140px minmax(0, 1fr); } .promo--band .promo-shot { width: 140px; } }
+.cdash__help { display: grid; gap: 6px; }
+.cdash__help .row-item__s { white-space: normal; overflow: visible; }
+.cdash__ask { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0 4px; }
+.cdash__ask .pill { height: 50px; padding: 0 22px; }
+.cdash__ask .ico { width: 17px; height: 17px; }
+.pill--wa { background: #25D366; color: #08341A; }
