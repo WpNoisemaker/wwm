@@ -24,7 +24,7 @@ $more = [
 	</nav>
 	<div class="mnu__foot">
 		<?php if ($in): ?>
-			<a class="pill pill--block" href="<?= e(App::url('/account')) ?>">Your page</a>
+			<a class="pill pill--block" href="<?= e(App::url('/account')) ?>">My account</a>
 		<?php else: ?>
 			<a class="pill pill--block" href="<?= e(App::url('/join')) ?>">Create your page</a>
 			<a class="pill pill--block pill--glass" href="<?= e(App::url('/sign-in')) ?>">Sign in</a>

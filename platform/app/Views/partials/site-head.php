@@ -14,7 +14,7 @@ $nav = require __DIR__ . '/nav.php';
 		<a class="cbtn" href="<?= e(App::url('/search')) ?>" aria-label="Search"><?= icon('search') ?></a>
 		<button class="cbtn" type="button" data-theme-toggle aria-label="Switch between day and night"><?= icon('moon') ?></button>
 		<?php if (Auth::check()): ?>
-			<a class="pill pill--sm" href="<?= e(App::url('/account')) ?>">Your page</a>
+			<a class="pill pill--sm" href="<?= e(App::url('/account')) ?>">My account</a>
 		<?php else: ?>
 			<a class="link" href="<?= e(App::url('/sign-in')) ?>">Sign in</a>
 			<a class="pill pill--sm" href="<?= e(App::url('/join')) ?>">Create your page</a>

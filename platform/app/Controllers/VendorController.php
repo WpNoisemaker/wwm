@@ -82,7 +82,7 @@ final class VendorController
         $me = (int) Auth::id();
         $back = 'Location: ' . App::url('/vendors/' . $v['slug'] . '#reviews');
         if (!Market::canReview($v, $me)) {
-            Guard::flash('bad', 'Reviews come from customers who have messaged ' . $v['name'] . ' here.');
+            Guard::flash('bad', 'Reviews come from couples who booked ' . $v['name'] . ' and from guests at their weddings. If you booked them, add them to your wedding page under Vendors first.');
             header($back);
             exit;
         }

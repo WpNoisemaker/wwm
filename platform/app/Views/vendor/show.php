@@ -97,7 +97,7 @@ $here = '/vendors/' . $v['slug'];
 				<button class="pill" type="submit"><?= $myReview ? 'Update my review' : 'Post my review' ?></button>
 			</form>
 		<?php elseif (!$mine): ?>
-			<p class="help center">Reviews come from customers who have messaged <?= e($v['name']) ?> here.</p>
+			<p class="help center">Reviews come from couples who booked <?= e($v['name']) ?> and from guests at their weddings.<?php if (Auth::check()): ?> Booked them? <a class="linkish" href="<?= e(App::url('/account/vendors')) ?>">Add them to your wedding page</a>, then review them here.<?php endif; ?></p>
 		<?php endif; ?>
 		<?php if (!$reviews): ?>
 			<div class="glass glass--plain empty"><span class="cbtn"><?= icon('star') ?></span><p>No reviews yet.</p></div>
@@ -107,7 +107,7 @@ $here = '/vendors/' . $v['slug'];
 					<figure class="review">
 						<p class="stars" aria-label="<?= (int) $r['stars'] ?> out of 5"><?= $stars((int) $r['stars']) ?></p>
 						<blockquote><?= e((string) $r['body']) ?></blockquote>
-						<figcaption><?= e((string) ($r['name'] ?: 'A customer')) ?><?php if (!empty($r['guest']) && !empty($r['wslug'])): ?>, guest at <a href="<?= e(App::url('/w/' . $r['wslug'])) ?>"><?= e(Wedding::names($r)) ?></a>&rsquo;s wedding<?php endif; ?> · <?= e(ago((string) $r['created_at'])) ?></figcaption>
+						<figcaption><?php if (!empty($r['wslug']) && empty($r['guest'])): ?><a href="<?= e(App::url('/w/' . $r['wslug'])) ?>"><?= e((string) $r['name']) ?></a>, who booked them<?php elseif (!empty($r['wslug'])): ?><?= e((string) ($r['name'] ?: 'A guest')) ?>, a guest at <a href="<?= e(App::url('/w/' . $r['wslug'])) ?>"><?= e(Wedding::names($r)) ?></a>&rsquo;s wedding<?php else: ?><?= e((string) ($r['name'] ?: 'A customer')) ?><?php endif; ?> · <?= e(ago((string) $r['created_at'])) ?></figcaption>
 						<?php if (trim((string) $r['reply']) !== ''): ?><p class="review__reply"><b><?= e($v['name']) ?> replied</b><?= e((string) $r['reply']) ?></p><?php endif; ?>
 					</figure>
 				<?php endforeach; ?>

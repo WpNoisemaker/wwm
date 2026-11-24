@@ -525,7 +525,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 			<p class="sub"><?= e($design['name']) ?> design · Made on <a href="<?= e(App::url('/')) ?>">Wedding Websites &amp; More</a> · <a href="<?= e(App::url('/join')) ?>">Make your own page</a></p>
 		<?php else: ?>
 			<p class="sub"><?= e($design['name']) ?> design · Made on <a href="<?= e(App::url('/')) ?>">Wedding Websites &amp; More</a></p>
-			<a class="pill pill--glass wed-foot__cta" href="<?= e(App::url('/pricing#premium')) ?>">Make your own Premium wedding page, designed your way</a>
+			<a class="pill pill--glass wed-foot__cta" href="<?= e(App::url('/pricing#premium')) ?>">Make your own Premium page: choose a design and set your own colours</a>
 		<?php endif; ?>
 	</footer>
 </article>

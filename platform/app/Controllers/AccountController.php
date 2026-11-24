@@ -134,7 +134,7 @@ final class AccountController
 
     private function show(string $tpl, array $data): void
     {
-        View::render('account/' . $tpl, $data + ['tab' => 'account', 'appTitle' => $tpl === 'index' ? 'Your Page' : mb_strimwidth((string) $data['title'], 0, 18, '…'), 'back' => $tpl === 'index' ? null : App::url('/account')]);
+        View::render('account/' . $tpl, $data + ['tab' => 'account', 'appTitle' => $tpl === 'index' ? 'My Account' : mb_strimwidth((string) $data['title'], 0, 18, '…'), 'back' => $tpl === 'index' ? null : App::url('/account')]);
     }
 
     private static function go(string $p): never

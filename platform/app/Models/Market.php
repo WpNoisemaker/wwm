@@ -270,17 +270,28 @@ final class Market
     /* ------------------------------------------------------------------ reviews */
 
     /** Only customers who have written to the seller here can review them. */
+    /**
+     * Reviews come from the couples who booked a vendor (they list them on their wedding page) and
+     * from the guests at those weddings (who review from the wedding page itself).
+     */
     public static function canReview(array $v, int $me): bool
     {
-        return $me > 0 && (int) $v['user_id'] !== $me
-            && (bool) Db::val("SELECT 1 FROM messages WHERE partner_id = ? AND user_id = ? AND sender = 'user' LIMIT 1", [(int) $v['user_id'], $me]);
+        return $me > 0 && (int) $v['user_id'] !== $me && self::bookedBy($v, $me) !== null;
+    }
+
+    /** The wedding of this signed-in person that lists this vendor, if any. */
+    public static function bookedBy(array $v, int $me): ?array
+    {
+        return Db::one('SELECT w.* FROM weddings w JOIN wedding_vendors wv ON wv.wedding_id = w.id AND wv.vendor_id = ? WHERE w.owner_id = ? ORDER BY w.id LIMIT 1', [(int) $v['id'], $me]);
     }
 
     public static function review(array $v, int $me, int $stars, string $body): void
     {
-        $name = (string) Db::val('SELECT name FROM users WHERE id = ?', [$me], '');
+        // A couple's review carries their names and their wedding, so it reads "Chidi & Amaka".
+        $w = self::bookedBy($v, $me);
+        $name = $w ? Wedding::names($w) : (string) Db::val('SELECT name FROM users WHERE id = ?', [$me], '');
         $old = Db::val('SELECT id FROM reviews WHERE vendor_id = ? AND user_id = ?', [$v['id'], $me]);
-        $row = ['stars' => max(1, min(5, $stars)), 'body' => mb_substr($body, 0, 2000), 'name' => mb_substr($name, 0, 160), 'status' => 'live'];
+        $row = ['stars' => max(1, min(5, $stars)), 'body' => mb_substr($body, 0, 2000), 'name' => mb_substr($name, 0, 160), 'status' => 'live', 'wedding_id' => $w['id'] ?? null, 'guest' => 0];
         if ($old) {
             Db::update('reviews', $row, 'id = ?', [$old]);
         } else {

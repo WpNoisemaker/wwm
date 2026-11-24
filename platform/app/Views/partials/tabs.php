@@ -7,7 +7,7 @@ $tabs = [
 	['ring', 'Weddings', '/weddings', 'weddings'],
 	null,
 	['chat', 'Anonymous Community', '/community', 'community'],
-	['user', $in ? 'You' : 'Sign in', $in ? '/account' : '/sign-in', 'account'],
+	['user', $in ? 'Account' : 'Sign in', $in ? '/account' : '/sign-in', 'account'],
 ];
 ?>
 <nav class="tabbar" aria-label="App">
