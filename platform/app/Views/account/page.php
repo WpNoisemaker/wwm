@@ -33,7 +33,7 @@ $isPremium = Wedding::rank((string) $w['plan']) >= Wedding::rank('premium');
 					<?php foreach ($choices as $k => $label): ?><option value="<?= e($k) ?>"<?= Design::get((string) $w['template'])['key'] === $k ? ' selected' : '' ?>><?= e($label) ?></option><?php endforeach; ?>
 				</select>
 			</label>
-			<p class="help"><?= $isPremium ? 'Your page uses this design.' : 'Free pages use Classic in black &amp; white, and Pro pages use Classic in your colours.' ?> <a class="linkish" href="<?= e(App::url('/templates')) ?>">See them all</a></p>
+			<p class="help"><?= $isPremium ? 'Your page uses this design.' : 'Free pages use Classic in black &amp; white, and Pro pages use Classic in your colours.' ?></p>
 			<?php if (!$isPremium): ?><div class="lock-row gap-t-sm"><span class="help">Ten more designs, from Royal to Savannah</span><?= up_tag('premium', 'Every Premium design') ?></div><?php endif; ?>
 			<?php if (Wedding::has($w, 'colours')): ?>
 				<div class="form-grid form-grid--2 gap-t-sm">

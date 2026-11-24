@@ -139,4 +139,15 @@ final class Site
     {
         return array_column(Db::all('SELECT k, v FROM settings'), 'v', 'k');
     }
+
+    /** The key in the private link to the designs page. Made on first use; HQ can change it. */
+    public static function designsKey(bool $fresh = false): string
+    {
+        $k = $fresh ? '' : self::setting('designs_key', '');
+        if ($k === '') {
+            $k = bin2hex(random_bytes(10));
+            Db::run('INSERT INTO settings (k, v) VALUES (?, ?) ON DUPLICATE KEY UPDATE v = VALUES(v)', ['designs_key', $k]);
+        }
+        return $k;
+    }
 }

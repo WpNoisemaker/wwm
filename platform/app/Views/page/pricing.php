@@ -28,7 +28,7 @@ $plans = [
 		<?php endforeach; ?>
 	</div>
 	<p class="center sub gap-t">A Free or Pro page adds a <?= e($fee) ?>% service fee to cash gifts, which guests can choose to cover. Premium adds none.</p>
-	<p class="center gap-t-sm"><a class="linkish" href="<?= e(App::url(Auth::check() ? '/templates' : '/sign-in?to=%2Ftemplates')) ?>"><?= t('pricing.button.see-every-premium-design-on', 'See every Premium design on a real page') ?></a> · <a class="linkish" href="<?= e(App::url('/rankings#coins')) ?>"><?= t('pricing.button.how-each-plan-earns-buzz', 'How each plan earns buzz') ?></a></p>
+	<p class="center gap-t-sm"><a class="linkish" href="<?= e(App::url('/rankings#coins')) ?>"><?= t('pricing.button.how-each-plan-earns-buzz', 'How each plan earns buzz') ?></a></p>
 	<p class="center sub gap-t-sm">Paid pages stay live for good. Free pages can be removed at any time. All payments are final, and there are <a class="linkish" href="<?= e(App::url('/refunds')) ?>"><?= t('pricing.button.no-refunds', 'no refunds') ?></a>.</p>
 </div>
 

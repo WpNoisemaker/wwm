@@ -43,8 +43,8 @@ foreach ($routes as $r) {
 
     // A 302 to sign-in is the right answer for the account and HQ areas when signed out.
     $gated = in_array($code, [302, 303], true) && str_starts_with($r, '/account') === false ? false : true;
-    $ok    = $code === 200 || (in_array($code, [302, 303], true) && (str_starts_with($r, '/account') || str_starts_with($r, '/hq') || str_starts_with($r, '/pay/') || $r === '/templates'))
-          || ($r === '/w/tolu-ayo' && $code === 401) || ($r === '/nope-not-a-page' && $code === 404);
+    $ok    = $code === 200 || (in_array($code, [302, 303], true) && (str_starts_with($r, '/account') || str_starts_with($r, '/hq') || str_starts_with($r, '/pay/')))
+          || ($r === '/w/tolu-ayo' && $code === 401) || ($r === '/nope-not-a-page' && $code === 404) || ($r === '/templates' && $code === 404);
 
     // A page that returns 200 but printed a PHP error is not actually fine.
     $err = '';

@@ -64,7 +64,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 	</div>
 	<div class="mosaic feat reveal">
 		<?php foreach ([
-			['s-ring', t('home.tile.pages', 'Wedding pages'), t('home.tileline.pages', 'Put your invitation, story, schedule, venue and dress code on one link that you share with guests.'), '/templates'],
+			['s-ring', t('home.tile.pages', 'Wedding pages'), t('home.tileline.pages', 'Put your invitation, story, schedule, venue and dress code on one link that you share with guests.'), '/weddings'],
 			['s-users', t('home.tile.rsvp', 'RSVP & guest list'), t('home.tileline.rsvp', 'Guests tell you whether they are coming, without needing an account. You get the guest list and entry passes.'), '/pricing'],
 			['s-gift', t('home.tile.gifts', 'Gifts & spraying'), t('home.tileline.gifts', 'Guests send cash gifts and spray you online, from any country.'), '/pricing'],
 			['s-live', t('home.tile.live', 'Livestream'), t('home.tileline.live', 'Stream the ceremony on your page for family who cannot be there.'), '/pricing'],
@@ -111,7 +111,6 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 			</a>
 		<?php endforeach; ?>
 	</div>
-	<p class="sec-more reveal"><a class="pill pill--glass pill--sm" href="<?= e(App::url('/templates')) ?>">Compare every design <?= icon('arrow') ?></a></p>
 </section>
 <?php endif; ?>
 

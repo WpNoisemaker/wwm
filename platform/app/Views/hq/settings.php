@@ -24,6 +24,11 @@
 			<h2 class="h3 gap-t-sm">Email confirmation</h2>
 			<label class="check"><span>Ask new sign-ups to confirm their email</span><input type="checkbox" name="email_verify" value="1" <?= $verify['on'] ? 'checked' : '' ?>></label>
 			<p class="help">This stays off until you turn it on. When it is on, anyone who signs up from then on must follow a link before making their page public or asking for a payout. Existing accounts are never asked.<?php if ($verify['on'] && $verify['since'] !== ''): ?> It has been on since <?= e(date('j M Y, g:ia', (int) strtotime($verify['since']))) ?>.<?php endif; ?></p>
+			<h2 class="h3 gap-t-sm">Designs page: private link</h2>
+			<p class="help">The page with every design is hidden. Nothing on the site links to it and search engines skip it. Share this link with a client when you want them to see it.</p>
+			<?php $dl = App::url('/templates?k=' . Site::designsKey()); ?>
+			<div class="door__row"><input class="input" value="<?= e($dl) ?>" readonly aria-label="Private link to the designs page"><button class="pill pill--sm pill--glass" type="button" data-copy="<?= e($dl) ?>" data-copied="Link copied"><?= icon('copy') ?>Copy</button></div>
+			<label class="check"><span>Make a new link (the old one stops working)</span><input type="checkbox" name="designs_new" value="1"></label>
 			<h2 class="h3 gap-t-sm">Spraying: the ₦1,000 notes</h2>
 			<p class="help">When a guest's spray lands, notes fly across their screen. Upload clear photos of a real ₦1,000 note, front and back, cropped to the edges of the note. Until you do, a plain drawn note is used.</p>
 			<?php foreach (['front' => 'Front of the note', 'back' => 'Back of the note'] as $side => $label): $cur = Site::setting('spray_note_' . $side, ''); ?>

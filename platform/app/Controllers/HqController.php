@@ -109,6 +109,9 @@ final class HqController
                     Db::run('INSERT INTO settings (k, v) VALUES (?, ?) ON DUPLICATE KEY UPDATE v = VALUES(v)', ['spray_note_' . $side, $img]);
                 }
             }
+            if (!empty($_POST['designs_new'])) {
+                Site::designsKey(true);   // the old private link stops working
+            }
             // A ticked box is present in the POST, an unticked one is simply absent.
             Verify::set(isset($_POST['email_verify']));
             Guard::flash('ok', 'Saved. The pricing page now shows these prices.');

@@ -20,8 +20,16 @@ final class SiteController
     /** Every design, each shown on a real page that wears it. */
     public function templates(): void
     {
-        // The full design gallery is for signed-in people only.
-        Auth::wall();
+        // Hidden: nothing on the site links here. It opens only from the private link HQ shares
+        // with a client (/templates?k=…), or for our own team. Everyone else is told it does not exist.
+        $k = (string) ($_GET['k'] ?? '');
+        if (!(($k !== '' && hash_equals(Site::designsKey(), $k)) || Staff::can('content') || Staff::can('settings'))) {
+            http_response_code(404);
+            View::render('errors/404', ['title' => 'Not here']);
+            return;
+        }
+        header('X-Robots-Tag: noindex, nofollow');
+        header('Cache-Control: private, no-store');
         View::render('site/templates', [
             'title'    => 'Wedding page designs',
             'desc'     => 'Every wedding page design: Classic for Free and Pro pages, ten Premium designs and custom designs made for one couple.',
@@ -177,6 +185,6 @@ final class SiteController
     public function robots(): void
     {
         header('Content-Type: text/plain; charset=utf-8');
-        echo "User-agent: *\nDisallow: /account\nDisallow: /hq\nDisallow: /sign-in\nDisallow: /join\nDisallow: /forgot\nDisallow: /reset\nDisallow: /verify\nDisallow: /search\nDisallow: /pay\nDisallow: /templates\nAllow: /\n\n" . implode('', array_map(static fn (string $bot): string => "User-agent: $bot\nDisallow: /\n\n", ['GPTBot', 'ChatGPT-User', 'OAI-SearchBot', 'ClaudeBot', 'Claude-Web', 'anthropic-ai', 'CCBot', 'Google-Extended', 'PerplexityBot', 'Bytespider', 'Applebot-Extended', 'meta-externalagent', 'Diffbot', 'Omgilibot', 'cohere-ai'])) . "Sitemap: " . App::url('/sitemap.xml') . "\n";
+        echo "User-agent: *\nDisallow: /account\nDisallow: /hq\nDisallow: /sign-in\nDisallow: /join\nDisallow: /forgot\nDisallow: /reset\nDisallow: /verify\nDisallow: /search\nDisallow: /pay\nAllow: /\n\n" . implode('', array_map(static fn (string $bot): string => "User-agent: $bot\nDisallow: /\n\n", ['GPTBot', 'ChatGPT-User', 'OAI-SearchBot', 'ClaudeBot', 'Claude-Web', 'anthropic-ai', 'CCBot', 'Google-Extended', 'PerplexityBot', 'Bytespider', 'Applebot-Extended', 'meta-externalagent', 'Diffbot', 'Omgilibot', 'cohere-ai'])) . "Sitemap: " . App::url('/sitemap.xml') . "\n";
     }
 }

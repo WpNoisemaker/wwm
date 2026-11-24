@@ -25,7 +25,6 @@
 			</ul></div>
 			<div><h2><?= t('site.heading.samples', 'Samples') ?></h2><ul>
 				<li><a href="<?= e(App::url('/w/ibrahim-ummi')) ?>">Premium page</a></li>
-				<?php if (Auth::check()): ?><li><a href="<?= e(App::url('/templates')) ?>">All designs</a></li><?php endif; ?>
 				<li><a href="<?= e(App::url('/w/kola-lara')) ?>">Free page</a></li>
 			</ul></div>
 			<div><h2><?= t('site.heading.help', 'Help') ?></h2><ul>
