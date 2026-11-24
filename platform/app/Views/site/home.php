@@ -40,7 +40,7 @@ $premiumDesigns = array_filter(Design::ALL, static fn ($d) => $d[1] !== 'free');
 	<div class="showcase" aria-label="The top-ranked weddings">
 		<?php foreach ($show as $n => $w): ?>
 			<a class="card showcase__i" href="<?= e(App::url('/w/' . $w['slug'])) ?>">
-				<span class="sq"><?= photo((string) $w['cover'], Wedding::names($w), $n < 2) ?: '<span class="fill-art" aria-hidden="true">' . initials($w) . '</span>' ?><span class="sq__rank" aria-label="Ranked <?= $n + 1 ?>">#<?= $n + 1 ?></span></span>
+				<span class="sq"><?= photo((string) $w['cover'], Wedding::names($w), $n < 2) ?: '<span class="fill-art" aria-hidden="true">' . initials($w) . '</span>' ?><span class="showcase__n" aria-label="Ranked <?= $n + 1 ?>"><?= $n + 1 ?></span></span>
 				<span class="card__cap"><span class="card__t"><?= e(Wedding::names($w)) ?></span><span class="card__s"><?= e(Wedding::place($w)) ?></span></span>
 			</a>
 		<?php endforeach; ?>
