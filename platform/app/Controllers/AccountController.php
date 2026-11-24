@@ -684,6 +684,10 @@ final class AccountController
                     Guard::flash('bad', 'A listing needs a title.');
                     self::go('/account/shop');
                 }
+                if (!$v) {
+                    Guard::flash('bad', 'Fill in your business profile first. Buyers see it on every listing you add.');
+                    self::go('/account/shop/profile');
+                }
                 $old = $id ? Db::one('SELECT * FROM listings WHERE id = ? AND partner_id = ?', [$id, $uid]) : null;
                 if ($id && !$old) {
                     self::go('/account/shop');

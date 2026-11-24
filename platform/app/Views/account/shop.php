@@ -33,6 +33,9 @@ $photoManager = static function (array $l): string {
 };
 ?>
 <?= View::partial('account/_head', ['h' => $v ? (string) $v['name'] : 'Your shop', 'sub' => 'Your seller shop', 'now' => 'shop']) ?>
+	<?php if (!$v): ?>
+		<p class="note note--bad"><?= icon('store') ?><span>Fill in your business profile before you list anything. Your logo, name and city show on every listing, and buyers open your profile from there.</span><a class="pill pill--sm" href="<?= e(App::url('/account/shop/profile')) ?>">Fill it in</a></p>
+	<?php endif; ?>
 	<div class="split-2">
 		<div class="acct-list">
 			<?php foreach ($rows as $l): $ph = first_photo((string) $l['photos']); ?>
@@ -52,6 +55,7 @@ $photoManager = static function (array $l): string {
 						<label class="field span-2"><span>About it</span><textarea class="input" name="about" rows="5"><?= e((string) $l['about']) ?></textarea></label>
 						<label class="field"><span>Status</span><select class="input" name="status"><option value="live"<?= $l['status'] === 'live' ? ' selected' : '' ?>>Live</option><option value="paused"<?= $l['status'] !== 'live' ? ' selected' : '' ?>>Paused</option></select></label>
 						<?= $photoManager($l) ?>
+						<?php if (count(Listing::photos($l)) < 3): ?><p class="help span-2">Add a few more photos. Buyers swipe through every photo on your listing card, and listings with several photos get more messages.</p><?php endif; ?>
 						<label class="photo-pick span-2"><input type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple data-photo-input><?= icon('camera') ?><span data-photo-name>Add photos (you can choose several at once)</span></label>
 					</div>
 					<div class="form-actions"><button class="pill pill--sm" type="submit">Save</button><button class="pill pill--sm pill--danger" type="submit" name="do" value="delete" data-confirm="Remove this listing from the marketplace?">Remove</button></div>

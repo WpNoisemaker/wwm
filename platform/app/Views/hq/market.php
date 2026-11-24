@@ -9,6 +9,22 @@ $state = ['active' => 'Live', 'suspended' => 'Paused, verifying', 'removed' => '
 ?>
 <?= View::partial('hq/_head', ['h' => 'Marketplace', 'now' => 'market', 'sub' => 'Sellers, reports and categories']) ?>
 	<div class="form-actions"><a class="pill pill--sm pill--glass" href="<?= e(App::url('/hq/categories')) ?>"><?= icon('grid') ?>Categories</a></div>
+	<?php if (!empty($unlinked)): ?>
+		<section class="glass glass--plain glass--tight acct-card gap-t" id="unlinked">
+			<h2 class="h3"><?= count($unlinked) === 1 ? '1 listing has no seller profile' : count($unlinked) . ' listings have no seller profile' ?></h2>
+			<p class="help">These were added from an account that has not filled in a business profile, so the listing shows no seller. Link each one to the seller it belongs to, or ask the account owner to fill in their business profile.</p>
+			<div class="rows">
+				<?php foreach ($unlinked as $u): ?>
+					<form method="post" class="row-item hq-link">
+						<?= Guard::field() ?><input type="hidden" name="do" value="link"><input type="hidden" name="listing_id" value="<?= (int) $u['id'] ?>">
+						<span><a class="row-item__t" href="<?= e(App::url('/market/' . $u['slug'])) ?>"><?= e($u['title']) ?></a><span class="row-item__s">Added by <?= e(trim((string) ($u['uname'] ?: 'an account') . ($u['email'] ? ' · ' . $u['email'] : ''))) ?></span></span>
+						<select class="input" name="vendor_id" aria-label="Seller for <?= e($u['title']) ?>" required><option value="">Choose the seller</option><?php foreach ($allSellers as $s): ?><option value="<?= (int) $s['id'] ?>"><?= e($s['name'] . ($s['city'] ? ' · ' . $s['city'] : '')) ?></option><?php endforeach; ?></select>
+						<button class="pill pill--sm" type="submit">Link</button>
+					</form>
+				<?php endforeach; ?>
+			</div>
+		</section>
+	<?php endif; ?>
 	<p class="help">Once a seller has <?= Market::SUSPEND_AT ?> open reports, they are paused automatically and emailed to verify their business by hand. At <?= Market::REMOVE_AT ?>, they are removed from the site. You can reverse either step here.</p>
 	<div class="acct-list gap-t-sm">
 		<?php foreach ($sellers as $v): $n = (int) $v['reports']; $st = (string) ($v['status'] ?? 'active'); ?>

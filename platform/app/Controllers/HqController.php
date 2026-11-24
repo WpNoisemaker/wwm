@@ -523,6 +523,15 @@ final class HqController
     public function market(): void
     {
         $this->gate('market');
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && ($_POST['do'] ?? '') === 'link') {
+            // A listing added from an account with no business profile: show it as this seller's.
+            Guard::must();
+            $vid = (int) ($_POST['vendor_id'] ?? 0);
+            Db::run('UPDATE listings SET vendor_id = ? WHERE id = ?', [$vid ?: null, (int) ($_POST['listing_id'] ?? 0)]);
+            Guard::flash('ok', $vid ? 'Linked. The listing now shows that seller’s profile.' : 'Unlinked.');
+            header('Location: ' . App::url('/hq/market#unlinked'));
+            exit;
+        }
         if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             Guard::must();
             $v = Db::one('SELECT * FROM vendors WHERE id = ?', [(int) ($_POST['id'] ?? 0)]);
@@ -579,7 +588,11 @@ final class HqController
                           WHERE r.status = 'open' ORDER BY r.created_at DESC") as $r) {
             $reports[(int) $r['vendor_id']][] = $r;
         }
-        $this->show('market', ['title' => 'Marketplace', 'sellers' => $sellers, 'reports' => $reports]);
+        // Listings with no business profile behind them: they show no seller until one is linked.
+        $unlinked = Db::all("SELECT l.id, l.slug, l.title, u.name uname, u.email FROM listings l LEFT JOIN users u ON u.id = l.partner_id
+                             WHERE l.vendor_id IS NULL AND NOT EXISTS (SELECT 1 FROM vendors v WHERE v.user_id = l.partner_id) ORDER BY l.id DESC");
+        $this->show('market', ['title' => 'Marketplace', 'sellers' => $sellers, 'reports' => $reports, 'unlinked' => $unlinked,
+            'allSellers' => Db::all("SELECT id, name, city FROM vendors WHERE status <> 'removed' ORDER BY name")]);
     }
 
     /** A seller gone for good: their shop, listings and reports. Their account stays, as an ordinary one. */

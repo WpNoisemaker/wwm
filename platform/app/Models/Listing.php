@@ -5,11 +5,15 @@ declare(strict_types=1);
 final class Listing
 {
     /** Who sells it: their business name, profile address and whether HQ has verified them. */
-    private const SELLER = "(SELECT v.name FROM vendors v WHERE v.user_id = l.partner_id ORDER BY v.verified DESC, v.id LIMIT 1) seller,
-        (SELECT v.slug FROM vendors v WHERE v.user_id = l.partner_id ORDER BY v.verified DESC, v.id LIMIT 1) seller_slug,
-        (SELECT MAX(v.verified) FROM vendors v WHERE v.user_id = l.partner_id) seller_ok,
-        (SELECT v.logo FROM vendors v WHERE v.user_id = l.partner_id ORDER BY v.verified DESC, v.id LIMIT 1) seller_logo,
-        (SELECT v.city FROM vendors v WHERE v.user_id = l.partner_id ORDER BY v.verified DESC, v.id LIMIT 1) seller_city";
+    /** Which business profile sells it: the one HQ linked, or else the profile of the account that added it. */
+    private const SV = "COALESCE(l.vendor_id, (SELECT v0.id FROM vendors v0 WHERE v0.user_id = l.partner_id ORDER BY v0.verified DESC, v0.id LIMIT 1))";
+
+    /** Who sells it: their business name, profile address, logo, city and whether HQ has verified them. */
+    private const SELLER = "(SELECT v.name FROM vendors v WHERE v.id = " . self::SV . ") seller,
+        (SELECT v.slug FROM vendors v WHERE v.id = " . self::SV . ") seller_slug,
+        (SELECT v.verified FROM vendors v WHERE v.id = " . self::SV . ") seller_ok,
+        (SELECT v.logo FROM vendors v WHERE v.id = " . self::SV . ") seller_logo,
+        (SELECT v.city FROM vendors v WHERE v.id = " . self::SV . ") seller_city";
 
     /** A listing shows only while its seller is in good standing (not paused or removed after reports). */
     private const SELLER_OK = "NOT EXISTS (SELECT 1 FROM vendors sv WHERE sv.user_id = l.partner_id AND sv.status <> 'active')";

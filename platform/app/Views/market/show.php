@@ -5,7 +5,7 @@
  * then more like it.
  */
 $photos = Listing::photos($l);
-$v = Market::seller((int) $l['partner_id']);
+$v = !empty($l['vendor_id']) ? Db::one('SELECT * FROM vendors WHERE id = ?', [(int) $l['vendor_id']]) : Market::seller((int) $l['partner_id']);
 $me = (int) Auth::id();
 $mine = $me && $me === (int) $l['partner_id'];
 $here = '/market/' . $l['slug'];

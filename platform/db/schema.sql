@@ -317,6 +317,8 @@ CREATE TABLE reviews (
 CREATE TABLE listings (
   id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
   partner_id INT UNSIGNED NOT NULL,
+  -- The business profile shown on the listing. Empty: the profile of the account that added it.
+  vendor_id  INT UNSIGNED NULL,
   slug       VARCHAR(160) NOT NULL,
   title      VARCHAR(190) NOT NULL,
   kind       VARCHAR(40)  NOT NULL DEFAULT 'service',   -- a category slug: only HQ opens new ones
@@ -334,6 +336,7 @@ CREATE TABLE listings (
   UNIQUE KEY uq_slug (slug),
   UNIQUE KEY uq_wp (wp_id),
   KEY ix_partner (partner_id, status),
+  KEY ix_vendor (vendor_id),
   KEY ix_kind (kind, state, city, status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
