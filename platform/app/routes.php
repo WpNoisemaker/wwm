@@ -119,6 +119,7 @@ $r->get('/hq/weddings',         [HqController::class, 'weddings']);
 $r->get('/hq/people',           [HqController::class, 'people']);
 $r->get('/hq/money',            [HqController::class, 'money']);
 $r->any('/hq/settings',         [HqController::class, 'settings']);
+$r->any('/hq/menus',            [HqController::class, 'menus']);
 $r->post('/hq/test-mail',       [HqController::class, 'testMail']);
 $r->post('/hq/demo/add',        [HqController::class, 'demoAdd']);
 $r->post('/hq/demo/remove',     [HqController::class, 'demoRemove']);

@@ -73,6 +73,25 @@ final class HqController
         ]);
     }
 
+    /** The site's menus: main menu, phone-only extras and the footer groups. */
+    public function menus(): void
+    {
+        $this->gate('settings');
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+            Guard::must();
+            if (!empty($_POST['reset'])) {
+                Menu::reset();
+                Guard::flash('ok', 'The menus are back to how they were first set up.');
+            } else {
+                Menu::save($_POST);
+                Guard::flash('ok', 'Saved. The menus on the site now show these links.');
+            }
+            header('Location: ' . App::url('/hq/menus'));
+            exit;
+        }
+        $this->show('menus', ['title' => 'Menus', 'menus' => Menu::all()]);
+    }
+
     public function settings(): void
     {
         $this->gate('settings');

@@ -2544,3 +2544,11 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .photo-card .help { margin: 0 0 6px; }
 .photo-card .photo-add { margin: 0; text-align: left; }
 .squad-join__form { max-width: 720px; margin: 16px auto 0; } .squad-join .help.center { max-width: 560px; margin: 0 auto; } .rsvp-wait .sq.rsvp-wait__face { width: 56px; height: 56px; aspect-ratio: 1; }
+
+/* ---------- HQ: menus ---------- */
+.menu-row { display: grid; grid-template-columns: 70px minmax(0, 1fr) minmax(0, 1.3fr) 110px auto; gap: 8px; align-items: center; }
+.menu-row--plain { grid-template-columns: 70px minmax(0, 1fr) minmax(0, 1.3fr) auto; }
+.menu-row .input { height: 46px; }
+.menu-row__off { font-size: 13px; color: var(--ink-2); white-space: nowrap; }
+.menu-group { display: grid; grid-template-columns: minmax(0, 1fr) 90px auto; gap: 8px; align-items: end; }
+@media (max-width: 699px) { .menu-row, .menu-row--plain { grid-template-columns: 60px minmax(0, 1fr); } .menu-row > :nth-child(n + 3) { grid-column: 2; } }

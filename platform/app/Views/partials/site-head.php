@@ -7,7 +7,7 @@ $nav = require __DIR__ . '/nav.php';
 	<a class="brand" href="<?= e(App::url('/')) ?>"><span class="cbtn"><span class="logo">&amp;</span></span>Wedding Websites &amp; More</a>
 	<nav class="site-nav" aria-label="Sections">
 		<?php foreach ($nav as [$i, $t, $h, $k]): ?>
-			<a href="<?= e(App::url($h)) ?>"<?= $now === $k ? ' class="is-here" aria-current="page"' : '' ?>><?= e($t) ?></a>
+			<a href="<?= e(Menu::href($h)) ?>"<?= $now === $k ? ' class="is-here" aria-current="page"' : '' ?>><?= e($t) ?></a>
 		<?php endforeach; ?>
 	</nav>
 	<div class="site-tools">

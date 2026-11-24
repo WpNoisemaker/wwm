@@ -1,11 +1,3 @@
 <?php
-/** The one list of places a visitor can go. The desktop header and the footer both read it. */
-return [
-	['ring',   'Weddings',   '/weddings',  'weddings'],
-	['chart',  'Buzz Chart', '/rankings',  'rankings'],
-	['store',  'Vendors',    '/vendors',   'vendors'],
-	['bag',    'Marketplace',     '/market',    'market'],
-	['chat',   'Anonymous Community',  '/community', 'community'],
-	['book',   'Blog',       '/blog',      'blog'],
-	['wallet', 'Pricing',    '/pricing',   'pricing'],
-];
+/** The main menu, which HQ edits in HQ > Menus. The desktop header and the phone menu both read it. */
+return Menu::main();

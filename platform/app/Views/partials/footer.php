@@ -11,31 +11,11 @@
 			</div>
 		</div>
 		<div class="site-foot__cols">
-			<div><h2><?= t('site.heading.platform', 'Platform') ?></h2><ul>
-				<li><a href="<?= e(App::url('/weddings')) ?>">Wedding pages</a></li>
-				<li><a href="<?= e(App::url('/rankings')) ?>">Buzz Chart</a></li>
-				<li><a href="<?= e(App::url('/community')) ?>">Anonymous Community</a></li>
-				<li><a href="<?= e(App::url('/blog')) ?>">Blog</a></li>
-			</ul></div>
-			<div><h2><?= t('site.heading.shop', 'Shop') ?></h2><ul>
-				<li><a href="<?= e(App::url('/vendors')) ?>">Vendors</a></li>
-				<li><a href="<?= e(App::url('/market')) ?>">Marketplace</a></li>
-				<li><a href="<?= e(App::url('/sell')) ?>">Sell with us</a></li>
-				<li><a href="<?= e(App::url('/pricing')) ?>">Pricing</a></li>
-			</ul></div>
-			<div><h2><?= t('site.heading.samples', 'Samples') ?></h2><ul>
-				<li><a href="<?= e(App::url('/w/ibrahim-ummi')) ?>">Premium page</a></li>
-				<li><a href="<?= e(App::url('/w/kola-lara')) ?>">Free page</a></li>
-			</ul></div>
-			<div><h2><?= t('site.heading.help', 'Help') ?></h2><ul>
-				<li><a href="<?= e(App::url('/help')) ?>">Help</a></li>
-				<li><a href="<?= e(App::url('/about')) ?>">About</a></li>
-				<li><a href="<?= e(App::url('/terms')) ?>">Terms &amp; conditions</a></li>
-				<li><a href="<?= e(App::url('/privacy')) ?>">Privacy policy</a></li>
-				<li><a href="<?= e(App::url('/refunds')) ?>">Refund policy</a></li>
-				<li><a href="<?= e(App::url('/community-guidelines')) ?>">Community guidelines</a></li>
-				<li><a href="<?= e(App::url('/cookies')) ?>">Cookies</a></li>
-			</ul></div>
+			<?php foreach (Menu::footer() as [$head, $links]): ?>
+				<div><h2><?= e($head) ?></h2><ul>
+					<?php foreach ($links as [$label, $url]): ?><li><a href="<?= e(Menu::href($url)) ?>"><?= e($label) ?></a></li><?php endforeach; ?>
+				</ul></div>
+			<?php endforeach; ?>
 		</div>
 	</div>
 	<nav class="site-foot__places" aria-label="Weddings by country">
