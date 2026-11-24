@@ -292,13 +292,18 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 	<section class="sec wrap" id="photos">
 		<div class="w-head reveal"><span class="eyebrow"><?= (int) $tally['photos'] ? (int) $tally['photos'] . ' from guests' : 'From guests' ?></span><h2>Photos</h2></div>
 		<?php if ($photos): ?>
-			<div class="gallery reveal">
+			<div class="gallery gallery--guests reveal">
 				<?php foreach (array_slice($photos, 0, 12) as $ph): ?><?= sq((string) $ph['image'], (string) $ph['body']) ?><?php endforeach; ?>
 			</div>
+		<?php else: ?>
+			<p class="w-sub center reveal">No photos yet. Be the first to add one.</p>
 		<?php endif; ?>
-		<form class="photo-add reveal" method="post" action="<?= e(App::url('/w/' . $slug . '/photo')) ?>" enctype="multipart/form-data">
+		<div class="photo-card glass glass--plain reveal">
+			<p class="photo-card__t">Add your photo from the day</p>
+			<p class="help">It appears in the gallery<?= $photos ? ' above' : '' ?> for everyone who opens this page.</p>
+		<form class="photo-add" method="post" action="<?= e(App::url('/w/' . $slug . '/photo')) ?>" enctype="multipart/form-data">
 			<?= Guard::field() ?>
-			<label class="photo-pick"><input type="file" name="photo" accept="image/jpeg,image/png,image/webp" required data-photo-input><?= icon('camera') ?><span data-photo-name>Add your photo from the day</span></label>
+			<label class="photo-pick"><input type="file" name="photo" accept="image/jpeg,image/png,image/webp" required data-photo-input><?= icon('camera') ?><span data-photo-name>Choose a photo</span></label>
 			<div class="photo-add__row">
 				<label class="sr" for="p-name">Your name</label>
 				<input class="input" id="p-name" name="name" required placeholder="Your name" autocomplete="name">
@@ -307,6 +312,7 @@ if ($key === 'classic' && !$isFree && Wedding::has($w, 'colours')) {
 				<button class="cbtn wish-compose__go" type="submit" aria-label="Add your photo"><?= icon('arrow') ?></button>
 			</div>
 		</form>
+		</div>
 	</section>
 	<?php endif; ?>
 	<?php $blocks['photos'] = ob_get_clean(); ?>

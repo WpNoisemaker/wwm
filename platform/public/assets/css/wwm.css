@@ -2534,3 +2534,12 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .cdash__ask .pill { height: 50px; padding: 0 22px; }
 .cdash__ask .ico { width: 17px; height: 17px; }
 .pill--wa { background: #25D366; color: #08341A; }
+
+/* ---------- wedding page: guests' photos above, the way to add one in its own card below ---------- */
+.gallery--guests { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 1080px; margin: 0 auto; }
+.gallery--guests > .sq { flex: 0 1 calc((100% - 10px) / 2); }
+@media (min-width: 900px) { .gallery--guests { gap: 16px; } .gallery--guests > .sq { flex-basis: calc((100% - 3 * 16px) / 4); } }
+.photo-card { display: grid; gap: 6px; max-width: 620px; margin: 32px auto 0; padding: 18px; text-align: center; }
+.photo-card__t { font-size: 17px; }
+.photo-card .help { margin: 0 0 6px; }
+.photo-card .photo-add { margin: 0; text-align: left; }
