@@ -8,7 +8,7 @@ declare(strict_types=1);
  */
 final class Upgrade
 {
-    private const STEPS = ['couple-photos-1', 'ibrahim-ummi-photos-1', 'wall-voice-squad-1', 'squad-profiles-1', 'market-2', 'talk-threads-1', 'demo-sprays-1', 'seller-premium-1', 'bachs-1', 'shortlets-1', 'settle-1', 'rsvp-approve-1', 'guest-reviews-1', 'team-1', 'listing-seller-1', 'ads-2'];
+    private const STEPS = ['couple-photos-1', 'ibrahim-ummi-photos-1', 'wall-voice-squad-1', 'squad-profiles-1', 'market-2', 'talk-threads-1', 'demo-sprays-1', 'seller-premium-1', 'bachs-1', 'shortlets-1', 'settle-1', 'rsvp-approve-1', 'guest-reviews-1', 'team-1', 'listing-seller-1', 'ads-2', 'squad-join-1'];
 
     public static function run(): void
     {
@@ -31,6 +31,7 @@ final class Upgrade
                     'bachs-1'              => Db::val("SHOW COLUMNS FROM weddings LIKE 'va_number'") ?: Db::run("ALTER TABLE weddings ADD COLUMN va_account VARCHAR(80) NOT NULL DEFAULT '', ADD COLUMN va_number VARCHAR(20) NOT NULL DEFAULT '', ADD COLUMN va_bank VARCHAR(120) NOT NULL DEFAULT '', ADD COLUMN va_name VARCHAR(160) NOT NULL DEFAULT '', ADD COLUMN va_status VARCHAR(20) NOT NULL DEFAULT '', ADD COLUMN va_error VARCHAR(255) NOT NULL DEFAULT ''"),
                     'seller-premium-1'     => Db::val("SHOW COLUMNS FROM vendors LIKE 'premium'") ?: Db::run('ALTER TABLE vendors ADD COLUMN premium TINYINT(1) NOT NULL DEFAULT 0 AFTER projects, ADD COLUMN brand JSON NULL AFTER premium'),
                     'guest-reviews-1'      => self::guestReviews(),
+                    'squad-join-1'         => self::squadJoin(),
                     'ads-2'                => Db::val("SHOW TABLES LIKE 'ads'") ? Db::run("UPDATE ads SET line = ? WHERE line LIKE 'Your own design, your song playing%'", ['Choose from ten designs, set your own colours, play your song and collect voice notes from guests. Our team can set it all up for you.']) : true,
                     'listing-seller-1'     => Db::val("SHOW COLUMNS FROM listings LIKE 'vendor_id'") ?: Db::run('ALTER TABLE listings ADD COLUMN vendor_id INT UNSIGNED NULL AFTER partner_id, ADD KEY ix_vendor (vendor_id)'),
                     'team-1'               => (Team::table() ?? true) && (Db::val("SHOW COLUMNS FROM guests LIKE 'checked_out'") ?: Db::run('ALTER TABLE guests ADD COLUMN checked_out DATETIME NULL AFTER checked_in')),
@@ -142,6 +143,17 @@ final class Upgrade
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
         if (!Db::val("SHOW COLUMNS FROM reviews LIKE 'wedding_id'")) {
             Db::run('ALTER TABLE reviews ADD COLUMN wedding_id INT UNSIGNED NULL AFTER user_id, ADD COLUMN guest TINYINT(1) NOT NULL DEFAULT 0 AFTER wedding_id, ADD KEY ix_wed (wedding_id)');
+        }
+    }
+
+    /** Bridesmaids and groomsmen add their own profile from a link; each one waits for the couple. */
+    private static function squadJoin(): void
+    {
+        if (!Db::val("SHOW COLUMNS FROM squad LIKE 'email'")) {
+            Db::run("ALTER TABLE squad MODIFY status ENUM('invited','joined','hidden','pending') NOT NULL DEFAULT 'invited', ADD COLUMN email VARCHAR(190) NOT NULL DEFAULT '' AFTER name");
+        }
+        if (!Db::val("SHOW COLUMNS FROM weddings LIKE 'squad_key'")) {
+            Db::run("ALTER TABLE weddings ADD COLUMN squad_key VARCHAR(24) NOT NULL DEFAULT ''");
         }
     }
 }

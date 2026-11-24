@@ -376,7 +376,58 @@ final class AccountController
             $this->rowAction('squad', (int) $w['id'], $fields, 'name');
             self::go('/account/squad');
         }
-        $this->show('squad', ['title' => 'The squad', 'w' => $w, 'rows' => Db::all('SELECT * FROM squad WHERE wedding_id = ? ORDER BY sort, id', [$w['id']])]);
+        $this->show('squad', ['title' => 'The squad', 'w' => $w,
+            'rows'    => Db::all("SELECT * FROM squad WHERE wedding_id = ? AND status <> 'pending' ORDER BY sort, id", [$w['id']]),
+            'pending' => Db::all("SELECT * FROM squad WHERE wedding_id = ? AND status = 'pending' ORDER BY id", [$w['id']]),
+            'joinUrl' => App::url('/w/' . $w['slug'] . '/squad/join/' . self::squadKey($w)),
+        ]);
+    }
+
+    /** The key in the couple's squad sign-up link. Made on first use; a new one cancels the old link. */
+    public static function squadKey(array $w, bool $fresh = false): string
+    {
+        $k = $fresh ? '' : (string) ($w['squad_key'] ?? '');
+        if ($k === '') {
+            $k = bin2hex(random_bytes(8));
+            Db::update('weddings', ['squad_key' => $k], 'id = ?', [$w['id']]);
+        }
+        return $k;
+    }
+
+    /** Approve a profile someone sent from the squad link (it goes live and they get an email), or decline it. */
+    public function squadDecide(string $id): void
+    {
+        Guard::must();
+        $w = $this->need();
+        $r = Db::one("SELECT * FROM squad WHERE id = ? AND wedding_id = ? AND status = 'pending'", [(int) $id, $w['id']]);
+        if (!$r) {
+            self::go('/account/squad');
+        }
+        $names = Wedding::names($w);
+        if (($_POST['do'] ?? '') === 'approve') {
+            Db::update('squad', ['status' => 'joined'], 'id = ?', [$r['id']]);
+            if ($r['email'] !== '') {
+                $page = App::url('/w/' . $w['slug'] . '#squad');
+                $first = trim(explode(' ', trim((string) $r['name']))[0] ?? '');
+                Mailer::send((string) $r['email'], 'You are in ' . $names . '’s squad', 'Hello' . ($first !== '' ? ' ' . $first : '') . ",\n\n{$names} have approved your profile. It is now in The Squad on their wedding page:\n{$page}",
+                    ['button' => ['See the squad', $page], 'title' => 'You are in the squad', 'why' => 'You get this email because you added your profile to ' . $names . '’s wedding page.']);
+            }
+            Guard::flash('ok', $r['name'] . ' is now in the squad on your page. We emailed them.');
+        } else {
+            Db::run('DELETE FROM squad WHERE id = ?', [$r['id']]);
+            Guard::flash('ok', 'Declined. ' . $r['name'] . ' is not on your page.');
+        }
+        self::go('/account/squad#waiting');
+    }
+
+    /** A new squad link; the old one stops working. */
+    public function squadLink(): void
+    {
+        Guard::must();
+        $w = $this->need();
+        self::squadKey($w, true);
+        Guard::flash('ok', 'Here is your new link. The old one no longer works.');
+        self::go('/account/squad#invite');
     }
 
     /** One social link: a full address, or an @handle (taken as Instagram). Anything else is dropped. */

@@ -316,6 +316,64 @@ final class WeddingController
         self::back($slug, 'vendors');
     }
 
+    /**
+     * The couple's squad link: a bridesmaid or groomsman fills in their own profile. It waits for
+     * the couple to approve it, and then it goes live in The Squad and they get an email.
+     */
+    public function squadJoin(string $slug, string $key): void
+    {
+        $w = Wedding::bySlug($slug);
+        if (!$w || (string) ($w['squad_key'] ?? '') === '' || !hash_equals((string) $w['squad_key'], $key)) {
+            self::notFound();
+        }
+        $names = Wedding::names($w);
+        $done = false;
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+            Guard::must();
+            $name  = mb_substr(trim((string) ($_POST['name'] ?? '')), 0, 160);
+            $email = mb_substr(trim((string) ($_POST['email'] ?? '')), 0, 190);
+            $side  = in_array($_POST['side'] ?? '', ['bride', 'groom'], true) ? (string) $_POST['side'] : '';
+            $back  = '/w/' . $w['slug'] . '/squad/join/' . $key;
+            if (Guard::tooMany('squadjoin', 6, 60)) {
+                Guard::flash('bad', 'That is a lot of profiles from one place. Try again in a little while.');
+            } elseif ($name === '' || $side === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                Guard::flash('bad', 'Please choose bridesmaid or groomsman, and add your name and email.');
+                Guard::keep($_POST);
+            } else {
+                $photo = '';
+                if (!empty($_FILES['photo']['name'])) {
+                    $photo = (string) Images::store($_FILES['photo'], 'squad/' . (int) $w['id']);
+                    if ($photo === '') {
+                        Guard::flash('bad', 'That photo could not be used. Try a JPEG or PNG under 12 MB.');
+                        Guard::keep($_POST);
+                        header('Location: ' . App::url($back));
+                        exit;
+                    }
+                }
+                Db::insert('squad', [
+                    'wedding_id' => $w['id'], 'side' => $side, 'name' => $name, 'email' => $email,
+                    'role'  => mb_substr(trim((string) ($_POST['role'] ?? '')), 0, 120) ?: ($side === 'bride' ? 'Bridesmaid' : 'Groomsman'),
+                    'work'  => mb_substr(trim((string) ($_POST['work'] ?? '')), 0, 160),
+                    'hobby' => mb_substr(trim((string) ($_POST['hobby'] ?? '')), 0, 160),
+                    'words' => mb_substr(trim((string) ($_POST['words'] ?? '')), 0, 240),
+                    'relationship' => isset(AccountController::RELATIONSHIP[$_POST['relationship'] ?? '']) ? (string) $_POST['relationship'] : '',
+                    'social' => AccountController::socialLink((string) ($_POST['social'] ?? '')),
+                    'photo' => $photo, 'status' => 'pending', 'sort' => 999,
+                ]);
+                $_SESSION['squad_sent'][(int) $w['id']] = $name;
+                header('Location: ' . App::url($back . '?sent=1'));
+                exit;
+            }
+            header('Location: ' . App::url($back));
+            exit;
+        }
+        if (!empty($_GET['sent']) && !empty($_SESSION['squad_sent'][(int) $w['id']])) {
+            $done = true;
+        }
+        header('X-Robots-Tag: noindex');
+        View::render('wedding/squad-join', ['title' => 'Join ' . $names . '’s squad', 'w' => $w, 'names' => $names, 'done' => $done, 'key' => $key, 'appTitle' => 'The squad']);
+    }
+
     /** The reply this phone sent: still waiting, approved (with its pass), or nothing. */
     private static function myReply(array $w): ?array
     {

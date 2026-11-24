@@ -43,7 +43,41 @@ $member = static function (array $r) use ($sides): string {
 	<?php if (!Wedding::has($w, 'squad')): ?>
 		<p class="note"><?= icon('lock') ?><span>The squad shows on your page from the Pro plan upwards. Fill it in now and it will appear when you upgrade. </span><?= up_tag('pro', 'The squad') ?></p>
 	<?php endif; ?>
-	<p class="help">No photo? Their card shows the first letter of their name. An @handle is treated as Instagram; for anything else, paste the link.</p>
+	<section class="glass glass--plain glass--tight acct-card" id="invite">
+		<h2 class="h3">Let them fill in their own profiles</h2>
+		<p class="help">Send this link to your bridesmaids and groomsmen. Each person adds their photo and details, then waits for you to approve them. Once you approve someone, we email them and their profile appears in The Squad on your page.</p>
+		<div class="door__row"><input class="input" value="<?= e($joinUrl) ?>" readonly aria-label="Your squad link"><button class="pill pill--sm pill--glass" type="button" data-copy="<?= e($joinUrl) ?>" data-copied="Link copied"><?= icon('copy') ?>Copy</button></div>
+		<div class="form-actions">
+			<a class="pill pill--sm pill--wa" href="<?= e('https://wa.me/?text=' . rawurlencode('Please add your profile to The Squad on our wedding page: ' . $joinUrl)) ?>" target="_blank" rel="noopener"><?= icon('chat') ?>Share on WhatsApp</a>
+			<form method="post" action="<?= e(App::url('/account/squad/link')) ?>" data-confirm="Make a new link? The old one will stop working."><?= Guard::field() ?><button class="pill pill--sm pill--glass" type="submit">Make a new link</button></form>
+		</div>
+	</section>
+
+	<?php if (!empty($pending)): ?>
+	<section class="gap-t" id="waiting">
+		<div class="block-head"><h2 class="h2">Waiting for you (<?= count($pending) ?>)</h2></div>
+		<div class="rows">
+			<?php foreach ($pending as $p): ?>
+				<div class="row-item rsvp-wait">
+					<?php if ((string) $p['photo'] !== ''): ?><?= sq((string) $p['photo'], (string) $p['name'], 'rsvp-wait__face') ?><?php else: ?><span class="row-item__ico"><?= e(mb_strtoupper(mb_substr((string) $p['name'], 0, 1))) ?></span><?php endif; ?>
+					<span>
+						<span class="row-item__t"><?= e($p['name']) ?></span>
+						<span class="row-item__s"><?= e(trim($p['role'] . ' · ' . ($p['side'] === 'bride' ? 'Bridesmaids' : 'Groomsmen'), ' ·')) ?></span>
+						<span class="row-item__s"><?= e(trim(implode(' · ', array_filter([(string) $p['work'], (string) $p['hobby'], (string) $p['email']])))) ?></span>
+						<?php if ($p['words']): ?><span class="row-item__s">“<?= e($p['words']) ?>”</span><?php endif; ?>
+					</span>
+					<form class="rsvp-wait__acts" method="post" action="<?= e(App::url('/account/squad/' . (int) $p['id'] . '/decide')) ?>">
+						<?= Guard::field() ?>
+						<button class="pill pill--sm" type="submit" name="do" value="approve">Approve</button>
+						<button class="pill pill--sm pill--glass" type="submit" name="do" value="decline">Decline</button>
+					</form>
+				</div>
+			<?php endforeach; ?>
+		</div>
+	</section>
+	<?php endif; ?>
+
+	<p class="help gap-t">No photo? Their card shows the first letter of their name. An @handle is treated as Instagram; for anything else, paste the link.</p>
 	<div class="acct-list">
 		<?php foreach ($rows as $r): ?><?= $member($r) ?><?php endforeach; ?>
 		<?= $member([]) ?>

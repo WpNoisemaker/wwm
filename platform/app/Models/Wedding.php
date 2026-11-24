@@ -490,7 +490,7 @@ final class Wedding
     public static function squad(int $id): array
     {
         return Db::all(
-            "SELECT * FROM squad WHERE wedding_id = ? AND status <> 'hidden' ORDER BY sort, id",
+            "SELECT * FROM squad WHERE wedding_id = ? AND status NOT IN ('hidden', 'pending') ORDER BY sort, id",
             [$id]
         );
     }
