@@ -7,12 +7,20 @@
  */
 $edit = LiveEdit::editing() ? '<a class="promo__edit" href="' . e(App::url('/hq/ads#ad' . $id)) . '" data-cms-skip>' . icon('pen') . 'Edit this ad</a>' : '';
 $from = $price !== '' ? 'From ' . $price . ', once' : '';
+// Our own ads show a Premium page on a phone, with a second design behind it.
+$shot = Promo::isShot($img);
+$phones = '';
+if ($shot) {
+	$n = (int) substr($img, 9, 1);
+	$pic = static fn (int $k): string => '<picture><source type="image/webp" srcset="' . e(App::asset('assets/img/ads/page-' . $k . '.webp')) . '"><img src="' . e(App::asset('assets/img/ads/page-' . $k . '.jpg')) . '" alt="" loading="lazy" decoding="async" width="480" height="960"></picture>';
+	$phones = '<span class="promo-shot" aria-hidden="true"><span class="promo-shot__phone promo-shot__phone--back">' . $pic(($n % 4) + 1) . '</span><span class="promo-shot__phone">' . $pic($n) . '</span></span>';
+}
 ?>
 <?php if ($as === 'post'): ?>
 	<article class="post post--ad" data-ad="1" data-id="ad" data-href="<?= e($href) ?>" data-likes="0" data-replies="0" aria-label="Ad: <?= e($title) ?>" data-cms-skip>
 		<span class="post__topic promo__lab">Ad · Wedding Websites &amp; More</span>
 		<div class="post__body promo__body">
-			<?php if ($img !== ''): ?><?= sq($img, '', 'promo__pic') ?><?php endif; ?>
+			<?php if ($shot): ?><?= $phones ?><?php elseif ($img !== ''): ?><?= sq($img, '', 'promo__pic') ?><?php endif; ?>
 			<span class="promo__tag"><?= icon('s-crown') ?>Premium</span>
 			<p class="promo__t"><?= e($title) ?></p>
 			<?php if ($line !== ''): ?><p class="promo__s"><?= e($line) ?></p><?php endif; ?>
@@ -21,12 +29,12 @@ $from = $price !== '' ? 'From ' . $price . ', once' : '';
 	</article>
 <?php elseif ($as === 'card'): ?>
 	<a class="card promo-card" href="<?= e($href) ?>" aria-label="Ad: <?= e($title) ?>" data-cms-skip>
-		<span class="sq"><?= $img !== '' ? photo($img, '') : '<span class="fill-art" aria-hidden="true">&amp;</span>' ?><span class="sq__tag promo__ad">Ad</span><span class="promo-card__over"><span class="promo__tag"><?= icon('s-crown') ?>Premium</span><span class="promo-card__t"><?= e($title) ?></span></span></span>
+		<span class="sq<?= $shot ? ' promo-card__shot' : '' ?>"><?= $shot ? $phones : ($img !== '' ? photo($img, '') : '<span class="fill-art" aria-hidden="true">&amp;</span>') ?><span class="sq__tag promo__ad">Ad</span><span class="promo-card__over"><span class="promo__tag"><?= icon('s-crown') ?>Premium</span><span class="promo-card__t"><?= e($title) ?></span></span></span>
 		<span class="card__cap"><span class="card__t"><?= e($button) ?></span><?php if ($from !== ''): ?><span class="card__s"><?= $from ?></span><?php endif; ?></span>
 	</a>
 <?php elseif ($as === 'story'): ?>
 	<a class="story-card promo-story" href="<?= e($href) ?>" aria-label="Ad: <?= e($title) ?>" data-cms-skip>
-		<?php if ($img !== ''): ?><?= sq($img, '', 'sq--wide') ?><?php endif; ?>
+		<?php if ($shot): ?><span class="promo-story__shot"><?= $phones ?></span><?php elseif ($img !== ''): ?><?= sq($img, '', 'sq--wide') ?><?php endif; ?>
 		<span class="eyebrow">Ad · Wedding Websites &amp; More</span>
 		<span class="story-card__t"><?= e($title) ?></span>
 		<?php if ($line !== ''): ?><span class="story-card__x"><?= e($line) ?></span><?php endif; ?>
@@ -35,7 +43,7 @@ $from = $price !== '' ? 'From ' . $price . ', once' : '';
 <?php else: ?>
 	<section class="sec wrap promo-band" data-cms-skip>
 		<a class="promo promo--band" href="<?= e($href) ?>" aria-label="Ad: <?= e($title) ?>">
-			<?php if ($img !== ''): ?><?= sq($img, '', 'promo__pic') ?><?php endif; ?>
+			<?php if ($shot): ?><?= $phones ?><?php elseif ($img !== ''): ?><?= sq($img, '', 'promo__pic') ?><?php endif; ?>
 			<span class="promo__in">
 				<span class="promo__lab">Ad · Wedding Websites &amp; More</span>
 				<span class="promo__tag"><?= icon('s-crown') ?>Premium</span>

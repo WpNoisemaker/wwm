@@ -118,12 +118,15 @@ final class Promo
     }
 
     /** A real Premium page's photo, for an ad with no picture of its own. */
+    /** With no image of its own, an ad shows a Premium wedding page on a phone (one of four designs). */
     private static function picture(int $n): string
     {
-        static $pics = null;
-        if ($pics === null) {
-            $pics = array_column(Db::all("SELECT cover FROM weddings WHERE plan IN ('premium','society') AND visibility = 'public' AND cover <> '' ORDER BY buzz DESC LIMIT 6"), 'cover');
-        }
-        return $pics ? (string) $pics[$n % count($pics)] : '';
+        return 'ads/page-' . (($n % 4) + 1) . '.jpg';
+    }
+
+    /** Is this one of our own page screenshots (shown in a phone frame) rather than a photo HQ uploaded? */
+    public static function isShot(string $img): bool
+    {
+        return (bool) preg_match('~^ads/page-\d\.jpg$~', $img);
     }
 }
